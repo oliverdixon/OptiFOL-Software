@@ -1,0 +1,37 @@
+# CMake build directories
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+*.cmake
+CMakeLists.txt.user
+cmake-build-*
+
+# CLion project files
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Binaries
+*.out
+*.exe
+*.o
+*.a
+*.so
+*.dylib
+*.dll
+*.obj
+*.pdb
+*.lib
+
+# User-specific configuration files
+*.user
+*.userprefs
+
+# Other files
+*.log
+*.bak
+*.swp
+*.tmp
+
