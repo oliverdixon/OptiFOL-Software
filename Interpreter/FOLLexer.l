@@ -6,38 +6,39 @@
 #define yypanic(X) (void)(X)
 %}
 
-%option c++ interactive noyywrap noyylineno nodefault
+%option c++ interactive noyywrap noyylineno
 
-dseq            ([[:digit:]]+)
-dseq_opt        ({dseq}?)
-frac            (({dseq_opt}"."{dseq})|{dseq}".")
-exp             ([eE][+-]?{dseq})
-exp_opt         ({exp}?)
-
-integer         ({dseq})
-float           (({frac}{exp_opt})|({dseq}{exp}))
-intvar          ([[:upper:]])
-fltvar          ([[:lower:]])
+lowercase_sequence ([a-z]+)
+uppercase_sequence ([A-Z]+)
+whitespace         ([ \t]+)
+symbol_prefix      "%"
+constant_prefix    "_"
+function_prefix    "$"
+character_sequence ([a-zA-Z]+)
 
 %%
 
-{integer}       yylval->emplace<long long>(strtoll(YYText(), nullptr, 10)); return FOLParser::token::INT;
-{float}         yylval->emplace<double>(strtod(YYText(), nullptr)); return FOLParser::token::FLT;
-{intvar}        yylval->emplace<char>(YYText()[0]); return FOLParser::token::INTVAR;
-{fltvar}        yylval->emplace<char>(YYText()[0]); return FOLParser::token::FLTVAR;
-"+"             return FOLParser::token::PLUS;
-"-"             return FOLParser::token::MINUS;
-"*"             return FOLParser::token::MULTIPLY;
-"/"             return FOLParser::token::DIVIDE;
-"%"             return FOLParser::token::MODULO;
-"!"             return FOLParser::token::FACTORIAL;
-"^"             return FOLParser::token::EXPONENT;
-"("             return FOLParser::token::LPAREN;
-")"             return FOLParser::token::RPAREN;
-"="             return FOLParser::token::ASSIGN;
-\n              return FOLParser::token::EOL;
-<<EOF>>         return FOLParser::token::YYEOF;
-.               /* no action on unmatched input */
+{constant_prefix}{character_sequence}   yylval->emplace<std::string>(YYText()); return FOLParser::token::Constant;
+{function_prefix}{character_sequence}   yylval->emplace<std::string>(YYText()); return FOLParser::token::Function;
+{lowercase_sequence}                    yylval->emplace<std::string>(YYText()); return FOLParser::token::Variable;
+{uppercase_sequence}                    yylval->emplace<std::string>(YYText()); return FOLParser::token::Predicate;
+
+{symbol_prefix}"Univ"   return FOLParser::token::Universal;
+{symbol_prefix}"Exis"   return FOLParser::token::Existential;
+{symbol_prefix}"Conj"   return FOLParser::token::Conjunction;
+{symbol_prefix}"Disj"   return FOLParser::token::Disjunction;
+{symbol_prefix}"Negn"   return FOLParser::token::Negation;
+{symbol_prefix}"Impl"   return FOLParser::token::Implication;
+{symbol_prefix}"Bcnd"   return FOLParser::token::Biconditional;
+{symbol_prefix}"Idty"   return FOLParser::token::Identity;
+
+"(" return FOLParser::token::LeftParenthesis;
+")" return FOLParser::token::RightParenthesis;
+"," return FOLParser::token::Comma;
+
+\n           return FOLParser::token::End;
+<<EOF>>      return FOLParser::token::End;
+{whitespace} /* Ignore whitespace */
 
 %%
 

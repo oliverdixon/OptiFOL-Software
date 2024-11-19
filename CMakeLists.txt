@@ -27,6 +27,11 @@ add_executable(OptiFOL
         ${FLEX_FOLLexer_OUTPUTS}
         Interpreter/FOLLexer.hpp
         Interpreter/FOLInterpreter.cpp
+        Interpreter/AST/ITermASTNode.hpp
+        Interpreter/AST/IFormulaASTNode.hpp
+        Interpreter/AST/VariableASTNode.hpp
+        Interpreter/AST/ConstantASTNode.hpp
+        Interpreter/AST/FunctionASTNode.hpp
 )
 
 target_include_directories(OptiFOL PRIVATE Interpreter/ ${GENERATED_SRC_DIR})
