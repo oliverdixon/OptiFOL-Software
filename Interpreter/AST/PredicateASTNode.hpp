@@ -1,25 +1,27 @@
 //
-// Created by owd on 19/11/24.
+// Created by owd on 20/11/24.
 //
 
-#ifndef OPTIFOL_FUNCTIONASTNODE_HPP
-#define OPTIFOL_FUNCTIONASTNODE_HPP
+#ifndef OPTIFOL_PREDICATEASTNODE_HPP
+#define OPTIFOL_PREDICATEASTNODE_HPP
 
-#include <memory>
-#include <utility>
-#include <vector>
+#include "IAtomicASTNode.hpp"
 #include "ITermASTNode.hpp"
+
+#include <vector>
+#include <memory>
 
 namespace optifol
 {
 
-class FunctionASTNode :
-        public ITermASTNode
+class PredicateASTNode :
+        public IAtomicASTNode
 {
 public:
-    [[maybe_unused]] explicit FunctionASTNode(std::string name,
-                                              std::vector<std::shared_ptr<ITermASTNode>> &&arguments) :
-            name(std::move(name)), arguments(std::move(arguments))
+    [[maybe_unused]] explicit PredicateASTNode(std::string name,
+                                               std::vector<std::shared_ptr<ITermASTNode>> &&arguments) :
+            name(std::move(name)),
+            arguments(std::move(arguments))
     {}
 
     [[nodiscard]] std::string to_string() const override
@@ -45,4 +47,4 @@ private:
 
 }
 
-#endif //OPTIFOL_FUNCTIONASTNODE_HPP
+#endif //OPTIFOL_PREDICATEASTNODE_HPP

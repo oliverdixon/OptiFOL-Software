@@ -32,6 +32,13 @@ add_executable(OptiFOL
         Interpreter/AST/VariableASTNode.hpp
         Interpreter/AST/ConstantASTNode.hpp
         Interpreter/AST/FunctionASTNode.hpp
+        Interpreter/AST/PredicateASTNode.hpp
+        Interpreter/AST/BinaryFormulaASTNode.hpp
+        Interpreter/AST/UnaryFormulaASTNode.hpp
+        Interpreter/AST/IAtomicASTNode.hpp
+        Interpreter/AST/BinaryFormulaASTNode.cpp
+        Interpreter/AST/UnaryFormulaASTNode.cpp
+        Interpreter/AST/IdentityTermASTNode.hpp
 )
 
 target_include_directories(OptiFOL PRIVATE Interpreter/ ${GENERATED_SRC_DIR})

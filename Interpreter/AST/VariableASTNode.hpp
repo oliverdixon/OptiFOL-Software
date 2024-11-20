@@ -7,12 +7,16 @@
 
 #include "ITermASTNode.hpp"
 
-class VariableASTNode:
+namespace optifol
+{
+
+class VariableASTNode :
         public ITermASTNode
 {
 public:
-    [[maybe_unused]] explicit VariableASTNode(std::string name):
-        name(std::move(name)) { }
+    [[maybe_unused]] explicit VariableASTNode(std::string name) :
+            name(std::move(name))
+    {}
 
     [[nodiscard]] std::string to_string() const override
     {
@@ -22,5 +26,7 @@ public:
 private:
     const std::string name;
 };
+
+}
 
 #endif //OPTIFOL_VARIABLEASTNODE_HPP

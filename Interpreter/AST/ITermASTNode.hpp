@@ -7,6 +7,9 @@
 
 #include <string>
 
+namespace optifol
+{
+
 class ITermASTNode
 {
 public:
@@ -14,5 +17,7 @@ public:
 
     [[nodiscard]] virtual std::string to_string() const = 0;
 };
+
+}
 
 #endif //OPTIFOL_ITERMASTNODE_HPP

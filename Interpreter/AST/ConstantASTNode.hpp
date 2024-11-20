@@ -7,12 +7,16 @@
 
 #include "ITermASTNode.hpp"
 
-class ConstantASTNode:
+namespace optifol
+{
+
+class ConstantASTNode :
         public ITermASTNode
 {
 public:
-    [[maybe_unused]] explicit ConstantASTNode(std::string name):
-            name(std::move(name)) { }
+    [[maybe_unused]] explicit ConstantASTNode(std::string name) :
+            name(std::move(name))
+    {}
 
     [[nodiscard]] std::string to_string() const override
     {
@@ -22,5 +26,7 @@ public:
 private:
     const std::string name;
 };
+
+}
 
 #endif //OPTIFOL_CONSTANTASTNODE_HPP

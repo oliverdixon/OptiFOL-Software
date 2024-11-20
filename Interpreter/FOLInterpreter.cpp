@@ -5,9 +5,14 @@
 #include <memory>
 
 #include "FOLLexer.hpp"
-#include "AST/ITermASTNode.hpp"
+#include "AST/IFormulaASTNode.hpp"
 
-[[maybe_unused]] std::shared_ptr<ITermASTNode> yyroot;
+namespace optifol
+{
+
+[[maybe_unused]] std::shared_ptr<optifol::IFormulaASTNode> yyroot;
+
+}
 
 int main()
 {
@@ -16,6 +21,5 @@ int main()
 
     while (true)
         if (parser.parse() == 0)
-            std::cout << yyroot->to_string() << std::endl;
-
+            std::cout << optifol::yyroot->to_string() << std::endl;
 }

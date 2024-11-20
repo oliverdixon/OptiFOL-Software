@@ -19,10 +19,15 @@
     #include "AST/FunctionASTNode.hpp"
     #include "AST/ConstantASTNode.hpp"
 
-    extern std::shared_ptr<ITermASTNode> yyroot;
+    #include "AST/UnaryFormulaASTNode.hpp"
+    #include "AST/BinaryFormulaASTNode.hpp"
+    #include "AST/PredicateASTNode.hpp"
+    #include "AST/IdentityTermASTNode.hpp"
 
-    namespace optifol {
+    namespace optifol
+    {
         class FOLLexer;
+        extern std::shared_ptr<IFormulaASTNode> yyroot;
     }
 }
 
@@ -48,6 +53,8 @@
 %left Conjunction
 %right Negation
 
+%type <std::shared_ptr<IFormulaASTNode>> logical_expression
+%type <std::shared_ptr<IAtomicASTNode>> atomic_sentence
 %type <std::shared_ptr<ITermASTNode>> term
 %type <std::vector<std::shared_ptr<ITermASTNode>>> term_vector
 
@@ -63,33 +70,75 @@ quantified_sentence : Existential Variable sentence
                     | Universal Variable sentence
                     ;
 
-logical_expression : LeftParenthesis logical_expression RightParenthesis
-                   | Negation logical_expression
-                   | logical_expression Conjunction logical_expression
-                   | logical_expression Disjunction logical_expression
-                   | logical_expression Implication logical_expression
-                   | logical_expression Biconditional logical_expression
-                   | atomic_sentence
-                   ;
+tmp_start : logical_expression End {
+              yyroot = $1;
+              return 0;
+          }
 
-atomic_sentence : term Identity term
-                | Predicate LeftParenthesis term_vector RightParenthesis
-                ;
-
-tmp_start : term End { yyroot = $1; return 0; }
-          | error End { return -1; }
+          | error End {
+              return -1;
+          }
           ;
 
-term_vector : term { $$ = { $1 }; }
-            | term_vector Comma term { $$ = std::move($1); $$.push_back($3); }
+logical_expression : LeftParenthesis logical_expression RightParenthesis {
+                       $$ = $2;
+                   }
+
+                   | Negation logical_expression {
+                       $$ = std::make_shared<UnaryFormulaASTNode<UnaryFormulaASTTypes::Negation>>($2);
+                   }
+
+                   | logical_expression Conjunction logical_expression {
+                       $$ = std::make_shared<BinaryFormulaASTNode<BinaryFormulaASTTypes::Conjunction>>($1, $3);
+                   }
+
+                   | logical_expression Disjunction logical_expression {
+                       $$ = std::make_shared<BinaryFormulaASTNode<BinaryFormulaASTTypes::Disjunction>>($1, $3);
+                   }
+
+                   | logical_expression Implication logical_expression {
+                       $$ = std::make_shared<BinaryFormulaASTNode<BinaryFormulaASTTypes::Implication>>($1, $3);
+                   }
+
+                   | logical_expression Biconditional logical_expression {
+                       $$ = std::make_shared<BinaryFormulaASTNode<BinaryFormulaASTTypes::Biconditional>>($1, $3);
+                   }
+
+                   | atomic_sentence {
+                       $$ = $1;
+                   }
+                   ;
+
+atomic_sentence : term Identity term {
+                    $$ = std::make_shared<IdentityTermASTNode>($1, $3);
+                }
+
+                | Predicate LeftParenthesis term_vector RightParenthesis {
+                    $$ = std::make_shared<PredicateASTNode>($1, std::move($3));
+                }
+                ;
+
+term_vector : term {
+                $$ = { $1 };
+            }
+
+            | term_vector Comma term {
+                $$ = std::move($1);
+                $$.push_back($3);
+            }
             ;
 
 term : Function LeftParenthesis term_vector RightParenthesis {
          $$ = std::make_shared<FunctionASTNode>($1, std::move($3));
      }
 
-     | Constant { $$ = std::make_shared<ConstantASTNode>($1); }
-     | Variable { $$ = std::make_shared<VariableASTNode>($1); }
+     | Constant {
+         $$ = std::make_shared<ConstantASTNode>($1);
+     }
+
+     | Variable {
+         $$ = std::make_shared<VariableASTNode>($1);
+     }
      ;
 
 %%
