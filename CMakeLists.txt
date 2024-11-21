@@ -14,11 +14,12 @@ if (NOT BISON_FOUND)
     message(FATAL_ERROR "Bison is required but was not found.")
 endif ()
 
-set(GENERATED_SRC_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated)
+set(GENERATED_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/include)
+set(GENERATED_SRC_DIR ${GENERATED_INCLUDE_DIR}/generated)
 file(MAKE_DIRECTORY ${GENERATED_SRC_DIR})
 
-bison_target(FOLParser Interpreter/FOLParser.y ${GENERATED_SRC_DIR}/FOLParser.cpp
-        DEFINES_FILE ${GENERATED_SRC_DIR}/FOLParser.hpp COMPILE_FLAGS "-t -Wcounterexamples")
+bison_target(FOLParser Interpreter/FOLParser.y ${GENERATED_SRC_DIR}/BaseParser.cpp
+        COMPILE_FLAGS "-t -Wcounterexamples")
 flex_target(FOLLexer Interpreter/FOLLexer.l ${GENERATED_SRC_DIR}/FOLLexer.cpp)
 add_flex_bison_dependency(FOLLexer FOLParser)
 
@@ -37,6 +38,7 @@ add_executable(OptiFOL
         Interpreter/AST/NegatedSentenceNode.hpp
         Interpreter/AST/IdentitySentenceNode.hpp
         Interpreter/AST/QuantifiedSentenceNode.hpp
+        Interpreter/FOLParser.hpp
 )
 
-target_include_directories(OptiFOL PRIVATE Interpreter/ ${GENERATED_SRC_DIR})
+target_include_directories(OptiFOL PRIVATE Interpreter/ ${GENERATED_INCLUDE_DIR})

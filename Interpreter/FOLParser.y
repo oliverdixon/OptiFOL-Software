@@ -1,15 +1,12 @@
-%{
-#include <iostream>
-#include <string>
-%}
-
 %require "3.7.4"
 %language "C++"
 
-%define api.parser.class {FOLParser}
-%define api.namespace {optifol}
+%define api.parser.class {BaseParser}
+%define api.namespace {optifol::impl}
 %define api.value.type variant
 %define parse.error detailed
+%defines
+%skeleton "lalr1.cc"
 %parse-param {FOLLexer* scanner}
 
 %code requires
@@ -27,7 +24,6 @@
     namespace optifol
     {
         class FOLLexer;
-        extern std::shared_ptr<ISentenceNode> yyroot;
     }
 }
 
@@ -64,7 +60,7 @@
 line :
      sentence End
      {
-         yyroot = $1;
+         static_cast<FOLParser *>(this)->registerSentence($1);
          return 0;
      }
      |
@@ -182,7 +178,7 @@ term :
 
 %%
 
-void optifol::FOLParser::error(const std::string& msg)
+void optifol::impl::BaseParser::error(const std::string& msg)
 {
-    std::cerr << msg << '\n';
+    static_cast<FOLParser *>(this)->error(msg);
 }
