@@ -2,23 +2,23 @@
 // Created by owd on 19/11/24.
 //
 
-#ifndef OPTIFOL_FUNCTIONASTNODE_HPP
-#define OPTIFOL_FUNCTIONASTNODE_HPP
+#ifndef OPTIFOL_FUNCTIONNODE_HPP
+#define OPTIFOL_FUNCTIONNODE_HPP
 
 #include <memory>
 #include <utility>
 #include <vector>
-#include "ITermASTNode.hpp"
+#include "ITermNode.hpp"
 
 namespace optifol
 {
 
-class FunctionASTNode :
-        public ITermASTNode
+class FunctionNode :
+        public ITermNode
 {
 public:
-    [[maybe_unused]] explicit FunctionASTNode(std::string name,
-                                              std::vector<std::shared_ptr<ITermASTNode>> &&arguments) :
+    [[maybe_unused]] explicit FunctionNode(std::string name,
+                                           std::vector<std::shared_ptr<ITermNode>> &&arguments) :
             name(std::move(name)), arguments(std::move(arguments))
     {}
 
@@ -40,9 +40,9 @@ public:
 
 private:
     const std::string name;
-    const std::vector<std::shared_ptr<ITermASTNode>> arguments;
+    const std::vector<std::shared_ptr<ITermNode>> arguments;
 };
 
 }
 
-#endif //OPTIFOL_FUNCTIONASTNODE_HPP
+#endif //OPTIFOL_FUNCTIONNODE_HPP

@@ -18,7 +18,7 @@ set(GENERATED_SRC_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated)
 file(MAKE_DIRECTORY ${GENERATED_SRC_DIR})
 
 bison_target(FOLParser Interpreter/FOLParser.y ${GENERATED_SRC_DIR}/FOLParser.cpp
-        DEFINES_FILE ${GENERATED_SRC_DIR}/FOLParser.hpp)
+        DEFINES_FILE ${GENERATED_SRC_DIR}/FOLParser.hpp COMPILE_FLAGS "-t -Wcounterexamples")
 flex_target(FOLLexer Interpreter/FOLLexer.l ${GENERATED_SRC_DIR}/FOLLexer.cpp)
 add_flex_bison_dependency(FOLLexer FOLParser)
 
@@ -27,18 +27,16 @@ add_executable(OptiFOL
         ${FLEX_FOLLexer_OUTPUTS}
         Interpreter/FOLLexer.hpp
         Interpreter/FOLInterpreter.cpp
-        Interpreter/AST/ITermASTNode.hpp
-        Interpreter/AST/IFormulaASTNode.hpp
-        Interpreter/AST/VariableASTNode.hpp
-        Interpreter/AST/ConstantASTNode.hpp
-        Interpreter/AST/FunctionASTNode.hpp
-        Interpreter/AST/PredicateASTNode.hpp
-        Interpreter/AST/BinaryFormulaASTNode.hpp
-        Interpreter/AST/UnaryFormulaASTNode.hpp
-        Interpreter/AST/IAtomicASTNode.hpp
-        Interpreter/AST/BinaryFormulaASTNode.cpp
-        Interpreter/AST/UnaryFormulaASTNode.cpp
-        Interpreter/AST/IdentityTermASTNode.hpp
+        Interpreter/AST/ITermNode.hpp
+        Interpreter/AST/ISentenceNode.hpp
+        Interpreter/AST/VariableNode.hpp
+        Interpreter/AST/ConstantNode.hpp
+        Interpreter/AST/FunctionNode.hpp
+        Interpreter/AST/PredicationNode.hpp
+        Interpreter/AST/ConnectedSentenceNode.hpp
+        Interpreter/AST/NegatedSentenceNode.hpp
+        Interpreter/AST/IdentitySentenceNode.hpp
+        Interpreter/AST/QuantifiedSentenceNode.hpp
 )
 
 target_include_directories(OptiFOL PRIVATE Interpreter/ ${GENERATED_SRC_DIR})

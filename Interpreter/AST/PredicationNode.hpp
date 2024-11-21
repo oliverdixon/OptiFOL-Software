@@ -2,11 +2,11 @@
 // Created by owd on 20/11/24.
 //
 
-#ifndef OPTIFOL_PREDICATEASTNODE_HPP
-#define OPTIFOL_PREDICATEASTNODE_HPP
+#ifndef OPTIFOL_PREDICATIONNODE_HPP
+#define OPTIFOL_PREDICATIONNODE_HPP
 
-#include "IAtomicASTNode.hpp"
-#include "ITermASTNode.hpp"
+#include "ISentenceNode.hpp"
+#include "ITermNode.hpp"
 
 #include <vector>
 #include <memory>
@@ -14,12 +14,12 @@
 namespace optifol
 {
 
-class PredicateASTNode :
-        public IAtomicASTNode
+class PredicationNode :
+        public ISentenceNode
 {
 public:
-    [[maybe_unused]] explicit PredicateASTNode(std::string name,
-                                               std::vector<std::shared_ptr<ITermASTNode>> &&arguments) :
+    [[maybe_unused]] explicit PredicationNode(std::string name,
+                                              std::vector<std::shared_ptr<ITermNode>> &&arguments) :
             name(std::move(name)),
             arguments(std::move(arguments))
     {}
@@ -42,9 +42,9 @@ public:
 
 private:
     const std::string name;
-    const std::vector<std::shared_ptr<ITermASTNode>> arguments;
+    const std::vector<std::shared_ptr<ITermNode>> arguments;
 };
 
 }
 
-#endif //OPTIFOL_PREDICATEASTNODE_HPP
+#endif //OPTIFOL_PREDICATIONNODE_HPP

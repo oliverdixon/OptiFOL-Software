@@ -23,14 +23,15 @@ character_sequence ([a-zA-Z]+)
 {lowercase_sequence}                    yylval->emplace<std::string>(YYText()); return FOLParser::token::Variable;
 {uppercase_sequence}                    yylval->emplace<std::string>(YYText()); return FOLParser::token::Predicate;
 
-{symbol_prefix}"Univ"   return FOLParser::token::Universal;
-{symbol_prefix}"Exis"   return FOLParser::token::Existential;
-{symbol_prefix}"Conj"   return FOLParser::token::Conjunction;
-{symbol_prefix}"Disj"   return FOLParser::token::Disjunction;
-{symbol_prefix}"Negn"   return FOLParser::token::Negation;
-{symbol_prefix}"Impl"   return FOLParser::token::Implication;
-{symbol_prefix}"Bcnd"   return FOLParser::token::Biconditional;
-{symbol_prefix}"Idty"   return FOLParser::token::Identity;
+{symbol_prefix}"U"   return FOLParser::token::Universal;
+{symbol_prefix}"E"   return FOLParser::token::Existential;
+
+"&"     return FOLParser::token::Conjunction;
+"|"     return FOLParser::token::Disjunction;
+"~"     return FOLParser::token::Negation;
+"=>"    return FOLParser::token::Implication;
+"<=>"   return FOLParser::token::Biconditional;
+"="     return FOLParser::token::Identity;
 
 "(" return FOLParser::token::LeftParenthesis;
 ")" return FOLParser::token::RightParenthesis;

@@ -2,22 +2,22 @@
 // Created by owd on 19/11/24.
 //
 
-#ifndef OPTIFOL_ITERMASTNODE_HPP
-#define OPTIFOL_ITERMASTNODE_HPP
+#ifndef OPTIFOL_ITERMNODE_HPP
+#define OPTIFOL_ITERMNODE_HPP
 
 #include <string>
 
 namespace optifol
 {
 
-class ITermASTNode
+class ITermNode
 {
 public:
-    virtual ~ITermASTNode() = default;
+    virtual ~ITermNode() = default;
 
     [[nodiscard]] virtual std::string to_string() const = 0;
 };
 
 }
 
-#endif //OPTIFOL_ITERMASTNODE_HPP
+#endif //OPTIFOL_ITERMNODE_HPP

@@ -10,24 +10,24 @@
 %define api.namespace {optifol}
 %define api.value.type variant
 %define parse.error detailed
-%define parse.lac full
 %parse-param {FOLLexer* scanner}
 
 %code requires
 {
-    #include "AST/VariableASTNode.hpp"
-    #include "AST/FunctionASTNode.hpp"
-    #include "AST/ConstantASTNode.hpp"
+    #include "AST/VariableNode.hpp"
+    #include "AST/FunctionNode.hpp"
+    #include "AST/ConstantNode.hpp"
 
-    #include "AST/UnaryFormulaASTNode.hpp"
-    #include "AST/BinaryFormulaASTNode.hpp"
-    #include "AST/PredicateASTNode.hpp"
-    #include "AST/IdentityTermASTNode.hpp"
+    #include "AST/NegatedSentenceNode.hpp"
+    #include "AST/ConnectedSentenceNode.hpp"
+    #include "AST/PredicationNode.hpp"
+    #include "AST/IdentitySentenceNode.hpp"
+    #include "AST/QuantifiedSentenceNode.hpp"
 
     namespace optifol
     {
         class FOLLexer;
-        extern std::shared_ptr<IFormulaASTNode> yyroot;
+        extern std::shared_ptr<ISentenceNode> yyroot;
     }
 }
 
@@ -53,91 +53,130 @@
 %left Conjunction
 %right Negation
 
-%type <std::shared_ptr<IFormulaASTNode>> logical_expression
-%type <std::shared_ptr<IAtomicASTNode>> atomic_sentence
-%type <std::shared_ptr<ITermASTNode>> term
-%type <std::vector<std::shared_ptr<ITermASTNode>>> term_vector
+%type <std::shared_ptr<ISentenceNode>> sentence
+%type <std::shared_ptr<ITermNode>> term
+%type <std::vector<std::shared_ptr<ITermNode>>> term_vector
 
-%start tmp_start
+%start line
 
 %%
 
-sentence : quantified_sentence End { return 0; }
-         | logical_expression End { return 0; }
+line :
+     sentence End
+     {
+         yyroot = $1;
+         return 0;
+     }
+     |
+     error
+     {
+         return -1;
+     }
+     ;
+
+sentence :
+         Universal Variable LeftParenthesis sentence RightParenthesis
+         {
+             $$ = std::make_shared<QuantifiedSentenceNode>(
+                 QuantifierTypes::Universal,
+                 std::make_shared<VariableNode>($2),
+                 $4
+             );
+         }
+         |
+         Existential Variable LeftParenthesis sentence RightParenthesis
+         {
+             $$ = std::make_shared<QuantifiedSentenceNode>(
+                 QuantifierTypes::Existential,
+                 std::make_shared<VariableNode>($2),
+                 $4
+             );
+         }
+         |
+         Predicate LeftParenthesis term_vector RightParenthesis
+         {
+             $$ = std::make_shared<PredicationNode>($1, std::move($3));
+         }
+         |
+         term Identity term
+         {
+             $$ = std::make_shared<IdentitySentenceNode>($1, $3);
+         }
+         |
+         Negation sentence
+         {
+             $$ = std::make_shared<NegatedSentenceNode>($2);
+         }
+         |
+         sentence Conjunction sentence
+         {
+             $$ = std::make_shared<ConnectedSentenceNode>(
+                 BinaryOperatorTypes::Conjunction,
+                 $1,
+                 $3
+             );
+         }
+         |
+         sentence Disjunction sentence
+         {
+             $$ = std::make_shared<ConnectedSentenceNode>(
+                 BinaryOperatorTypes::Disjunction,
+                 $1,
+                 $3
+             );
+         }
+         |
+         sentence Implication sentence
+         {
+             $$ = std::make_shared<ConnectedSentenceNode>(
+                 BinaryOperatorTypes::Implication,
+                 $1,
+                 $3
+             );
+         }
+         |
+         sentence Biconditional sentence
+         {
+             $$ = std::make_shared<ConnectedSentenceNode>(
+                 BinaryOperatorTypes::Biconditional,
+                 $1,
+                 $3
+             );
+         }
+         |
+         LeftParenthesis sentence RightParenthesis
+         {
+             $$ = $2;
+         }
          ;
 
-quantified_sentence : Existential Variable sentence
-                    | Universal Variable sentence
-                    ;
-
-tmp_start : logical_expression End {
-              yyroot = $1;
-              return 0;
-          }
-
-          | error End {
-              return -1;
-          }
-          ;
-
-logical_expression : LeftParenthesis logical_expression RightParenthesis {
-                       $$ = $2;
-                   }
-
-                   | Negation logical_expression {
-                       $$ = std::make_shared<UnaryFormulaASTNode<UnaryFormulaASTTypes::Negation>>($2);
-                   }
-
-                   | logical_expression Conjunction logical_expression {
-                       $$ = std::make_shared<BinaryFormulaASTNode<BinaryFormulaASTTypes::Conjunction>>($1, $3);
-                   }
-
-                   | logical_expression Disjunction logical_expression {
-                       $$ = std::make_shared<BinaryFormulaASTNode<BinaryFormulaASTTypes::Disjunction>>($1, $3);
-                   }
-
-                   | logical_expression Implication logical_expression {
-                       $$ = std::make_shared<BinaryFormulaASTNode<BinaryFormulaASTTypes::Implication>>($1, $3);
-                   }
-
-                   | logical_expression Biconditional logical_expression {
-                       $$ = std::make_shared<BinaryFormulaASTNode<BinaryFormulaASTTypes::Biconditional>>($1, $3);
-                   }
-
-                   | atomic_sentence {
-                       $$ = $1;
-                   }
-                   ;
-
-atomic_sentence : term Identity term {
-                    $$ = std::make_shared<IdentityTermASTNode>($1, $3);
-                }
-
-                | Predicate LeftParenthesis term_vector RightParenthesis {
-                    $$ = std::make_shared<PredicateASTNode>($1, std::move($3));
-                }
-                ;
-
-term_vector : term {
+term_vector :
+            term
+            {
                 $$ = { $1 };
             }
-
-            | term_vector Comma term {
+            |
+            term_vector Comma term
+            {
                 $$ = std::move($1);
                 $$.push_back($3);
             }
             ;
 
-term : Function LeftParenthesis term_vector RightParenthesis {
-         $$ = std::make_shared<FunctionASTNode>($1, std::move($3));
+term :
+     Function LeftParenthesis term_vector RightParenthesis
+     {
+         $$ = std::make_shared<FunctionNode>($1, std::move($3));
      }
-
-     | Constant {
-         $$ = std::make_shared<ConstantASTNode>($1);
+     |
+     Constant
+     {
+         $$ = std::make_shared<ConstantNode>($1);
      }
-
-     | Variable {
-         $$ = std::make_shared<VariableASTNode>($1);
+     |
+     Variable
+     {
+         $$ = std::make_shared<VariableNode>($1);
      }
      ;
 

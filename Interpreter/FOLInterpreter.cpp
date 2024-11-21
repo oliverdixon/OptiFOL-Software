@@ -5,12 +5,12 @@
 #include <memory>
 
 #include "FOLLexer.hpp"
-#include "AST/IFormulaASTNode.hpp"
+#include "AST/ISentenceNode.hpp"
 
 namespace optifol
 {
 
-[[maybe_unused]] std::shared_ptr<optifol::IFormulaASTNode> yyroot;
+[[maybe_unused]] std::shared_ptr<optifol::ISentenceNode> yyroot;
 
 }
 
