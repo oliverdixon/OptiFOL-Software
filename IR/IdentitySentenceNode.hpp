@@ -6,6 +6,7 @@
 #define OPTIFOL_IDENTITYSENTENCENODE_HPP
 
 #include "ISentenceNode.hpp"
+#include "ITermNode.hpp"
 
 #include <memory>
 
@@ -17,15 +18,15 @@ class IdentitySentenceNode :
 {
 public:
     [[maybe_unused]] IdentitySentenceNode(std::shared_ptr<ITermNode> lhs,
-                                          std::shared_ptr<ITermNode> rhs) :
-            lhs(std::move(lhs)),
-            rhs(std::move(rhs))
-    {}
+                                          std::shared_ptr<ITermNode> rhs);
 
-    [[nodiscard]] std::string to_string() const override
-    {
-        return lhs->to_string() + " = " + rhs->to_string();
-    }
+    [[nodiscard]] std::string to_string() const override;
+
+    [[nodiscard]] std::shared_ptr<ITermNode> get_lhs_operand() const;
+
+    [[nodiscard]] std::shared_ptr<ITermNode> get_rhs_operand() const;
+
+    void accept(VisitorBase& visitor) override;
 
 private:
     std::shared_ptr<ITermNode> lhs;

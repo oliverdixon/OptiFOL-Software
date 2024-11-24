@@ -10,12 +10,16 @@
 namespace optifol
 {
 
+class VisitorBase;
+
 class ISentenceNode
 {
 public:
     virtual ~ISentenceNode() = default;
 
     [[nodiscard]] virtual std::string to_string() const = 0;
+
+    virtual void accept(VisitorBase &visitor) = 0;
 };
 
 }

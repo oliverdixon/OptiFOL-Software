@@ -11,15 +11,16 @@
 
 %code requires
 {
-    #include "AST/VariableNode.hpp"
-    #include "AST/FunctionNode.hpp"
-    #include "AST/ConstantNode.hpp"
+    #include "../IR/VariableNode.hpp"
+    #include "../IR/FunctionNode.hpp"
+    #include "../IR/ConstantNode.hpp"
 
-    #include "AST/NegatedSentenceNode.hpp"
-    #include "AST/ConnectedSentenceNode.hpp"
-    #include "AST/PredicationNode.hpp"
-    #include "AST/IdentitySentenceNode.hpp"
-    #include "AST/QuantifiedSentenceNode.hpp"
+    #include "../IR/NegatedSentenceNode.hpp"
+    #include "../IR/PredicationNode.hpp"
+    #include "../IR/IdentitySentenceNode.hpp"
+
+    #include "../IR/QuantifiedSentenceNodeProxy.hpp"
+    #include "../IR/ConnectedSentenceNodeProxy.hpp"
 
     namespace optifol
     {
@@ -60,7 +61,7 @@
 line :
      sentence End
      {
-         static_cast<FOLParser *>(this)->registerSentence($1);
+         static_cast<FOLParser *>(this)->register_sentence($1);
          return 0;
      }
      |
@@ -73,19 +74,23 @@ line :
 sentence :
          Universal Variable LeftParenthesis sentence RightParenthesis
          {
-             $$ = std::make_shared<QuantifiedSentenceNode>(
-                 QuantifierTypes::Universal,
-                 std::make_shared<VariableNode>($2),
-                 $4
+             $$ = std::make_shared<QuantifiedSentenceNodeProxy>(
+                 std::make_shared<QuantifiedSentenceNode>(
+                     QuantifierTypes::Universal,
+                     std::make_shared<VariableNode>($2),
+                     $4
+                 )
              );
          }
          |
          Existential Variable LeftParenthesis sentence RightParenthesis
          {
-             $$ = std::make_shared<QuantifiedSentenceNode>(
-                 QuantifierTypes::Existential,
-                 std::make_shared<VariableNode>($2),
-                 $4
+             $$ = std::make_shared<QuantifiedSentenceNodeProxy>(
+                 std::make_shared<QuantifiedSentenceNode>(
+                     QuantifierTypes::Existential,
+                     std::make_shared<VariableNode>($2),
+                     $4
+                 )
              );
          }
          |
@@ -106,37 +111,45 @@ sentence :
          |
          sentence Conjunction sentence
          {
-             $$ = std::make_shared<ConnectedSentenceNode>(
-                 BinaryOperatorTypes::Conjunction,
-                 $1,
-                 $3
+             $$ = std::make_shared<ConnectedSentenceNodeProxy>(
+                 std::make_shared<ConnectedSentenceNode>(
+                     BinaryOperatorTypes::Conjunction,
+                     $1,
+                     $3
+                 )
              );
          }
          |
          sentence Disjunction sentence
          {
-             $$ = std::make_shared<ConnectedSentenceNode>(
-                 BinaryOperatorTypes::Disjunction,
-                 $1,
-                 $3
+             $$ = std::make_shared<ConnectedSentenceNodeProxy>(
+                 std::make_shared<ConnectedSentenceNode>(
+                     BinaryOperatorTypes::Disjunction,
+                     $1,
+                     $3
+                 )
              );
          }
          |
          sentence Implication sentence
          {
-             $$ = std::make_shared<ConnectedSentenceNode>(
-                 BinaryOperatorTypes::Implication,
-                 $1,
-                 $3
+             $$ = std::make_shared<ConnectedSentenceNodeProxy>(
+                 std::make_shared<ConnectedSentenceNode>(
+                     BinaryOperatorTypes::Implication,
+                     $1,
+                     $3
+                 )
              );
          }
          |
          sentence Biconditional sentence
          {
-             $$ = std::make_shared<ConnectedSentenceNode>(
-                 BinaryOperatorTypes::Biconditional,
-                 $1,
-                 $3
+             $$ = std::make_shared<ConnectedSentenceNodeProxy>(
+                 std::make_shared<ConnectedSentenceNode>(
+                     BinaryOperatorTypes::Biconditional,
+                     $1,
+                     $3
+                 )
              );
          }
          |

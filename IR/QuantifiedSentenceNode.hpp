@@ -6,6 +6,7 @@
 #define OPTIFOL_QUANTIFIEDSENTENCENODE_HPP
 
 #include <memory>
+
 #include "ISentenceNode.hpp"
 #include "VariableNode.hpp"
 
@@ -22,22 +23,22 @@ class QuantifiedSentenceNode :
         public ISentenceNode
 {
 public:
-    [[maybe_unused]] QuantifiedSentenceNode(QuantifierTypes quantifierType,
+    [[maybe_unused]] QuantifiedSentenceNode(QuantifierTypes quantifier_type,
                                             std::shared_ptr<VariableNode> bound_variable,
-                                            std::shared_ptr<ISentenceNode> sentence) :
-            quantifierType(quantifierType),
-            bound_variable(std::move(bound_variable)),
-            sentence(std::move(sentence))
-    {}
+                                            std::shared_ptr<ISentenceNode> sentence);
 
-    [[nodiscard]] std::string to_string() const override
-    {
-        return ((quantifierType == QuantifierTypes::Universal) ? "ForAll " : "ThereExist ") +
-               bound_variable->to_string() + " (" + sentence->to_string() + ')';
-    }
+    [[nodiscard]] std::string to_string() const override;
+
+    [[nodiscard]] QuantifierTypes get_quantifier_type() const;
+
+    [[nodiscard]] std::shared_ptr<VariableNode> get_bound_variable() const;
+
+    [[nodiscard]] std::shared_ptr<ISentenceNode> get_sentence() const;
+
+    void accept(VisitorBase& visitor) override;
 
 private:
-    QuantifierTypes quantifierType;
+    QuantifierTypes quantifier_type;
     std::shared_ptr<VariableNode> bound_variable;
     std::shared_ptr<ISentenceNode> sentence;
 };

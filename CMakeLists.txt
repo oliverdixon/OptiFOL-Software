@@ -27,18 +27,30 @@ add_executable(OptiFOL
         ${BISON_FOLParser_OUTPUTS}
         ${FLEX_FOLLexer_OUTPUTS}
         Interpreter/FOLLexer.hpp
-        Interpreter/FOLInterpreter.cpp
-        Interpreter/AST/ITermNode.hpp
-        Interpreter/AST/ISentenceNode.hpp
-        Interpreter/AST/VariableNode.hpp
-        Interpreter/AST/ConstantNode.hpp
-        Interpreter/AST/FunctionNode.hpp
-        Interpreter/AST/PredicationNode.hpp
-        Interpreter/AST/ConnectedSentenceNode.hpp
-        Interpreter/AST/NegatedSentenceNode.hpp
-        Interpreter/AST/IdentitySentenceNode.hpp
-        Interpreter/AST/QuantifiedSentenceNode.hpp
+        Driver.cpp
+        IR/ITermNode.hpp
+        IR/ISentenceNode.hpp
+        IR/VariableNode.hpp
+        IR/ConstantNode.hpp
+        IR/FunctionNode.hpp
+        IR/PredicationNode.hpp
+        IR/ConnectedSentenceNode.hpp
+        IR/NegatedSentenceNode.hpp
+        IR/IdentitySentenceNode.hpp
+        IR/QuantifiedSentenceNode.hpp
         Interpreter/FOLParser.hpp
+        Visitors/ImplicationPurgingVisitor.hpp
+        Visitors/VisitorBase.hpp
+        IR/QuantifiedSentenceNodeProxy.hpp
+        IR/ConnectedSentenceNodeProxy.hpp
+        Visitors/DMLVisitor.hpp
+        IR/ConnectedSentenceNodeProxy.cpp
+        IR/ConnectedSentenceNode.cpp
+        IR/QuantifiedSentenceNode.cpp
+        IR/QuantifiedSentenceNodeProxy.cpp
+        IR/IdentitySentenceNode.cpp
+        IR/PredicationNode.cpp
+        IR/NegatedSentenceNode.cpp
 )
 
 target_include_directories(OptiFOL PRIVATE Interpreter/ ${GENERATED_INCLUDE_DIR})
