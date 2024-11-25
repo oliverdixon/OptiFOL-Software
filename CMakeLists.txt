@@ -39,18 +39,18 @@ add_executable(OptiFOL
         IR/IdentitySentenceNode.hpp
         IR/QuantifiedSentenceNode.hpp
         Interpreter/FOLParser.hpp
-        Visitors/ImplicationPurgingVisitor.hpp
+        Visitors/ImplicationEliminationVisitor.hpp
         Visitors/VisitorBase.hpp
         IR/QuantifiedSentenceNodeProxy.hpp
-        IR/ConnectedSentenceNodeProxy.hpp
         Visitors/DMLVisitor.hpp
-        IR/ConnectedSentenceNodeProxy.cpp
         IR/ConnectedSentenceNode.cpp
         IR/QuantifiedSentenceNode.cpp
         IR/QuantifiedSentenceNodeProxy.cpp
         IR/IdentitySentenceNode.cpp
         IR/PredicationNode.cpp
         IR/NegatedSentenceNode.cpp
+        Visitors/UniversalEliminationVisitor.hpp
+        Visitors/DisjunctionDistributionVisitor.hpp
 )
 
 target_include_directories(OptiFOL PRIVATE Interpreter/ ${GENERATED_INCLUDE_DIR})
