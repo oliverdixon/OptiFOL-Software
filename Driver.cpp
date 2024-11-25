@@ -5,7 +5,8 @@
 #include "Interpreter/FOLLexer.hpp"
 #include "Interpreter/FOLParser.hpp"
 
-#include "Visitors/ImplicationPurgingVisitor.hpp"
+#include "Visitors/UniversalEliminationVisitor.hpp"
+#include "Visitors/DisjunctionDistributionVisitor.hpp"
 
 int main()
 {
@@ -14,11 +15,15 @@ int main()
 
     while (parser.parse() == 0) {
         const auto root = parser.retrieve_sentence();
-        std::cout << "[As-Parsed]\t" << root->to_string() << '\n';
+        std::cout << "[Parsed]\t" << root->to_string() << '\n';
 
-        optifol::ImplicationPurgingVisitor normaliser;
-        root->accept(normaliser);
-        std::cout << "[As-Normalised]\t" << root->to_string() << '\n';
+        optifol::UniversalEliminationVisitor universalEliminationVisitor;
+        root->accept(universalEliminationVisitor);
+        std::cout << "[Uni. Elim.]\t" << root->to_string() << '\n';
+
+        optifol::DisjunctionDistributionVisitor disjunctionDistributionVisitor;
+        root->accept(disjunctionDistributionVisitor);
+        std::cout << "[Disj. Dist.]\t" << root->to_string() << '\n';
     }
 
     return 0;

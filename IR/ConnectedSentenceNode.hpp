@@ -16,6 +16,7 @@ namespace optifol
 
 enum class BinaryOperatorTypes
 {
+    None,
     Conjunction,
     Disjunction,
     Implication,
@@ -56,6 +57,8 @@ private:
                 return "=>";
             case BinaryOperatorTypes::Biconditional:
                 return "<=>";
+            case BinaryOperatorTypes::None:
+                return "?";
         }
     }
 };

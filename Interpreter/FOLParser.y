@@ -18,9 +18,9 @@
     #include "../IR/NegatedSentenceNode.hpp"
     #include "../IR/PredicationNode.hpp"
     #include "../IR/IdentitySentenceNode.hpp"
+    #include "../IR/ConnectedSentenceNode.hpp"
 
     #include "../IR/QuantifiedSentenceNodeProxy.hpp"
-    #include "../IR/ConnectedSentenceNodeProxy.hpp"
 
     namespace optifol
     {
@@ -111,45 +111,37 @@ sentence :
          |
          sentence Conjunction sentence
          {
-             $$ = std::make_shared<ConnectedSentenceNodeProxy>(
-                 std::make_shared<ConnectedSentenceNode>(
-                     BinaryOperatorTypes::Conjunction,
-                     $1,
-                     $3
-                 )
+             $$ = std::make_shared<ConnectedSentenceNode>(
+                 BinaryOperatorTypes::Conjunction,
+                 $1,
+                 $3
              );
          }
          |
          sentence Disjunction sentence
          {
-             $$ = std::make_shared<ConnectedSentenceNodeProxy>(
-                 std::make_shared<ConnectedSentenceNode>(
-                     BinaryOperatorTypes::Disjunction,
-                     $1,
-                     $3
-                 )
+             $$ = std::make_shared<ConnectedSentenceNode>(
+                 BinaryOperatorTypes::Disjunction,
+                 $1,
+                 $3
              );
          }
          |
          sentence Implication sentence
          {
-             $$ = std::make_shared<ConnectedSentenceNodeProxy>(
-                 std::make_shared<ConnectedSentenceNode>(
-                     BinaryOperatorTypes::Implication,
-                     $1,
-                     $3
-                 )
+             $$ = std::make_shared<ConnectedSentenceNode>(
+                 BinaryOperatorTypes::Implication,
+                 $1,
+                 $3
              );
          }
          |
          sentence Biconditional sentence
          {
-             $$ = std::make_shared<ConnectedSentenceNodeProxy>(
-                 std::make_shared<ConnectedSentenceNode>(
-                     BinaryOperatorTypes::Biconditional,
-                     $1,
-                     $3
-                 )
+             $$ = std::make_shared<ConnectedSentenceNode>(
+                 BinaryOperatorTypes::Biconditional,
+                 $1,
+                 $3
              );
          }
          |

@@ -22,7 +22,7 @@ public:
 
     void accept(VisitorBase& visitor) override;
 
-    std::shared_ptr<QuantifiedSentenceNode> sentence;
+    std::shared_ptr<ISentenceNode> sentence;
 };
 
 }

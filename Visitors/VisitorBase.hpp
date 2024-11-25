@@ -5,11 +5,11 @@
 #ifndef OPTIFOL_VISITORBASE_HPP
 #define OPTIFOL_VISITORBASE_HPP
 
-#include "../IR/ConnectedSentenceNodeProxy.hpp"
 #include "../IR/QuantifiedSentenceNodeProxy.hpp"
 #include "../IR/IdentitySentenceNode.hpp"
 #include "../IR/PredicationNode.hpp"
 #include "../IR/NegatedSentenceNode.hpp"
+#include "../IR/ConnectedSentenceNode.hpp"
 
 namespace optifol
 {
@@ -28,9 +28,6 @@ public:
         node.get_rhs_operand()->accept(*this);
     }
 
-    virtual void visit(IdentitySentenceNode& node) {}
-    virtual void visit(PredicationNode& node) {}
-
     virtual void visit(NegatedSentenceNode& node)
     {
         node.get_operand()->accept(*this);
@@ -41,10 +38,8 @@ public:
         node.sentence->accept(*this);
     }
 
-    virtual void visit(ConnectedSentenceNodeProxy& node)
-    {
-        node.sentence->accept(*this);
-    }
+    virtual void visit(IdentitySentenceNode& node) {}
+    virtual void visit(PredicationNode& node) {}
 };
 
 }
