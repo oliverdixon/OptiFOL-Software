@@ -1,6 +1,6 @@
 /**
  * @file ImplicationEliminationVisitor.hpp
- * @brief Class specification for the Implication Purging Visitor and its associated rule set.
+ * @brief Class specification for the Implication-Elimination Visitor and its associated rule set.
  * @author Oliver Dixon
  * @date 2024-11-24
  * @version Development
@@ -31,35 +31,7 @@ class ImplicationEliminationVisitor :
         public VisitorBase
 {
 public:
-    void visit(ConnectedSentenceNode &node) override
-    {
-        VisitorBase::visit(node);
-
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wswitch"
-        switch (node.get_operator_type()) {
-            case BinaryOperatorTypes::Implication:
-                node.operator_type = BinaryOperatorTypes::Disjunction;
-                node.lhs = std::make_shared<NegatedSentenceNode>(node.lhs);
-                break;
-
-            case BinaryOperatorTypes::Biconditional:
-                node.operator_type = BinaryOperatorTypes::Conjunction;
-                const auto save_lhs = node.lhs;
-
-                node.lhs = std::make_shared<ConnectedSentenceNode>(BinaryOperatorTypes::Disjunction,
-                                                                   node.lhs,
-                                                                   std::make_shared<NegatedSentenceNode>(node.rhs));
-
-                node.rhs = std::make_shared<ConnectedSentenceNode>(BinaryOperatorTypes::Disjunction,
-                                                                   std::make_shared<NegatedSentenceNode>(save_lhs),
-                                                                   node.rhs);
-
-                break;
-
-        }
-#pragma clang diagnostic pop
-    }
+    void visit(ConnectedSentenceNode &node) override;
 };
 
 }

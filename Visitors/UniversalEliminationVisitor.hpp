@@ -1,6 +1,10 @@
-//
-// Created by owd on 25/11/24.
-//
+/**
+ * @file UniversalEliminationVisitor.hpp
+ * @brief Class specification for the Universal-Elimination Visitor and its associated rule set.
+ * @author Oliver Dixon
+ * @date 2024-11-25
+ * @version Development
+ */
 
 #ifndef OPTIFOL_UNIVERSALELIMINATIONVISITOR_HPP
 #define OPTIFOL_UNIVERSALELIMINATIONVISITOR_HPP
@@ -14,23 +18,9 @@ class UniversalEliminationVisitor :
         public VisitorBase
 {
 public:
-    void visit(QuantifiedSentenceNode& node) override
-    {
-        VisitorBase::visit(node);
+    void visit(QuantifiedSentenceNode& node) override;
 
-        if (node.get_quantifier_type() == QuantifierTypes::Universal)
-            extracted_sentence = node.get_sentence();
-    }
-
-    void visit(QuantifiedSentenceNodeProxy& proxy) override
-    {
-        VisitorBase::visit(proxy);
-
-        if (extracted_sentence != nullptr) {
-            proxy.sentence = extracted_sentence;
-            extracted_sentence = nullptr;
-        }
-    }
+    void visit(QuantifiedSentenceNodeProxy& proxy) override;
 
 private:
     std::shared_ptr<ISentenceNode> extracted_sentence;

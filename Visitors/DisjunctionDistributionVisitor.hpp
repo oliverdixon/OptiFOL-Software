@@ -1,84 +1,79 @@
-//
-// Created by owd on 25/11/24.
-//
+/**
+ * @file DisjunctionDistributionVisitor.hpp
+ * @brief Class specification for the Disjunction-Distribution Visitor and its associated rule set.
+ * @author Oliver Dixon
+ * @date 2024-11-25
+ * @version Development
+ */
 
 #ifndef OPTIFOL_DISJUNCTIONDISTRIBUTIONVISITOR_HPP
 #define OPTIFOL_DISJUNCTIONDISTRIBUTIONVISITOR_HPP
 
 #include <stack>
+#include <cassert>
 
 #include "VisitorBase.hpp"
 
 namespace optifol
 {
 
+/**
+ * @class DisjunctionDistributionVisitor
+ * @brief The Disjunction-Distribution Visitor applies the distributive law to eligible connected sentences.
+ *
+ * @details The Disjunction-Distribution Visitor rewrites the model to distribute disjunctions across clauses of nested
+ * conjunctions. In particular,
+ * <ul>
+ *   <li><code>P(x) | (Q(x) & R(x))</code> becomes <code>(P(x) | Q(x)) & (P(x) | R(x))</code>; and likewise, </li>
+ *   <li><code>(P(x) & Q(x)) | R(x)</code> becomes <code>(R(x) | P(x)) & (R(x) | Q(x))</code>.</li>
+ * </ul>
+ * The rewriting rules executed herein do not make use of proxies, as fundamental types are not altered (i.e. only the
+ * substance of the ConnectedSentenceNode operands are altered).
+ *
+ * @warning Although multiple passes are not required for this CNF-normalising visitor, it does recurse on any produced
+ * terms to ensure a full reduction. On extremely deeply nested sentences, this could cause a machine stack overflow.
+ */
 class DisjunctionDistributionVisitor :
         public VisitorBase
 {
 public:
-    void visit(ConnectedSentenceNode &node) override
-    {
-        const auto current_operator_type = node.get_operator_type();
-
-        if (current_operator_type == BinaryOperatorTypes::Conjunction)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wswitch"
-            switch (tracking_state) {
-                case TrackingState::LeftMajor:
-                    tracked_operands.emplace(node.get_lhs_operand(), node.get_rhs_operand());
-                    break;
-
-                case TrackingState::RightMajor:
-                    tracked_operands.emplace(node.get_rhs_operand(), node.get_lhs_operand());
-                    break;
-            }
-#pragma clang diagnostic pop
-        else
-            tracking_state = TrackingState::NotTracking;
-
-        if (current_operator_type == BinaryOperatorTypes::Disjunction) {
-            tracking_state = TrackingState::RightMajor;
-            node.get_rhs_operand()->accept(*this);
-
-            if (!attempt_reduction(node)) {
-                tracking_state = TrackingState::LeftMajor;
-                node.get_lhs_operand()->accept(*this);
-                attempt_reduction(node);
-            }
-
-            tracking_state = TrackingState::NotTracking;
-        }
-    }
+    /**
+     * @copydoc VisitorBase::node(ConnectedSentenceNode&)
+     */
+    void visit(ConnectedSentenceNode &node) override;
 
 private:
+    /**
+     * @enum TrackingState
+     * @brief Indicate the current state of 'tracking', as required by a calling visitor.
+     * @details When tracking is enabled (left- or right-major), operands/children of binary-connected nodes should
+     *  be tracked by the DisjunctionDistributionVisitor instance.
+     */
     enum class TrackingState
     {
-        NotTracking,
-        LeftMajor,
-        RightMajor
+        NotTracking, /**< Not tracking; nested children shouldn't record their operands. */
+        LeftMajor, /**< Tracking to the left: nested children should record their left operands in the major slot */
+        RightMajor /**< Tracking to the right: nested children should record their right operands in the major slot */
     };
 
     TrackingState tracking_state = TrackingState::NotTracking;
+
+    /**
+     * @brief The tracked operand stack stores, depth-wise, the major and minor child operands of connected nodes,
+     *  respectively.
+     */
     std::stack<std::pair<std::shared_ptr<ISentenceNode>, std::shared_ptr<ISentenceNode>>> tracked_operands;
 
-    bool attempt_reduction(ConnectedSentenceNode &node)
-    {
-        if (!tracked_operands.empty()) {
-            const auto simple = (tracking_state == TrackingState::LeftMajor) ? node.rhs : node.lhs;
-            auto& complex = tracked_operands.top();
-
-            node.operator_type = BinaryOperatorTypes::Conjunction;
-            node.lhs = std::make_shared<ConnectedSentenceNode>(BinaryOperatorTypes::Disjunction, simple,
-                                                               std::move(complex.first));
-            node.rhs = std::make_shared<ConnectedSentenceNode>(BinaryOperatorTypes::Disjunction, simple,
-                                                               std::move(complex.second));
-
-            tracked_operands.pop();
-            return true;
-        }
-
-        return false;
-    }
+    /**
+     * @brief Apply any applicable reductions to the given node, given the collected tracked operands from eligible
+     *  children.
+     * @pre The given node must be of a disjunctive nature. The top of the tracked operands stack must be fully
+     *  populated and not contain any empty containers.
+     * @post The tracked operand stack is empty.
+     * @param node The root node on which reduction should be applied
+     * @return Was at least one reduction performed?
+     */
+    bool attempt_reduction(ConnectedSentenceNode &node);
 };
 
 }

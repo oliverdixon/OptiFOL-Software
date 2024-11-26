@@ -51,6 +51,9 @@ add_executable(OptiFOL
         IR/NegatedSentenceNode.cpp
         Visitors/UniversalEliminationVisitor.hpp
         Visitors/DisjunctionDistributionVisitor.hpp
+        Visitors/DisjunctionDistributionVisitor.cpp
+        Visitors/UniversalEliminationVisitor.cpp
+        Visitors/ImplicationEliminationVisitor.cpp
 )
 
 target_include_directories(OptiFOL PRIVATE Interpreter/ ${GENERATED_INCLUDE_DIR})

@@ -35,6 +35,8 @@ public:
 
     [[nodiscard]] std::shared_ptr<ISentenceNode> get_sentence() const;
 
+    [[nodiscard]] std::shared_ptr<ISentenceNode> move_sentence();
+
     void accept(VisitorBase& visitor) override;
 
 private:

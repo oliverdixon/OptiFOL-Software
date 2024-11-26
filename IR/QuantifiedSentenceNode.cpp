@@ -42,4 +42,11 @@ void QuantifiedSentenceNode::accept(VisitorBase &visitor)
     visitor.visit(*this);
 }
 
+std::shared_ptr<ISentenceNode> QuantifiedSentenceNode::move_sentence()
+{
+    auto borrowed = std::move(sentence);
+    sentence = nullptr;
+    return borrowed;
+}
+
 }
