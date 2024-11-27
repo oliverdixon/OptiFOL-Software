@@ -3,7 +3,6 @@
 //
 
 #include "Interpreter/FOLLexer.hpp"
-#include "Interpreter/FOLParser.hpp"
 
 #include "Visitors/ImplicationEliminationVisitor.hpp"
 #include "Visitors/UniversalEliminationVisitor.hpp"
