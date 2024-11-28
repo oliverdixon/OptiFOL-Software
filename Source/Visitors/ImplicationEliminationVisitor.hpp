@@ -32,6 +32,8 @@ class ImplicationEliminationVisitor :
 {
 public:
     void visit(ConnectedSentenceNode &node) override;
+
+    void reset() override;
 };
 
 }

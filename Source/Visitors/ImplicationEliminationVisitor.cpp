@@ -37,4 +37,10 @@ void ImplicationEliminationVisitor::visit(ConnectedSentenceNode &node)
 #pragma clang diagnostic pop
 }
 
+void ImplicationEliminationVisitor::reset()
+{
+    // Visitor does not maintain any internal state.
+    (void)0;
+}
+
 }

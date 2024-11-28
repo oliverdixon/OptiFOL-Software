@@ -10,7 +10,6 @@
 #define OPTIFOL_DISJUNCTIONDISTRIBUTIONVISITOR_HPP
 
 #include <stack>
-#include <cassert>
 
 #include "VisitorBase.hpp"
 
@@ -24,8 +23,8 @@ namespace optifol
  * @details The Disjunction-Distribution Visitor rewrites the model to distribute disjunctions across clauses of nested
  * conjunctions. In particular,
  * <ul>
- *   <li><code>P(x) | (Q(x) & R(x))</code> becomes <code>(P(x) | Q(x)) & (P(x) | R(x))</code>; and likewise, </li>
- *   <li><code>(P(x) & Q(x)) | R(x)</code> becomes <code>(R(x) | P(x)) & (R(x) | Q(x))</code>.</li>
+ *   <li><code>P | (Q & R)</code> becomes <code>(P | Q) & (P | R)</code>; and likewise, </li>
+ *   <li><code>(P & Q) | R</code> becomes <code>(R | P) & (R | Q)</code>.</li>
  * </ul>
  * The rewriting rules executed herein do not make use of proxies, as fundamental types are not altered (i.e. only the
  * substance of the ConnectedSentenceNode operands are altered).
@@ -41,6 +40,8 @@ public:
      * @copydoc VisitorBase::node(ConnectedSentenceNode&)
      */
     void visit(ConnectedSentenceNode &node) override;
+
+    void reset() override;
 
 private:
     /**

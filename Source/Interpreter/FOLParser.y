@@ -20,7 +20,7 @@
     #include "../IR/IdentitySentenceNode.hpp"
     #include "../IR/ConnectedSentenceNode.hpp"
 
-    #include "../IR/QuantifiedSentenceNodeProxy.hpp"
+    #include "../IR/NodeProxy.hpp"
 
     namespace optifol
     {
@@ -74,7 +74,7 @@ line :
 sentence :
          Universal Variable LeftParenthesis sentence RightParenthesis
          {
-             $$ = std::make_shared<QuantifiedSentenceNodeProxy>(
+             $$ = std::make_shared<NodeProxy>(
                  std::make_shared<QuantifiedSentenceNode>(
                      QuantifierTypes::Universal,
                      std::make_shared<VariableNode>($2),
@@ -85,7 +85,7 @@ sentence :
          |
          Existential Variable LeftParenthesis sentence RightParenthesis
          {
-             $$ = std::make_shared<QuantifiedSentenceNodeProxy>(
+             $$ = std::make_shared<NodeProxy>(
                  std::make_shared<QuantifiedSentenceNode>(
                      QuantifierTypes::Existential,
                      std::make_shared<VariableNode>($2),
@@ -106,7 +106,11 @@ sentence :
          |
          Negation sentence
          {
-             $$ = std::make_shared<NegatedSentenceNode>($2);
+             $$ = std::make_shared<NodeProxy>(
+                 std::make_shared<NegatedSentenceNode>(
+                     $2
+                 )
+             );
          }
          |
          sentence Conjunction sentence

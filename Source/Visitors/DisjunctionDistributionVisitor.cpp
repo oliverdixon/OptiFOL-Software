@@ -1,6 +1,12 @@
-//
-// Created by owd on 25/11/24.
-//
+/**
+ * @file DisjunctionDistributionVisitor.cpp
+ * @brief Class implementation for the Disjunction-Distribution Visitor and its associated rule set.
+ * @author Oliver Dixon
+ * @date 2024-11-25
+ * @version Development
+ */
+
+#include <cassert>
 
 #include "DisjunctionDistributionVisitor.hpp"
 
@@ -70,6 +76,14 @@ bool DisjunctionDistributionVisitor::attempt_reduction(ConnectedSentenceNode &no
     }
 
     return false;
+}
+
+void DisjunctionDistributionVisitor::reset()
+{
+    tracking_state = TrackingState::NotTracking;
+
+    while (!tracked_operands.empty())
+        tracked_operands.pop();
 }
 
 }

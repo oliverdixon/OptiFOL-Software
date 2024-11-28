@@ -5,7 +5,7 @@
 #ifndef OPTIFOL_VISITORBASE_HPP
 #define OPTIFOL_VISITORBASE_HPP
 
-#include "../IR/QuantifiedSentenceNodeProxy.hpp"
+#include "../IR/NodeProxy.hpp"
 #include "../IR/IdentitySentenceNode.hpp"
 #include "../IR/PredicationNode.hpp"
 #include "../IR/NegatedSentenceNode.hpp"
@@ -17,6 +17,8 @@ namespace optifol
 class VisitorBase
 {
 public:
+    virtual ~VisitorBase() = default;
+
     virtual void visit(QuantifiedSentenceNode& node)
     {
         node.get_sentence()->accept(*this);
@@ -33,13 +35,15 @@ public:
         node.get_operand()->accept(*this);
     }
 
-    virtual void visit(QuantifiedSentenceNodeProxy& node)
+    virtual void visit(NodeProxy& node)
     {
         node.sentence->accept(*this);
     }
 
     virtual void visit(IdentitySentenceNode& node) {}
     virtual void visit(PredicationNode& node) {}
+
+    virtual void reset() = 0;
 };
 
 }

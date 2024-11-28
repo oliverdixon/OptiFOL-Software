@@ -20,7 +20,9 @@ class UniversalEliminationVisitor :
 public:
     void visit(QuantifiedSentenceNode& node) override;
 
-    void visit(QuantifiedSentenceNodeProxy& proxy) override;
+    void visit(NodeProxy& proxy) override;
+
+    void reset() override;
 
 private:
     std::shared_ptr<ISentenceNode> extracted_sentence;

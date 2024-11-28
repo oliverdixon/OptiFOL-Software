@@ -30,25 +30,26 @@ set(COMMON_SOURCES
         Source/IR/FunctionNode.hpp
         Source/IR/PredicationNode.hpp
         Source/IR/ConnectedSentenceNode.hpp
-        Source/IR/NegatedSentenceNode.hpp
         Source/IR/IdentitySentenceNode.hpp
+        Source/IR/NegatedSentenceNode.hpp
         Source/IR/QuantifiedSentenceNode.hpp
         Source/Interpreter/FOLParser.hpp
         Source/Visitors/ImplicationEliminationVisitor.hpp
         Source/Visitors/VisitorBase.hpp
-        Source/IR/QuantifiedSentenceNodeProxy.hpp
+        Source/IR/NodeProxy.hpp
         Source/Visitors/DMLVisitor.hpp
         Source/IR/ConnectedSentenceNode.cpp
+        Source/IR/NegatedSentenceNode.cpp
         Source/IR/QuantifiedSentenceNode.cpp
-        Source/IR/QuantifiedSentenceNodeProxy.cpp
+        Source/IR/NodeProxy.cpp
         Source/IR/IdentitySentenceNode.cpp
         Source/IR/PredicationNode.cpp
-        Source/IR/NegatedSentenceNode.cpp
         Source/Visitors/UniversalEliminationVisitor.hpp
         Source/Visitors/DisjunctionDistributionVisitor.hpp
         Source/Visitors/DisjunctionDistributionVisitor.cpp
         Source/Visitors/UniversalEliminationVisitor.cpp
         Source/Visitors/ImplicationEliminationVisitor.cpp
+        Source/Visitors/DMLVisitor.cpp
 )
 
 add_executable(OptiFOL
@@ -58,7 +59,7 @@ add_executable(OptiFOL
 
 target_include_directories(OptiFOL PRIVATE Source/Interpreter/ ${GENERATED_INCLUDE_DIR})
 
-set(FETCHCONTENT_BASE_DIR "${CMAKE_SOURCE_DIR}/_deps")
+cmake_policy(SET CMP0135 NEW)
 FetchContent_Declare(
         googletest
         URL https://github.com/google/googletest/archive/03597a01ee50ed33e9dfd640b249b4be3799d395.zip

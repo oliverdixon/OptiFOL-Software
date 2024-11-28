@@ -2,8 +2,8 @@
 // Created by owd on 24/11/24.
 //
 
-#ifndef OPTIFOL_QUANTIFIEDSENTENCENODEPROXY_HPP
-#define OPTIFOL_QUANTIFIEDSENTENCENODEPROXY_HPP
+#ifndef OPTIFOL_NODEPROXY_HPP
+#define OPTIFOL_NODEPROXY_HPP
 
 #include <utility>
 
@@ -12,11 +12,11 @@
 namespace optifol
 {
 
-class QuantifiedSentenceNodeProxy :
+class NodeProxy :
         public ISentenceNode
 {
 public:
-    explicit QuantifiedSentenceNodeProxy(std::shared_ptr<QuantifiedSentenceNode> node);
+    explicit NodeProxy(std::shared_ptr<ISentenceNode> node);
 
     [[nodiscard]] std::string to_string() const override;
 
@@ -27,4 +27,4 @@ public:
 
 }
 
-#endif //OPTIFOL_QUANTIFIEDSENTENCENODEPROXY_HPP
+#endif //OPTIFOL_NODEPROXY_HPP
