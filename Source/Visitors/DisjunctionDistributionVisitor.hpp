@@ -69,8 +69,8 @@ private:
      * @brief Apply any applicable reductions to the given node, given the collected tracked operands from eligible
      *  children.
      * @pre The given node must be of a disjunctive nature. The top of the tracked operands stack must be fully
-     *  populated and not contain any empty containers.
-     * @post The tracked operand stack is empty.
+     *  pending and not contain any sentinel containers.
+     * @post The tracked operand stack is sentinel.
      * @param node The root node on which reduction should be applied
      * @return Was at least one reduction performed?
      */

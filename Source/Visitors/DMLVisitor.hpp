@@ -25,8 +25,8 @@ namespace optifol
  *   <li><code>~(P | Q)</code> becomes <code>~P & ~Q</code>;</li>
  *   <li><code>~(P & Q)</code> becomes <code>~P | ~Q</code>;</li>
  *   <li><code>~~P</code> becomes <code>P</code>;</li>
- *   <li><code>~(%Ux(P(x)))</code> becomes <code>%Ex(~P(x))</code>; and</li>
- *   <li><code>~(%Ex(P(x)))</code> becomes <code>%Ux(~P(x))</code>.</li>
+ *   <li><code>~%Ux(P(x))</code> becomes <code>%Ex(~P(x))</code>; and</li>
+ *   <li><code>~%Ex(P(x))</code> becomes <code>%Ux(~P(x))</code>.</li>
  * </ul>
  *
  * @warning Although multiple passes are not required for this DML-normalising visitor, it does recurse on any produced
@@ -43,42 +43,40 @@ public:
 
     /**
      * @copydoc VisitorBase::visit(ConnectedSentenceNode&)
-     * @pre The negative context stack must not be empty.
-     * @post The negative context stack must not be empty.
      */
     void visit(ConnectedSentenceNode &node) override;
 
     /**
      * @copydoc VisitorBase::visit(QuantifiedSentenceNode&)
-     * @pre The negative context stack must not be empty.
-     * @post The negative context stack must not be empty.
      */
     void visit(QuantifiedSentenceNode &node) override;
 
     /**
      * @copydoc VisitorBase::visit(NegatedSentenceNode&)
-     * @pre The negative context stack must not be empty.
-     * @post The negative context stack must not be empty.
      */
     void visit(NegatedSentenceNode &node) override;
 
     /**
      * @copydoc VisitorBase::visit(NodeProxy&)
-     * @pre The negative context stack must not be empty. Further, if the topmost layer the negative context stack has
-     *  a populated ~P-type node (second entry), it must also have a populated P-type node (first node).
-     * @post The negative context stack must not be empty.
      */
     void visit(NodeProxy &node) override;
 
     void reset() override;
 
 private:
+    struct ContextLayer
+    {
+        bool is_positive = true;
+        std::shared_ptr<ISentenceNode> positive_branch;
+        std::shared_ptr<ISentenceNode> negative_branch;
+    };
+
     /**
-     * @brief The pending DML-transformed sentence
-     *
-     * @details The DML normalisers generally use this reference variable to store their most recent reduction. It is
-     *  also useful as a sentinel (when comparing against the null pointer) to determine whether a DML-normalisation was
-     *  performed at all.
+     * @struct PendingTransformation
+     * @brief A transparent container type for a pending DML transformation
+     * @details The DML normalisers generally use a visitor-held instance of this structure to cache the most recent
+     *  reduction. It is also useful as a sentinel (when comparing against the null pointer) to determine whether a
+     *  DML-normalisation was performed at all.
      *
      * @warning This is highly state-based, and depends on trusted member functions undertaking appropriate reference-
      *  counting and clean-up. See the symbols referenced herein for examples of responsible usage.
@@ -86,25 +84,42 @@ private:
      * @sa DMLVisitor::visit(ConnectedSentenceNode&)
      * @sa DMLVisitor::visit(QuantifiedSentenceNode&)
      */
-    std::shared_ptr<ISentenceNode> pending_dml;
+    struct PendingTransformation
+    {
+        /**
+         * @brief The pending DML-transformed sentence
+         */
+        std::shared_ptr<ISentenceNode> pending_dml;
+
+        /**
+         * @brief The number of remaining 'skips' the pending DML-transformed sentence should undertake before
+         * participating in a replacement.
+         */
+        unsigned int skip_node_count = 0;
+
+        /**
+         * @brief Is there a pending transformation suitable for despatch?
+         */
+        [[nodiscard]] bool pending() const;
+
+        [[nodiscard("The stealer invalidates the internal state.")]] std::shared_ptr<ISentenceNode> steal();
+    };
+
+    PendingTransformation pending_transformation;
 
     /**
      * @brief The negative context stack, composed of layers
      *
      * @details A negative context layer, represented as an element on the stack, denotes a boundary across which
-     *  negation-reduction cannot translate. The first boolean flags whether the corresponding context layer is
-     *  transiently positive (or negative, in the false case). The pair of pointers store references to the two
-     *  irreducible forms of a chained negation of a sentence P(x): the positive branch P(x), and the negative branch
-     *  ~P(x), respectively.
-     *
+     *  negation-reduction cannot translate.
+
      * @warning For each DML-normalisation operation, a new 'layer' of context must be provided. See the symbols
      *  referenced herein for examples of correct usage.
      *
      * @sa DMLVisitor::visit(ConnectedSentenceNode&)
      * @sa DMLVisitor::visit(QuantifiedSentenceNode&)
      */
-    std::stack<std::pair<bool,
-            std::pair<std::shared_ptr<ISentenceNode>, std::shared_ptr<ISentenceNode>>>> negative_context;
+    std::stack<ContextLayer> negative_context;
 };
 
 }

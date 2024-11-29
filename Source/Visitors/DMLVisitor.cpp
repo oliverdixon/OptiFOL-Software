@@ -15,15 +15,14 @@ namespace optifol
 
 DMLVisitor::DMLVisitor()
 {
-    negative_context.push({true, {nullptr, nullptr}});
+    negative_context.emplace();
 }
 
 void DMLVisitor::visit(ConnectedSentenceNode &node)
 {
     assert(!negative_context.empty());
-    const bool just_seen_negative = !negative_context.top().first;
 
-    if (just_seen_negative) {
+    if (!negative_context.top().is_positive) {
         const auto type = node.get_operator_type();
 
         if (type == BinaryOperatorTypes::Conjunction || type == BinaryOperatorTypes::Disjunction) {
@@ -42,23 +41,28 @@ void DMLVisitor::visit(ConnectedSentenceNode &node)
              *
              * We also need new negative contexts for the L- and RHS, but that's nothing new from the non-DML case. */
 
-            negative_context.push({true, {nullptr, nullptr}});
+            negative_context.emplace();
             lhs_neg->accept(*this);
-            if (pending_dml != nullptr) {
-                lhs_neg = std::move(pending_dml);
-                pending_dml = nullptr;
-            }
+            if (pending_transformation.pending())
+                lhs_neg = pending_transformation.steal();
 
-            negative_context.top() = {true, {nullptr, nullptr}};
+            negative_context.pop();
+            negative_context.emplace();
+
             rhs_neg->accept(*this);
+            if (pending_transformation.pending())
+                rhs_neg = pending_transformation.steal();
+
             negative_context.pop();
 
-            pending_dml = std::make_shared<ConnectedSentenceNode>(
+            pending_transformation.pending_dml = std::make_shared<ConnectedSentenceNode>(
                     (type == BinaryOperatorTypes::Conjunction) ?
                     BinaryOperatorTypes::Disjunction :
                     BinaryOperatorTypes::Conjunction,
                     std::move(lhs_neg),
-                    (pending_dml == nullptr) ? std::move(rhs_neg) : std::move(pending_dml));
+                    std::move(rhs_neg));
+
+            pending_transformation.skip_node_count = 0;
         }
     } else {
         /* In the above branch, expressions produced are of the form (~P) | (~Q), or similar. L- and RHS are DML-
@@ -66,9 +70,11 @@ void DMLVisitor::visit(ConnectedSentenceNode &node)
          * DML normalisation. This branch emulates VisitorBase::visit(ConnectedSentenceNode&), taking care to provide
          * suitable negative context layers. */
 
-        negative_context.push({true, {nullptr, nullptr}});
+        negative_context.emplace();
         node.get_lhs_operand()->accept(*this);
-        negative_context.top() = {true, {nullptr, nullptr}};
+        negative_context.pop();
+
+        negative_context.emplace();
         node.get_rhs_operand()->accept(*this);
         negative_context.pop();
     }
@@ -78,12 +84,10 @@ void DMLVisitor::visit(ConnectedSentenceNode &node)
 
 void DMLVisitor::visit(QuantifiedSentenceNode &node)
 {
-#if 0
     assert(!negative_context.empty());
-    const bool just_seen_negative = !negative_context.top().first;
 
-    if (just_seen_negative) {
-        assert(pending_dml == nullptr);
+    if (!negative_context.top().is_positive) {
+        assert(!pending_transformation.pending());
         const auto type = node.get_quantifier_type();
 
         /* Negate the detained sentence within a proxy (due to a potential ~~P-type to P-type conversion). The detained
@@ -92,30 +96,29 @@ void DMLVisitor::visit(QuantifiedSentenceNode &node)
         auto neg_operand = std::make_shared<NodeProxy>(
                 std::make_shared<NegatedSentenceNode>(node.get_sentence()));
 
-        negative_context.push({true, {nullptr, nullptr}});
+        negative_context.emplace();
         neg_operand->accept(*this);
 
-        if (pending_dml != nullptr) {
-            neg_operand->sentence = std::move(pending_dml);
-            pending_dml = nullptr;
-        }
+        if (pending_transformation.pending())
+            neg_operand->sentence = pending_transformation.steal();
 
         negative_context.pop();
 
-        pending_dml = std::make_shared<QuantifiedSentenceNode>(
+        pending_transformation.pending_dml = std::make_shared<QuantifiedSentenceNode>(
                 (type == QuantifierTypes::Universal) ?
                 QuantifierTypes::Existential :
                 QuantifierTypes::Universal,
                 node.get_bound_variable(), // TODO: we can definitely steal this
                 std::move(neg_operand));
+
+        pending_transformation.skip_node_count = 1;
     } else {
-        negative_context.push({true, {nullptr, nullptr}});
+        negative_context.emplace();
         VisitorBase::visit(node);
         negative_context.pop();
     }
 
     assert(!negative_context.empty());
-#endif
 }
 
 void DMLVisitor::visit(NegatedSentenceNode &node)
@@ -126,21 +129,19 @@ void DMLVisitor::visit(NegatedSentenceNode &node)
      * flip the negation sentinel flag. The latter needs to happen before any recursive visitation, so our children
      * know that we're negative. */
     auto &context_layer = negative_context.top();
-    context_layer.first = !context_layer.first;
+    context_layer.is_positive = !context_layer.is_positive;
 
     VisitorBase::visit(node);
 
-    auto &negative_operands = context_layer.second;
-
-    if (negative_operands.first == nullptr)
+    if (context_layer.positive_branch == nullptr)
         /* If this is the first negated node in a consecutive chain ~...~P, we must be visiting precisely ~P. Therefore,
          * we save P in the first slot of the negated operand cache. */
-        negative_operands.first = node.get_operand();
+        context_layer.positive_branch = node.get_operand();
 
-    else if (negative_operands.second == nullptr)
+    else if (context_layer.negative_branch == nullptr)
         /* If this is the second negated node in a consecutive chain ~...~P, we must be visiting precisely ~~P.
          * Therefore, we save ~P in the second slot of the negated operand cache. */
-        negative_operands.second = node.get_operand();
+        context_layer.negative_branch = node.get_operand();
 
     assert(!negative_context.empty());
 }
@@ -150,17 +151,21 @@ void DMLVisitor::visit(NodeProxy &node)
     assert(!negative_context.empty());
     VisitorBase::visit(node);
 
-    if (pending_dml != nullptr) {
-        node.sentence = std::move(pending_dml);
-        pending_dml = nullptr;
+    if (pending_transformation.pending()) {
+        if (pending_transformation.skip_node_count == 0)
+            node.sentence = pending_transformation.steal();
+        else
+            --pending_transformation.skip_node_count;
     }
 
-    auto &negative_layer = negative_context.top().second;
+    auto &negative_layer = negative_context.top();
 
-    if (negative_layer.second != nullptr) {
-        assert(negative_layer.first != nullptr);
-        node.sentence = (negative_context.top().first) ? negative_layer.first : negative_layer.second;
-        pending_dml = node.sentence;
+    if (negative_layer.negative_branch != nullptr) {
+        assert(negative_layer.positive_branch != nullptr);
+        node.sentence = (negative_context.top().is_positive) ? negative_layer.positive_branch :
+                        negative_layer.negative_branch;
+        pending_transformation.pending_dml = node.sentence;
+        pending_transformation.skip_node_count = 0;
     }
 
     assert(!negative_context.empty());
@@ -168,10 +173,26 @@ void DMLVisitor::visit(NodeProxy &node)
 
 void DMLVisitor::reset()
 {
+    pending_transformation.pending_dml = nullptr;
+    pending_transformation.skip_node_count = 0;
+
     while (!negative_context.empty())
         negative_context.pop();
 
-    negative_context.push({true, {nullptr, nullptr}});
+    negative_context.emplace();
+}
+
+bool DMLVisitor::PendingTransformation::pending() const
+{
+    return pending_dml != nullptr;
+}
+
+std::shared_ptr<ISentenceNode> DMLVisitor::PendingTransformation::steal()
+{
+    auto ptr = std::move(pending_dml);
+    pending_dml = nullptr;
+    skip_node_count = 0;
+    return std::move(ptr);
 }
 
 }
