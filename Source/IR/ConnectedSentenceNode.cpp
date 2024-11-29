@@ -4,7 +4,8 @@
 
 
 #include "ConnectedSentenceNode.hpp"
-#include "../Visitors/VisitorBase.hpp"
+#include "../Visitors/MutatingVisitorBase.hpp"
+#include "../Visitors/IObservingVisitor.hpp"
 
 namespace optifol
 {
@@ -16,12 +17,7 @@ ConnectedSentenceNode::ConnectedSentenceNode(BinaryOperatorTypes operator_type, 
         rhs(std::move(rhs))
 {}
 
-std::string ConnectedSentenceNode::to_string() const
-{
-    return "(" + lhs->to_string() + ' ' + operator_symbol() + ' ' + rhs->to_string() + ')';
-}
-
-void ConnectedSentenceNode::accept(VisitorBase &visitor)
+void ConnectedSentenceNode::accept(MutatingVisitorBase &visitor)
 {
     visitor.visit(*this);
 }
@@ -39,6 +35,11 @@ std::shared_ptr<ISentenceNode> ConnectedSentenceNode::get_lhs_operand() const
 std::shared_ptr<ISentenceNode> ConnectedSentenceNode::get_rhs_operand() const
 {
     return rhs;
+}
+
+void ConnectedSentenceNode::accept(IObservingVisitor &visitor) const
+{
+    visitor.visit(*this);
 }
 
 }

@@ -3,7 +3,9 @@
 //
 
 #include "IdentitySentenceNode.hpp"
-#include "../Visitors/VisitorBase.hpp"
+
+#include "../Visitors/MutatingVisitorBase.hpp"
+#include "../Visitors/IObservingVisitor.hpp"
 
 namespace optifol
 {
@@ -12,11 +14,6 @@ IdentitySentenceNode::IdentitySentenceNode(std::shared_ptr<ITermNode> lhs, std::
         lhs(std::move(lhs)),
         rhs(std::move(rhs))
 {}
-
-std::string IdentitySentenceNode::to_string() const
-{
-    return lhs->to_string() + " = " + rhs->to_string();
-}
 
 std::shared_ptr<ITermNode> IdentitySentenceNode::get_lhs_operand() const
 {
@@ -28,7 +25,12 @@ std::shared_ptr<ITermNode> IdentitySentenceNode::get_rhs_operand() const
     return rhs;
 }
 
-void IdentitySentenceNode::accept(VisitorBase &visitor)
+void IdentitySentenceNode::accept(MutatingVisitorBase &visitor)
+{
+    visitor.visit(*this);
+}
+
+void IdentitySentenceNode::accept(IObservingVisitor &visitor) const
 {
     visitor.visit(*this);
 }

@@ -9,7 +9,7 @@
 #ifndef OPTIFOL_IMPLICATIONELIMINATIONVISITOR_HPP
 #define OPTIFOL_IMPLICATIONELIMINATIONVISITOR_HPP
 
-#include "VisitorBase.hpp"
+#include "../MutatingVisitorBase.hpp"
 
 namespace optifol
 {
@@ -28,7 +28,7 @@ namespace optifol
  * substance of the ConnectedSentenceNode operands are altered).
  */
 class ImplicationEliminationVisitor :
-        public VisitorBase
+        public MutatingVisitorBase
 {
 public:
     void visit(ConnectedSentenceNode &node) override;

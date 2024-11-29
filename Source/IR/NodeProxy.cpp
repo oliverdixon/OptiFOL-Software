@@ -3,7 +3,8 @@
 //
 
 #include "NodeProxy.hpp"
-#include "../Visitors/VisitorBase.hpp"
+#include "../Visitors/MutatingVisitorBase.hpp"
+#include "../Visitors/IObservingVisitor.hpp"
 
 namespace optifol
 {
@@ -12,12 +13,12 @@ NodeProxy::NodeProxy(std::shared_ptr<ISentenceNode> node) :
         sentence(std::move(node))
 {}
 
-std::string NodeProxy::to_string() const
+void NodeProxy::accept(MutatingVisitorBase &visitor)
 {
-    return sentence->to_string();
+    visitor.visit(*this);
 }
 
-void NodeProxy::accept(VisitorBase &visitor)
+void NodeProxy::accept(IObservingVisitor &visitor) const
 {
     visitor.visit(*this);
 }

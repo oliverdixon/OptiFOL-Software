@@ -3,7 +3,8 @@
 //
 
 #include "NegatedSentenceNode.hpp"
-#include "../Visitors/VisitorBase.hpp"
+#include "../Visitors/MutatingVisitorBase.hpp"
+#include "../Visitors/IObservingVisitor.hpp"
 
 namespace optifol
 {
@@ -12,17 +13,17 @@ NegatedSentenceNode::NegatedSentenceNode(std::shared_ptr<ISentenceNode> operand)
         operand(std::move(operand))
 {}
 
-std::string NegatedSentenceNode::to_string() const
-{
-    return "~ " + operand->to_string();
-}
-
 std::shared_ptr<ISentenceNode> NegatedSentenceNode::get_operand() const
 {
     return operand;
 }
 
-void NegatedSentenceNode::accept(VisitorBase &visitor)
+void NegatedSentenceNode::accept(MutatingVisitorBase &visitor)
+{
+    visitor.visit(*this);
+}
+
+void NegatedSentenceNode::accept(IObservingVisitor &visitor) const
 {
     visitor.visit(*this);
 }

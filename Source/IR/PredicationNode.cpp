@@ -3,7 +3,8 @@
 //
 
 #include "PredicationNode.hpp"
-#include "../Visitors/VisitorBase.hpp"
+#include "../Visitors/MutatingVisitorBase.hpp"
+#include "../Visitors/IObservingVisitor.hpp"
 
 namespace optifol
 {
@@ -13,23 +14,12 @@ PredicationNode::PredicationNode(std::string name, std::vector<std::shared_ptr<I
         arguments(std::move(arguments))
 {}
 
-std::string PredicationNode::to_string() const
+void PredicationNode::accept(MutatingVisitorBase &visitor)
 {
-    std::string result = name + '(';
-
-    auto argument_count = arguments.size();
-
-    for (const auto &arg: arguments) {
-        result += arg->to_string();
-        if (--argument_count > 0)
-            result += ", ";
-    }
-
-    result += ')';
-    return result;
+    visitor.visit(*this);
 }
 
-void PredicationNode::accept(VisitorBase &visitor)
+void PredicationNode::accept(IObservingVisitor &visitor) const
 {
     visitor.visit(*this);
 }

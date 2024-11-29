@@ -1,5 +1,6 @@
 /cmake-build-*/
 /_deps/
+/Data
 
 /.idea/workspace.xml
 /.idea/usage.statistics.xml

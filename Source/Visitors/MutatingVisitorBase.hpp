@@ -2,8 +2,8 @@
 // Created by owd on 23/11/24.
 //
 
-#ifndef OPTIFOL_VISITORBASE_HPP
-#define OPTIFOL_VISITORBASE_HPP
+#ifndef OPTIFOL_MUTATINGVISITORBASE_HPP
+#define OPTIFOL_MUTATINGVISITORBASE_HPP
 
 #include "../IR/NodeProxy.hpp"
 #include "../IR/IdentitySentenceNode.hpp"
@@ -14,10 +14,10 @@
 namespace optifol
 {
 
-class VisitorBase
+class MutatingVisitorBase
 {
 public:
-    virtual ~VisitorBase() = default;
+    virtual ~MutatingVisitorBase() = default;
 
     virtual void visit(QuantifiedSentenceNode& node)
     {
@@ -48,4 +48,4 @@ public:
 
 }
 
-#endif //OPTIFOL_VISITORBASE_HPP
+#endif //OPTIFOL_MUTATINGVISITORBASE_HPP

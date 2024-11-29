@@ -11,7 +11,7 @@
 
 #include <stack>
 
-#include "VisitorBase.hpp"
+#include "../MutatingVisitorBase.hpp"
 
 namespace optifol
 {
@@ -33,11 +33,11 @@ namespace optifol
  * terms to ensure a full reduction. On extremely deeply nested sentences, this could cause a machine stack overflow.
  */
 class DisjunctionDistributionVisitor :
-        public VisitorBase
+        public MutatingVisitorBase
 {
 public:
     /**
-     * @copydoc VisitorBase::node(ConnectedSentenceNode&)
+     * @copydoc MutatingVisitorBase::node(ConnectedSentenceNode&)
      */
     void visit(ConnectedSentenceNode &node) override;
 

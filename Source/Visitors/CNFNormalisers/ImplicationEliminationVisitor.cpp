@@ -9,7 +9,7 @@ namespace optifol
 
 void ImplicationEliminationVisitor::visit(ConnectedSentenceNode &node)
 {
-    VisitorBase::visit(node);
+    MutatingVisitorBase::visit(node);
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wswitch"

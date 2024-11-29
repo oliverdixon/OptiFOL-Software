@@ -34,22 +34,27 @@ set(COMMON_SOURCES
         Source/IR/NegatedSentenceNode.hpp
         Source/IR/QuantifiedSentenceNode.hpp
         Source/Interpreter/FOLParser.hpp
-        Source/Visitors/ImplicationEliminationVisitor.hpp
-        Source/Visitors/VisitorBase.hpp
+        Source/Visitors/CNFNormalisers/ImplicationEliminationVisitor.hpp
+        Source/Visitors/MutatingVisitorBase.hpp
         Source/IR/NodeProxy.hpp
-        Source/Visitors/DMLVisitor.hpp
+        Source/Visitors/CNFNormalisers/DMLVisitor.hpp
         Source/IR/ConnectedSentenceNode.cpp
         Source/IR/NegatedSentenceNode.cpp
         Source/IR/QuantifiedSentenceNode.cpp
         Source/IR/NodeProxy.cpp
         Source/IR/IdentitySentenceNode.cpp
         Source/IR/PredicationNode.cpp
-        Source/Visitors/UniversalEliminationVisitor.hpp
-        Source/Visitors/DisjunctionDistributionVisitor.hpp
-        Source/Visitors/DisjunctionDistributionVisitor.cpp
-        Source/Visitors/UniversalEliminationVisitor.cpp
-        Source/Visitors/ImplicationEliminationVisitor.cpp
-        Source/Visitors/DMLVisitor.cpp
+        Source/Visitors/CNFNormalisers/UniversalEliminationVisitor.hpp
+        Source/Visitors/CNFNormalisers/DisjunctionDistributionVisitor.hpp
+        Source/Visitors/CNFNormalisers/DisjunctionDistributionVisitor.cpp
+        Source/Visitors/CNFNormalisers/UniversalEliminationVisitor.cpp
+        Source/Visitors/CNFNormalisers/ImplicationEliminationVisitor.cpp
+        Source/Visitors/CNFNormalisers/DMLVisitor.cpp
+        Source/Visitors/Serialisers/TextSerialiserVisitor.cpp
+        Source/Visitors/Serialisers/TextSerialiserVisitor.hpp
+        Source/Visitors/Serialisers/JSONSerialiserVisitor.cpp
+        Source/Visitors/Serialisers/JSONSerialiserVisitor.hpp
+        Source/Visitors/IObservingVisitor.hpp
 )
 
 add_executable(OptiFOL

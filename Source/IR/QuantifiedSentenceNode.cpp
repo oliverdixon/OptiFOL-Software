@@ -3,7 +3,8 @@
 //
 
 #include "QuantifiedSentenceNode.hpp"
-#include "../Visitors/VisitorBase.hpp"
+#include "../Visitors/MutatingVisitorBase.hpp"
+#include "../Visitors/IObservingVisitor.hpp"
 
 namespace optifol
 {
@@ -15,12 +16,6 @@ QuantifiedSentenceNode::QuantifiedSentenceNode(QuantifierTypes quantifier_type,
         bound_variable(std::move(bound_variable)),
         sentence(std::move(sentence))
 {}
-
-std::string QuantifiedSentenceNode::to_string() const
-{
-    return ((quantifier_type == QuantifierTypes::Universal) ? "ForAll " : "ThereExist ") +
-           bound_variable->to_string() + " (" + sentence->to_string() + ')';
-}
 
 QuantifierTypes QuantifiedSentenceNode::get_quantifier_type() const
 {
@@ -37,7 +32,7 @@ std::shared_ptr<ISentenceNode> QuantifiedSentenceNode::get_sentence() const
     return sentence;
 }
 
-void QuantifiedSentenceNode::accept(VisitorBase &visitor)
+void QuantifiedSentenceNode::accept(MutatingVisitorBase &visitor)
 {
     visitor.visit(*this);
 }
@@ -47,6 +42,11 @@ std::shared_ptr<ISentenceNode> QuantifiedSentenceNode::move_sentence()
     auto borrowed = std::move(sentence);
     sentence = nullptr;
     return borrowed;
+}
+
+void QuantifiedSentenceNode::accept(IObservingVisitor &visitor) const
+{
+    visitor.visit(*this);
 }
 
 }

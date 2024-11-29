@@ -9,7 +9,7 @@ namespace optifol
 
 void UniversalEliminationVisitor::visit(QuantifiedSentenceNode &node)
 {
-    VisitorBase::visit(node);
+    MutatingVisitorBase::visit(node);
 
     if (node.get_quantifier_type() == QuantifierTypes::Universal)
         extracted_sentence = node.move_sentence();
@@ -17,7 +17,7 @@ void UniversalEliminationVisitor::visit(QuantifiedSentenceNode &node)
 
 void UniversalEliminationVisitor::visit(NodeProxy &proxy)
 {
-    VisitorBase::visit(proxy);
+    MutatingVisitorBase::visit(proxy);
 
     if (extracted_sentence != nullptr) {
         proxy.sentence = std::move(extracted_sentence);

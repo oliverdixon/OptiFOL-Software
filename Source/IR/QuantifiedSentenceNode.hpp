@@ -27,8 +27,6 @@ public:
                                             std::shared_ptr<VariableNode> bound_variable,
                                             std::shared_ptr<ISentenceNode> sentence);
 
-    [[nodiscard]] std::string to_string() const override;
-
     [[nodiscard]] QuantifierTypes get_quantifier_type() const;
 
     [[nodiscard]] std::shared_ptr<VariableNode> get_bound_variable() const;
@@ -37,7 +35,9 @@ public:
 
     [[nodiscard]] std::shared_ptr<ISentenceNode> move_sentence();
 
-    void accept(VisitorBase& visitor) override;
+    void accept(MutatingVisitorBase& visitor) override;
+
+    void accept(IObservingVisitor& visitor) const override;
 
 private:
     QuantifierTypes quantifier_type;

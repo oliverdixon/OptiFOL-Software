@@ -18,9 +18,9 @@ class NodeProxy :
 public:
     explicit NodeProxy(std::shared_ptr<ISentenceNode> node);
 
-    [[nodiscard]] std::string to_string() const override;
+    void accept(MutatingVisitorBase& visitor) override;
 
-    void accept(VisitorBase& visitor) override;
+    void accept(IObservingVisitor& visitor) const override;
 
     std::shared_ptr<ISentenceNode> sentence;
 };

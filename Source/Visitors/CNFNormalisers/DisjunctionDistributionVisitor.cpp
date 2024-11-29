@@ -69,7 +69,7 @@ bool DisjunctionDistributionVisitor::attempt_reduction(ConnectedSentenceNode &no
                                                            std::move(complex.second));
 
         tracked_operands.pop();
-        VisitorBase::visit(node);
+        MutatingVisitorBase::visit(node);
 
         assert(tracked_operands.empty());
         return true;

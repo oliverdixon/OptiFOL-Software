@@ -21,11 +21,10 @@ public:
     [[maybe_unused]] explicit PredicationNode(std::string name,
                                               std::vector<std::shared_ptr<ITermNode>> &&arguments);
 
-    [[nodiscard]] std::string to_string() const override;
+    void accept(MutatingVisitorBase &visitor) override;
 
-    void accept(VisitorBase& visitor) override;
+    void accept(IObservingVisitor &visitor) const override;
 
-private:
     const std::string name;
     const std::vector<std::shared_ptr<ITermNode>> arguments;
 };

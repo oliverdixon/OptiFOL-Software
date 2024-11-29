@@ -20,13 +20,13 @@ public:
     [[maybe_unused]] IdentitySentenceNode(std::shared_ptr<ITermNode> lhs,
                                           std::shared_ptr<ITermNode> rhs);
 
-    [[nodiscard]] std::string to_string() const override;
-
     [[nodiscard]] std::shared_ptr<ITermNode> get_lhs_operand() const;
 
     [[nodiscard]] std::shared_ptr<ITermNode> get_rhs_operand() const;
 
-    void accept(VisitorBase& visitor) override;
+    void accept(MutatingVisitorBase& visitor) override;
+
+    void accept(IObservingVisitor& visitor) const override;
 
 private:
     std::shared_ptr<ITermNode> lhs;

@@ -11,7 +11,7 @@
 
 #include <stack>
 
-#include "../Visitors/VisitorBase.hpp"
+#include "../MutatingVisitorBase.hpp"
 
 namespace optifol
 {
@@ -33,7 +33,7 @@ namespace optifol
  * terms to ensure a full reduction. On extremely deeply nested sentences, this could cause a machine stack overflow.
  */
 class DMLVisitor :
-        public VisitorBase
+        public MutatingVisitorBase
 {
 public:
     /**
@@ -42,22 +42,22 @@ public:
     DMLVisitor();
 
     /**
-     * @copydoc VisitorBase::visit(ConnectedSentenceNode&)
+     * @copydoc MutatingVisitorBase::visit(ConnectedSentenceNode&)
      */
     void visit(ConnectedSentenceNode &node) override;
 
     /**
-     * @copydoc VisitorBase::visit(QuantifiedSentenceNode&)
+     * @copydoc MutatingVisitorBase::visit(QuantifiedSentenceNode&)
      */
     void visit(QuantifiedSentenceNode &node) override;
 
     /**
-     * @copydoc VisitorBase::visit(NegatedSentenceNode&)
+     * @copydoc MutatingVisitorBase::visit(NegatedSentenceNode&)
      */
     void visit(NegatedSentenceNode &node) override;
 
     /**
-     * @copydoc VisitorBase::visit(NodeProxy&)
+     * @copydoc MutatingVisitorBase::visit(NodeProxy&)
      */
     void visit(NodeProxy &node) override;
 

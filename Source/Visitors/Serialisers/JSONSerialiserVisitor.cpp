@@ -1,0 +1,99 @@
+//
+// Created by owd on 29/11/24.
+//
+
+#include "JSONSerialiserVisitor.hpp"
+
+namespace optifol
+{
+
+void JSONSerialiserVisitor::visit(const QuantifiedSentenceNode &node)
+{
+    output_stream << R"({"type": "quantified", "nature": ")" << get_operator_symbol(node.get_quantifier_type()) <<
+                     R"(", "variable": ")" << node.get_bound_variable()->to_string() << R"(", "sentence": )";
+
+    node.get_sentence()->accept(*this);
+    output_stream << '}';
+}
+
+void JSONSerialiserVisitor::visit(const ConnectedSentenceNode &node)
+{
+    output_stream << R"({"type": "binary", "operator": ")" << get_operator_symbol(node.get_operator_type()) <<
+                     R"(", "left": )";
+
+    node.get_lhs_operand()->accept(*this);
+    output_stream << R"(, "right": )";
+
+    node.get_rhs_operand()->accept(*this);
+    output_stream << '}';
+}
+
+void JSONSerialiserVisitor::visit(const NegatedSentenceNode &node)
+{
+    output_stream << R"({"type": "negated", "content": )";
+    node.get_operand()->accept(*this);
+    output_stream << '}';
+}
+
+void JSONSerialiserVisitor::visit(const NodeProxy &node)
+{
+    node.sentence->accept(*this);
+}
+
+void JSONSerialiserVisitor::visit(const IdentitySentenceNode &node)
+{
+    output_stream << R"({"type": "equality", "left": ")" << node.get_lhs_operand()->to_string() << R"(", "right": ")" <<
+                     node.get_rhs_operand()->to_string() << '"' << '}';
+}
+
+void JSONSerialiserVisitor::visit(const PredicationNode &node)
+{
+    output_stream << R"({"type": "predicate", "name": ")" << node.name << R"(", "arguments": [)";
+
+    const auto arg_count = node.arguments.size();
+    for (auto i = 1; i < arg_count; ++i)
+        output_stream << '"' << node.arguments[i - 1]->to_string() << '"' << ',' << ' ';
+
+    if (arg_count > 0)
+        output_stream << '"' << node.arguments[arg_count - 1]->to_string() << '"';
+
+    output_stream << ']' << '}';
+}
+
+std::any JSONSerialiserVisitor::extract() const
+{
+    return output_stream.str();
+}
+
+void JSONSerialiserVisitor::reset()
+{
+    std::ostringstream().swap(output_stream);
+}
+
+const char *JSONSerialiserVisitor::get_operator_symbol(BinaryOperatorTypes type)
+{
+    switch (type) {
+        case BinaryOperatorTypes::Conjunction:
+            return "conjunction";
+        case BinaryOperatorTypes::Disjunction:
+            return "disjunction";
+        case BinaryOperatorTypes::Implication:
+            return "implication";
+        case BinaryOperatorTypes::Biconditional:
+            return "biconditional";
+        case BinaryOperatorTypes::None:
+            return "none";
+    }
+}
+
+const char *JSONSerialiserVisitor::get_operator_symbol(QuantifierTypes type)
+{
+    switch (type) {
+        case QuantifierTypes::Universal:
+            return "universal";
+        case QuantifierTypes::Existential:
+            return "existential";
+    }
+}
+
+}
