@@ -24,6 +24,10 @@ public:
 
     [[nodiscard]] std::shared_ptr<ITermNode> get_rhs_operand() const;
 
+    void swap_lhs_operand(std::shared_ptr<ITermNode> new_lhs);
+
+    void swap_rhs_operand(std::shared_ptr<ITermNode> new_rhs);
+
     void accept(MutatingVisitorBase& visitor) override;
 
     void accept(IObservingVisitor& visitor) const override;

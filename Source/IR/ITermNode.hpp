@@ -10,12 +10,18 @@
 namespace optifol
 {
 
+class ITermVisitor;
+
 class ITermNode
 {
 public:
     virtual ~ITermNode() = default;
 
     [[nodiscard]] virtual std::string to_string() const = 0;
+
+    [[nodiscard]] virtual std::string get_disambiguated_name() const = 0;
+
+    virtual void accept(ITermVisitor& visitor) = 0;
 };
 
 }

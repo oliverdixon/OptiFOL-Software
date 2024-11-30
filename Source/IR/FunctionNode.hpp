@@ -8,7 +8,9 @@
 #include <memory>
 #include <utility>
 #include <vector>
+
 #include "ITermNode.hpp"
+#include "../Visitors/Terms/ITermVisitor.hpp"
 
 namespace optifol
 {
@@ -36,6 +38,16 @@ public:
 
         result += ')';
         return result;
+    }
+
+    [[nodiscard]] std::string get_disambiguated_name() const override
+    {
+        return to_string();
+    }
+
+    void accept(ITermVisitor& visitor) override
+    {
+        visitor.visit(*this);
     }
 
 private:

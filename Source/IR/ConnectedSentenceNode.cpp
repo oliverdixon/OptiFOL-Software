@@ -4,8 +4,8 @@
 
 
 #include "ConnectedSentenceNode.hpp"
-#include "../Visitors/MutatingVisitorBase.hpp"
-#include "../Visitors/IObservingVisitor.hpp"
+#include "../Visitors/Sentences/MutatingVisitorBase.hpp"
+#include "../Visitors/Sentences/IObservingVisitor.hpp"
 
 namespace optifol
 {

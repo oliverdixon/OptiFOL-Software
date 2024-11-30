@@ -26,7 +26,7 @@ public:
     void accept(IObservingVisitor &visitor) const override;
 
     const std::string name;
-    const std::vector<std::shared_ptr<ITermNode>> arguments;
+    std::vector<std::shared_ptr<ITermNode>> arguments;
 };
 
 }

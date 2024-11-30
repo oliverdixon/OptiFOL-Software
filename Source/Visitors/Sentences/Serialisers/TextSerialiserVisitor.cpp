@@ -9,7 +9,9 @@ namespace optifol
 
 void TextSerialiserVisitor::visit(const QuantifiedSentenceNode &node)
 {
-    output_stream << get_operator_symbol(node.get_quantifier_type()) << node.get_bound_variable()->to_string() << ' ';
+    output_stream << get_operator_symbol(node.get_quantifier_type())
+                  << node.get_bound_variable()->get_disambiguated_name() << ' ';
+
     node.get_sentence()->accept(*this);
 }
 
@@ -37,7 +39,8 @@ void TextSerialiserVisitor::visit(const NodeProxy &node)
 
 void TextSerialiserVisitor::visit(const IdentitySentenceNode &node)
 {
-    output_stream << node.get_lhs_operand()->to_string() << ' ' << '=' << ' ' << node.get_rhs_operand()->to_string();
+    output_stream << '(' << node.get_lhs_operand()->get_disambiguated_name() << ' ' << '=' << ' '
+                  << node.get_rhs_operand()->get_disambiguated_name() << ')';
 }
 
 void TextSerialiserVisitor::visit(const PredicationNode &node)
@@ -46,10 +49,10 @@ void TextSerialiserVisitor::visit(const PredicationNode &node)
 
     const auto arg_count = node.arguments.size();
     for (auto i = 1; i < arg_count; ++i)
-        output_stream << node.arguments[i - 1]->to_string() << ',' << ' ';
+        output_stream << node.arguments[i - 1]->get_disambiguated_name() << ',' << ' ';
 
     if (arg_count > 0)
-        output_stream << node.arguments[arg_count - 1]->to_string();
+        output_stream << node.arguments[arg_count - 1]->get_disambiguated_name();
 
     output_stream << ')';
 }

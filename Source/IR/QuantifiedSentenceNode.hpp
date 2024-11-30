@@ -35,6 +35,8 @@ public:
 
     [[nodiscard]] std::shared_ptr<ISentenceNode> move_sentence();
 
+    void replace_bound_variable(std::shared_ptr<VariableNode> new_bound_variable);
+
     void accept(MutatingVisitorBase& visitor) override;
 
     void accept(IObservingVisitor& visitor) const override;

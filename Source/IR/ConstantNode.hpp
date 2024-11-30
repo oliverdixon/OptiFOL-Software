@@ -23,6 +23,16 @@ public:
         return name;
     }
 
+    [[nodiscard]] std::string get_disambiguated_name() const override
+    {
+        return to_string();
+    }
+
+    void accept(ITermVisitor& visitor) override
+    {
+        visitor.visit(*this);
+    }
+
 private:
     const std::string name;
 };

@@ -7,11 +7,11 @@
 
 #include <any>
 
-#include "../IR/NodeProxy.hpp"
-#include "../IR/IdentitySentenceNode.hpp"
-#include "../IR/PredicationNode.hpp"
-#include "../IR/NegatedSentenceNode.hpp"
-#include "../IR/ConnectedSentenceNode.hpp"
+#include "../../IR/NodeProxy.hpp"
+#include "../../IR/IdentitySentenceNode.hpp"
+#include "../../IR/PredicationNode.hpp"
+#include "../../IR/NegatedSentenceNode.hpp"
+#include "../../IR/ConnectedSentenceNode.hpp"
 
 namespace optifol
 {

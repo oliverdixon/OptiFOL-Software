@@ -5,11 +5,11 @@
 #ifndef OPTIFOL_MUTATINGVISITORBASE_HPP
 #define OPTIFOL_MUTATINGVISITORBASE_HPP
 
-#include "../IR/NodeProxy.hpp"
-#include "../IR/IdentitySentenceNode.hpp"
-#include "../IR/PredicationNode.hpp"
-#include "../IR/NegatedSentenceNode.hpp"
-#include "../IR/ConnectedSentenceNode.hpp"
+#include "../../IR/NodeProxy.hpp"
+#include "../../IR/IdentitySentenceNode.hpp"
+#include "../../IR/PredicationNode.hpp"
+#include "../../IR/NegatedSentenceNode.hpp"
+#include "../../IR/ConnectedSentenceNode.hpp"
 
 namespace optifol
 {

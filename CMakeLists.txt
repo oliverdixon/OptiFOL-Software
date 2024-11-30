@@ -34,27 +34,33 @@ set(COMMON_SOURCES
         Source/IR/NegatedSentenceNode.hpp
         Source/IR/QuantifiedSentenceNode.hpp
         Source/Interpreter/FOLParser.hpp
-        Source/Visitors/CNFNormalisers/ImplicationEliminationVisitor.hpp
-        Source/Visitors/MutatingVisitorBase.hpp
+        Source/Visitors/Sentences/CNFNormalisers/ImplicationEliminationVisitor.hpp
+        Source/Visitors/Sentences/MutatingVisitorBase.hpp
         Source/IR/NodeProxy.hpp
-        Source/Visitors/CNFNormalisers/DMLVisitor.hpp
+        Source/Visitors/Sentences/CNFNormalisers/DMLVisitor.hpp
         Source/IR/ConnectedSentenceNode.cpp
         Source/IR/NegatedSentenceNode.cpp
         Source/IR/QuantifiedSentenceNode.cpp
         Source/IR/NodeProxy.cpp
         Source/IR/IdentitySentenceNode.cpp
         Source/IR/PredicationNode.cpp
-        Source/Visitors/CNFNormalisers/UniversalEliminationVisitor.hpp
-        Source/Visitors/CNFNormalisers/DisjunctionDistributionVisitor.hpp
-        Source/Visitors/CNFNormalisers/DisjunctionDistributionVisitor.cpp
-        Source/Visitors/CNFNormalisers/UniversalEliminationVisitor.cpp
-        Source/Visitors/CNFNormalisers/ImplicationEliminationVisitor.cpp
-        Source/Visitors/CNFNormalisers/DMLVisitor.cpp
-        Source/Visitors/Serialisers/TextSerialiserVisitor.cpp
-        Source/Visitors/Serialisers/TextSerialiserVisitor.hpp
-        Source/Visitors/Serialisers/JSONSerialiserVisitor.cpp
-        Source/Visitors/Serialisers/JSONSerialiserVisitor.hpp
-        Source/Visitors/IObservingVisitor.hpp
+        Source/Visitors/Sentences/CNFNormalisers/UniversalEliminationVisitor.hpp
+        Source/Visitors/Sentences/CNFNormalisers/DisjunctionDistributionVisitor.hpp
+        Source/Visitors/Sentences/CNFNormalisers/DisjunctionDistributionVisitor.cpp
+        Source/Visitors/Sentences/CNFNormalisers/UniversalEliminationVisitor.cpp
+        Source/Visitors/Sentences/CNFNormalisers/ImplicationEliminationVisitor.cpp
+        Source/Visitors/Sentences/CNFNormalisers/DMLVisitor.cpp
+        Source/Visitors/Sentences/Serialisers/TextSerialiserVisitor.cpp
+        Source/Visitors/Sentences/Serialisers/TextSerialiserVisitor.hpp
+        Source/Visitors/Sentences/Serialisers/JSONSerialiserVisitor.cpp
+        Source/Visitors/Sentences/Serialisers/JSONSerialiserVisitor.hpp
+        Source/Visitors/Sentences/IObservingVisitor.hpp
+        Source/Visitors/Sentences/CNFNormalisers/SymbolVisitor.cpp
+        Source/Visitors/Sentences/CNFNormalisers/SymbolVisitor.hpp
+        Source/SemanticException.hpp
+        Source/Visitors/Terms/ITermVisitor.hpp
+        Source/Visitors/Terms/TermResolutionVisitor.cpp
+        Source/Visitors/Terms/TermResolutionVisitor.hpp
 )
 
 add_executable(OptiFOL
