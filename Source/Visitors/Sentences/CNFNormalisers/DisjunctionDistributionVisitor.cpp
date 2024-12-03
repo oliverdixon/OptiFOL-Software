@@ -9,6 +9,7 @@
 #include <cassert>
 
 #include "DisjunctionDistributionVisitor.hpp"
+#include "../../../IR/ConnectedSentenceNode.hpp"
 
 namespace optifol
 {
@@ -69,7 +70,7 @@ bool DisjunctionDistributionVisitor::attempt_reduction(ConnectedSentenceNode &no
                                                            std::move(complex.second));
 
         tracked_operands.pop();
-        MutatingVisitorBase::visit(node);
+        MutatingSentenceVisitorBase::visit(node);
 
         assert(tracked_operands.empty());
         return true;

@@ -19,9 +19,14 @@ bison_target(FOLParser Source/Interpreter/FOLParser.y ${GENERATED_SRC_DIR}/BaseP
 flex_target(FOLLexer Source/Interpreter/FOLLexer.l ${GENERATED_SRC_DIR}/FOLLexer.cpp)
 add_flex_bison_dependency(FOLLexer FOLParser)
 
-set(COMMON_SOURCES
+add_library(OptiFOLGenerated
         ${BISON_FOLParser_OUTPUTS}
-        ${FLEX_FOLLexer_OUTPUTS}
+        ${FLEX_FOLLexer_OUTPUTS})
+
+target_include_directories(OptiFOLGenerated PRIVATE Source/Interpreter ${GENERATED_INCLUDE_DIR})
+target_compile_options(OptiFOLGenerated PRIVATE -Wno-everything)
+
+set(COMMON_SOURCES
         Source/Interpreter/FOLLexer.hpp
         Source/IR/ITermNode.hpp
         Source/IR/ISentenceNode.hpp
@@ -35,7 +40,7 @@ set(COMMON_SOURCES
         Source/IR/QuantifiedSentenceNode.hpp
         Source/Interpreter/FOLParser.hpp
         Source/Visitors/Sentences/CNFNormalisers/ImplicationEliminationVisitor.hpp
-        Source/Visitors/Sentences/MutatingVisitorBase.hpp
+        Source/Visitors/Sentences/MutatingSentenceVisitorBase.hpp
         Source/IR/NodeProxy.hpp
         Source/Visitors/Sentences/CNFNormalisers/DMLVisitor.hpp
         Source/IR/ConnectedSentenceNode.cpp
@@ -54,13 +59,15 @@ set(COMMON_SOURCES
         Source/Visitors/Sentences/Serialisers/TextSerialiserVisitor.hpp
         Source/Visitors/Sentences/Serialisers/JSONSerialiserVisitor.cpp
         Source/Visitors/Sentences/Serialisers/JSONSerialiserVisitor.hpp
-        Source/Visitors/Sentences/IObservingVisitor.hpp
-        Source/Visitors/Sentences/CNFNormalisers/SymbolVisitor.cpp
-        Source/Visitors/Sentences/CNFNormalisers/SymbolVisitor.hpp
+        Source/Visitors/Sentences/IObservingSentenceVisitor.hpp
+        Source/Visitors/Sentences/CNFNormalisers/SymbolStandardisingVisitor.cpp
+        Source/Visitors/Sentences/CNFNormalisers/SymbolStandardisingVisitor.hpp
         Source/SemanticException.hpp
-        Source/Visitors/Terms/ITermVisitor.hpp
+        Source/Visitors/Terms/MutatingTermVisitorBase.hpp
         Source/Visitors/Terms/TermResolutionVisitor.cpp
         Source/Visitors/Terms/TermResolutionVisitor.hpp
+        Source/Visitors/Terms/MutatingTermVisitorBase.cpp
+        Source/Visitors/Sentences/MutatingSentenceVisitorBase.cpp
 )
 
 add_executable(OptiFOL
@@ -68,7 +75,19 @@ add_executable(OptiFOL
         Source/Driver.cpp
 )
 
-target_include_directories(OptiFOL PRIVATE Source/Interpreter/ ${GENERATED_INCLUDE_DIR})
+target_link_libraries(OptiFOL PUBLIC OptiFOLGenerated)
+target_include_directories(OptiFOL PRIVATE Source/Interpreter/)
+target_include_directories(OptiFOL SYSTEM PRIVATE ${GENERATED_INCLUDE_DIR})
+target_compile_options(OptiFOL PRIVATE
+        -Weverything
+        -Wno-unknown-pragmas
+        -Wno-c++98-compat
+        -Wno-padded
+        -Wno-c++98-compat-pedantic
+        -Wno-weak-vtables
+        -Wno-switch-default
+        -Wno-shadow-field-in-constructor
+)
 
 cmake_policy(SET CMP0135 NEW)
 FetchContent_Declare(
@@ -86,6 +105,8 @@ add_executable(OptiFOLTesting
         Tests/FOLParserTest.cpp
 )
 
-target_include_directories(OptiFOLTesting PRIVATE Source/Interpreter/ ${GENERATED_INCLUDE_DIR})
-target_link_libraries(OptiFOLTesting GTest::gtest_main)
+target_include_directories(OptiFOLTesting PRIVATE Source/Interpreter/)
+target_include_directories(OptiFOLTesting SYSTEM PRIVATE ${GENERATED_INCLUDE_DIR})
+target_link_libraries(OptiFOLTesting PRIVATE GTest::gtest_main OptiFOLGenerated)
+target_compile_options(OptiFOLTesting PRIVATE -Weverything)
 gtest_discover_tests(OptiFOLTesting)

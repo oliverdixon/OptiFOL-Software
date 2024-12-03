@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "ITermNode.hpp"
-#include "../Visitors/Terms/ITermVisitor.hpp"
+#include "../Visitors/Terms/MutatingTermVisitorBase.hpp"
 
 namespace optifol
 {
@@ -31,7 +31,7 @@ public:
         auto argument_count = arguments.size();
 
         for (const auto &arg: arguments) {
-            result += arg->to_string();
+            result += arg->get_disambiguated_name();
             if (--argument_count > 0)
                 result += ", ";
         }
@@ -45,14 +45,19 @@ public:
         return to_string();
     }
 
-    void accept(ITermVisitor& visitor) override
+    void accept(MutatingTermVisitorBase& visitor) override
     {
         visitor.visit(*this);
     }
 
+    std::vector<std::shared_ptr<ITermNode>>& get_arguments()
+    {
+        return arguments;
+    }
+
 private:
     const std::string name;
-    const std::vector<std::shared_ptr<ITermNode>> arguments;
+    std::vector<std::shared_ptr<ITermNode>> arguments;
 };
 
 }

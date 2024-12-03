@@ -19,6 +19,7 @@
     #include "../IR/PredicationNode.hpp"
     #include "../IR/IdentitySentenceNode.hpp"
     #include "../IR/ConnectedSentenceNode.hpp"
+    #include "../IR/QuantifiedSentenceNode.hpp"
 
     #include "../IR/NodeProxy.hpp"
 

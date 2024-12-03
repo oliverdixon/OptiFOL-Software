@@ -8,8 +8,6 @@
 #include "ISentenceNode.hpp"
 
 #include <memory>
-#include <utility>
-#include <vector>
 
 namespace optifol
 {
@@ -37,9 +35,9 @@ public:
 
     [[nodiscard]] std::shared_ptr<ISentenceNode> get_rhs_operand() const;
 
-    void accept(MutatingVisitorBase& visitor) override;
+    void accept(MutatingSentenceVisitorBase& visitor) override;
 
-    void accept(IObservingVisitor& visitor) const override;
+    void accept(IObservingSentenceVisitor& visitor) const override;
 
     BinaryOperatorTypes operator_type;
     std::shared_ptr<ISentenceNode> lhs;

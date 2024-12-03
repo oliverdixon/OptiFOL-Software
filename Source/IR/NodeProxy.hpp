@@ -5,9 +5,8 @@
 #ifndef OPTIFOL_NODEPROXY_HPP
 #define OPTIFOL_NODEPROXY_HPP
 
-#include <utility>
-
-#include "QuantifiedSentenceNode.hpp"
+#include <memory>
+#include "ISentenceNode.hpp"
 
 namespace optifol
 {
@@ -18,9 +17,9 @@ class NodeProxy :
 public:
     explicit NodeProxy(std::shared_ptr<ISentenceNode> node);
 
-    void accept(MutatingVisitorBase& visitor) override;
+    void accept(MutatingSentenceVisitorBase& visitor) override;
 
-    void accept(IObservingVisitor& visitor) const override;
+    void accept(IObservingSentenceVisitor& visitor) const override;
 
     std::shared_ptr<ISentenceNode> sentence;
 };

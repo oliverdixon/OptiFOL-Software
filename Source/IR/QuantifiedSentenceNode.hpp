@@ -37,9 +37,9 @@ public:
 
     void replace_bound_variable(std::shared_ptr<VariableNode> new_bound_variable);
 
-    void accept(MutatingVisitorBase& visitor) override;
+    void accept(MutatingSentenceVisitorBase& visitor) override;
 
-    void accept(IObservingVisitor& visitor) const override;
+    void accept(IObservingSentenceVisitor& visitor) const override;
 
 private:
     QuantifierTypes quantifier_type;

@@ -1,15 +1,21 @@
-//
-// Created by owd on 25/11/24.
-//
+/**
+ * @file UniversalEliminationVisitor.hpp
+ * @brief Class implementation for the Universal-Elimination Visitor and its associated rule set.
+ * @author Oliver Dixon
+ * @date 2024-11-25
+ * @version Development
+ */
 
 #include "UniversalEliminationVisitor.hpp"
+#include "../../../IR/QuantifiedSentenceNode.hpp"
+#include "../../../IR/NodeProxy.hpp"
 
 namespace optifol
 {
 
 void UniversalEliminationVisitor::visit(QuantifiedSentenceNode &node)
 {
-    MutatingVisitorBase::visit(node);
+    MutatingSentenceVisitorBase::visit(node);
 
     if (node.get_quantifier_type() == QuantifierTypes::Universal)
         extracted_sentence = node.move_sentence();
@@ -17,7 +23,7 @@ void UniversalEliminationVisitor::visit(QuantifiedSentenceNode &node)
 
 void UniversalEliminationVisitor::visit(NodeProxy &proxy)
 {
-    MutatingVisitorBase::visit(proxy);
+    MutatingSentenceVisitorBase::visit(proxy);
 
     if (extracted_sentence != nullptr) {
         proxy.sentence = std::move(extracted_sentence);

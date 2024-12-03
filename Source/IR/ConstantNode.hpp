@@ -28,7 +28,7 @@ public:
         return to_string();
     }
 
-    void accept(ITermVisitor& visitor) override
+    void accept(MutatingTermVisitorBase& visitor) override
     {
         visitor.visit(*this);
     }

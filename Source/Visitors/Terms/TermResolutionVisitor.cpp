@@ -1,73 +1,46 @@
-//
-// Created by owd on 30/11/24.
-//
-
-#include <cassert>
+/**
+ * @file TermResolutionVisitor.cpp
+ * @brief Class implementation for the Term-Resolution Visitor and its associated rule set.
+ * @author Oliver Dixon
+ * @date 2024-11-30
+ * @version Development
+ */
 
 #include "TermResolutionVisitor.hpp"
+#include "../../IR/FunctionNode.hpp"
+#include "../../IR/VariableNode.hpp"
 #include "../../SemanticException.hpp"
 
 namespace optifol
 {
 
+TermResolutionVisitor::TermResolutionVisitor(
+        const std::unordered_set<std::string> &scope_hook,
+        const std::unordered_map<std::string, std::shared_ptr<VariableNode>> &rewriting_rules_hook) :
+
+        scope_hook(scope_hook), rewriting_rules_hook(rewriting_rules_hook)
+{}
+
 void TermResolutionVisitor::visit(FunctionNode &node)
 {
-    // TODO
-    (void) 0;
-}
+    auto &args = node.get_arguments();
+    const auto argument_count = args.size();
 
-void TermResolutionVisitor::visit(ConstantNode &node)
-{
-    // TODO
-    (void) 0;
+    for (std::remove_const_t<decltype(argument_count)> i = 0; i < argument_count; ++i) {
+        const auto &rule = rewriting_rules_hook.find(args[i]->get_disambiguated_name());
+        if (rule != rewriting_rules_hook.cend())
+            args[i] = rule->second;
+
+        args[i]->accept(*this);
+    }
 }
 
 void TermResolutionVisitor::visit(VariableNode &node)
 {
     const auto &name = node.to_string();
 
-    if (!scope.contains(name))
+    if (!scope_hook.contains(name))
         throw SemanticException("Referenced variable \"" + name + "\" is not defined in the current scope.");
-}
-
-bool TermResolutionVisitor::open_scope(QuantifiedSentenceNode& node)
-{
-    const auto& original_name = node.get_bound_variable()->to_string();
-    bool updated = false;
-
-    if (scope.contains(original_name))
-        throw SemanticException("Declared variable \"" + original_name + "\" is already defined in the current scope.");
-
-    if (adjacent.contains(original_name)) {
-        auto new_name = generate_name(original_name);
-
-        while (adjacent.contains(new_name))
-            new_name = generate_name(new_name);
-
-        node.replace_bound_variable(std::make_shared<VariableNode>(original_name, new_name));
-        updated = true;
-    }
-
-    scope.emplace(node.get_bound_variable()->to_string());
-    return updated;
-}
-
-void TermResolutionVisitor::reset()
-{
-    scope.clear();
-}
-
-std::string TermResolutionVisitor::generate_name(const std::string &name)
-{
-    return name + std::to_string(counter++);
-}
-
-void TermResolutionVisitor::close_scope(const VariableNode &node)
-{
-    const auto number_erased = scope.erase(node.to_string());
-    assert(number_erased == 1);
-
-    adjacent.emplace(node.get_disambiguated_name());
 }
 
 }

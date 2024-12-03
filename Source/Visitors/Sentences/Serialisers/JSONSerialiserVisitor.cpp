@@ -1,8 +1,19 @@
-//
-// Created by owd on 29/11/24.
-//
+/**
+ * @file JSONSerialiserVisitor.cpp
+ * @brief Class implementation for the JSON-serialising observing visitor.
+ * @author Oliver Dixon
+ * @date 2024-11-29
+ * @version Development
+ */
 
 #include "JSONSerialiserVisitor.hpp"
+
+#include "../../../IR/QuantifiedSentenceNode.hpp"
+#include "../../../IR/ConnectedSentenceNode.hpp"
+#include "../../../IR/NodeProxy.hpp"
+#include "../../../IR/NegatedSentenceNode.hpp"
+#include "../../../IR/IdentitySentenceNode.hpp"
+#include "../../../IR/PredicationNode.hpp"
 
 namespace optifol
 {
@@ -51,12 +62,12 @@ void JSONSerialiserVisitor::visit(const PredicationNode &node)
 {
     output_stream << R"({"type": "predicate", "name": ")" << node.name << R"(", "arguments": [)";
 
-    const auto arg_count = node.arguments.size();
-    for (auto i = 1; i < arg_count; ++i)
+    const auto argument_count = node.arguments.size();
+    for (std::remove_const_t<decltype(argument_count)> i = 1; i < argument_count; ++i)
         output_stream << '"' << node.arguments[i - 1]->get_disambiguated_name() << '"' << ',' << ' ';
 
-    if (arg_count > 0)
-        output_stream << '"' << node.arguments[arg_count - 1]->get_disambiguated_name() << '"';
+    if (argument_count > 0)
+        output_stream << '"' << node.arguments[argument_count - 1]->get_disambiguated_name() << '"';
 
     output_stream << ']' << '}';
 }

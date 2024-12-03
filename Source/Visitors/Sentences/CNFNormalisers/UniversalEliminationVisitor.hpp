@@ -9,13 +9,17 @@
 #ifndef OPTIFOL_UNIVERSALELIMINATIONVISITOR_HPP
 #define OPTIFOL_UNIVERSALELIMINATIONVISITOR_HPP
 
-#include "../MutatingVisitorBase.hpp"
+#include <memory>
+
+#include "../MutatingSentenceVisitorBase.hpp"
 
 namespace optifol
 {
 
+class ISentenceNode;
+
 class UniversalEliminationVisitor :
-        public MutatingVisitorBase
+        public MutatingSentenceVisitorBase
 {
 public:
     void visit(QuantifiedSentenceNode& node) override;

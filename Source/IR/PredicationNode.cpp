@@ -3,8 +3,8 @@
 //
 
 #include "PredicationNode.hpp"
-#include "../Visitors/Sentences/MutatingVisitorBase.hpp"
-#include "../Visitors/Sentences/IObservingVisitor.hpp"
+#include "../Visitors/Sentences/MutatingSentenceVisitorBase.hpp"
+#include "../Visitors/Sentences/IObservingSentenceVisitor.hpp"
 
 namespace optifol
 {
@@ -14,12 +14,12 @@ PredicationNode::PredicationNode(std::string name, std::vector<std::shared_ptr<I
         arguments(std::move(arguments))
 {}
 
-void PredicationNode::accept(MutatingVisitorBase &visitor)
+void PredicationNode::accept(MutatingSentenceVisitorBase &visitor)
 {
     visitor.visit(*this);
 }
 
-void PredicationNode::accept(IObservingVisitor &visitor) const
+void PredicationNode::accept(IObservingSentenceVisitor &visitor) const
 {
     visitor.visit(*this);
 }

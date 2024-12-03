@@ -9,12 +9,15 @@
 #ifndef OPTIFOL_DISJUNCTIONDISTRIBUTIONVISITOR_HPP
 #define OPTIFOL_DISJUNCTIONDISTRIBUTIONVISITOR_HPP
 
+#include <memory>
 #include <stack>
 
-#include "../MutatingVisitorBase.hpp"
+#include "../MutatingSentenceVisitorBase.hpp"
 
 namespace optifol
 {
+
+class ISentenceNode;
 
 /**
  * @class DisjunctionDistributionVisitor
@@ -33,11 +36,12 @@ namespace optifol
  * terms to ensure a full reduction. On extremely deeply nested sentences, this could cause a machine stack overflow.
  */
 class DisjunctionDistributionVisitor :
-        public MutatingVisitorBase
+        public MutatingSentenceVisitorBase
 {
 public:
     /**
-     * @copydoc MutatingVisitorBase::node(ConnectedSentenceNode&)
+     * @brief Recursively applies disjunction-distribution to the connected sentence, in-place.
+     * @param node The root of the connected sentence on which disjunction-distribution should be applied.
      */
     void visit(ConnectedSentenceNode &node) override;
 
@@ -57,6 +61,9 @@ private:
         RightMajor /**< Tracking to the right: nested children should record their right operands in the major slot */
     };
 
+    /**
+     * @brief The current operand-tracking state
+     */
     TrackingState tracking_state = TrackingState::NotTracking;
 
     /**

@@ -1,15 +1,22 @@
-//
-// Created by owd on 26/11/24.
-//
+/**
+ * @file ImplicationEliminationVisitor.cpp
+ * @brief Class implementation for the Implication-Elimination Visitor and its associated rule set.
+ * @author Oliver Dixon
+ * @date 2024-11-24
+ * @version Development
+ */
 
 #include "ImplicationEliminationVisitor.hpp"
+
+#include "../../../IR/ConnectedSentenceNode.hpp"
+#include "../../../IR/NegatedSentenceNode.hpp"
 
 namespace optifol
 {
 
 void ImplicationEliminationVisitor::visit(ConnectedSentenceNode &node)
 {
-    MutatingVisitorBase::visit(node);
+    MutatingSentenceVisitorBase::visit(node);
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wswitch"

@@ -10,7 +10,7 @@
 namespace optifol
 {
 
-class ITermVisitor;
+class MutatingTermVisitorBase;
 
 class ITermNode
 {
@@ -21,7 +21,7 @@ public:
 
     [[nodiscard]] virtual std::string get_disambiguated_name() const = 0;
 
-    virtual void accept(ITermVisitor& visitor) = 0;
+    virtual void accept(MutatingTermVisitorBase& visitor) = 0;
 };
 
 }

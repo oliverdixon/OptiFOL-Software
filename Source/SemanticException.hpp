@@ -1,6 +1,10 @@
-//
-// Created by owd on 30/11/24.
-//
+/**
+ * @file SemanticException.hpp
+ * @brief Class definition for the Semantic Exception
+ * @author Oliver Dixon
+ * @date 2024-11-30
+ * @version Development
+ */
 
 #ifndef OPTIFOL_SEMANTICEXCEPTION_HPP
 #define OPTIFOL_SEMANTICEXCEPTION_HPP

@@ -28,9 +28,9 @@ public:
 
     void swap_rhs_operand(std::shared_ptr<ITermNode> new_rhs);
 
-    void accept(MutatingVisitorBase& visitor) override;
+    void accept(MutatingSentenceVisitorBase& visitor) override;
 
-    void accept(IObservingVisitor& visitor) const override;
+    void accept(IObservingSentenceVisitor& visitor) const override;
 
 private:
     std::shared_ptr<ITermNode> lhs;

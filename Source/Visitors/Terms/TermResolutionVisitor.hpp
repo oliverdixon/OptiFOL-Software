@@ -1,45 +1,43 @@
-//
-// Created by owd on 30/11/24.
-//
+/**
+ * @file TermResolutionVisitor.hpp
+ * @brief Class specification for the Term-Resolution Visitor and its associated rule set.
+ * @author Oliver Dixon
+ * @date 2024-11-30
+ * @version Development
+ */
 
 #ifndef OPTIFOL_TERMRESOLUTIONVISITOR_HPP
 #define OPTIFOL_TERMRESOLUTIONVISITOR_HPP
 
+#include <memory>
 #include <string>
 #include <unordered_set>
-#include <optional>
+#include <unordered_map>
 
-#include "ITermVisitor.hpp"
-#include "../../IR/QuantifiedSentenceNode.hpp"
+#include "MutatingTermVisitorBase.hpp"
 
 namespace optifol
 {
 
+class VariableNode;
+
 class TermResolutionVisitor :
-        public ITermVisitor
+        public MutatingTermVisitorBase
 {
 public:
-    void visit(FunctionNode &node) override;
+    TermResolutionVisitor(
+            const std::unordered_set<std::string> &scope_hook,
+            const std::unordered_map<std::string, std::shared_ptr<VariableNode>> &rewriting_rules_hook
+    );
 
-    void visit(ConstantNode &node) override;
+    void visit(FunctionNode &node) override;
 
     void visit(VariableNode &node) override;
 
-    void reset() override;
-
-    [[nodiscard ("Check if the name was modified during disambiguation and propagate the change.")]]
-    bool open_scope(QuantifiedSentenceNode& node);
-
-    void close_scope(const VariableNode& node);
-
 private:
-    std::unordered_set<std::string> scope;
+    const std::unordered_set<std::string> &scope_hook;
 
-    std::unordered_set<std::string> adjacent;
-
-    std::string generate_name(const std::string &name);
-
-    unsigned int counter = 0;
+    const std::unordered_map<std::string, std::shared_ptr<VariableNode>> &rewriting_rules_hook;
 };
 
 }

@@ -6,13 +6,14 @@
 #define OPTIFOL_PREDICATIONNODE_HPP
 
 #include "ISentenceNode.hpp"
-#include "ITermNode.hpp"
 
 #include <vector>
 #include <memory>
 
 namespace optifol
 {
+
+class ITermNode;
 
 class PredicationNode :
         public ISentenceNode
@@ -21,9 +22,9 @@ public:
     [[maybe_unused]] explicit PredicationNode(std::string name,
                                               std::vector<std::shared_ptr<ITermNode>> &&arguments);
 
-    void accept(MutatingVisitorBase &visitor) override;
+    void accept(MutatingSentenceVisitorBase &visitor) override;
 
-    void accept(IObservingVisitor &visitor) const override;
+    void accept(IObservingSentenceVisitor &visitor) const override;
 
     const std::string name;
     std::vector<std::shared_ptr<ITermNode>> arguments;

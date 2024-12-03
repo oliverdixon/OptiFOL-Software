@@ -7,7 +7,7 @@
 
 #include <optional>
 #include "ITermNode.hpp"
-#include "../Visitors/Terms/ITermVisitor.hpp"
+#include "../Visitors/Terms/MutatingTermVisitorBase.hpp"
 
 namespace optifol
 {
@@ -35,7 +35,7 @@ public:
         return disambiguated_name.value_or(name);
     }
 
-    void accept(ITermVisitor& visitor) override
+    void accept(MutatingTermVisitorBase& visitor) override
     {
         visitor.visit(*this);
     }

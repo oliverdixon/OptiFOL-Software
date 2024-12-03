@@ -9,6 +9,10 @@
 #include <cassert>
 
 #include "DMLVisitor.hpp"
+#include "../../../IR/QuantifiedSentenceNode.hpp"
+#include "../../../IR/ConnectedSentenceNode.hpp"
+#include "../../../IR/NegatedSentenceNode.hpp"
+#include "../../../IR/NodeProxy.hpp"
 
 namespace optifol
 {
@@ -67,8 +71,8 @@ void DMLVisitor::visit(ConnectedSentenceNode &node)
     } else {
         /* In the above branch, expressions produced are of the form (~P) | (~Q), or similar. L- and RHS are DML-
          * normalised before the outer connected sentence is constructed. Hence, there is no opportunity for further
-         * DML normalisation. This branch emulates MutatingVisitorBase::visit(ConnectedSentenceNode&), taking care to provide
-         * suitable negative context layers. */
+         * DML normalisation. This branch emulates MutatingSentenceVisitorBase::visit(ConnectedSentenceNode&), taking
+         * care to provide suitable negative context layers. */
 
         negative_context.emplace();
         node.get_lhs_operand()->accept(*this);
@@ -114,7 +118,7 @@ void DMLVisitor::visit(QuantifiedSentenceNode &node)
         pending_transformation.skip_node_count = 1;
     } else {
         negative_context.emplace();
-        MutatingVisitorBase::visit(node);
+        MutatingSentenceVisitorBase::visit(node);
         negative_context.pop();
     }
 
@@ -131,7 +135,7 @@ void DMLVisitor::visit(NegatedSentenceNode &node)
     auto &context_layer = negative_context.top();
     context_layer.is_positive = !context_layer.is_positive;
 
-    MutatingVisitorBase::visit(node);
+    MutatingSentenceVisitorBase::visit(node);
 
     if (context_layer.positive_branch == nullptr)
         /* If this is the first negated node in a consecutive chain ~...~P, we must be visiting precisely ~P. Therefore,
@@ -149,7 +153,7 @@ void DMLVisitor::visit(NegatedSentenceNode &node)
 void DMLVisitor::visit(NodeProxy &node)
 {
     assert(!negative_context.empty());
-    MutatingVisitorBase::visit(node);
+    MutatingSentenceVisitorBase::visit(node);
 
     if (pending_transformation.pending()) {
         if (pending_transformation.skip_node_count == 0)
@@ -192,7 +196,7 @@ std::shared_ptr<ISentenceNode> DMLVisitor::PendingTransformation::steal()
     auto ptr = std::move(pending_dml);
     pending_dml = nullptr;
     skip_node_count = 0;
-    return std::move(ptr);
+    return ptr;
 }
 
 }

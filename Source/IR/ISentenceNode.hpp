@@ -10,17 +10,17 @@
 namespace optifol
 {
 
-class MutatingVisitorBase;
-class IObservingVisitor;
+class MutatingSentenceVisitorBase;
+class IObservingSentenceVisitor;
 
 class ISentenceNode
 {
 public:
     virtual ~ISentenceNode() = default;
 
-    virtual void accept(MutatingVisitorBase &visitor) = 0;
+    virtual void accept(MutatingSentenceVisitorBase &visitor) = 0;
 
-    virtual void accept(IObservingVisitor &visitor) const = 0;
+    virtual void accept(IObservingSentenceVisitor &visitor) const = 0;
 };
 
 }

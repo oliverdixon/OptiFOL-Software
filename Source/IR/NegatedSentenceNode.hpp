@@ -20,9 +20,9 @@ public:
 
     [[nodiscard]] std::shared_ptr<ISentenceNode> get_operand() const;
 
-    void accept(MutatingVisitorBase& visitor) override;
+    void accept(MutatingSentenceVisitorBase& visitor) override;
 
-    void accept(IObservingVisitor& visitor) const override;
+    void accept(IObservingSentenceVisitor& visitor) const override;
 
 private:
     std::shared_ptr<ISentenceNode> operand;

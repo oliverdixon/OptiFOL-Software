@@ -3,8 +3,8 @@
 //
 
 #include "QuantifiedSentenceNode.hpp"
-#include "../Visitors/Sentences/MutatingVisitorBase.hpp"
-#include "../Visitors/Sentences/IObservingVisitor.hpp"
+#include "../Visitors/Sentences/MutatingSentenceVisitorBase.hpp"
+#include "../Visitors/Sentences/IObservingSentenceVisitor.hpp"
 
 namespace optifol
 {
@@ -32,7 +32,7 @@ std::shared_ptr<ISentenceNode> QuantifiedSentenceNode::get_sentence() const
     return sentence;
 }
 
-void QuantifiedSentenceNode::accept(MutatingVisitorBase &visitor)
+void QuantifiedSentenceNode::accept(MutatingSentenceVisitorBase &visitor)
 {
     visitor.visit(*this);
 }
@@ -44,7 +44,7 @@ std::shared_ptr<ISentenceNode> QuantifiedSentenceNode::move_sentence()
     return borrowed;
 }
 
-void QuantifiedSentenceNode::accept(IObservingVisitor &visitor) const
+void QuantifiedSentenceNode::accept(IObservingSentenceVisitor &visitor) const
 {
     visitor.visit(*this);
 }

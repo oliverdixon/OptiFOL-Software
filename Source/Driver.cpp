@@ -7,7 +7,7 @@
 
 #include "Visitors/Sentences/CNFNormalisers/ImplicationEliminationVisitor.hpp"
 #include "Visitors/Sentences/CNFNormalisers/DMLVisitor.hpp"
-#include "Visitors/Sentences/CNFNormalisers/SymbolVisitor.hpp"
+#include "Visitors/Sentences/CNFNormalisers/SymbolStandardisingVisitor.hpp"
 #include "Visitors/Sentences/CNFNormalisers/UniversalEliminationVisitor.hpp"
 #include "Visitors/Sentences/CNFNormalisers/DisjunctionDistributionVisitor.hpp"
 
@@ -17,7 +17,7 @@
 namespace
 {
 
-std::string get_text(const optifol::ISentenceNode& node)
+[[maybe_unused]] std::string get_text(const optifol::ISentenceNode& node)
 {
     // Just a quick helper. Not anything more!
     static optifol::TextSerialiserVisitor text_serialiser;
@@ -27,7 +27,7 @@ std::string get_text(const optifol::ISentenceNode& node)
     return string;
 }
 
-std::string get_json(const optifol::ISentenceNode& node)
+[[maybe_unused]] std::string get_json(const optifol::ISentenceNode& node)
 {
     // Just a quick helper. Not anything more!
     static optifol::JSONSerialiserVisitor json_serialiser;
@@ -44,10 +44,10 @@ int main()
     optifol::FOLLexer lexer{std::cin, std::cerr};
     optifol::FOLParser parser(&lexer);
 
-    static const std::array<std::tuple<std::unique_ptr<optifol::MutatingVisitorBase>, std::string, bool>, 5>
+    static const std::array<std::tuple<std::unique_ptr<optifol::MutatingSentenceVisitorBase>, std::string, bool>, 5>
             cnf_normalisers{{
                                     {std::make_unique<optifol::ImplicationEliminationVisitor>(), "ImplElim", false},
-                                    {std::make_unique<optifol::SymbolVisitor>(), "Symbols", true},
+                                    {std::make_unique<optifol::SymbolStandardisingVisitor>(), "Symbols", true},
                                     {std::make_unique<optifol::DMLVisitor>(), "DeMorgan", false},
                                     {std::make_unique<optifol::UniversalEliminationVisitor>(), "UnivElim", false},
                                     {std::make_unique<optifol::DisjunctionDistributionVisitor>(), "DisjDist", false}
@@ -55,13 +55,13 @@ int main()
 
     while (parser.parse() == 0) {
         const auto root = parser.retrieve_sentence();
-        std::cout << "[Parsed]\t" << get_json(*root) << '\n';
+        std::cout << "[Parsed]\t" << get_text(*root) << '\n';
 
         for (const auto &[visitor, name, enabled]: cnf_normalisers) {
             if (enabled) {
                 try {
                     root->accept(*visitor);
-                    std::cout << '[' << name << "]\t" << get_json(*root) << '\n';
+                    std::cout << '[' << name << "]\t" << get_text(*root) << '\n';
                 } catch (const optifol::SemanticException& exception) {
                     std::cerr << exception.what() << std::endl;
                 }

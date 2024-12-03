@@ -1,19 +1,26 @@
-//
-// Created by owd on 29/11/24.
-//
+/**
+ * @file JSONSerialiserVisitor.hpp
+ * @brief Class specification for the JSON-serialising observing visitor.
+ * @author Oliver Dixon
+ * @date 2024-11-29
+ * @version Development
+ */
 
 #ifndef OPTIFOL_JSONSERIALISERVISITOR_HPP
 #define OPTIFOL_JSONSERIALISERVISITOR_HPP
 
 #include <sstream>
 
-#include "../IObservingVisitor.hpp"
+#include "../IObservingSentenceVisitor.hpp"
 
 namespace optifol
 {
 
+enum class BinaryOperatorTypes;
+enum class QuantifierTypes;
+
 class JSONSerialiserVisitor:
-        public IObservingVisitor
+        public IObservingSentenceVisitor
 {
 public:
     using OutT = std::string;

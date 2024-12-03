@@ -9,7 +9,7 @@
 #ifndef OPTIFOL_IMPLICATIONELIMINATIONVISITOR_HPP
 #define OPTIFOL_IMPLICATIONELIMINATIONVISITOR_HPP
 
-#include "../MutatingVisitorBase.hpp"
+#include "../MutatingSentenceVisitorBase.hpp"
 
 namespace optifol
 {
@@ -28,9 +28,13 @@ namespace optifol
  * substance of the ConnectedSentenceNode operands are altered).
  */
 class ImplicationEliminationVisitor :
-        public MutatingVisitorBase
+        public MutatingSentenceVisitorBase
 {
 public:
+    /**
+     * @brief Recursively applies implication-elimination transformations to the given connected sentence root
+     * @param node The connected sentence root node on which the implication-elimination should be applied
+     */
     void visit(ConnectedSentenceNode &node) override;
 
     void reset() override;
