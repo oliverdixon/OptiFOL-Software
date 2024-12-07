@@ -10,9 +10,9 @@
 
 #include "SymbolStandardisingVisitor.hpp"
 #include "../../../SemanticException.hpp"
-#include "../../../IR/QuantifiedSentenceNode.hpp"
-#include "../../../IR/PredicationNode.hpp"
-#include "../../../IR/IdentitySentenceNode.hpp"
+#include "../../../IR/Sentences/QuantifiedSentenceNode.hpp"
+#include "../../../IR/Sentences/PredicationNode.hpp"
+#include "../../../IR/Sentences/IdentitySentenceNode.hpp"
 
 namespace optifol
 {

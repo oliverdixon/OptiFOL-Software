@@ -8,8 +8,8 @@
 
 #include "ImplicationEliminationVisitor.hpp"
 
-#include "../../../IR/ConnectedSentenceNode.hpp"
-#include "../../../IR/NegatedSentenceNode.hpp"
+#include "../../../IR/Sentences/ConnectedSentenceNode.hpp"
+#include "../../../IR/Sentences/NegatedSentenceNode.hpp"
 
 namespace optifol
 {

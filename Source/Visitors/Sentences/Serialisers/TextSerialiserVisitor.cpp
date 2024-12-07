@@ -8,12 +8,12 @@
 
 #include "TextSerialiserVisitor.hpp"
 
-#include "../../../IR/QuantifiedSentenceNode.hpp"
-#include "../../../IR/ConnectedSentenceNode.hpp"
-#include "../../../IR/NodeProxy.hpp"
-#include "../../../IR/NegatedSentenceNode.hpp"
-#include "../../../IR/IdentitySentenceNode.hpp"
-#include "../../../IR/PredicationNode.hpp"
+#include "../../../IR/Sentences/QuantifiedSentenceNode.hpp"
+#include "../../../IR/Sentences/ConnectedSentenceNode.hpp"
+#include "../../../IR/Sentences/NodeProxy.hpp"
+#include "../../../IR/Sentences/NegatedSentenceNode.hpp"
+#include "../../../IR/Sentences/IdentitySentenceNode.hpp"
+#include "../../../IR/Sentences/PredicationNode.hpp"
 
 namespace optifol
 {

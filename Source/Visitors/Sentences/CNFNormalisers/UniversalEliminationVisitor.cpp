@@ -7,8 +7,8 @@
  */
 
 #include "UniversalEliminationVisitor.hpp"
-#include "../../../IR/QuantifiedSentenceNode.hpp"
-#include "../../../IR/NodeProxy.hpp"
+#include "../../../IR/Sentences/QuantifiedSentenceNode.hpp"
+#include "../../../IR/Sentences/NodeProxy.hpp"
 
 namespace optifol
 {

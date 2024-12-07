@@ -3,8 +3,8 @@
 //
 
 #include "QuantifiedSentenceNode.hpp"
-#include "../Visitors/Sentences/MutatingSentenceVisitorBase.hpp"
-#include "../Visitors/Sentences/IObservingSentenceVisitor.hpp"
+#include "../../Visitors/Sentences/MutatingSentenceVisitorBase.hpp"
+#include "../../Visitors/Sentences/IObservingSentenceVisitor.hpp"
 
 namespace optifol
 {

@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "ITermNode.hpp"
-#include "../Visitors/Terms/MutatingTermVisitorBase.hpp"
+#include "../../Visitors/Terms/MutatingTermVisitorBase.hpp"
 
 namespace optifol
 {

@@ -8,12 +8,16 @@
 #include "Visitors/Sentences/CNFNormalisers/ImplicationEliminationVisitor.hpp"
 #include "Visitors/Sentences/CNFNormalisers/DMLVisitor.hpp"
 #include "Visitors/Sentences/CNFNormalisers/SymbolStandardisingVisitor.hpp"
+#include "Visitors/Sentences/CNFNormalisers/ExistentialShiftingVisitor.hpp"
+#include "Visitors/Sentences/CNFNormalisers/SkolemIntroducingVisitor.hpp"
 #include "Visitors/Sentences/CNFNormalisers/UniversalEliminationVisitor.hpp"
 #include "Visitors/Sentences/CNFNormalisers/DisjunctionDistributionVisitor.hpp"
 
 #include "Visitors/Sentences/Serialisers/TextSerialiserVisitor.hpp"
 #include "Visitors/Sentences/Serialisers/JSONSerialiserVisitor.hpp"
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wexit-time-destructors"
 namespace
 {
 
@@ -44,12 +48,14 @@ int main()
     optifol::FOLLexer lexer{std::cin, std::cerr};
     optifol::FOLParser parser(&lexer);
 
-    static const std::array<std::tuple<std::unique_ptr<optifol::MutatingSentenceVisitorBase>, std::string, bool>, 5>
+    static const std::array<std::tuple<std::unique_ptr<optifol::MutatingSentenceVisitorBase>, std::string, bool>, 7>
             cnf_normalisers{{
-                                    {std::make_unique<optifol::ImplicationEliminationVisitor>(), "ImplElim", false},
-                                    {std::make_unique<optifol::SymbolStandardisingVisitor>(), "Symbols", true},
-                                    {std::make_unique<optifol::DMLVisitor>(), "DeMorgan", false},
-                                    {std::make_unique<optifol::UniversalEliminationVisitor>(), "UnivElim", false},
+                                    {std::make_unique<optifol::ImplicationEliminationVisitor>(),  "ImplElim", false},
+                                    {std::make_unique<optifol::DMLVisitor>(),                     "DeMorgan", false},
+                                    {std::make_unique<optifol::SymbolStandardisingVisitor>(),     "SymbStnd", false},
+                                    {std::make_unique<optifol::ExistentialShiftingVisitor>(),     "ExisShft", false},
+                                    {std::make_unique<optifol::SkolemIntroducingVisitor>(),       "SklmIntr", false},
+                                    {std::make_unique<optifol::UniversalEliminationVisitor>(),    "UnivElim", false},
                                     {std::make_unique<optifol::DisjunctionDistributionVisitor>(), "DisjDist", false}
                             }};
 
@@ -73,3 +79,5 @@ int main()
 
     return 0;
 }
+
+#pragma clang diagnostic pop

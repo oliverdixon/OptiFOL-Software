@@ -8,10 +8,10 @@
 
 #include "MutatingSentenceVisitorBase.hpp"
 
-#include "../../IR/NodeProxy.hpp"
-#include "../../IR/NegatedSentenceNode.hpp"
-#include "../../IR/ConnectedSentenceNode.hpp"
-#include "../../IR/QuantifiedSentenceNode.hpp"
+#include "../../IR/Sentences/NodeProxy.hpp"
+#include "../../IR/Sentences/NegatedSentenceNode.hpp"
+#include "../../IR/Sentences/ConnectedSentenceNode.hpp"
+#include "../../IR/Sentences/QuantifiedSentenceNode.hpp"
 
 namespace optifol
 {

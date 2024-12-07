@@ -9,10 +9,10 @@
 #include <cassert>
 
 #include "DMLVisitor.hpp"
-#include "../../../IR/QuantifiedSentenceNode.hpp"
-#include "../../../IR/ConnectedSentenceNode.hpp"
-#include "../../../IR/NegatedSentenceNode.hpp"
-#include "../../../IR/NodeProxy.hpp"
+#include "../../../IR/Sentences/QuantifiedSentenceNode.hpp"
+#include "../../../IR/Sentences/ConnectedSentenceNode.hpp"
+#include "../../../IR/Sentences/NegatedSentenceNode.hpp"
+#include "../../../IR/Sentences/NodeProxy.hpp"
 
 namespace optifol
 {

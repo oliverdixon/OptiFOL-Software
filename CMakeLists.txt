@@ -28,27 +28,27 @@ target_compile_options(OptiFOLGenerated PRIVATE -Wno-everything)
 
 set(COMMON_SOURCES
         Source/Interpreter/FOLLexer.hpp
-        Source/IR/ITermNode.hpp
-        Source/IR/ISentenceNode.hpp
-        Source/IR/VariableNode.hpp
-        Source/IR/ConstantNode.hpp
-        Source/IR/FunctionNode.hpp
-        Source/IR/PredicationNode.hpp
-        Source/IR/ConnectedSentenceNode.hpp
-        Source/IR/IdentitySentenceNode.hpp
-        Source/IR/NegatedSentenceNode.hpp
-        Source/IR/QuantifiedSentenceNode.hpp
+        Source/IR/Terms/ITermNode.hpp
+        Source/IR/Sentences/ISentenceNode.hpp
+        Source/IR/Terms/VariableNode.hpp
+        Source/IR/Terms/ConstantNode.hpp
+        Source/IR/Terms/FunctionNode.hpp
+        Source/IR/Sentences/PredicationNode.hpp
+        Source/IR/Sentences/ConnectedSentenceNode.hpp
+        Source/IR/Sentences/IdentitySentenceNode.hpp
+        Source/IR/Sentences/NegatedSentenceNode.hpp
+        Source/IR/Sentences/QuantifiedSentenceNode.hpp
         Source/Interpreter/FOLParser.hpp
         Source/Visitors/Sentences/CNFNormalisers/ImplicationEliminationVisitor.hpp
         Source/Visitors/Sentences/MutatingSentenceVisitorBase.hpp
-        Source/IR/NodeProxy.hpp
+        Source/IR/Sentences/NodeProxy.hpp
         Source/Visitors/Sentences/CNFNormalisers/DMLVisitor.hpp
-        Source/IR/ConnectedSentenceNode.cpp
-        Source/IR/NegatedSentenceNode.cpp
-        Source/IR/QuantifiedSentenceNode.cpp
-        Source/IR/NodeProxy.cpp
-        Source/IR/IdentitySentenceNode.cpp
-        Source/IR/PredicationNode.cpp
+        Source/IR/Sentences/ConnectedSentenceNode.cpp
+        Source/IR/Sentences/NegatedSentenceNode.cpp
+        Source/IR/Sentences/QuantifiedSentenceNode.cpp
+        Source/IR/Sentences/NodeProxy.cpp
+        Source/IR/Sentences/IdentitySentenceNode.cpp
+        Source/IR/Sentences/PredicationNode.cpp
         Source/Visitors/Sentences/CNFNormalisers/UniversalEliminationVisitor.hpp
         Source/Visitors/Sentences/CNFNormalisers/DisjunctionDistributionVisitor.hpp
         Source/Visitors/Sentences/CNFNormalisers/DisjunctionDistributionVisitor.cpp
@@ -68,6 +68,10 @@ set(COMMON_SOURCES
         Source/Visitors/Terms/TermResolutionVisitor.hpp
         Source/Visitors/Terms/MutatingTermVisitorBase.cpp
         Source/Visitors/Sentences/MutatingSentenceVisitorBase.cpp
+        Source/Visitors/Sentences/CNFNormalisers/ExistentialShiftingVisitor.cpp
+        Source/Visitors/Sentences/CNFNormalisers/ExistentialShiftingVisitor.hpp
+        Source/Visitors/Sentences/CNFNormalisers/SkolemIntroducingVisitor.cpp
+        Source/Visitors/Sentences/CNFNormalisers/SkolemIntroducingVisitor.hpp
 )
 
 add_executable(OptiFOL

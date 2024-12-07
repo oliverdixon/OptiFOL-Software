@@ -11,17 +11,17 @@
 
 %code requires
 {
-    #include "../IR/VariableNode.hpp"
-    #include "../IR/FunctionNode.hpp"
-    #include "../IR/ConstantNode.hpp"
+    #include "../IR/Terms/VariableNode.hpp"
+    #include "../IR/Terms/FunctionNode.hpp"
+    #include "../IR/Terms/ConstantNode.hpp"
 
-    #include "../IR/NegatedSentenceNode.hpp"
-    #include "../IR/PredicationNode.hpp"
-    #include "../IR/IdentitySentenceNode.hpp"
-    #include "../IR/ConnectedSentenceNode.hpp"
-    #include "../IR/QuantifiedSentenceNode.hpp"
+    #include "../IR/Sentences/NegatedSentenceNode.hpp"
+    #include "../IR/Sentences/PredicationNode.hpp"
+    #include "../IR/Sentences/IdentitySentenceNode.hpp"
+    #include "../IR/Sentences/ConnectedSentenceNode.hpp"
+    #include "../IR/Sentences/QuantifiedSentenceNode.hpp"
 
-    #include "../IR/NodeProxy.hpp"
+    #include "../IR/Sentences/NodeProxy.hpp"
 
     namespace optifol
     {

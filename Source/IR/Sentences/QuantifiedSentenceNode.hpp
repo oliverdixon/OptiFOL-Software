@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "ISentenceNode.hpp"
-#include "VariableNode.hpp"
+#include "../Terms/VariableNode.hpp"
 
 namespace optifol
 {

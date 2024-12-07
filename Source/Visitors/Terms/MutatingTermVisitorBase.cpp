@@ -7,7 +7,7 @@
  */
 
 #include "MutatingTermVisitorBase.hpp"
-#include "../../IR/FunctionNode.hpp"
+#include "../../IR/Terms/FunctionNode.hpp"
 
 namespace optifol
 {

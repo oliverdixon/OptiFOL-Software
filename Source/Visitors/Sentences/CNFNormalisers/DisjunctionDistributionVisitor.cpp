@@ -9,7 +9,7 @@
 #include <cassert>
 
 #include "DisjunctionDistributionVisitor.hpp"
-#include "../../../IR/ConnectedSentenceNode.hpp"
+#include "../../../IR/Sentences/ConnectedSentenceNode.hpp"
 
 namespace optifol
 {

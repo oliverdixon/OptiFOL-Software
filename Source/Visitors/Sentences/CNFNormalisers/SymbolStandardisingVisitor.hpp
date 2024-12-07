@@ -37,8 +37,6 @@ namespace optifol
  * @warning Although multiple passes are not required for this symbol-standardising visitor, it does recurse on any
  *  produced terms to ensure a full reduction. On extremely deeply nested sentences, this could cause a machine stack
  *  overflow.
- *
- * @throws SemanticException
  */
 class SymbolStandardisingVisitor :
         public MutatingSentenceVisitorBase
@@ -47,18 +45,21 @@ public:
     /**
      * @brief Recursively applies the symbol-standardisation procedures to the given quantified sentence root.
      * @param node The root quantified sentence node
+     * @throws SemanticException TODO
      */
     void visit(QuantifiedSentenceNode &node) override;
 
     /**
      * @brief Recursively applies the symbol-standardisation procedures to the given predicate root node.
      * @param node The root predicate sentence node
+     * @throws SemanticException TODO
      */
     void visit(PredicationNode &node) override;
 
     /**
      * @brief Recursively applies the symbol-standardisation procedures to the given identity sentence node.
      * @param node The root identity sentence node
+     * @throws SemanticException TODO
      */
     void visit(IdentitySentenceNode &node) override;
 

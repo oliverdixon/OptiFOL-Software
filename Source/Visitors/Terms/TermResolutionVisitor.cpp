@@ -7,8 +7,8 @@
  */
 
 #include "TermResolutionVisitor.hpp"
-#include "../../IR/FunctionNode.hpp"
-#include "../../IR/VariableNode.hpp"
+#include "../../IR/Terms/FunctionNode.hpp"
+#include "../../IR/Terms/VariableNode.hpp"
 #include "../../SemanticException.hpp"
 
 namespace optifol

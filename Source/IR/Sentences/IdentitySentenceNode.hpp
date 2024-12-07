@@ -6,7 +6,7 @@
 #define OPTIFOL_IDENTITYSENTENCENODE_HPP
 
 #include "ISentenceNode.hpp"
-#include "ITermNode.hpp"
+#include "../Terms/ITermNode.hpp"
 
 #include <memory>
 
