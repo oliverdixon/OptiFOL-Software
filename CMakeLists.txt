@@ -4,11 +4,15 @@ include(FetchContent)
 include(GoogleTest)
 
 project(OptiFOL)
+find_package(PkgConfig REQUIRED)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(FLEX REQUIRED)
 find_package(BISON REQUIRED)
+
+pkg_check_modules(GTKMM REQUIRED gtkmm-4.0)
+find_program(GLIB_COMPILE_RESOURCES NAMES glib-compile-resources REQUIRED)
 
 set(GENERATED_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/include)
 set(GENERATED_SRC_DIR ${GENERATED_INCLUDE_DIR}/generated)
@@ -19,11 +23,29 @@ bison_target(FOLParser Source/Interpreter/FOLParser.y ${GENERATED_SRC_DIR}/BaseP
 flex_target(FOLLexer Source/Interpreter/FOLLexer.l ${GENERATED_SRC_DIR}/FOLLexer.cpp)
 add_flex_bison_dependency(FOLLexer FOLParser)
 
+set(RESOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Resources)
+set(RESOURCE_XML ${RESOURCE_DIR}/optifol.gresource.xml)
+set(RESOURCE_OUT ${GENERATED_SRC_DIR}/resources.c)
+
+add_custom_command(
+        OUTPUT ${RESOURCE_OUT}
+        WORKING_DIRECTORY ${RESOURCE_DIR}
+        COMMAND ${GLIB_COMPILE_RESOURCES}
+        ARGS
+            --generate-source
+            --target=${RESOURCE_OUT}
+            ${RESOURCE_XML}
+        VERBATIM
+        MAIN_DEPENDENCY ${RESOURCE_XML}
+)
+
 add_library(OptiFOLGenerated
+        OBJECT
+        ${RESOURCE_OUT}
         ${BISON_FOLParser_OUTPUTS}
         ${FLEX_FOLLexer_OUTPUTS})
 
-target_include_directories(OptiFOLGenerated PRIVATE Source/Interpreter ${GENERATED_INCLUDE_DIR})
+target_include_directories(OptiFOLGenerated PRIVATE Source/Interpreter ${GENERATED_INCLUDE_DIR} ${GTKMM_INCLUDE_DIRS})
 target_compile_options(OptiFOLGenerated PRIVATE -Wno-everything)
 
 set(COMMON_SOURCES
@@ -77,11 +99,17 @@ set(COMMON_SOURCES
 add_executable(OptiFOL
         ${COMMON_SOURCES}
         Source/Driver.cpp
+        Source/GUI/GUIDriver.cpp
+        Source/GUI/MainWindow.cpp
+        Source/GUI/MainWindow.hpp
+        Source/GUI/Application.cpp
+        Source/GUI/Application.hpp
 )
 
-target_link_libraries(OptiFOL PUBLIC OptiFOLGenerated)
+target_compile_definitions(OptiFOL PRIVATE OPTIFOL_GUI)
+target_link_libraries(OptiFOL PRIVATE OptiFOLGenerated ${GTKMM_LIBRARIES})
 target_include_directories(OptiFOL PRIVATE Source/Interpreter/)
-target_include_directories(OptiFOL SYSTEM PRIVATE ${GENERATED_INCLUDE_DIR})
+target_include_directories(OptiFOL SYSTEM PRIVATE ${GENERATED_INCLUDE_DIR} ${GTKMM_INCLUDE_DIRS})
 target_compile_options(OptiFOL PRIVATE
         -Weverything
         -Wno-unknown-pragmas

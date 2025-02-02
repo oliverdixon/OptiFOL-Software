@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+    <gresource prefix="/uk/ac/york/www_users/od641/optifol">
+        <file preprocess="xml-stripblanks">UI/MainWindow.ui</file>
+        <file>Images/wide_logo.png</file>
+    </gresource>
+</gresources>
