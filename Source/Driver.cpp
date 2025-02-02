@@ -2,6 +2,10 @@
 // Created by owd on 18/11/24.
 //
 
+#ifndef OPTIFOL_GUI
+
+#include <array>
+
 #include "Interpreter/FOLLexer.hpp"
 #include "SemanticException.hpp"
 
@@ -81,3 +85,5 @@ int main()
 }
 
 #pragma clang diagnostic pop
+
+#endif
