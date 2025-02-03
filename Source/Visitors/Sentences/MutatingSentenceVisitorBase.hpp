@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) All Rights Reserved
+ * 2024-2025 Oliver Dixon <od641@york.ac.uk>
+ */
+
 /**
  * @file MutatingSentenceVisitorBase.hpp
  * @brief Class specification for the Mutating Sentence Visitor base class.

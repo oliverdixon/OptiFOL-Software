@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) All Rights Reserved
+  ~ 2024-2025 Oliver Dixon <od641@york.ac.uk>
+  -->
+
 <gresources>
     <gresource prefix="/uk/ac/york/www_users/od641/optifol">
         <file preprocess="xml-stripblanks">UI/MainWindow.ui</file>

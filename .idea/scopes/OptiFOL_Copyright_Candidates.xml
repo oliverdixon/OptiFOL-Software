@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="OptiFOL Copyright Candidates" pattern="file[OptiFOL-Software]:*/&amp;&amp;!file[OptiFOL-Software]:.idea/*&amp;&amp;!file[OptiFOL-Software]:.idea//*&amp;&amp;!file[OptiFOL-Software]:Resources/Images//*&amp;&amp;!file:.gitignore&amp;&amp;!file:README.md" />
+</component>

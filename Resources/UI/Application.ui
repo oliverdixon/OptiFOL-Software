@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  - Copyright (c) All Rights Reserved
+  - 2024-2025 Oliver Dixon <od641@york.ac.uk>
+  -->
+
 <interface>
     <menu id="top_menu">
         <submenu>

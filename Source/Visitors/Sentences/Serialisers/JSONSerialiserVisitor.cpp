@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) All Rights Reserved
+ * 2024-2025 Oliver Dixon <od641@york.ac.uk>
+ */
+
 /**
  * @file JSONSerialiserVisitor.cpp
  * @brief Class implementation for the JSON-serialising observing visitor.

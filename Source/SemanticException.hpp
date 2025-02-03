@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) All Rights Reserved
+ * 2024-2025 Oliver Dixon <od641@york.ac.uk>
+ */
+
 /**
  * @file SemanticException.hpp
  * @brief Class definition for the Semantic Exception

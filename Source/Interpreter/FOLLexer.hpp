@@ -1,10 +1,15 @@
+/*
+ * Copyright (c) All Rights Reserved
+ * 2024-2025 Oliver Dixon <od641@york.ac.uk>
+ */
+
+#ifndef OPTIFOL_FOLLEXER_HPP
+#define OPTIFOL_FOLLEXER_HPP
+
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "OCUnusedStructInspection"
 #pragma ide diagnostic ignored "NotImplementedFunctions"
 #pragma ide diagnostic ignored "OCUnusedGlobalDeclarationInspection"
-
-#ifndef OPTIFOL_FOLLEXER_HPP
-#define OPTIFOL_FOLLEXER_HPP
 
 #ifndef __FLEX_LEXER_H
 // Note that the yyFlexLexer definition is not suitably guarded by some versions of Flex.
@@ -33,6 +38,6 @@ public:
 
 }
 
-#endif //OPTIFOL_FOLLEXER_HPP
-
 #pragma clang diagnostic pop
+
+#endif //OPTIFOL_FOLLEXER_HPP
