@@ -15,11 +15,6 @@ class MainWindow :
 {
 public:
     MainWindow();
-
-private:
-    Glib::RefPtr<Gtk::Builder> builder;
-
-    Gtk::AboutDialog * dialog;
 };
 
 }
