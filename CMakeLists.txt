@@ -4,17 +4,28 @@
 cmake_minimum_required(VERSION 3.7 FATAL_ERROR)
 project(OptiFOL)
 
-include(FetchContent)
-include(GoogleTest)
-
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
 find_package(PkgConfig REQUIRED)
+
+# Strip release-like builds, except debuginfo release builds.
+function(utils_strip TARGET)
+    add_custom_command(
+            TARGET "${TARGET}" POST_BUILD
+            DEPENDS "${TARGET}"
+            COMMAND $<$<OR:$<CONFIG:release>,$<CONFIG:minsizerel>>:${CMAKE_STRIP}>
+            ARGS --strip-all $<TARGET_FILE:${TARGET}>
+    )
+endfunction()
 
 ######################################
 ## OptiFOL Generated Object Library ##
 ######################################
+
+# The "generated" object library controls the invocation of all code-generators required for OptiFOL. Namely: Flex
+# (lexer, generates C++), Bison (parser, generates C++), and glib-compile-resources (GResources blob, generates C). All
+# generated source translation units are placed in ${GENERATED_SRC_DIR}, and headers are placed in
+# ${GENERATED_INCLUDE_DIR}. Note that glib-compile-resources requires GTKMM for the headers only.
 
 find_package(FLEX REQUIRED)
 find_package(BISON REQUIRED)
@@ -25,9 +36,17 @@ set(GENERATED_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/include)
 set(GENERATED_SRC_DIR ${GENERATED_INCLUDE_DIR}/generated)
 file(MAKE_DIRECTORY ${GENERATED_SRC_DIR})
 
-bison_target(FOLParser Source/Interpreter/FOLParser.y ${GENERATED_SRC_DIR}/BaseParser.cpp
-        COMPILE_FLAGS "-t -Wcounterexamples")
-flex_target(FOLLexer Source/Interpreter/FOLLexer.l ${GENERATED_SRC_DIR}/FOLLexer.cpp)
+bison_target(FOLParser
+        Source/Interpreter/FOLParser.y
+        ${GENERATED_SRC_DIR}/BaseParser.cpp
+        COMPILE_FLAGS "-t -Wcounterexamples"
+)
+
+flex_target(FOLLexer
+        Source/Interpreter/FOLLexer.l
+        ${GENERATED_SRC_DIR}/FOLLexer.cpp
+)
+
 add_flex_bison_dependency(FOLLexer FOLParser)
 
 set(RESOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Resources)
@@ -48,20 +67,20 @@ add_custom_command(
         BYPRODUCTS ${RESOURCE_DEP} # Don't let Ninja absorb the depfile into its internal database
         COMMAND ${GLIB_COMPILE_RESOURCES}
         ARGS
-            --generate-source
-            --generate-phony-targets
-            --dependency-file=${RESOURCE_DEP}
-            --target=${RESOURCE_OUT}
-            --sourcedir=${RESOURCE_DIR}
-            ${RESOURCE_XML}
+        --generate-source
+        --generate-phony-targets # Individual resource files are not generated
+        --dependency-file=${RESOURCE_DEP}
+        --target=${RESOURCE_OUT}
+        --sourcedir=${RESOURCE_DIR}
+        ${RESOURCE_XML}
         COMMAND sed -i "s|${CMAKE_CURRENT_BINARY_DIR}/||g" ${RESOURCE_DEP} # Clean up any paths that should be relative
 )
 
-add_library(OptiFOLGenerated
-        OBJECT
+add_library(OptiFOLGenerated OBJECT
         ${RESOURCE_OUT}
         ${BISON_FOLParser_OUTPUTS}
-        ${FLEX_FOLLexer_OUTPUTS})
+        ${FLEX_FOLLexer_OUTPUTS}
+)
 
 # Flex, Bison, and glib-compile-resources generate all sorts of suspect melting pots of C and C++. It is assumed safe
 # and correct to suppress all compiler warnings produced by these programs, hence the grouping of all generated code
@@ -69,13 +88,11 @@ add_library(OptiFOLGenerated
 target_compile_options(OptiFOLGenerated PRIVATE -Wno-everything)
 target_include_directories(OptiFOLGenerated PRIVATE Source/Interpreter ${GENERATED_INCLUDE_DIR} ${GTKMM_INCLUDE_DIRS})
 
-####################################
-## OptiFOL Application Executable ##
-####################################
+###################################
+## OptiFOL Common Object Library ##
+###################################
 
-# 'Common sources' are source files (including headers) that are applicable to all executable targets; nominally, the
-# basic application and any test suites.
-set(COMMON_SOURCES
+add_library(OptiFOLCommon OBJECT
         Source/Interpreter/FOLLexer.hpp
         Source/IR/Terms/ITermNode.hpp
         Source/IR/Sentences/ISentenceNode.hpp
@@ -123,9 +140,11 @@ set(COMMON_SOURCES
         Source/Visitors/Sentences/CNFNormalisers/SkolemIntroducingVisitor.hpp
 )
 
-add_executable(OptiFOL
-        ${COMMON_SOURCES}
-        Source/Driver.cpp
+########################################
+## OptiFOL GUI Application Executable ##
+########################################
+
+add_executable(OptiFOLGUI
         Source/GUI/GUIDriver.cpp
         Source/GUI/MainWindow.cpp
         Source/GUI/MainWindow.hpp
@@ -134,11 +153,11 @@ add_executable(OptiFOL
         Source/GUI/GTKHelpers.hpp
 )
 
-target_compile_definitions(OptiFOL PRIVATE OPTIFOL_GUI)
-target_link_libraries(OptiFOL PRIVATE OptiFOLGenerated ${GTKMM_LIBRARIES})
-target_include_directories(OptiFOL PRIVATE Source/Interpreter/)
-target_include_directories(OptiFOL SYSTEM PRIVATE ${GENERATED_INCLUDE_DIR} ${GTKMM_INCLUDE_DIRS})
-target_compile_options(OptiFOL PRIVATE
+target_compile_definitions(OptiFOLGUI PRIVATE OPTIFOL_GUI)
+target_link_libraries(OptiFOLGUI PRIVATE OptiFOLCommon OptiFOLGenerated ${GTKMM_LIBRARIES})
+target_include_directories(OptiFOLGUI PRIVATE Source/Interpreter/)
+target_include_directories(OptiFOLGUI SYSTEM PRIVATE ${GTKMM_INCLUDE_DIRS})
+target_compile_options(OptiFOLGUI PRIVATE
         -Weverything
         -Wno-unknown-pragmas # Support some IntelliJ IDEA in-line directives
         -Wno-c++98-compat
@@ -149,12 +168,18 @@ target_compile_options(OptiFOL PRIVATE
         -Wno-shadow-field-in-constructor
 )
 
+utils_strip(OptiFOLGUI)
+
 ###########################################
 ## OptiFOL Google Test Suite Executable  ##
-## TODO: do not recompile common sources ##
+## TODO: test suite needs updating       ##
 ###########################################
 
+include(FetchContent)
+include(GoogleTest)
+
 cmake_policy(SET CMP0135 NEW)
+
 FetchContent_Declare(
         googletest
         URL https://github.com/google/googletest/archive/03597a01ee50ed33e9dfd640b249b4be3799d395.zip
@@ -166,12 +191,11 @@ FetchContent_MakeAvailable(googletest)
 enable_testing()
 
 add_executable(OptiFOLTesting
-        ${COMMON_SOURCES}
         Tests/FOLParserTest.cpp
 )
 
 target_include_directories(OptiFOLTesting PRIVATE Source/Interpreter/)
 target_include_directories(OptiFOLTesting SYSTEM PRIVATE ${GENERATED_INCLUDE_DIR})
-target_link_libraries(OptiFOLTesting PRIVATE GTest::gtest_main OptiFOLGenerated)
+target_link_libraries(OptiFOLTesting PRIVATE OptiFOLCommon OptiFOLGenerated GTest::gtest_main)
 target_compile_options(OptiFOLTesting PRIVATE -Weverything)
 gtest_discover_tests(OptiFOLTesting)
