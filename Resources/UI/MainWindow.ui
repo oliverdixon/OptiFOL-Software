@@ -1,4 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-
+    <object class="GtkScrolledWindow" id="scrolled_window">
+        <property name="hexpand">TRUE</property>
+        <property name="vexpand">TRUE</property>
+        <property name="hscrollbar-policy">GTK_POLICY_AUTOMATIC</property>
+        <property name="vscrollbar-policy">GTK_POLICY_ALWAYS</property>
+        <child>
+            <object class="GtkListView" id="directory_view" />
+        </child>
+    </object>
 </interface>
