@@ -28,7 +28,7 @@ public:
         const auto object = builder->get_object<ObjectType>(object_name);
 
         if (!object)
-            throw std::runtime_error("Could not build \"" + segment_name + "\": GTK object \"" + object_name + "\""
+            throw std::runtime_error("Could not build \"" + segment_name + "\": GTK object \"" + object_name + "\" "
                                      "was not found");
 
         return object;
@@ -45,7 +45,7 @@ public:
         const auto widget = builder->get_widget<ObjectType>(widget_name);
 
         if (!widget)
-            throw std::runtime_error("Could not build \"" + segment_name + "\": GTK widget \"" + widget_name + "\""
+            throw std::runtime_error("Could not build \"" + segment_name + "\": GTK widget \"" + widget_name + "\" "
                                      "was not found");
 
         return widget;

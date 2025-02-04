@@ -14,12 +14,12 @@
 namespace optifol
 {
 
-MainWindow::MainWindow()
+MainWindow::MainWindow():
+    builder(Gtk::Builder::create_from_resource("/uk/ac/york/www_users/od641/optifol/UI/MainWindow.ui")),
+    scrolled_window(GTKHelpers::get_widget<Gtk::ScrolledWindow>("Main Window", builder, "scrolled_window")),
+    directory_view(GTKHelpers::get_widget<Gtk::ListView>("Main Window", builder, "directory_view")),
+    root_grid(GTKHelpers::get_widget<Gtk::Grid>("Main Window", builder, "root_grid"))
 {
-    builder = Gtk::Builder::create_from_resource("/uk/ac/york/www_users/od641/optifol/UI/MainWindow.ui");
-    scrolled_window = GTKHelpers::get_widget<Gtk::ScrolledWindow>("Main Window", builder, "scrolled_window");
-    directory_view = GTKHelpers::get_widget<Gtk::ListView>("Main Window", builder, "directory_view");
-
     set_title("OptiFOL");
     set_default_size(600, 400);
     set_child(*scrolled_window);

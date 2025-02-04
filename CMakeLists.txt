@@ -92,6 +92,8 @@ target_include_directories(OptiFOLGenerated PRIVATE Source/Interpreter ${GENERAT
 ## OptiFOL Common Object Library ##
 ###################################
 
+find_package(nlohmann_json 3.11.3 REQUIRED)
+
 add_library(OptiFOLCommon OBJECT
         Source/Interpreter/FOLLexer.hpp
         Source/IR/Terms/ITermNode.hpp
@@ -138,7 +140,18 @@ add_library(OptiFOLCommon OBJECT
         Source/Visitors/Sentences/CNFNormalisers/ExistentialShiftingVisitor.hpp
         Source/Visitors/Sentences/CNFNormalisers/SkolemIntroducingVisitor.cpp
         Source/Visitors/Sentences/CNFNormalisers/SkolemIntroducingVisitor.hpp
+        Source/IR/Meta/Solution.cpp
+        Source/IR/Meta/Solution.hpp
+        Source/IR/Meta/Project.cpp
+        Source/IR/Meta/Project.hpp
+        Source/IR/Meta/Group.cpp
+        Source/IR/Meta/Group.hpp
+        Source/IR/Meta/Requirement.cpp
+        Source/IR/Meta/Requirement.hpp
+        Source/Visitors/Meta/IObservingMetaVisitor.hpp
 )
+
+target_link_libraries(OptiFOLCommon PRIVATE nlohmann_json::nlohmann_json)
 
 ########################################
 ## OptiFOL GUI Application Executable ##

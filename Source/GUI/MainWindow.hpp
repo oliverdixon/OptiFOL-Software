@@ -26,13 +26,14 @@ private:
 
     void on_bind_name(const Glib::RefPtr<Gtk::ListItem>& item) const;
 
+    Glib::RefPtr<Gtk::Builder> builder;
+
     Gtk::ScrolledWindow * scrolled_window;
     Gtk::ListView * directory_view;
+    Gtk::Grid * root_grid;
 
     Glib::RefPtr<Gtk::DirectoryList> directory_model =
         Gtk::DirectoryList::create("standard::name", Gio::File::create_for_path("/home/owd/"));
-
-    Glib::RefPtr<Gtk::Builder> builder;
 };
 
 }
