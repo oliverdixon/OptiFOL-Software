@@ -1,11 +1,9 @@
 /*
  * Copyright (c) All Rights Reserved
- * 2024-2025 Oliver Dixon <od641@york.ac.uk>
+ * 2025 Oliver Dixon <od641@york.ac.uk>
  */
 
-//
-// Created by owd on 19/11/24.
-//
+
 
 #ifndef OPTIFOL_VARIABLENODE_HPP
 #define OPTIFOL_VARIABLENODE_HPP

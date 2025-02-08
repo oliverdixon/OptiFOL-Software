@@ -1,12 +1,12 @@
 /*
  * Copyright (c) All Rights Reserved
- * 2024-2025 Oliver Dixon <od641@york.ac.uk>
+ * 2025 Oliver Dixon <od641@york.ac.uk>
  */
 
 /**
  * @file FOLParser.hpp
  * @brief Class declaration of the exposed first-order logic parser
- * @date 21st November 2024
+ * @date 2024-11-21
  * @author Oliver Dixon <od641@york.ac.uk>
  * @warning This file depends on build-time generated source from Flex and Bison.
  */

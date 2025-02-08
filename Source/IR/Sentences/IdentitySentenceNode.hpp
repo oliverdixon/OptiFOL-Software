@@ -1,11 +1,9 @@
 /*
  * Copyright (c) All Rights Reserved
- * 2024-2025 Oliver Dixon <od641@york.ac.uk>
+ * 2025 Oliver Dixon <od641@york.ac.uk>
  */
 
-//
-// Created by owd on 20/11/24.
-//
+
 
 #ifndef OPTIFOL_IDENTITYSENTENCENODE_HPP
 #define OPTIFOL_IDENTITYSENTENCENODE_HPP

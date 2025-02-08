@@ -1,5 +1,5 @@
 # OptiFOL CMakeLists
-# Copyright (C) 2024--2025 Oliver Dixon
+# Copyright (C) 2025 Oliver Dixon
 
 cmake_minimum_required(VERSION 3.7 FATAL_ERROR)
 project(OptiFOL)
