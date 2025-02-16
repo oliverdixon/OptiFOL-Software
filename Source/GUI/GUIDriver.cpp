@@ -5,7 +5,7 @@
 
 
 
-#ifdef OPTIFOL_GUI
+#ifndef OPTIFOL_DISABLE_GUI
 
 #include "Application.hpp"
 

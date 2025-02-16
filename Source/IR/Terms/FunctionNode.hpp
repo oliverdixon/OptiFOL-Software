@@ -65,4 +65,4 @@ private:
 
 }
 
-#endif //OPTIFOL_FUNCTIONNODE_HPP
+#endif

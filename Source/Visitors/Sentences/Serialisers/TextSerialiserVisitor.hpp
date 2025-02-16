@@ -4,7 +4,7 @@
  */
 
 /**
- * @file TextSerialiserVisitor.hpp
+ * @file
  * @brief Class specification for the text-serialising observing visitor.
  * @author Oliver Dixon
  * @date 2024-11-29
@@ -28,8 +28,6 @@ class TextSerialiserVisitor :
         public IObservingSentenceVisitor
 {
 public:
-    using OutT = std::string;
-
     void visit(const QuantifiedSentenceNode& node) override;
 
     void visit(const ConnectedSentenceNode& node) override;
@@ -42,9 +40,7 @@ public:
 
     void visit(const PredicationNode& node) override;
 
-    std::any extract() const override;
-
-    void reset() override;
+    [[nodiscard]] std::string extract();
 
 private:
     std::ostringstream output_stream;
@@ -57,4 +53,4 @@ private:
 }
 
 
-#endif //OPTIFOL_TEXTSERIALISERVISITOR_HPP
+#endif

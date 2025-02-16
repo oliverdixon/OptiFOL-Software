@@ -40,4 +40,4 @@ public:
 
 #pragma clang diagnostic pop
 
-#endif //OPTIFOL_FOLLEXER_HPP
+#endif

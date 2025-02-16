@@ -4,7 +4,7 @@
  */
 
 /**
- * @file DisjunctionDistributionVisitor.cpp
+ * @file
  * @brief Class implementation for the Disjunction-Distribution Visitor and its associated rule set.
  * @author Oliver Dixon
  * @date 2024-11-25
@@ -25,18 +25,18 @@ void DisjunctionDistributionVisitor::visit(ConnectedSentenceNode &node)
 
     if (current_operator_type == BinaryOperatorTypes::Conjunction)
         // If we're a conjunction node, we might be a candidate child. Check if we should be tracking.
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wswitch"
         switch (tracking_state) {
-            case TrackingState::LeftMajor:
-                tracked_operands.emplace(node.get_lhs_operand(), node.get_rhs_operand());
-                break;
+        case TrackingState::LeftMajor:
+            tracked_operands.emplace(node.get_lhs_operand(), node.get_rhs_operand());
+            break;
 
-            case TrackingState::RightMajor:
-                tracked_operands.emplace(node.get_rhs_operand(), node.get_lhs_operand());
-                break;
+        case TrackingState::RightMajor:
+            tracked_operands.emplace(node.get_rhs_operand(), node.get_lhs_operand());
+            break;
+
+        case TrackingState::NotTracking:
+            break;
         }
-#pragma clang diagnostic pop
     else
         // If we're not a child candidate, we mark the end of any chain. Stop the tracking here.
         tracking_state = TrackingState::NotTracking;

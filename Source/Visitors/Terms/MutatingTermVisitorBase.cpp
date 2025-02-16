@@ -4,7 +4,7 @@
  */
 
 /**
- * @file MutatingTermVisitorBase.cpp
+ * @file
  * @brief Class implementation for the Mutating Term Visitor base class.
  * @author Oliver Dixon
  * @date 2024-11-30

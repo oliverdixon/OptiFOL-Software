@@ -1,8 +1,0 @@
-<component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="All in FOLParserTest.cpp" type="CMakeGoogleTestRunConfigurationType" factoryName="Google Test" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="OptiFOL" TARGET_NAME="OptiFOLTesting" CONFIG_NAME="DebugIWYU" RUN_TARGET_PROJECT_NAME="OptiFOL" RUN_TARGET_NAME="OptiFOLTesting" TEST_PATTERN="all-tests(file://$PROJECT_DIR$/Tests/FOLParserTest.cpp)" TEST_MODE="PATTERN">
-    <method v="2">
-      <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
-      <option name="BeforeTestRunTask" enabled="true" />
-    </method>
-  </configuration>
-</component>

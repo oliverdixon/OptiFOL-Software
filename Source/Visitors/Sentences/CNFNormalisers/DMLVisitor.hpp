@@ -4,7 +4,7 @@
  */
 
 /**
- * @file DMLVisitor.hpp
+ * @file
  * @brief Class specification for the De Morgan's Laws Visitor and its associated rule set.
  * @author Oliver Dixon
  * @date 2024-11-27
@@ -163,4 +163,4 @@ private:
 
 }
 
-#endif //OPTIFOL_DMLVISITOR_HPP
+#endif

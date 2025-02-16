@@ -4,7 +4,7 @@
  */
 
 /**
- * @file JSONSerialiserVisitor.hpp
+ * @file
  * @brief Class specification for the JSON-serialising observing visitor.
  * @author Oliver Dixon
  * @date 2024-11-29
@@ -14,7 +14,7 @@
 #ifndef OPTIFOL_JSONSERIALISERVISITOR_HPP
 #define OPTIFOL_JSONSERIALISERVISITOR_HPP
 
-#include <sstream>
+#include <nlohmann/json.hpp>
 
 #include "../IObservingSentenceVisitor.hpp"
 
@@ -28,8 +28,6 @@ class JSONSerialiserVisitor:
         public IObservingSentenceVisitor
 {
 public:
-    using OutT = std::string;
-
     void visit(const QuantifiedSentenceNode& node) override;
 
     void visit(const ConnectedSentenceNode& node) override;
@@ -42,12 +40,10 @@ public:
 
     void visit(const PredicationNode& node) override;
 
-    std::any extract() const override;
-
-    void reset() override;
+    [[nodiscard]] nlohmann::json extract();
 
 private:
-    std::ostringstream output_stream;
+    nlohmann::json output;
 
     [[nodiscard]] static const char *get_operator_symbol(BinaryOperatorTypes type);
 
@@ -56,4 +52,4 @@ private:
 
 }
 
-#endif //OPTIFOL_JSONSERIALISERVISITOR_HPP
+#endif

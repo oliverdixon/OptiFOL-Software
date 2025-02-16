@@ -33,4 +33,4 @@ private:
 
 }
 
-#endif //OPTIFOL_NEGATEDSENTENCENODE_HPP
+#endif

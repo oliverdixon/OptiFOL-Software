@@ -29,4 +29,4 @@ public:
 
 }
 
-#endif //OPTIFOL_NODEPROXY_HPP
+#endif

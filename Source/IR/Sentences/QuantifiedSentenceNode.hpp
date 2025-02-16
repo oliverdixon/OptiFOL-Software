@@ -52,4 +52,4 @@ private:
 
 }
 
-#endif //OPTIFOL_QUANTIFIEDSENTENCENODE_HPP
+#endif

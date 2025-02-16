@@ -35,4 +35,4 @@ public:
 
 }
 
-#endif //OPTIFOL_PREDICATIONNODE_HPP
+#endif

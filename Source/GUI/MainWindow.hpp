@@ -36,4 +36,4 @@ private:
 
 }
 
-#endif //OPTIFOL_MAINWINDOW_HPP
+#endif

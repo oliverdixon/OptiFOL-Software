@@ -28,4 +28,4 @@ public:
 
 }
 
-#endif //OPTIFOL_ISENTENCENODE_HPP
+#endif

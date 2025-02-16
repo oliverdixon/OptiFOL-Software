@@ -4,7 +4,7 @@
  */
 
 /**
- * @file TextSerialiserVisitor.cpp
+ * @file
  * @brief Class implementation for the text-serialising observing visitor.
  * @author Oliver Dixon
  * @date 2024-11-29
@@ -73,39 +73,36 @@ void TextSerialiserVisitor::visit(const PredicationNode &node)
     output_stream << ')';
 }
 
-std::any TextSerialiserVisitor::extract() const
+std::string TextSerialiserVisitor::extract()
 {
-    return output_stream.str();
-}
-
-void TextSerialiserVisitor::reset()
-{
+    auto str = output_stream.str();
     std::ostringstream().swap(output_stream);
+    return str;
 }
 
 const char *TextSerialiserVisitor::get_operator_symbol(BinaryOperatorTypes type)
 {
     switch (type) {
-        case BinaryOperatorTypes::Conjunction:
-            return " & ";
-        case BinaryOperatorTypes::Disjunction:
-            return " | ";
-        case BinaryOperatorTypes::Implication:
-            return " => ";
-        case BinaryOperatorTypes::Biconditional:
-            return " <=> ";
-        case BinaryOperatorTypes::None:
-            return " ? ";
+    case BinaryOperatorTypes::Conjunction:
+        return " & ";
+    case BinaryOperatorTypes::Disjunction:
+        return " | ";
+    case BinaryOperatorTypes::Implication:
+        return " => ";
+    case BinaryOperatorTypes::Biconditional:
+        return " <=> ";
+    case BinaryOperatorTypes::None:
+        return " ? ";
     }
 }
 
 const char *TextSerialiserVisitor::get_operator_symbol(QuantifierTypes type)
 {
     switch (type) {
-        case QuantifierTypes::Universal:
-            return "ForAll ";
-        case QuantifierTypes::Existential:
-            return "ThereExists ";
+    case QuantifierTypes::Universal:
+        return "ForAll ";
+    case QuantifierTypes::Existential:
+        return "ThereExists ";
     }
 }
 

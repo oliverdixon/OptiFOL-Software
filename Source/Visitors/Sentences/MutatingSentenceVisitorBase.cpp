@@ -4,7 +4,7 @@
  */
 
 /**
- * @file MutatingSentenceVisitorBase.cpp
+ * @file
  * @brief Class implementation for the Mutating Sentence Visitor base class.
  * @author Oliver Dixon
  * @date 2024-11-24

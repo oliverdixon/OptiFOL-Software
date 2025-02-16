@@ -44,4 +44,4 @@ private:
 
 }
 
-#endif //OPTIFOL_APPLICATION_HPP
+#endif

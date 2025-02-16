@@ -4,7 +4,7 @@
  */
 
 /**
- * @file TermResolutionVisitor.hpp
+ * @file
  * @brief Class specification for the Term-Resolution Visitor and its associated rule set.
  * @author Oliver Dixon
  * @date 2024-11-30
@@ -47,4 +47,4 @@ private:
 
 }
 
-#endif //OPTIFOL_TERMRESOLUTIONVISITOR_HPP
+#endif

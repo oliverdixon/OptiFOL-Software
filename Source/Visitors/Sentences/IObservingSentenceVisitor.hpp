@@ -4,7 +4,7 @@
  */
 
 /**
- * @file IObservingSentenceVisitor.hpp
+ * @file
  * @brief Interface specification for the sentence-observing visitor.
  * @author Oliver Dixon
  * @date 2024-11-29
@@ -13,8 +13,6 @@
 
 #ifndef OPTIFOL_IOBSERVINGSENTENCEVISITOR_HPP
 #define OPTIFOL_IOBSERVINGSENTENCEVISITOR_HPP
-
-#include <any>
 
 namespace optifol
 {
@@ -42,12 +40,8 @@ public:
     virtual void visit(const IdentitySentenceNode& node) = 0;
 
     virtual void visit(const PredicationNode& node) = 0;
-
-    [[nodiscard]] virtual std::any extract() const = 0;
-
-    virtual void reset() = 0;
 };
 
 }
 
-#endif //OPTIFOL_IOBSERVINGSENTENCEVISITOR_HPP
+#endif

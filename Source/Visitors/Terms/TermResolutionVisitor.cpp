@@ -4,7 +4,7 @@
  */
 
 /**
- * @file TermResolutionVisitor.cpp
+ * @file
  * @brief Class implementation for the Term-Resolution Visitor and its associated rule set.
  * @author Oliver Dixon
  * @date 2024-11-30
@@ -14,7 +14,7 @@
 #include "TermResolutionVisitor.hpp"
 #include "../../IR/Terms/FunctionNode.hpp"
 #include "../../IR/Terms/VariableNode.hpp"
-#include "../../SemanticException.hpp"
+#include "../../Exceptions/SemanticException.hpp"
 
 namespace optifol
 {

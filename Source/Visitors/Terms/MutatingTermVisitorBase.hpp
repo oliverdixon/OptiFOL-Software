@@ -4,7 +4,7 @@
  */
 
 /**
- * @file MutatingTermVisitorBase.hpp
+ * @file
  * @brief Class specification for the Mutating Term Visitor base class.
  * @author Oliver Dixon
  * @date 2024-11-30
@@ -35,4 +35,4 @@ public:
 
 }
 
-#endif //OPTIFOL_MUTATINGTERMVISITORBASE_HPP
+#endif

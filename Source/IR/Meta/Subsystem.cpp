@@ -4,17 +4,14 @@
  */
 
 
-
-#ifndef GROUP_HPP
-#define GROUP_HPP
+#include "Subsystem.hpp"
 
 namespace optifol
 {
 
-class Group
+Subsystem::Subsystem(std::string &&name):
+    name(std::move(name))
 {
-};
+}
 
-} // optifol
-
-#endif
+}

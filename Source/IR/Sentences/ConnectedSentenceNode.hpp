@@ -49,4 +49,4 @@ public:
 
 }
 
-#endif //OPTIFOL_CONNECTEDSENTENCENODE_HPP
+#endif

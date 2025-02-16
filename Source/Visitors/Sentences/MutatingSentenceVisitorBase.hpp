@@ -4,7 +4,7 @@
  */
 
 /**
- * @file MutatingSentenceVisitorBase.hpp
+ * @file
  * @brief Class specification for the Mutating Sentence Visitor base class.
  * @author Oliver Dixon
  * @date 2024-12-01
@@ -83,4 +83,4 @@ public:
 
 }
 
-#endif //OPTIFOL_MUTATINGSENTENCEVISITORBASE_HPP
+#endif

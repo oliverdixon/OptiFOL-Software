@@ -22,15 +22,12 @@ endfunction()
 ## OptiFOL Generated Object Library ##
 ######################################
 
-# The "generated" object library controls the invocation of all code-generators required for OptiFOL. Namely: Flex
-# (lexer, generates C++), Bison (parser, generates C++), and glib-compile-resources (GResources blob, generates C). All
-# generated source translation units are placed in ${GENERATED_SRC_DIR}, and headers are placed in
-# ${GENERATED_INCLUDE_DIR}. Note that glib-compile-resources requires GTKMM for the headers only.
+# The "generated" object library controls the invocation of all non-GTK code-generators required for OptiFOL. Namely:
+# Flex (lexer, generates C++) and Bison (parser, generates C++). All generated source translation units are placed in
+# ${GENERATED_SRC_DIR}, and headers are placed in ${GENERATED_INCLUDE_DIR}.
 
 find_package(FLEX REQUIRED)
 find_package(BISON REQUIRED)
-find_program(GLIB_COMPILE_RESOURCES NAMES glib-compile-resources REQUIRED)
-pkg_check_modules(GTKMM REQUIRED gtkmm-4.0)
 
 set(GENERATED_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/include)
 set(GENERATED_SRC_DIR ${GENERATED_INCLUDE_DIR}/generated)
@@ -49,44 +46,21 @@ flex_target(FOLLexer
 
 add_flex_bison_dependency(FOLLexer FOLParser)
 
-set(RESOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Resources)
-set(RESOURCE_XML ${RESOURCE_DIR}/optifol.gresource.xml)
-set(RESOURCE_OUT ${GENERATED_SRC_DIR}/resources.c)
-set(RESOURCE_DEP ${GENERATED_SRC_DIR}/optifol.gresource.d)
-
-# The below command generates the 'resources.c' pseudo-blob with 'glib-compile-resources', containing octal
-# representations of GTK resources. This is later linked into the generated object target only. A Make-style depfile is
-# also created and retained in the generated sources root, using paths relative to the current binary directory, or
-# absolute paths, as required by the Ninja backend.
-add_custom_command(
-        OUTPUT ${RESOURCE_OUT}
-        MAIN_DEPENDENCY ${RESOURCE_XML}
-        DEPFILE ${RESOURCE_DEP}
-        VERBATIM
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} # Encourage glib-compile-resources to emit relative paths
-        BYPRODUCTS ${RESOURCE_DEP} # Don't let Ninja absorb the depfile into its internal database
-        COMMAND ${GLIB_COMPILE_RESOURCES}
-        ARGS
-        --generate-source
-        --generate-phony-targets # Individual resource files are not generated
-        --dependency-file=${RESOURCE_DEP}
-        --target=${RESOURCE_OUT}
-        --sourcedir=${RESOURCE_DIR}
-        ${RESOURCE_XML}
-        COMMAND sed -i "s|${CMAKE_CURRENT_BINARY_DIR}/||g" ${RESOURCE_DEP} # Clean up any paths that should be relative
-)
-
 add_library(OptiFOLGenerated OBJECT
-        ${RESOURCE_OUT}
         ${BISON_FOLParser_OUTPUTS}
         ${FLEX_FOLLexer_OUTPUTS}
 )
 
-# Flex, Bison, and glib-compile-resources generate all sorts of suspect melting pots of C and C++. It is assumed safe
-# and correct to suppress all compiler warnings produced by these programs, hence the grouping of all generated code
-# into a distinct CMake target.
+# Flex and Bison generate all sorts of suspect melting pots of C and C++. It is assumed safe and correct to suppress all
+# compiler warnings produced by these programs, hence the grouping of all generated code into a distinct CMake target.
 target_compile_options(OptiFOLGenerated PRIVATE -Wno-everything)
-target_include_directories(OptiFOLGenerated PRIVATE Source/Interpreter ${GENERATED_INCLUDE_DIR} ${GTKMM_INCLUDE_DIRS})
+target_include_directories(OptiFOLGenerated PRIVATE Source/Interpreter ${GENERATED_INCLUDE_DIR})
+
+set_source_files_properties(
+        ${BISON_FOLParser_OUTPUTS}
+        ${FLEX_FOLLexer_OUTPUTS}
+        PROPERTIES GENERATED TRUE
+)
 
 ###################################
 ## OptiFOL Common Object Library ##
@@ -130,7 +104,7 @@ add_library(OptiFOLCommon OBJECT
         Source/Visitors/Sentences/IObservingSentenceVisitor.hpp
         Source/Visitors/Sentences/CNFNormalisers/SymbolStandardisingVisitor.cpp
         Source/Visitors/Sentences/CNFNormalisers/SymbolStandardisingVisitor.hpp
-        Source/SemanticException.hpp
+        Source/Exceptions/SemanticException.hpp
         Source/Visitors/Terms/MutatingTermVisitorBase.hpp
         Source/Visitors/Terms/TermResolutionVisitor.cpp
         Source/Visitors/Terms/TermResolutionVisitor.hpp
@@ -142,13 +116,14 @@ add_library(OptiFOLCommon OBJECT
         Source/Visitors/Sentences/CNFNormalisers/SkolemIntroducingVisitor.hpp
         Source/IR/Meta/Solution.cpp
         Source/IR/Meta/Solution.hpp
-        Source/IR/Meta/Project.cpp
-        Source/IR/Meta/Project.hpp
-        Source/IR/Meta/Group.cpp
-        Source/IR/Meta/Group.hpp
+        Source/IR/Meta/Subsystem.cpp
+        Source/IR/Meta/Subsystem.hpp
         Source/IR/Meta/Requirement.cpp
         Source/IR/Meta/Requirement.hpp
         Source/Visitors/Meta/IObservingMetaVisitor.hpp
+        Source/Exceptions/ExceptionBase.cpp
+        Source/Exceptions/ExceptionBase.hpp
+        Source/Exceptions/SemanticException.cpp
 )
 
 target_link_libraries(OptiFOLCommon PRIVATE nlohmann_json::nlohmann_json)
@@ -157,7 +132,46 @@ target_link_libraries(OptiFOLCommon PRIVATE nlohmann_json::nlohmann_json)
 ## OptiFOL GUI Application Executable ##
 ########################################
 
+find_program(GLIB_COMPILE_RESOURCES NAMES glib-compile-resources REQUIRED)
+pkg_check_modules(GTKMM REQUIRED gtkmm-4.0)
+
+set(RESOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Resources)
+set(RESOURCE_XML ${RESOURCE_DIR}/optifol.gresource.xml)
+set(RESOURCE_OUT ${GENERATED_SRC_DIR}/resources.c)
+set(RESOURCE_DEP ${GENERATED_SRC_DIR}/optifol.gresource.d)
+
+# The below command generates the 'resources.c' pseudo-blob with 'glib-compile-resources', containing octal
+# representations of GTK resources. This is later linked into the GUI target only. A Make-style depfile is also created
+# and retained in the generated sources root, using paths relative to the current binary directory, or absolute paths,
+# as required by the Ninja backend.
+add_custom_command(
+        OUTPUT ${RESOURCE_OUT}
+        MAIN_DEPENDENCY ${RESOURCE_XML}
+        DEPFILE ${RESOURCE_DEP}
+        VERBATIM
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} # Encourage glib-compile-resources to emit relative paths
+        BYPRODUCTS ${RESOURCE_DEP} # Don't let Ninja absorb the depfile into its internal database
+        COMMAND ${GLIB_COMPILE_RESOURCES}
+        ARGS
+        --generate-source
+        --generate-phony-targets # Individual resource files are not generated
+        --dependency-file=${RESOURCE_DEP}
+        --target=${RESOURCE_OUT}
+        --sourcedir=${RESOURCE_DIR}
+        ${RESOURCE_XML}
+        COMMAND sed -i "s|${CMAKE_CURRENT_BINARY_DIR}/||g" ${RESOURCE_DEP} # Clean up any paths that should be relative
+)
+
+# Suppress compiler warnings known to be harmlessly invoked by glib-compile-resources translation units.
+set_source_files_properties(
+        ${RESOURCE_OUT}
+        PROPERTIES COMPILE_OPTIONS
+        "-Wno-overlength-strings;-Wno-reserved-macro-identifier;-Wno-unused-macros"
+)
+
 add_executable(OptiFOLGUI
+        ${RESOURCE_OUT}
+        Source/Driver.cpp
         Source/GUI/GUIDriver.cpp
         Source/GUI/MainWindow.cpp
         Source/GUI/MainWindow.hpp
@@ -166,27 +180,28 @@ add_executable(OptiFOLGUI
         Source/GUI/GTKHelpers.hpp
 )
 
-target_compile_definitions(OptiFOLGUI PRIVATE OPTIFOL_GUI)
-target_link_libraries(OptiFOLGUI PRIVATE OptiFOLCommon OptiFOLGenerated ${GTKMM_LIBRARIES})
-target_include_directories(OptiFOLGUI PRIVATE Source/Interpreter/)
-target_include_directories(OptiFOLGUI SYSTEM PRIVATE ${GTKMM_INCLUDE_DIRS})
-target_compile_options(OptiFOLGUI PRIVATE
+set(COMMON_COMPILER_OPTIONS
         -Weverything
         -Wno-unknown-pragmas # Support some IntelliJ IDEA in-line directives
         -Wno-c++98-compat
         -Wno-padded
         -Wno-c++98-compat-pedantic
-        -Wno-weak-vtables
         -Wno-switch-default
         -Wno-shadow-field-in-constructor
+        -Wno-weak-vtables
 )
+
+target_compile_definitions(OptiFOLGUI PRIVATE OPTIFOL_DISABLE_GUI)
+target_link_libraries(OptiFOLGUI PRIVATE OptiFOLCommon OptiFOLGenerated ${GTKMM_LIBRARIES})
+target_include_directories(OptiFOLGUI PRIVATE Source/Interpreter/ ${GENERATED_INCLUDE_DIR})
+target_include_directories(OptiFOLGUI SYSTEM PRIVATE ${GTKMM_INCLUDE_DIRS})
+target_compile_options(OptiFOLGUI PRIVATE ${COMMON_COMPILER_OPTIONS})
 
 utils_strip(OptiFOLGUI)
 
-###########################################
-## OptiFOL Google Test Suite Executable  ##
-## TODO: test suite needs updating       ##
-###########################################
+##########################################
+## OptiFOL Google Test Suite Executable ##
+##########################################
 
 include(FetchContent)
 include(GoogleTest)
@@ -210,5 +225,9 @@ add_executable(OptiFOLTesting
 target_include_directories(OptiFOLTesting PRIVATE Source/Interpreter/)
 target_include_directories(OptiFOLTesting SYSTEM PRIVATE ${GENERATED_INCLUDE_DIR})
 target_link_libraries(OptiFOLTesting PRIVATE OptiFOLCommon OptiFOLGenerated GTest::gtest_main)
-target_compile_options(OptiFOLTesting PRIVATE -Weverything)
+target_compile_options(OptiFOLTesting PRIVATE
+        ${COMMON_COMPILER_OPTIONS}
+        -Wno-global-constructors # GTest is known to generate declarations which require global constructors
+)
+
 gtest_discover_tests(OptiFOLTesting)

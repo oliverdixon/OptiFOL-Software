@@ -51,4 +51,4 @@ public:
 };
 }
 
-#endif //GTKHELPERS_HPP
+#endif

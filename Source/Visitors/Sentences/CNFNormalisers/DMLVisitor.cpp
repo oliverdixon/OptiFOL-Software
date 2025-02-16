@@ -4,7 +4,7 @@
  */
 
 /**
- * @file DMLVisitor.cpp
+ * @file
  * @brief Class implementation for the De Morgan's Laws Visitor and its associated rule set.
  * @author Oliver Dixon
  * @date 2024-11-27
@@ -167,12 +167,11 @@ void DMLVisitor::visit(NodeProxy &node)
             --pending_transformation.skip_node_count;
     }
 
-    auto &negative_layer = negative_context.top();
+    const auto &layer = negative_context.top();
 
-    if (negative_layer.negative_branch != nullptr) {
-        assert(negative_layer.positive_branch != nullptr);
-        node.sentence = (negative_context.top().is_positive) ? negative_layer.positive_branch :
-                        negative_layer.negative_branch;
+    if (layer.negative_branch != nullptr) {
+        assert(layer.positive_branch != nullptr);
+        node.sentence = layer.is_positive ? layer.positive_branch : layer.negative_branch;
         pending_transformation.pending_dml = node.sentence;
         pending_transformation.skip_node_count = 0;
     }

@@ -4,7 +4,7 @@
  */
 
 /**
- * @file ImplicationEliminationVisitor.hpp
+ * @file
  * @brief Class specification for the Implication-Elimination Visitor and its associated rule set.
  * @author Oliver Dixon
  * @date 2024-11-24
@@ -47,4 +47,4 @@ public:
 
 }
 
-#endif //OPTIFOL_IMPLICATIONELIMINATIONVISITOR_HPP
+#endif

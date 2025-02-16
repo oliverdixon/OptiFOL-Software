@@ -4,7 +4,7 @@
  */
 
 /**
- * @file SymbolStandardisingVisitor.hpp
+ * @file
  * @brief Class specification for the Symbol-Standardising Visitor and its associated rule set.
  * @author Oliver Dixon
  * @date 2024-12-01
@@ -126,4 +126,4 @@ private:
 
 }
 
-#endif //OPTIFOL_SYMBOLSTANDARDISINGVISITOR_HPP
+#endif

@@ -8,4 +8,4 @@
 #include "Solution.hpp"
 
 namespace optifol {
-} // optifol
+}

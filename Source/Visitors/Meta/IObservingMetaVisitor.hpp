@@ -15,6 +15,6 @@ class IObservingMetaVisitor
 {
 };
 
-} // optifol
+}
 
-#endif //IOBSERVINGMETAVISITOR_HPP
+#endif

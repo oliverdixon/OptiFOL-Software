@@ -4,7 +4,7 @@
  */
 
 /**
- * @file UniversalEliminationVisitor.hpp
+ * @file
  * @brief Class specification for the Universal-Elimination Visitor and its associated rule set.
  * @author Oliver Dixon
  * @date 2024-11-25
@@ -39,4 +39,4 @@ private:
 
 }
 
-#endif //OPTIFOL_UNIVERSALELIMINATIONVISITOR_HPP
+#endif

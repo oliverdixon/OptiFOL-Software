@@ -22,4 +22,4 @@ public:
 
 }
 
-#endif //OPTIFOL_EXISTENTIALSHIFTINGVISITOR_HPP
+#endif

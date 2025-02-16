@@ -42,4 +42,4 @@ private:
 
 }
 
-#endif //OPTIFOL_CONSTANTNODE_HPP
+#endif

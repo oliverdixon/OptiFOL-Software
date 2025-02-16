@@ -22,4 +22,4 @@ public:
 
 }
 
-#endif //OPTIFOL_SKOLEMINTRODUCINGVISITOR_HPP
+#endif

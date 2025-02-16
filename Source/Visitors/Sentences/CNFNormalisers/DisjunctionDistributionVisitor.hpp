@@ -4,7 +4,7 @@
  */
 
 /**
- * @file DisjunctionDistributionVisitor.hpp
+ * @file
  * @brief Class specification for the Disjunction-Distribution Visitor and its associated rule set.
  * @author Oliver Dixon
  * @date 2024-11-25
@@ -91,4 +91,4 @@ private:
 
 }
 
-#endif //OPTIFOL_DISJUNCTIONDISTRIBUTIONVISITOR_HPP
+#endif

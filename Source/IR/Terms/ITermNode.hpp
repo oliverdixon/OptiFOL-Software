@@ -29,4 +29,4 @@ public:
 
 }
 
-#endif //OPTIFOL_ITERMNODE_HPP
+#endif

@@ -50,4 +50,4 @@ private:
 
 }
 
-#endif //OPTIFOL_VARIABLENODE_HPP
+#endif

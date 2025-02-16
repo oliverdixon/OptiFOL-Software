@@ -4,7 +4,7 @@
  */
 
 /**
- * @file SymbolStandardisingVisitor.cpp
+ * @file
  * @brief Class implementation for the Symbol-Standardising Visitor and its associated rule set.
  * @author Oliver Dixon
  * @date 2024-12-01
@@ -14,7 +14,7 @@
 #include <cassert>
 
 #include "SymbolStandardisingVisitor.hpp"
-#include "../../../SemanticException.hpp"
+#include "../../../Exceptions/SemanticException.hpp"
 #include "../../../IR/Sentences/QuantifiedSentenceNode.hpp"
 #include "../../../IR/Sentences/PredicationNode.hpp"
 #include "../../../IR/Sentences/IdentitySentenceNode.hpp"
