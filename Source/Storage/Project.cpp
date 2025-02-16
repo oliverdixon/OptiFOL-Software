@@ -3,15 +3,13 @@
  * 2025 Oliver Dixon <od641@york.ac.uk>
  */
 
+//
+// Created by owd on 2/16/25.
+//
 
-#include "Subsystem.hpp"
+#include "Project.hpp"
 
 namespace optifol
 {
-
-Subsystem::Subsystem(std::string &&name):
-    name(std::move(name))
-{
-}
 
 }

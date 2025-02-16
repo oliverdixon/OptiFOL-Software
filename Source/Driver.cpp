@@ -3,7 +3,6 @@
  * 2025 Oliver Dixon <od641@york.ac.uk>
  */
 
-
 #ifdef OPTIFOL_DISABLE_GUI
 
 #include <array>
@@ -21,6 +20,8 @@
 
 #include "Visitors/Sentences/Serialisers/JSONSerialiserVisitor.hpp"
 #include "Visitors/Sentences/Serialisers/TextSerialiserVisitor.hpp"
+
+#include "Storage/PGDatabase.hpp"
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wexit-time-destructors"

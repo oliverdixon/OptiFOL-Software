@@ -67,6 +67,7 @@ set_source_files_properties(
 ###################################
 
 find_package(nlohmann_json 3.11.3 REQUIRED)
+pkg_check_modules(PQXX REQUIRED libpqxx)
 
 add_library(OptiFOLCommon OBJECT
         Source/Interpreter/FOLLexer.hpp
@@ -114,19 +115,18 @@ add_library(OptiFOLCommon OBJECT
         Source/Visitors/Sentences/CNFNormalisers/ExistentialShiftingVisitor.hpp
         Source/Visitors/Sentences/CNFNormalisers/SkolemIntroducingVisitor.cpp
         Source/Visitors/Sentences/CNFNormalisers/SkolemIntroducingVisitor.hpp
-        Source/IR/Meta/Solution.cpp
-        Source/IR/Meta/Solution.hpp
-        Source/IR/Meta/Subsystem.cpp
-        Source/IR/Meta/Subsystem.hpp
-        Source/IR/Meta/Requirement.cpp
-        Source/IR/Meta/Requirement.hpp
-        Source/Visitors/Meta/IObservingMetaVisitor.hpp
         Source/Exceptions/ExceptionBase.cpp
         Source/Exceptions/ExceptionBase.hpp
         Source/Exceptions/SemanticException.cpp
+        Source/Storage/Project.cpp
+        Source/Storage/Project.hpp
+        Source/Exceptions/StorageExceptionBase.cpp
+        Source/Exceptions/StorageExceptionBase.hpp
+        Source/Exceptions/StorageConnectionException.cpp
+        Source/Exceptions/StorageConnectionException.hpp
 )
 
-target_link_libraries(OptiFOLCommon PRIVATE nlohmann_json::nlohmann_json)
+target_link_libraries(OptiFOLCommon PRIVATE nlohmann_json::nlohmann_json pqxx)
 
 ########################################
 ## OptiFOL GUI Application Executable ##
@@ -178,6 +178,9 @@ add_executable(OptiFOLGUI
         Source/GUI/Application.cpp
         Source/GUI/Application.hpp
         Source/GUI/GTKHelpers.hpp
+        Source/Storage/PGDatabase.cpp
+        Source/Storage/PGDatabase.hpp
+        Source/Storage/IStorageController.hpp
 )
 
 set(COMMON_COMPILER_OPTIONS
@@ -191,7 +194,7 @@ set(COMMON_COMPILER_OPTIONS
         -Wno-weak-vtables
 )
 
-target_compile_definitions(OptiFOLGUI PRIVATE OPTIFOL_DISABLE_GUI)
+# target_compile_definitions(OptiFOLGUI PRIVATE OPTIFOL_DISABLE_GUI)
 target_link_libraries(OptiFOLGUI PRIVATE OptiFOLCommon OptiFOLGenerated ${GTKMM_LIBRARIES})
 target_include_directories(OptiFOLGUI PRIVATE Source/Interpreter/ ${GENERATED_INCLUDE_DIR})
 target_include_directories(OptiFOLGUI SYSTEM PRIVATE ${GTKMM_INCLUDE_DIRS})

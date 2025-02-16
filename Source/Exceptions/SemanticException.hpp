@@ -27,7 +27,7 @@ namespace optifol
  *  do not make meaningful sense in the present context. The most canonical usage would be to indicate a logical
  *  inconsistency in a requirement sentence according to the rules of FOL. See, for example, SymbolStandardisingVisitor.
  */
-class SemanticException :
+class SemanticException final :
         public ExceptionBase
 {
 public:
