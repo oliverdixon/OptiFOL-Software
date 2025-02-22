@@ -2,6 +2,9 @@
 /Data
 /Secret
 
-/.idea/workspace.xml
-/.idea/usage.statistics.xml
-/.idea/shelf
+/**/.idea/workspace.xml
+/**/.idea/usage.statistics.xml
+/**/.idea/shelf
+
+/Database/.idea/dataSources
+/Database/.idea/dataSources.local.xml

@@ -21,8 +21,6 @@
 #include "Visitors/Sentences/Serialisers/JSONSerialiserVisitor.hpp"
 #include "Visitors/Sentences/Serialisers/TextSerialiserVisitor.hpp"
 
-#include "Storage/PGDatabase.hpp"
-
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wexit-time-destructors"
 

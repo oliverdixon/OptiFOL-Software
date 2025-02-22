@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DdlMappings">
+    <mapping uuid="c1e8c2f0-98bd-4443-991d-115ad387e69e" name="optifol@localhost Mapping">
+      <data-sources db="e67f1c26-2d01-4296-9a3c-bbaec9d4c880" ddl="3f477a52-cfaf-461d-8d66-4f4734c6e2f9" />
+      <scope>
+        <node kind="database" qname="optifol">
+          <node kind="schema" qname="public" />
+        </node>
+      </scope>
+    </mapping>
+  </component>
+  <component name="SqlDataSourceStorage">
+    <option name="dataSources">
+      <list>
+        <State>
+          <option name="id" value="3f477a52-cfaf-461d-8d66-4f4734c6e2f9" />
+          <option name="name" value="OptiFOL Schema" />
+          <option name="dbmsName" value="POSTGRES" />
+          <option name="urls">
+            <array>
+              <option value="file://$PROJECT_DIR$/Schema" />
+            </array>
+          </option>
+          <option name="outLayout" value="File per object by schema.groovy" />
+        </State>
+      </list>
+    </option>
+  </component>
+</project>

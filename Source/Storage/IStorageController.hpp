@@ -36,7 +36,7 @@ public:
      * @return The list of all project names
      * @deprecated This will be replaced by a method to construct projects by way of a project factory
      */
-    [[nodiscard]] virtual std::vector<std::string> get_project_names() = 0;
+    [[nodiscard, deprecated]] virtual std::vector<std::string> get_project_names() = 0;
 };
 
 }
