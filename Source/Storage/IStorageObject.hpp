@@ -63,7 +63,13 @@ public:
      *  occur at approximately the same rate as a good hashing algorithm such as SHA256.
      * @return The object unique identifier
      */
-    [[nodiscard]] virtual std::size_t get_controller_id() const = 0;
+    [[nodiscard]] virtual std::size_t get_controller_id() const noexcept = 0;
+};
+
+template<typename T>
+concept StorableType = requires(T a)
+{
+    std::derived_from<T, IStorageObject>;
 };
 
 }

@@ -130,9 +130,14 @@ add_library(OptiFOLCommon OBJECT
         Source/Storage/Subsystem.cpp
         Source/Storage/Subsystem.hpp
         Source/Storage/IStorageObject.hpp
+        Source/Storage/INotificationReceiver.hpp
+        Source/Storage/NotificationPayload.hpp
         Source/Storage/PGNotificationReceiver.cpp
         Source/Storage/PGNotificationReceiver.hpp
-        Source/Storage/PGStorageContainer.hpp
+        Source/Exceptions/BadStorageNotificationException.cpp
+        Source/Exceptions/BadStorageNotificationException.hpp
+        Source/Storage/ProjectHashFunctor.cpp
+        Source/Storage/ProjectHashFunctor.hpp
 )
 
 target_link_libraries(OptiFOLCommon PRIVATE nlohmann_json::nlohmann_json pqxx)

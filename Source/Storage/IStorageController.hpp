@@ -39,6 +39,15 @@ public:
      *  similarly implementation-defined.
      */
     virtual void update() = 0;
+
+    // TODO document
+    virtual void load_project(std::size_t id) = 0;
+
+    // TODO document
+    virtual void reload_project(std::size_t id) = 0;
+
+    // TODO document
+    virtual void unload_project(std::size_t id) = 0;
 };
 
 }

@@ -15,11 +15,12 @@
 #define PGDATABASECONTROLLER_HPP
 
 #include <string>
+#include <unordered_set>
 
 #include "IStorageController.hpp"
-#include "PGStorageContainer.hpp"
+#include "PGNotificationReceiver.hpp"
 #include "Project.hpp"
-#include "Subsystem.hpp"
+#include "ProjectHashFunctor.hpp"
 
 namespace optifol
 {
@@ -49,11 +50,20 @@ public:
 
     void update() override;
 
+    void load_project(std::size_t id) override;
+
+    void reload_project(std::size_t id) override;
+
+    void unload_project(std::size_t id) override;
+
 private:
     std::optional<pqxx::connection> connection;
 
-    std::optional<PGStorageContainer<Project>> project_container;
-    std::optional<PGStorageContainer<Subsystem>> subsystem_container;
+    std::optional<PGNotificationReceiver> project_insert_rx;
+    std::optional<PGNotificationReceiver> project_update_rx;
+    std::optional<PGNotificationReceiver> project_delete_rx;
+
+    std::unordered_set<Project, ProjectHashFunctor, std::equal_to<>> project_cache;
 };
 
 }

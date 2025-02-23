@@ -3,48 +3,58 @@
  * 2025 Oliver Dixon <od641@york.ac.uk>
  */
 
-/**
- * @file
- * @brief Class implementation for the generic PostgreSQL NOTIFY--LISTEN receiver.
- * @author Oliver Dixon
- * @date 2025-02-23
- * @version Development
- */
-
-#include <iostream>
-
 #include "PGNotificationReceiver.hpp"
+#include "../Exceptions/BadStorageNotificationException.hpp"
 
 namespace optifol
 {
+
 PGNotificationReceiver::PGNotificationReceiver(pqxx::connection &connection,
-                                               const std::string_view target_entity,
-                                               Action action) :
-    pqxx::notification_receiver(connection, construct_channel_name(target_entity, action))
+                                         const std::string_view entity,
+                                         const NotificationPayload::PayloadType payload_type):
+    pqxx::notification_receiver(connection, construct_channel_name(entity, payload_type)),
+    payload_type(payload_type)
 {
 }
 
-void PGNotificationReceiver::operator()(const std::string &payload, const int backend_pid)
+void PGNotificationReceiver::operator()(const std::string &payload, int backend_pid)
 {
-    std::cout <<
-        "Notification received from PID " << std::to_string(backend_pid) <<
-        " on channel '" << channel() <<
-        "' with payload '"<< payload << '\'' <<
-    std::endl; // TODO: this is just for testing; we need to flush here for GTK.
+    std::size_t target_id;
+
+    try {
+        target_id = std::stoul(payload);
+    } catch (const std::invalid_argument& exception) {
+        throw BadStorageNotificationException(exception.what());
+    } catch (const std::out_of_range& exception) {
+        throw BadStorageNotificationException(exception.what());
+    }
+
+    payloads.emplace_front(target_id);
 }
 
-std::string PGNotificationReceiver::construct_channel_name(const std::string_view entity, const Action action)
+std::optional<NotificationPayload> PGNotificationReceiver::consume()
+{
+    if (payloads.empty())
+        return {};
+
+    auto latest_payload = payloads.front();
+    payloads.pop_front();
+    return latest_payload;
+}
+
+std::string PGNotificationReceiver::construct_channel_name(const std::string_view entity,
+                                                           const NotificationPayload::PayloadType payload_type)
 {
     std::string action_string;
 
-    switch (action) {
-    case Action::Insert:
+    switch (payload_type) {
+    case NotificationPayload::PayloadType::Insert:
+        action_string = "_insert";
+        break;
+    case NotificationPayload::PayloadType::Update:
         action_string = "_update";
         break;
-    case Action::Update:
-        action_string = "_update";
-        break;
-    case Action::Delete:
+    case NotificationPayload::PayloadType::Delete:
         action_string = "_delete";
         break;
     }

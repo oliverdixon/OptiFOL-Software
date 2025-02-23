@@ -9,12 +9,12 @@ VALUES ('Astute'),
        ('Dreadnought');
 
 INSERT INTO subsystem (project_id, name)
-VALUES (8, 'Sonar'),
-       (8, 'Comms'),
-       (8, 'Propulsion'),
-       (9, 'Sonar'),
-       (9, 'Comms'),
-       (9, 'Propulsion'),
-       (10, 'Sonar'),
-       (10, 'Comms'),
-       (10, 'Propulsion');
+VALUES (12, 'Sonar'),
+       (12, 'Comms'),
+       (12, 'Propulsion'),
+       (13, 'Sonar'),
+       (13, 'Comms'),
+       (13, 'Propulsion'),
+       (14, 'Sonar'),
+       (14, 'Comms'),
+       (14, 'Propulsion');
