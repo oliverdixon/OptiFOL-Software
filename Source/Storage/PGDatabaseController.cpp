@@ -21,13 +21,15 @@ PGDatabaseController::PGDatabaseController(const std::string& db_uri)
 {
     try {
         connection.emplace(db_uri);
-        notification_receiver.emplace(*connection, "test_channel");
+        project_container.emplace(*connection, "project");
+        subsystem_container.emplace(*connection, "subsystem");
     } catch (const pqxx::failure &exception) {
         throw StorageConnectionException(exception.what());
     }
 
     assert(connection.has_value());
-    assert(notification_receiver.has_value());
+    assert(project_container.has_value());
+    assert(subsystem_container.has_value());
 }
 
 PGDatabaseController::~PGDatabaseController()

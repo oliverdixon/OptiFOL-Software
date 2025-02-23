@@ -29,13 +29,21 @@ class PGNotificationReceiver :
         public pqxx::notification_receiver
 {
 public:
+    enum class Action
+    {
+        Insert,
+        Update,
+        Delete
+    };
+
     /**
      * @brief Creates a new notification receiver and registers it on the database to listen for messages on the
      *  specified channel
      * @param connection The PostgreSQL DB connection on which to register the RX
-     * @param channel The channel on which to listen
+     * @param target_entity The name of the entity from which the notification should originate
+     * @param action The type of action to listen for
      */
-    PGNotificationReceiver(pqxx::connection& connection, const std::string& channel);
+    PGNotificationReceiver(pqxx::connection& connection, std::string_view target_entity, Action action);
 
     /**
      * @brief Actions the notification at the front of the message queue
@@ -46,6 +54,9 @@ public:
      *  of payload contents.
      */
     void operator()(const std::string& payload, int backend_pid) override;
+
+private:
+    static std::string construct_channel_name(std::string_view entity, Action action);
 };
 
 }
