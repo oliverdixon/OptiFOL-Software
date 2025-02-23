@@ -31,19 +31,23 @@ public:
      * @brief Construct a new OptiFOL exception from a C++ string message.
      * @param message Message describing the cause of the exception
      */
-    explicit ExceptionBase(const std::string& message);
+    explicit ExceptionBase(const std::string& message):
+        std::runtime_error(prefix + message)
+    { }
 
     /**
      * @brief Construct a new SemanticException from a C-style string message.
      * @param message Message describing the cause of the SemanticException
      */
-    explicit ExceptionBase(const char* message);
+    explicit ExceptionBase(const char* message):
+        std::runtime_error(std::string(prefix) + message)
+    { }
 
 private:
     /**
      * @brief The prefix string to prepend to all OptiFOL exception messages
      */
-    static const std::string prefix;
+    static const char * prefix;
 };
 
 }

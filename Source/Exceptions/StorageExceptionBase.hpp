@@ -5,7 +5,7 @@
 
 /**
  * @file
- * @brief Class specification of base for storage exceptions
+ * @brief Class definition of base for storage exceptions
  * @author Oliver Dixon
  * @date 2025-02-16
  * @version Development
@@ -30,18 +30,22 @@ public:
     /**
      * @copydoc ExceptionBase::ExceptionBase(const std::string&)
      */
-    explicit StorageExceptionBase(const std::string& message);
+    explicit StorageExceptionBase(const std::string& message):
+        ExceptionBase(prefix + message)
+    { }
 
     /**
      * @copydoc ExceptionBase::ExceptionBase(const char *)
      */
-    explicit StorageExceptionBase(const char* message);
+    explicit StorageExceptionBase(const char* message):
+        ExceptionBase(std::string(prefix) + message)
+    { }
 
 private:
     /**
      * @brief The prefix string to prepend to all Storage Exception messages
      */
-    static const std::string prefix;
+    static const char * prefix;
 };
 
 }

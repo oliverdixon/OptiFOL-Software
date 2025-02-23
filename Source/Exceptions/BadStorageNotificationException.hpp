@@ -3,6 +3,14 @@
  * 2025 Oliver Dixon <od641@york.ac.uk>
  */
 
+/**
+ * @file
+ * @brief Class definition of the bad storage notification exception
+ * @author Oliver Dixon
+ * @date 2025-02-23
+ * @version Development
+ */
+
 #ifndef BADSTORAGENOTIFICATIONEXCEPTION_HPP
 #define BADSTORAGENOTIFICATIONEXCEPTION_HPP
 
@@ -11,16 +19,37 @@
 namespace optifol
 {
 
-class BadStorageNotificationException :
+/**
+ * @class BadStorageNotificationException
+ * @brief The bad storage notification exception expresses that an invalid notification was provided by the storage
+ *  backend
+ * @see INotificationReceiver
+ * @see NotificationPayload
+ */
+class BadStorageNotificationException final :
         public StorageExceptionBase
 {
 public:
-    explicit BadStorageNotificationException(const std::string &message);
+    /**
+     * @copydoc StorageExceptionBase::StorageExceptionBase(const std::string&)
+     */
+    explicit BadStorageNotificationException(const std::string &message):
+        StorageExceptionBase(prefix + message)
+    { }
 
-    explicit BadStorageNotificationException(const char *message);
+
+    /**
+     * @copydoc StorageExceptionBase::StorageExceptionBase(const char *)
+     */
+    explicit BadStorageNotificationException(const char *message):
+        StorageExceptionBase(std::string(prefix) + message)
+    { }
 
 private:
-    static const std::string prefix;
+    /**
+     * @brief The prefix string to prepend to all bad storage notification error messages
+     */
+    static const char * prefix;
 };
 
 }

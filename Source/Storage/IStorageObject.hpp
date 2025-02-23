@@ -64,6 +64,18 @@ public:
      * @return The object unique identifier
      */
     [[nodiscard]] virtual std::size_t get_controller_id() const noexcept = 0;
+
+    /**
+     * @brief Determines simple equality with the storage object of ID
+     * @param other_id The ID of the other storable object
+     * @return Are the objects equal by ID?
+     * @warning This is provided to aid with C++14/17 transparent lookup with STL unordered associative containers,
+     *  such that std::equal_to<> is at liberty to perform type deduction as the third template argument to
+     *  std::unordered_set, et al. An uninformed client may unknowingly use this comparator to establish equality
+     *  between semantically distinct objects; i.e. a project with ID <pre>N</pre> and a subsystem with ID <pre>N</pre>.
+     * @see StorageHashFunctor
+     */
+    virtual bool operator==(std::size_t other_id) const noexcept = 0;
 };
 
 template<typename T>

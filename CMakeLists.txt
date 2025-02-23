@@ -20,6 +20,10 @@ endfunction()
 
 ######################################
 ## OptiFOL Generated Object Library ##
+##                                  ##
+## Requires:                        ##
+##  - flex                          ##
+##  - bison                         ##
 ######################################
 
 # The "generated" object library controls the invocation of all non-GTK code-generators required for OptiFOL. Namely:
@@ -64,10 +68,16 @@ set_source_files_properties(
 
 ###################################
 ## OptiFOL Common Object Library ##
+##                               ##
+## Requires:                     ##
+##  - nlohmann::json >= 3.11.3   ##
+##  - libsigc++ >= 3.0           ##
+##  - libpqxx                    ##
 ###################################
 
 find_package(nlohmann_json 3.11.3 REQUIRED)
-pkg_check_modules(PQXX REQUIRED libpqxx)
+pkg_check_modules(sigcxx REQUIRED sigc++-3.0)
+pkg_check_modules(pqxx REQUIRED libpqxx)
 
 add_library(OptiFOLCommon OBJECT
         Source/Interpreter/FOLLexer.hpp
@@ -115,14 +125,10 @@ add_library(OptiFOLCommon OBJECT
         Source/Visitors/Sentences/CNFNormalisers/ExistentialShiftingVisitor.hpp
         Source/Visitors/Sentences/CNFNormalisers/SkolemIntroducingVisitor.cpp
         Source/Visitors/Sentences/CNFNormalisers/SkolemIntroducingVisitor.hpp
-        Source/Exceptions/ExceptionBase.cpp
         Source/Exceptions/ExceptionBase.hpp
-        Source/Exceptions/SemanticException.cpp
         Source/Storage/Project.cpp
         Source/Storage/Project.hpp
-        Source/Exceptions/StorageExceptionBase.cpp
         Source/Exceptions/StorageExceptionBase.hpp
-        Source/Exceptions/StorageConnectionException.cpp
         Source/Exceptions/StorageConnectionException.hpp
         Source/Storage/PGDatabaseController.cpp
         Source/Storage/PGDatabaseController.hpp
@@ -134,16 +140,23 @@ add_library(OptiFOLCommon OBJECT
         Source/Storage/NotificationPayload.hpp
         Source/Storage/PGNotificationReceiver.cpp
         Source/Storage/PGNotificationReceiver.hpp
-        Source/Exceptions/BadStorageNotificationException.cpp
         Source/Exceptions/BadStorageNotificationException.hpp
-        Source/Storage/ProjectHashFunctor.cpp
-        Source/Storage/ProjectHashFunctor.hpp
+        Source/Storage/StorageHashFunctor.hpp
+        Source/Exceptions/ExceptionPrefixes.cpp
 )
 
 target_link_libraries(OptiFOLCommon PRIVATE nlohmann_json::nlohmann_json pqxx)
 
+# libsigc++-3.0 libraries are poorly expressed on the filesystem, so we need to manually introspect pkg-config to
+# determine the correct include paths.
+target_include_directories(OptiFOLCommon PRIVATE ${sigcxx_INCLUDE_DIRS})
+
 ########################################
 ## OptiFOL GUI Application Executable ##
+##                                    ##
+## Requires:                          ##
+##  - glib-compile-resources          ##
+##  - gtkmm >= 4.0                    ##
 ########################################
 
 find_program(GLIB_COMPILE_RESOURCES NAMES glib-compile-resources REQUIRED)
@@ -215,6 +228,9 @@ utils_strip(OptiFOLGUI)
 
 ##########################################
 ## OptiFOL Google Test Suite Executable ##
+##                                      ##
+## Requires:                            ##
+##  - Google Test (acquired)            ##
 ##########################################
 
 include(FetchContent)

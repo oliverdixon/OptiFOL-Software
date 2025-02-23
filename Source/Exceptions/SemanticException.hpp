@@ -11,8 +11,8 @@
  * @version Development
  */
 
-#ifndef OPTIFOL_SEMANTICEXCEPTION_HPP
-#define OPTIFOL_SEMANTICEXCEPTION_HPP
+#ifndef SEMANTICEXCEPTION_HPP
+#define SEMANTICEXCEPTION_HPP
 
 #include "ExceptionBase.hpp"
 
@@ -22,7 +22,6 @@ namespace optifol
 /**
  * @class SemanticException
  * @brief The Semantic Exception expresses a logical/semantic error in the meaning of a requirement statement.
- *
  * @details The Semantic Exception can be used to express errors of a nature that, while syntactically unproblematic,
  *  do not make meaningful sense in the present context. The most canonical usage would be to indicate a logical
  *  inconsistency in a requirement sentence according to the rules of FOL. See, for example, SymbolStandardisingVisitor.
@@ -34,18 +33,22 @@ public:
     /**
      * @copydoc ExceptionBase::ExceptionBase(const std::string&)
      */
-    explicit SemanticException(const std::string& message);
+    explicit SemanticException(const std::string& message):
+        ExceptionBase(prefix + message)
+    { }
 
     /**
      * @copydoc ExceptionBase::ExceptionBase(const char *)
      */
-    explicit SemanticException(const char* message);
+    explicit SemanticException(const char* message):
+        ExceptionBase(std::string(prefix) + message)
+    { }
 
 private:
     /**
      * @brief The prefix string to prepend to all SemanticException messages
      */
-    static const std::string prefix;
+    static const char * prefix;
 };
 
 }

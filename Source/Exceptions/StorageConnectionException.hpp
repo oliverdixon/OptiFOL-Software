@@ -5,7 +5,7 @@
 
 /**
  * @file
- * @brief Class specification of the storage connection exception
+ * @brief Class definition of the storage connection exception
  * @author Oliver Dixon
  * @date 2025-02-16
  * @version Development
@@ -30,18 +30,22 @@ public:
     /**
      * @copydoc StorageExceptionBase::StorageExceptionBase(const std::string&)
      */
-    explicit StorageConnectionException(const std::string& message);
+    explicit StorageConnectionException(const std::string& message):
+        StorageExceptionBase(prefix + message)
+    { }
 
     /**
      * @copydoc StorageExceptionBase::StorageExceptionBase(const char *)
      */
-    explicit StorageConnectionException(const char* message);
+    explicit StorageConnectionException(const char* message):
+        StorageExceptionBase(std::string(prefix) + message)
+    { }
 
 private:
     /**
      * @brief The prefix string to prepend to all storage connection error messages
      */
-    static const std::string prefix;
+    static const char * prefix;
 };
 
 }

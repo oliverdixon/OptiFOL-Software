@@ -26,6 +26,7 @@ class Project :
         public IStorageObject
 {
 public:
+    // TODO: use std::chrono to parse SQL time strings. Defaulting here just for testing
     Project(std::size_t id, const std::string& name, const time_t& created_time = {},
         const time_t& last_modified_time = {});
 
@@ -43,9 +44,9 @@ public:
      * @return Is the current project the same as the other project?
      * @note This comparator determines equality by project metadata.
      */
-    bool operator==(const Project& other) const;
+    bool operator==(const Project& other) const noexcept;
 
-    bool operator==(std::size_t other_id) const;
+    bool operator==(std::size_t other_id) const noexcept override;
 
 private:
     const time_t created_time;

@@ -47,13 +47,13 @@ std::size_t Project::get_controller_id() const noexcept
     return id;
 }
 
-bool Project::operator==(const Project &other) const
+bool Project::operator==(const Project &other) const noexcept
 {
     return id == other.id && name == other.name && created_time == other.created_time &&
         last_modified_time == other.last_modified_time;
 }
 
-bool Project::operator==(std::size_t other_id) const
+bool Project::operator==(std::size_t other_id) const noexcept
 {
     return id == other_id;
 }

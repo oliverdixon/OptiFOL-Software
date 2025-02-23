@@ -11,10 +11,12 @@ namespace optifol
 
 PGNotificationReceiver::PGNotificationReceiver(pqxx::connection &connection,
                                          const std::string_view entity,
-                                         const NotificationPayload::PayloadType payload_type):
+                                         const NotificationPayload::PayloadType payload_type,
+                                         sigc::slot<signal_signature>&& signal_slot):
     pqxx::notification_receiver(connection, construct_channel_name(entity, payload_type)),
     payload_type(payload_type)
 {
+    signal_connection = signal.connect(std::move(signal_slot));
 }
 
 void PGNotificationReceiver::operator()(const std::string &payload, int backend_pid)
@@ -29,17 +31,7 @@ void PGNotificationReceiver::operator()(const std::string &payload, int backend_
         throw BadStorageNotificationException(exception.what());
     }
 
-    payloads.emplace_front(target_id);
-}
-
-std::optional<NotificationPayload> PGNotificationReceiver::consume()
-{
-    if (payloads.empty())
-        return {};
-
-    auto latest_payload = payloads.front();
-    payloads.pop_front();
-    return latest_payload;
+    signal.emit(NotificationPayload(target_id));
 }
 
 std::string PGNotificationReceiver::construct_channel_name(const std::string_view entity,

@@ -14,6 +14,8 @@
 #ifndef ISTORAGECONTROLLER_HPP
 #define ISTORAGECONTROLLER_HPP
 
+#include "NotificationPayload.hpp"
+
 namespace optifol
 {
 
@@ -41,13 +43,13 @@ public:
     virtual void update() = 0;
 
     // TODO document
-    virtual void load_project(std::size_t id) = 0;
+    virtual void load_project(const NotificationPayload& payload) = 0;
 
     // TODO document
-    virtual void reload_project(std::size_t id) = 0;
+    virtual void reload_project(const NotificationPayload& payload) = 0;
 
     // TODO document
-    virtual void unload_project(std::size_t id) = 0;
+    virtual void unload_project(const NotificationPayload& payload) = 0;
 };
 
 }
