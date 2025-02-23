@@ -29,9 +29,16 @@ public:
     using time_t = std::chrono::time_point<std::chrono::utc_clock>;
 
     /**
-     *
+     * @brief Destruct the storage object
+     * @todo What should be the semantic expression of this d'tor? Is it being removed from the cache, or storage?
      */
     virtual ~IStorageObject() = default;
+
+    /**
+     * @brief Gets the human-readable string identifier of the object
+     * @return The object human-readable string identifier
+     */
+    [[nodiscard]] virtual std::string get_identifier() const = 0;
 
     /**
      * @brief Gets the time at which the object was created
@@ -46,13 +53,6 @@ public:
      */
     [[nodiscard]] virtual time_t get_modified_time() const = 0;
 
-    /**
-     * @brief Gets the human-readable string identifier of the object
-     * @return The object human-readable string identifier
-     */
-    [[nodiscard]] virtual std::string get_identifier() const = 0;
-
-protected:
     /**
      * @brief Gets the controller-defined internal unique unsigned integer identifier for the object
      * @details For a relational database, this would typically be the primary key. Note that, in the case of an RDB,

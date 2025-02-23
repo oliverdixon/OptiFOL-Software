@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) All Rights Reserved
+ * 2025 Oliver Dixon <od641@york.ac.uk>
+ */
+
 CREATE TABLE project
 (
     id            INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,

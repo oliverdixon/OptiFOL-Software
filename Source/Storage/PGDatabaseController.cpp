@@ -11,6 +11,8 @@
  * @version Development
  */
 
+#include <pqxx/pqxx>
+
 #include "PGDatabaseController.hpp"
 #include "../Exceptions/StorageConnectionException.hpp"
 
@@ -30,6 +32,18 @@ PGDatabaseController::PGDatabaseController(const std::string& db_uri)
     assert(connection.has_value());
     assert(project_container.has_value());
     assert(subsystem_container.has_value());
+
+    pqxx::work tx{*connection};
+    const pqxx::result project_results = tx.exec("SELECT id, name, created_at, last_modified FROM project LIMIT " +
+        std::to_string(project_container->cachable_elements) + ';');
+
+    for (const auto& row : project_results)
+        project_container->cache.emplace(std::make_unique<Project>(
+            row[0].as<std::size_t>(),
+            row[1].as<std::string>()
+        ));
+
+    tx.commit();
 }
 
 PGDatabaseController::~PGDatabaseController()

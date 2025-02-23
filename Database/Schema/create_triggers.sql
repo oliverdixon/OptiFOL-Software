@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) All Rights Reserved
+ * 2025 Oliver Dixon <od641@york.ac.uk>
+ */
+
 -- TODO: I really doubt that this Cartesian product style of declaration is the best way to achieve this.
 
 CREATE FUNCTION notify_on_delete()

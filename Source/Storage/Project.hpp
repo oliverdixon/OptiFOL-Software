@@ -26,11 +26,24 @@ namespace optifol
 class Project :
         public IStorageObject
 {
+public:
+    Project(std::size_t id, const std::string& name, const time_t& created_time = {},
+        const time_t& last_modified_time = {});
+
+    [[nodiscard]] std::string get_identifier() const override;
+
+    [[nodiscard]] time_t get_creation_time() const override;
+
+    [[nodiscard]] time_t get_modified_time() const override;
+
+    [[nodiscard]] std::size_t get_controller_id() const override;
+
 private:
     const time_t created_time;
 
     time_t last_modified_time;
     std::string name;
+    std::size_t id;
 };
 
 }

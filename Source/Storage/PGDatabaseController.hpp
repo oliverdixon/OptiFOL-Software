@@ -15,10 +15,9 @@
 #define PGDATABASECONTROLLER_HPP
 
 #include <string>
-#include <unordered_set>
 
 #include "IStorageController.hpp"
-#include "PGNotificationReceiver.hpp"
+#include "PGStorageContainer.hpp"
 #include "Project.hpp"
 #include "Subsystem.hpp"
 
@@ -51,33 +50,10 @@ public:
     void update() override;
 
 private:
-    /**
-     * @class StorageContainer
-     * @brief A StorageContainer is a PG-specific convenient container within which a class of stored objects,
-     *  identifiable by their C++ type, may be maintained.
-     * @tparam ConcreteType The concrete storable object type maintained by the container
-     * @todo How can we reduce the coupling here, such that it's not dependent on the PGNotificationReceiver?
-     */
-    template<class ConcreteType>
-        requires std::derived_from<ConcreteType, IStorageObject>
-    struct StorageContainer
-    {
-        StorageContainer(pqxx::connection& connection, const std::string& entity_name):
-            insert_rx(connection, entity_name, PGNotificationReceiver::Action::Insert),
-            update_rx(connection, entity_name, PGNotificationReceiver::Action::Update),
-            delete_rx(connection, entity_name, PGNotificationReceiver::Action::Delete)
-        { }
-
-        std::unordered_set<std::unique_ptr<ConcreteType>> cache;
-
-        const PGNotificationReceiver insert_rx;
-        const PGNotificationReceiver update_rx;
-        const PGNotificationReceiver delete_rx;
-    };
-
     std::optional<pqxx::connection> connection;
-    std::optional<StorageContainer<Project>> project_container;
-    std::optional<StorageContainer<Subsystem>> subsystem_container;
+
+    std::optional<PGStorageContainer<Project>> project_container;
+    std::optional<PGStorageContainer<Subsystem>> subsystem_container;
 };
 
 }
