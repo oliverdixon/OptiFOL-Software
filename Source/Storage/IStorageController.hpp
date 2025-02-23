@@ -27,16 +27,18 @@ class IStorageController
 {
 public:
     /**
-     * @brief Destruct the storage controller
+     * @brief Destruct the storage controller, closing any held resources and/or external connections.
+     * @todo Any pending changes in the caches should be flushed here.
      */
     virtual ~IStorageController() = default;
 
     /**
-     * Retrieve a list of all project names from the loaded storage medium
-     * @return The list of all project names
-     * @deprecated This will be replaced by a method to construct projects by way of a project factory
+     * @brief Force the storage controller to perform an implementation-defined update.
+     * @warning The details of this member function are wholly implementation-defined; it may read from a message queue
+     *  over a socket and update files appropriately. It should not normally form a polling blocking loop, but this is
+     *  similarly implementation-defined.
      */
-    [[nodiscard, deprecated]] virtual std::vector<std::string> get_project_names() = 0;
+    virtual void update() = 0;
 };
 
 }

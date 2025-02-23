@@ -124,6 +124,14 @@ add_library(OptiFOLCommon OBJECT
         Source/Exceptions/StorageExceptionBase.hpp
         Source/Exceptions/StorageConnectionException.cpp
         Source/Exceptions/StorageConnectionException.hpp
+        Source/Storage/PGDatabaseController.cpp
+        Source/Storage/PGDatabaseController.hpp
+        Source/Storage/IStorageController.hpp
+        Source/Storage/Subsystem.cpp
+        Source/Storage/Subsystem.hpp
+        Source/Storage/IStorageObject.hpp
+        Source/Storage/PGNotificationReceiver.cpp
+        Source/Storage/PGNotificationReceiver.hpp
 )
 
 target_link_libraries(OptiFOLCommon PRIVATE nlohmann_json::nlohmann_json pqxx)
@@ -178,9 +186,6 @@ add_executable(OptiFOLGUI
         Source/GUI/Application.cpp
         Source/GUI/Application.hpp
         Source/GUI/GTKHelpers.hpp
-        Source/Storage/PGDatabase.cpp
-        Source/Storage/PGDatabase.hpp
-        Source/Storage/IStorageController.hpp
 )
 
 set(COMMON_COMPILER_OPTIONS

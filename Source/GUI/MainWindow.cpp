@@ -5,11 +5,9 @@
 
 #include "MainWindow.hpp"
 
-#include <iostream>
-
 #include "GTKHelpers.hpp"
 #include "../Exceptions/StorageConnectionException.hpp"
-#include "../Storage/PGDatabase.hpp"
+#include "../Storage/PGDatabaseController.hpp"
 
 namespace optifol
 {
@@ -19,6 +17,7 @@ MainWindow::MainWindow():
     scrolled_window(GTKHelpers::get_widget<Gtk::ScrolledWindow>("Main Window", builder, "scrolled_window")),
     directory_view(GTKHelpers::get_widget<Gtk::ListView>("Main Window", builder, "directory_view")),
     root_grid(GTKHelpers::get_widget<Gtk::Grid>("Main Window", builder, "root_grid")),
+    update_storage_button(GTKHelpers::get_widget<Gtk::Button>("Main Window", builder, "update_storage_button")),
     database_alert(GTKHelpers::get_object<Gtk::AlertDialog>("Main Window", builder, "database_alert"))
 {
     set_title("OptiFOL");
@@ -36,12 +35,8 @@ MainWindow::MainWindow():
     directory_view->set_factory(factory);
 
     try {
-        const std::unique_ptr<IStorageController> storage =
-            std::make_unique<PGDatabase>("postgresql://owd@localhost/optifol");
-
-        const auto project_names = storage->get_project_names();
-        for (const auto& name : project_names)
-            std::cout << name << std::endl; // TODO: just for testing!
+        storage = std::make_unique<PGDatabaseController>("postgresql://owd@localhost/optifol");
+        update_storage_button->signal_clicked().connect(sigc::mem_fun(*this, &MainWindow::on_update_storage));
     } catch (const StorageConnectionException& exception) {
         database_alert->set_detail(exception.what());
         database_alert->show(*this);
@@ -51,6 +46,11 @@ MainWindow::MainWindow():
 void MainWindow::on_setup_label(const Glib::RefPtr<Gtk::ListItem> &item)
 {
     item->set_child(*Gtk::make_managed<Gtk::Label>("", Gtk::Align::START));
+}
+
+void MainWindow::on_update_storage() const
+{
+    storage->update();
 }
 
 void MainWindow::on_bind_name(const Glib::RefPtr<Gtk::ListItem> &item) const

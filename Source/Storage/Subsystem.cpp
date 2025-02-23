@@ -5,13 +5,13 @@
 
 /**
  * @file
- * @brief Class implementation for the project-level storage object
+ * @brief Class implementation for the subsystem-level storage object
  * @author Oliver Dixon
  * @date 2025-02-22
  * @version Development
  */
 
-#include "Project.hpp"
+#include "Subsystem.hpp"
 
 namespace optifol
 {

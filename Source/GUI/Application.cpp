@@ -3,8 +3,6 @@
  * 2025 Oliver Dixon <od641@york.ac.uk>
  */
 
-
-
 #include <iostream>
 
 #include "Application.hpp"
