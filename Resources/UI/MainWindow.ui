@@ -33,7 +33,7 @@
         </child>
     </object>
     <object class="GtkAlertDialog" id="database_alert">
-        <property name="message">Could not establish database connection</property>
+        <property name="message">Backend Database Error</property>
         <property name="modal">TRUE</property>
     </object>
 </interface>

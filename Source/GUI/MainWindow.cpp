@@ -6,6 +6,7 @@
 #include "MainWindow.hpp"
 
 #include "GTKHelpers.hpp"
+#include "../Exceptions/BadStorageNotificationException.hpp"
 #include "../Exceptions/StorageConnectionException.hpp"
 #include "../Storage/PGDatabaseController.hpp"
 
@@ -48,9 +49,14 @@ void MainWindow::on_setup_label(const Glib::RefPtr<Gtk::ListItem> &item)
     item->set_child(*Gtk::make_managed<Gtk::Label>("", Gtk::Align::START));
 }
 
-void MainWindow::on_update_storage() const
+void MainWindow::on_update_storage()
 {
-    storage->update();
+    try {
+        storage->update();
+    } catch (const BadStorageNotificationException& exception) {
+        database_alert->set_detail(exception.what());
+        database_alert->show(*this);
+    }
 }
 
 void MainWindow::on_bind_name(const Glib::RefPtr<Gtk::ListItem> &item) const

@@ -22,7 +22,7 @@ public:
 private:
     static void on_setup_label(const Glib::RefPtr<Gtk::ListItem> &item);
 
-    void on_update_storage() const;
+    void on_update_storage();
 
     void on_bind_name(const Glib::RefPtr<Gtk::ListItem>& item) const;
 

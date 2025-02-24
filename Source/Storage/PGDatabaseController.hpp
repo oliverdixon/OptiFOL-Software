@@ -14,12 +14,13 @@
 #ifndef PGDATABASECONTROLLER_HPP
 #define PGDATABASECONTROLLER_HPP
 
+#include <queue>
+#include <simdjson.h>
 #include <string>
 #include <unordered_set>
-#include <sigc++-3.0/sigc++/trackable.h>
+#include <pqxx/connection>
 
 #include "IStorageController.hpp"
-#include "PGNotificationReceiver.hpp"
 #include "Project.hpp"
 #include "StorageHashFunctor.hpp"
 
@@ -31,8 +32,7 @@ namespace optifol
  * @brief The PGDatabaseController provides a PostgreSQL-based backend storage engine for OptiFOL
  */
 class PGDatabaseController :
-        public IStorageController,
-        public sigc::trackable
+        public IStorageController
 {
 public:
     /**
@@ -47,45 +47,34 @@ public:
     /**
      * @brief Close the database connection.
      * @todo We should close any open transactions here, and flush any changes in the locally cached storage objects.
-     * @note This hides the non-virtual ~sigc::trackable destructor, but it is not a problem in this case, as we would
-     *  never refer to a PGDatabaseController instance as a pointer to sigc::trackable.
      */
-    // ReSharper disable once CppHidingFunction
     ~PGDatabaseController() override;
 
+    /**
+     * @throws BadStorageNotificationException A propagation update was received from the DB, but it was malformed.
+     */
     void update() override;
 
-    void load_project(const NotificationPayload& payload) override;
-
-    void reload_project(const NotificationPayload& payload) override;
-
-    void unload_project(const NotificationPayload& payload) override;
-
 private:
-    template<StorableType Type>
-    struct Container
-    {
-        Container(pqxx::connection& connection,
-                  const std::string_view entity,
-                  sigc::slot<PGNotificationReceiver::signal_signature>&& insert_slot,
-                  sigc::slot<PGNotificationReceiver::signal_signature>&& update_slot,
-                  sigc::slot<PGNotificationReceiver::signal_signature>&& delete_slot):
-            insert_rx(connection, entity, NotificationPayload::PayloadType::Insert, std::move(insert_slot)),
-            update_rx(connection, entity, NotificationPayload::PayloadType::Update, std::move(update_slot)),
-            delete_rx(connection, entity, NotificationPayload::PayloadType::Delete, std::move(delete_slot))
-        { }
+    void load_projects();
 
-        std::unordered_set<Type, StorageHashFunctor<Type>, std::equal_to<>> cache;
+    void reload_projects();
 
-    private:
-        PGNotificationReceiver insert_rx;
-        PGNotificationReceiver update_rx;
-        PGNotificationReceiver delete_rx;
-    };
+    void unload_projects();
+
+    void despatch_json_change(std::string& payload);
+
+    std::string wal_slot_name{"test_slot"}; // TODO just for testing
+
+    simdjson::ondemand::parser json_parser;
 
     std::optional<pqxx::connection> connection;
 
-    std::optional<Container<Project>> project_container;
+    std::unordered_set<Project, StorageHashFunctor<Project>, std::equal_to<>> project_cache;
+
+    std::queue<std::size_t> project_load_queue;
+    std::queue<std::size_t> project_reload_queue;
+    std::queue<std::size_t> project_unload_queue;
 };
 
 }

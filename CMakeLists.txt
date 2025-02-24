@@ -2,6 +2,7 @@
 # Copyright (C) 2025 Oliver Dixon
 
 cmake_minimum_required(VERSION 3.7 FATAL_ERROR)
+include(FetchContent)
 project(OptiFOL)
 
 set(CMAKE_CXX_STANDARD 20)
@@ -73,11 +74,20 @@ set_source_files_properties(
 ##  - nlohmann::json >= 3.11.3   ##
 ##  - libsigc++ >= 3.0           ##
 ##  - libpqxx                    ##
+##  - simdjson >= 3 (acquired)   ##
 ###################################
 
 find_package(nlohmann_json 3.11.3 REQUIRED)
-pkg_check_modules(sigcxx REQUIRED sigc++-3.0)
 pkg_check_modules(pqxx REQUIRED libpqxx)
+FetchContent_Declare(
+        simdjson
+        GIT_REPOSITORY https://github.com/simdjson/simdjson.git
+        GIT_TAG  tags/v3.12.2
+        GIT_SHALLOW TRUE
+)
+
+FetchContent_MakeAvailable(simdjson)
+get_target_property(SIMDJSON_INCLUDE_DIR simdjson INTERFACE_INCLUDE_DIRECTORIES)
 
 add_library(OptiFOLCommon OBJECT
         Source/Interpreter/FOLLexer.hpp
@@ -136,20 +146,18 @@ add_library(OptiFOLCommon OBJECT
         Source/Storage/Subsystem.cpp
         Source/Storage/Subsystem.hpp
         Source/Storage/IStorageObject.hpp
-        Source/Storage/INotificationReceiver.hpp
-        Source/Storage/NotificationPayload.hpp
-        Source/Storage/PGNotificationReceiver.cpp
-        Source/Storage/PGNotificationReceiver.hpp
         Source/Exceptions/BadStorageNotificationException.hpp
         Source/Storage/StorageHashFunctor.hpp
         Source/Exceptions/ExceptionPrefixes.cpp
+        Source/Storage/WALJSONPGUpdateNotification.cpp
+        Source/Storage/WALJSONPGUpdateNotification.hpp
 )
 
-target_link_libraries(OptiFOLCommon PRIVATE nlohmann_json::nlohmann_json pqxx)
+target_link_libraries(OptiFOLCommon PRIVATE nlohmann_json::nlohmann_json pqxx simdjson)
 
 # libsigc++-3.0 libraries are poorly expressed on the filesystem, so we need to manually introspect pkg-config to
 # determine the correct include paths.
-target_include_directories(OptiFOLCommon PRIVATE ${sigcxx_INCLUDE_DIRS})
+target_include_directories(OptiFOLCommon SYSTEM PRIVATE ${sigcxx_INCLUDE_DIRS} ${SIMDJSON_INCLUDE_DIR})
 
 ########################################
 ## OptiFOL GUI Application Executable ##
@@ -221,7 +229,7 @@ set(COMMON_COMPILER_OPTIONS
 # target_compile_definitions(OptiFOLGUI PRIVATE OPTIFOL_DISABLE_GUI)
 target_link_libraries(OptiFOLGUI PRIVATE OptiFOLCommon OptiFOLGenerated ${GTKMM_LIBRARIES})
 target_include_directories(OptiFOLGUI PRIVATE Source/Interpreter/ ${GENERATED_INCLUDE_DIR})
-target_include_directories(OptiFOLGUI SYSTEM PRIVATE ${GTKMM_INCLUDE_DIRS})
+target_include_directories(OptiFOLGUI SYSTEM PRIVATE ${GTKMM_INCLUDE_DIRS} ${SIMDJSON_INCLUDE_DIR})
 target_compile_options(OptiFOLGUI PRIVATE ${COMMON_COMPILER_OPTIONS})
 
 utils_strip(OptiFOLGUI)
@@ -233,9 +241,7 @@ utils_strip(OptiFOLGUI)
 ##  - Google Test (acquired)            ##
 ##########################################
 
-include(FetchContent)
 include(GoogleTest)
-
 cmake_policy(SET CMP0135 NEW)
 
 FetchContent_Declare(
