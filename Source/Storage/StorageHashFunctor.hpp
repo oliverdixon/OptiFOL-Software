@@ -45,7 +45,7 @@ namespace optifol
  *  provided numerical ID
  * @tparam Type The concrete storable type for which a transparent-hashing functor should be templated
  */
-template<optifol::StorableType Type>
+template<StorableType Type>
 struct StorageHashFunctor
 {
     using hash_type = std::hash<Type>;

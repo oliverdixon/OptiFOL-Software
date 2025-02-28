@@ -26,7 +26,7 @@ namespace optifol
 class IStorageObject
 {
 public:
-    using time_t = std::chrono::time_point<std::chrono::utc_clock>;
+    using time_t = std::chrono::system_clock::time_point;
 
     /**
      * @brief Destruct the storage object

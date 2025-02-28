@@ -14,15 +14,12 @@
 #ifndef PGDATABASECONTROLLER_HPP
 #define PGDATABASECONTROLLER_HPP
 
-#include <queue>
 #include <simdjson.h>
 #include <string>
-#include <unordered_set>
 #include <pqxx/connection>
 
 #include "IStorageController.hpp"
-#include "Project.hpp"
-#include "StorageHashFunctor.hpp"
+#include "PGProjectCache.hpp"
 
 namespace optifol
 {
@@ -56,13 +53,7 @@ public:
     void update() override;
 
 private:
-    void load_projects();
-
-    void reload_projects();
-
-    void unload_projects();
-
-    void despatch_json_change(std::string& payload);
+    void despatch_json_change(std::string_view payload);
 
     std::string wal_slot_name{"test_slot"}; // TODO just for testing
 
@@ -70,11 +61,7 @@ private:
 
     std::optional<pqxx::connection> connection;
 
-    std::unordered_set<Project, StorageHashFunctor<Project>, std::equal_to<>> project_cache;
-
-    std::queue<std::size_t> project_load_queue;
-    std::queue<std::size_t> project_reload_queue;
-    std::queue<std::size_t> project_unload_queue;
+    std::optional<PGProjectCache> project_cache;
 };
 
 }

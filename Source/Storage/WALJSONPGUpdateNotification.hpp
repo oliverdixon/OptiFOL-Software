@@ -6,28 +6,32 @@
 #ifndef WALJSONPGUPDATENOTIFICATION_HPP
 #define WALJSONPGUPDATENOTIFICATION_HPP
 
-#include <optional>
-
-#include "IUpdateNotification.hpp"
-
 namespace optifol
 {
 
-class WALJSONPGUpdateNotification :
-        public IUpdateNotification
+class WALJSONPGUpdateNotification
 {
 public:
-    [[nodiscard]] Action get_action() const override;
+    enum class Action
+    {
+        NoOp,
+        Insert,
+        Update,
+        Delete
+    };
 
-    [[nodiscard]] Scope get_scope() const override;
+    enum class Scope
+    {
+        Empty,
+        Project,
+        Subsystem
+    };
 
-    [[nodiscard]] std::size_t get_id() const override;
+    std::size_t id;
 
-    std::optional<std::size_t> id;
+    Action action{Action::NoOp};
 
-    std::optional<Action> action;
-
-    std::optional<Scope> scope;
+    Scope scope{Scope::Empty};
 };
 
 }
@@ -38,24 +42,29 @@ namespace simdjson
 template<typename simdjson_value>
 error_code tag_invoke(deserialize_tag, simdjson_value &value, optifol::WALJSONPGUpdateNotification &payload)
 {
-    ondemand::object object;
-    value.get_object().get(object);
+    auto object = value.get_object();
+    const auto table_name = object["table"].get_string().value();
 
-    auto change_kind = object["kind"];
+    if (table_name == "project")
+        payload.scope = optifol::WALJSONPGUpdateNotification::Scope::Project;
+    else if (table_name == "subsystem")
+        payload.scope = optifol::WALJSONPGUpdateNotification::Scope::Subsystem;
+    else
+        return error_code::STRING_ERROR;
 
-    if (object["table"] == "project")
-        payload.scope = optifol::IUpdateNotification::Scope::Project;
+    const auto change_kind = object["kind"].get_string().value();
 
     if (change_kind == "insert") {
-        payload.action = optifol::IUpdateNotification::Action::Insert;
+        payload.action = optifol::WALJSONPGUpdateNotification::Action::Insert;
         payload.id = object["columnvalues"].at(0);
     } else if (change_kind == "update") {
-        payload.action = optifol::IUpdateNotification::Action::Update;
+        payload.action = optifol::WALJSONPGUpdateNotification::Action::Update;
         payload.id = object["columnvalues"].at(0);
     } else if (change_kind == "delete") {
-        payload.action = optifol::IUpdateNotification::Action::Delete;
+        payload.action = optifol::WALJSONPGUpdateNotification::Action::Delete;
         payload.id = object["oldkeys"]["keyvalues"].at(0);
-    }
+    } else
+        return error_code::STRING_ERROR;
 
     return error_code::SUCCESS;
 }

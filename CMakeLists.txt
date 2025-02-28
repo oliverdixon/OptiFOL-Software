@@ -73,12 +73,14 @@ set_source_files_properties(
 ## Requires:                     ##
 ##  - nlohmann::json >= 3.11.3   ##
 ##  - libsigc++ >= 3.0           ##
+##  - libpq                      ##
 ##  - libpqxx                    ##
 ##  - simdjson >= 3 (acquired)   ##
 ###################################
 
 find_package(nlohmann_json 3.11.3 REQUIRED)
 pkg_check_modules(pqxx REQUIRED libpqxx)
+pkg_check_modules(pq REQUIRED libpq)
 FetchContent_Declare(
         simdjson
         GIT_REPOSITORY https://github.com/simdjson/simdjson.git
@@ -149,11 +151,15 @@ add_library(OptiFOLCommon OBJECT
         Source/Exceptions/BadStorageNotificationException.hpp
         Source/Storage/StorageHashFunctor.hpp
         Source/Exceptions/ExceptionPrefixes.cpp
-        Source/Storage/WALJSONPGUpdateNotification.cpp
         Source/Storage/WALJSONPGUpdateNotification.hpp
+        Source/Storage/PGStorableObjectCacheBase.hpp
+        Source/Storage/PGProjectCache.hpp
+        Source/Storage/PGProjectCache.cpp
+        Source/Storage/PGChronoType.hpp
+        Source/Storage/PGChronoType.cpp
 )
 
-target_link_libraries(OptiFOLCommon PRIVATE nlohmann_json::nlohmann_json pqxx simdjson)
+target_link_libraries(OptiFOLCommon PRIVATE nlohmann_json::nlohmann_json pqxx pq simdjson)
 
 # libsigc++-3.0 libraries are poorly expressed on the filesystem, so we need to manually introspect pkg-config to
 # determine the correct include paths.
