@@ -37,7 +37,6 @@ public:
         StorageExceptionBase(prefix + message)
     { }
 
-
     /**
      * @copydoc StorageExceptionBase::StorageExceptionBase(const char *)
      */

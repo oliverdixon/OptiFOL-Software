@@ -1,6 +1,7 @@
 /cmake-build-*/
 /Data
 /Secret
+/GeneratedDocumentation
 
 /**/.idea/workspace.xml
 /**/.idea/usage.statistics.xml

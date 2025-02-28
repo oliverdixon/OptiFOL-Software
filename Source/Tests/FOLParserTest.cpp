@@ -13,8 +13,8 @@
 
 #include <gtest/gtest.h>
 
-#include "../Source/Interpreter/FOLLexer.hpp"
-#include "../Source/Visitors/Sentences/Serialisers/JSONSerialiserVisitor.hpp"
+#include "../Interpreter/FOLLexer.hpp"
+#include "../Visitors/Sentences/Serialisers/JSONSerialiserVisitor.hpp"
 
 namespace optifol
 {

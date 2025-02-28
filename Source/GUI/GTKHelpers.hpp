@@ -3,7 +3,13 @@
  * 2025 Oliver Dixon <od641@york.ac.uk>
  */
 
-
+/**
+ * @file
+ * @brief Class definition for some handy exception-aware GTK static helpers
+ * @author Oliver Dixon
+ * @date 2025-02-02
+ * @version Development
+ */
 
 #ifndef GTKHELPERS_HPP
 #define GTKHELPERS_HPP
@@ -12,6 +18,7 @@
 
 namespace optifol
 {
+
 class GTKHelpers
 {
 public:
@@ -49,6 +56,7 @@ public:
         return widget;
     }
 };
+
 }
 
 #endif

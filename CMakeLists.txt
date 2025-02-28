@@ -261,7 +261,7 @@ FetchContent_MakeAvailable(googletest)
 enable_testing()
 
 add_executable(OptiFOLTesting
-        Tests/FOLParserTest.cpp
+        Source/Tests/FOLParserTest.cpp
 )
 
 target_include_directories(OptiFOLTesting PRIVATE Source/Interpreter/)

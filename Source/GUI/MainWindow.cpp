@@ -3,6 +3,14 @@
  * 2025 Oliver Dixon <od641@york.ac.uk>
  */
 
+/**
+ * @file
+ * @brief Class implementation for the OptiFOL GTK main window
+ * @author Oliver Dixon
+ * @date 2025-02-02
+ * @version Development
+ */
+
 #include "MainWindow.hpp"
 
 #include "GTKHelpers.hpp"

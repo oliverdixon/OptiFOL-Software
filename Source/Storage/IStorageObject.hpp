@@ -30,7 +30,6 @@ public:
 
     /**
      * @brief Destruct the storage object
-     * @todo What should be the semantic expression of this d'tor? Is it being removed from the cache, or storage?
      */
     virtual ~IStorageObject() = default;
 

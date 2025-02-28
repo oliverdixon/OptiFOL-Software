@@ -10,6 +10,10 @@
 namespace
 {
 
+/**
+ * @enum BufferRequirements
+ * @brief The number of bytes required in a serialisation buffer for each component of the chronographic structure
+ */
 enum BufferRequirements
 {
     Year = 4,
@@ -23,6 +27,12 @@ enum BufferRequirements
     Null = 1
 };
 
+/**
+ * @brief Parse a single ASCII-like-encoded digit into an integer
+ * @param ch The character to parse
+ * @throws pqxx::conversion_error The given character does not represent an ASCII-like digit
+ * @return The parsed integer
+ */
 int parse_digit(const char ch)
 {
     const int digit = ch - '0';
@@ -32,6 +42,15 @@ int parse_digit(const char ch)
     return digit;
 }
 
+/**
+ * @brief Greedily parse a variable set of digits resembling a positive integer, followed by an optional delimiter
+ * @param str The string to parse
+ * @param idx The starting index into the view, incremented as the string is consumed
+ * @param delim An optional delimiter that should appear following the specified number of digits
+ * @param read_length An optional specification of the number of digits to consume prior to the delimiter
+ * @throw pqxx::conversion_error The given string was not in the correct format
+ * @return The parsed number
+ */
 int parse_numbers(const std::string_view str, std::size_t& idx, const char delim = 0, const std::size_t read_length = 2)
 {
     if (str.size() - idx < read_length)
@@ -49,6 +68,7 @@ int parse_numbers(const std::string_view str, std::size_t& idx, const char delim
 
     result += parse_digit(str[lower_bound_idx]) * last_multiplier;
 
+    // Added for flexibility; lack of delimiter shouldn't necessarily be elided
     // ReSharper disable once CppDFAConstantConditions
     if (delim != 0) {
         if (str[++idx] != delim)
@@ -59,10 +79,21 @@ int parse_numbers(const std::string_view str, std::size_t& idx, const char delim
     return result;
 }
 
+/**
+ * @brief Write the given number into the buffer for a fixed number of characters, padding with leading zeroes
+ * @param number The number to serialise
+ * @param leading_capacity The number of bytes to write
+ * @param begin The beginning of the pre-allocated string buffer to hold the serialised number
+ * @param delim An optional delimiter to append to the serialised output
+ * @throws pqxx::conversion_overrun The given buffer has insufficient capacity to hold the serialised number
+ * @return The address of the highest-address character written
+ */
 char* pad_number(int number, const std::size_t leading_capacity, char* const begin, const char delim = 0)
 {
+    assert(leading_capacity > 1);
     std::size_t remaining_capacity = leading_capacity;
 
+    // Added for flexibility; lack of delimiter shouldn't necessarily be elided
     // ReSharper disable once CppDFAConstantConditions
     if (delim != 0) {
         begin[remaining_capacity - 1] = delim;
@@ -87,6 +118,12 @@ char* pad_number(int number, const std::size_t leading_capacity, char* const beg
     return &begin[leading_capacity - 1];
 }
 
+/**
+ * @brief Parse a string of the standard PostgreSQL format into a C-style time structure
+ * @param str The string to parse
+ * @throws pqxx::conversion_error The digits could not be parsed to the required format
+ * @return The parsed time structure
+ */
 std::tm parse_pg_timestamp(const std::string_view str)
 {
     std::tm result;
@@ -102,7 +139,12 @@ std::tm parse_pg_timestamp(const std::string_view str)
     result.tm_min = parse_numbers(str, idx, ':');
     result.tm_sec = parse_numbers(str, idx, '.');
 
-    return std::move(result);
+    /**
+     * The result value should only be passed to std::mktime, which computes the uninitialised values. All important
+     * fields are either derived from the parsed values, or set explicitly.
+     */
+    // ReSharper disable once CppSomeObjectMembersMightNotBeInitialized
+    return result;
 }
 
 }
@@ -110,28 +152,30 @@ std::tm parse_pg_timestamp(const std::string_view str)
 namespace pqxx
 {
 
+/** @cond DO_NOT_DOCUMENT */
 template<>
 const std::string type_name<std::chrono::system_clock::time_point>{"Chrono time point"};
+/** @endcond */
 
-bool nullness<std::chrono::time_point<std::chrono::system_clock>>::is_null(
+bool nullness<std::chrono::system_clock::time_point>::is_null(
     const std::chrono::system_clock::time_point &time_point)
 {
     return time_point.time_since_epoch() == std::chrono::duration<std::decay_t<decltype(time_point)>::rep>::zero();
 }
 
-std::chrono::system_clock::time_point nullness<std::chrono::time_point<std::chrono::system_clock>>::null()
+std::chrono::system_clock::time_point nullness<std::chrono::system_clock::time_point>::null()
 {
     return {};
 }
 
-zview string_traits<std::chrono::time_point<std::chrono::system_clock>>::to_buf(char *begin, const char * const end,
+zview string_traits<std::chrono::system_clock::time_point>::to_buf(char *begin, const char * const end,
     const std::chrono::system_clock::time_point &value)
 {
     const char * const written_end = into_buf(begin, end, value);
     return {begin, written_end - begin};
 }
 
-char * string_traits<std::chrono::time_point<std::chrono::system_clock>>::into_buf(char * const begin,
+char * string_traits<std::chrono::system_clock::time_point>::into_buf(char * const begin,
     const char * const end, const std::chrono::system_clock::time_point &value)
 {
     if (end - begin < string_traits::size_buffer(value))
@@ -156,7 +200,7 @@ char * string_traits<std::chrono::time_point<std::chrono::system_clock>>::into_b
     return ++cursor;
 }
 
-std::size_t string_traits<std::chrono::time_point<std::chrono::system_clock>>::size_buffer(
+std::size_t string_traits<std::chrono::system_clock::time_point>::size_buffer(
     const std::chrono::system_clock::time_point &value) noexcept
 {
     std::ignore = value;
@@ -177,7 +221,7 @@ std::size_t string_traits<std::chrono::time_point<std::chrono::system_clock>>::s
            BufferRequirements::Null;
 }
 
-std::chrono::system_clock::time_point string_traits<std::chrono::time_point<std::chrono::system_clock>>::from_string(
+std::chrono::system_clock::time_point string_traits<std::chrono::system_clock::time_point>::from_string(
     const std::string_view text)
 {
     auto tm = parse_pg_timestamp(text);

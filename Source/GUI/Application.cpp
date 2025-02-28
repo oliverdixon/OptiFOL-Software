@@ -3,11 +3,19 @@
  * 2025 Oliver Dixon <od641@york.ac.uk>
  */
 
+/**
+ * @file
+ * @brief Class implementation for the OptiFOL GTK Application
+ * @author Oliver Dixon
+ * @date 2025-02-02
+ * @version Development
+ */
+
 #include <iostream>
 
 #include "Application.hpp"
-#include "MainWindow.hpp"
 #include "GTKHelpers.hpp"
+#include "MainWindow.hpp"
 
 namespace optifol
 {
@@ -44,10 +52,14 @@ void Application::on_activate()
     const auto main_window = create_main_window();
     main_window->present();
     about_dialog->set_transient_for(*main_window);
+
+    // ReSharper disable once CppDFAMemoryLeak
 }
 
 MainWindow * Application::create_main_window()
 {
+    // Memory leak warning here is a false positive, as windows are managed by the GTK management engine
+    // ReSharper disable once CppDFAMemoryLeak
     const auto main_window = new MainWindow();
     add_window(*main_window);
 

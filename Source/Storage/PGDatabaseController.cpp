@@ -23,6 +23,10 @@ namespace optifol
 
 PGDatabaseController::PGDatabaseController(const std::string& db_uri)
 {
+    std::ostringstream pid_stream;
+    pid_stream << "optifol_" << std::this_thread::get_id();
+    wal_slot_name = pid_stream.str();
+
     try {
         connection.emplace(db_uri);
         project_cache.emplace(*connection);
@@ -57,9 +61,7 @@ void PGDatabaseController::update()
         pqxx::params{wal_slot_name});
     tx.commit();
 
-    if (results.empty())
-        std::cout << "No updates\n";
-    else {
+    if (!results.empty()) {
         for (const auto& update_record : results) {
             const auto json = update_record[0].as<std::string>();
             despatch_json_change(json);

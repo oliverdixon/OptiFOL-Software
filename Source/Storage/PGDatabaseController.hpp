@@ -48,14 +48,19 @@ public:
     ~PGDatabaseController() override;
 
     /**
+     * @copybrief IStorageController::update
      * @throws BadStorageNotificationException A propagation update was received from the DB, but it was malformed.
      */
     void update() override;
 
 private:
+    /**
+     * @brief Parse and action the changes described by a JSON-formatted WAL replication message from the DB
+     * @param payload The JSON string posted to the WAL slot
+     */
     void despatch_json_change(std::string_view payload);
 
-    std::string wal_slot_name{"test_slot"}; // TODO just for testing
+    std::string wal_slot_name; // TODO just for testing
 
     simdjson::ondemand::parser json_parser;
 
