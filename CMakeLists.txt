@@ -138,25 +138,12 @@ add_library(OptiFOLCommon OBJECT
         Source/Visitors/Sentences/CNFNormalisers/SkolemIntroducingVisitor.cpp
         Source/Visitors/Sentences/CNFNormalisers/SkolemIntroducingVisitor.hpp
         Source/Exceptions/ExceptionBase.hpp
-        Source/Storage/Project.cpp
-        Source/Storage/Project.hpp
         Source/Exceptions/StorageExceptionBase.hpp
         Source/Exceptions/StorageConnectionException.hpp
-        Source/Storage/PGDatabaseController.cpp
-        Source/Storage/PGDatabaseController.hpp
-        Source/Storage/IStorageController.hpp
-        Source/Storage/Subsystem.cpp
-        Source/Storage/Subsystem.hpp
-        Source/Storage/IStorageObject.hpp
         Source/Exceptions/BadStorageNotificationException.hpp
-        Source/Storage/StorageHashFunctor.hpp
         Source/Exceptions/ExceptionPrefixes.cpp
-        Source/Storage/WALJSONPGUpdateNotification.hpp
-        Source/Storage/PGStorableObjectCacheBase.hpp
-        Source/Storage/PGProjectCache.hpp
-        Source/Storage/PGProjectCache.cpp
-        Source/Storage/PGChronoType.hpp
-        Source/Storage/PGChronoType.cpp
+        Source/LegacyWrappers.cpp
+        Source/LegacyWrappers.hpp
 )
 
 target_link_libraries(OptiFOLCommon PRIVATE nlohmann_json::nlohmann_json pqxx pq simdjson)
@@ -219,6 +206,21 @@ add_executable(OptiFOLGUI
         Source/GUI/Application.cpp
         Source/GUI/Application.hpp
         Source/GUI/GTKHelpers.hpp
+        Source/Storage/Project.cpp
+        Source/Storage/Project.hpp
+        Source/Storage/PGDatabaseController.cpp
+        Source/Storage/PGDatabaseController.hpp
+        Source/Storage/IStorageController.hpp
+        Source/Storage/Subsystem.cpp
+        Source/Storage/Subsystem.hpp
+        Source/Storage/IStorageObject.hpp
+        Source/Storage/WALJSONPGUpdateNotification.hpp
+        Source/Storage/PGStorableObjectCacheBase.hpp
+        Source/Storage/PGProjectCache.hpp
+        Source/Storage/PGProjectCache.cpp
+        Source/Storage/PGChronoType.hpp
+        Source/Storage/PGChronoType.cpp
+        Source/Storage/StorageHashFunctor.hpp
 )
 
 set(COMMON_COMPILER_OPTIONS
@@ -230,6 +232,7 @@ set(COMMON_COMPILER_OPTIONS
         -Wno-switch-default
         -Wno-shadow-field-in-constructor
         -Wno-weak-vtables
+        -Wno-shadow-field
 )
 
 # target_compile_definitions(OptiFOLGUI PRIVATE OPTIFOL_DISABLE_GUI)

@@ -13,7 +13,7 @@
         <child>
             <object class="GtkGrid" id="root_grid">
                 <child>
-                    <object class="GtkListView" id="directory_view">
+                    <object class="GtkListView" id="project_view">
                         <layout>
                             <property name="column">0</property>
                             <property name="row">0</property>

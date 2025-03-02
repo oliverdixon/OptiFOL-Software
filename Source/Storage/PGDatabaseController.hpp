@@ -20,6 +20,7 @@
 
 #include "IStorageController.hpp"
 #include "PGProjectCache.hpp"
+#include "../LegacyWrappers.hpp"
 
 namespace optifol
 {
@@ -53,6 +54,11 @@ public:
      */
     void update() override;
 
+    Glib::RefPtr<Gio::ListStore<Project>> get_project_model() const override
+    {
+        return project_cache->project_model;
+    }
+
 private:
     /**
      * @brief Parse and action the changes described by a JSON-formatted WAL replication message from the DB
@@ -60,7 +66,7 @@ private:
      */
     void despatch_json_change(std::string_view payload);
 
-    std::string wal_slot_name; // TODO just for testing
+    const std::string wal_slot_name{"optifol_" + std::to_string(LegacyWrappers::get_pid())};
 
     simdjson::ondemand::parser json_parser;
 

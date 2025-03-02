@@ -15,9 +15,10 @@
 #define PGSTORABLEOBJECTCACHEBASE_HPP
 
 #include <queue>
-#include <unordered_set>
+#include <giomm/liststore.h>
 #include <pqxx/connection>
 
+#include "Project.hpp"
 #include "StorageHashFunctor.hpp"
 
 namespace optifol
@@ -37,41 +38,17 @@ public:
     /**
      * @brief Flush any pending loads queued by the instance
      */
-    virtual void load()
-    {
-        if (load_queue.empty())
-            return;
-
-        throw std::runtime_error("Not implemented.");
-    }
+    virtual void load() = 0;
 
     /**
      * @brief Flush any pending reloads queued by the instance
      */
-    virtual void reload()
-    {
-        if (reload_queue.empty())
-            return;
-
-        throw std::runtime_error("Not implemented.");
-    }
+    virtual void reload() = 0;
 
     /**
      * @brief Flush any pending unloads queued by the instance
      */
-    virtual void unload()
-    {
-        while (!unload_queue.empty()) {
-            const auto id = unload_queue.front();
-            unload_queue.pop();
-
-            const auto cache_it = cache.find(id);
-            if (cache_it != cache.end()) {
-                std::cout << "Unloading project " << std::to_string(id) << std::endl;
-                cache.erase(cache_it);
-            }
-        }
-    }
+    virtual void unload() = 0;
 
     /**
      * @brief Enqueue an object, identified by its PK/ID, to be loaded into the cache instance
@@ -100,6 +77,8 @@ public:
         unload_queue.push(id);
     }
 
+    Glib::RefPtr<Gio::ListStore<Type>> project_model = Gio::ListStore<Type>::create();
+
 protected:
     /**
      * @brief Construct the object cache base
@@ -114,8 +93,6 @@ protected:
     std::queue<std::size_t> load_queue;
     std::queue<std::size_t> reload_queue;
     std::queue<std::size_t> unload_queue;
-
-    std::unordered_set<Type, StorageHashFunctor<Type>, std::equal_to<>> cache;
 };
 
 }

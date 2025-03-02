@@ -23,10 +23,6 @@ namespace optifol
 
 PGDatabaseController::PGDatabaseController(const std::string& db_uri)
 {
-    std::ostringstream pid_stream;
-    pid_stream << "optifol_" << std::this_thread::get_id();
-    wal_slot_name = pid_stream.str();
-
     try {
         connection.emplace(db_uri);
         project_cache.emplace(*connection);

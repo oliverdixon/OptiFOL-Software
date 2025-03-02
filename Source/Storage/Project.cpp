@@ -20,10 +20,10 @@ Project::Project(const std::size_t id,
                  const std::string &name,
                  const time_t &created_time,
                  const time_t &last_modified_time):
-    id(id),
-    name(name),
     created_time(created_time),
-    last_modified_time(last_modified_time)
+    last_modified_time(last_modified_time),
+    name(name),
+    id(id)
 {
 }
 
@@ -49,8 +49,7 @@ std::size_t Project::get_controller_id() const noexcept
 
 bool Project::operator==(const Project &other) const noexcept
 {
-    return id == other.id && name == other.name && created_time == other.created_time &&
-        last_modified_time == other.last_modified_time;
+    return id == other.id; // TODO tomorrow
 }
 
 bool Project::operator==(std::size_t other_id) const noexcept

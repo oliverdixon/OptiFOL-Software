@@ -57,8 +57,8 @@ int parse_numbers(const std::string_view str, std::size_t& idx, const char delim
         throw pqxx::conversion_error{"Invalid timestamp format: insufficient characters to parse"};
 
     const std::size_t lower_bound_idx = idx;
-    unsigned int last_multiplier = 1;
-    unsigned int result = 0;
+    int last_multiplier = 1;
+    int result = 0;
 
     for (std::size_t i = lower_bound_idx + read_length - 1; i > lower_bound_idx; --i) {
         result += parse_digit(str[i]) * last_multiplier;
@@ -93,6 +93,8 @@ char* pad_number(int number, const std::size_t leading_capacity, char* const beg
     assert(leading_capacity > 1);
     std::size_t remaining_capacity = leading_capacity;
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunsafe-buffer-usage" // Buffer safety is guaranteed by PQXX
     // Added for flexibility; lack of delimiter shouldn't necessarily be elided
     // ReSharper disable once CppDFAConstantConditions
     if (delim != 0) {
@@ -106,8 +108,8 @@ char* pad_number(int number, const std::size_t leading_capacity, char* const beg
             throw pqxx::conversion_overrun{"Insufficient capacity to serialise the date-string into PostgreSQL "
                                            "format"};
 
-        const unsigned int digit = number % 10;
-        begin[remaining_capacity - 1] = digit + '0';
+        const char digit = static_cast<char>(number % 10);
+        begin[remaining_capacity - 1] = digit + '0'; // NOLINT(*-narrowing-conversions)
         --remaining_capacity;
     }
 
@@ -116,6 +118,7 @@ char* pad_number(int number, const std::size_t leading_capacity, char* const beg
         begin[remaining_capacity - 1] = '0';
 
     return &begin[leading_capacity - 1];
+#pragma clang diagnostic pop
 }
 
 /**
@@ -126,7 +129,11 @@ char* pad_number(int number, const std::size_t leading_capacity, char* const beg
  */
 std::tm parse_pg_timestamp(const std::string_view str)
 {
-    std::tm result;
+    /**
+     * The result value should only be passed to std::mktime, which computes the uninitialised values. All important
+     * fields are either derived from the parsed values, or set explicitly.
+     */
+    std::tm result; // NOLINT(*-pro-type-member-init)
     std::size_t idx = 0;
 
     result.tm_gmtoff = 0;
@@ -139,10 +146,6 @@ std::tm parse_pg_timestamp(const std::string_view str)
     result.tm_min = parse_numbers(str, idx, ':');
     result.tm_sec = parse_numbers(str, idx, '.');
 
-    /**
-     * The result value should only be passed to std::mktime, which computes the uninitialised values. All important
-     * fields are either derived from the parsed values, or set explicitly.
-     */
     // ReSharper disable once CppSomeObjectMembersMightNotBeInitialized
     return result;
 }
@@ -151,11 +154,6 @@ std::tm parse_pg_timestamp(const std::string_view str)
 
 namespace pqxx
 {
-
-/** @cond DO_NOT_DOCUMENT */
-template<>
-const std::string type_name<std::chrono::system_clock::time_point>{"Chrono time point"};
-/** @endcond */
 
 bool nullness<std::chrono::system_clock::time_point>::is_null(
     const std::chrono::system_clock::time_point &time_point)
@@ -178,13 +176,15 @@ zview string_traits<std::chrono::system_clock::time_point>::to_buf(char *begin, 
 char * string_traits<std::chrono::system_clock::time_point>::into_buf(char * const begin,
     const char * const end, const std::chrono::system_clock::time_point &value)
 {
-    if (end - begin < string_traits::size_buffer(value))
+    if (static_cast<std::size_t>(end - begin) < string_traits::size_buffer(value))
         throw pqxx::conversion_overrun{"Insufficient capacity to serialise the date-string into PostgreSQL format"};
 
     char* cursor = begin;
     const std::time_t epoch_time = std::chrono::system_clock::to_time_t(value);
     const std::tm* tm{std::localtime(&epoch_time)};
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunsafe-buffer-usage" // Buffer safety is guaranteed by PQXX
     cursor = pad_number(tm->tm_year + 1900, BufferRequirements::Year + BufferRequirements::Delimiter, cursor, '-');
     cursor = pad_number(tm->tm_mon + 1, BufferRequirements::Month + BufferRequirements::Delimiter, cursor + 1, '-');
     cursor = pad_number(tm->tm_mday, BufferRequirements::Day + BufferRequirements::Delimiter, cursor + 1, ' ');
@@ -198,6 +198,7 @@ char * string_traits<std::chrono::system_clock::time_point>::into_buf(char * con
 
     *cursor = 0; // pqxx::zview requires NULL-termination
     return ++cursor;
+#pragma clang diagnostic pop
 }
 
 std::size_t string_traits<std::chrono::system_clock::time_point>::size_buffer(

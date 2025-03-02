@@ -14,6 +14,9 @@
 #ifndef ISTORAGECONTROLLER_HPP
 #define ISTORAGECONTROLLER_HPP
 
+#include "IStorageObject.hpp"
+#include "Project.hpp"
+
 namespace optifol
 {
 
@@ -39,6 +42,8 @@ public:
      *  similarly implementation-defined.
      */
     virtual void update() = 0;
+
+    virtual Glib::RefPtr<Gio::ListStore<Project>> get_project_model() const = 0;
 };
 
 }

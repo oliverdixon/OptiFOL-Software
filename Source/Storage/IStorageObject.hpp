@@ -16,6 +16,8 @@
 
 #include <chrono>
 
+#include "../GUI/GTKHelpers.hpp"
+
 namespace optifol
 {
 
@@ -23,7 +25,8 @@ namespace optifol
  * @class IStorageObject
  * @brief Defines the interface for a storable object in the OptiFOL object hierarchy
  */
-class IStorageObject
+class IStorageObject :
+        public Glib::Object
 {
 public:
     using time_t = std::chrono::system_clock::time_point;
@@ -31,7 +34,7 @@ public:
     /**
      * @brief Destruct the storage object
      */
-    virtual ~IStorageObject() = default;
+    ~IStorageObject() override = default;
 
     /**
      * @brief Gets the human-readable string identifier of the object

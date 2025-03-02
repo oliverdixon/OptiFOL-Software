@@ -29,12 +29,18 @@ class PGProjectCache :
 {
 public:
     /**
-     * @brief Construct a project cache container
+     * @brief Construct a project cache container and cache a set of most recently modified projects
      * @param connection The established PostgreSQL database connection
+     * @param initial_cache_limit The maximum number of projects to initially load into the cache
+     * @post The number of cached projects does not exceed the defined limit
      */
-    explicit PGProjectCache(pqxx::connection& connection);
+    explicit PGProjectCache(pqxx::connection& connection, std::size_t initial_cache_limit = 128);
 
     void load() override;
+
+    void unload() override;
+
+    void emplace_project(const pqxx::row& row);
 };
 
 }

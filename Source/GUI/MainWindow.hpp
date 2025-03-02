@@ -17,6 +17,7 @@
 #include <gtkmm.h>
 
 #include "../Storage/IStorageController.hpp"
+#include "../Storage/Project.hpp"
 
 namespace optifol
 {
@@ -37,15 +38,12 @@ private:
     Glib::RefPtr<Gtk::Builder> builder;
 
     Gtk::ScrolledWindow * scrolled_window;
-    Gtk::ListView * directory_view;
+    Gtk::ListView * project_view;
     Gtk::Grid * root_grid;
     Gtk::Button * update_storage_button;
 
     Glib::RefPtr<Gtk::AlertDialog> database_alert;
     std::unique_ptr<IStorageController> storage;
-
-    Glib::RefPtr<Gtk::DirectoryList> directory_model =
-        Gtk::DirectoryList::create("standard::name", Gio::File::create_for_path("/home/owd/"));
 };
 
 }
