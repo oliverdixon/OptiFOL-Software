@@ -21,7 +21,11 @@
 namespace pqxx
 {
 
+// Disabling this warning, as ReSharper cannot presently resolve name subject to template specialisation
+// ReSharper disable once CppDoxygenUnresolvedReference
+
 /**
+ * @class nullness<std::chrono::system_clock::time_point>
  * @brief Nullness sentinel, specialised the standard chronographic type
  * @see https://github.com/jtv/libpqxx/blob/master/include/pqxx/doc/datatypes.md#specialise-nullness
  */
@@ -52,8 +56,10 @@ struct nullness<std::chrono::system_clock::time_point>
     [[nodiscard]] static std::chrono::system_clock::time_point null();
 };
 
+// ReSharper disable once CppDoxygenUnresolvedReference
+
 /**
- * @struct string_traits
+ * @class string_traits<std::chrono::system_clock::time_point>
  * @brief String traits definition, specialised for the standard chronographic type
  * @see https://github.com/jtv/libpqxx/blob/master/include/pqxx/doc/datatypes.md#specialise-string_traits
  */

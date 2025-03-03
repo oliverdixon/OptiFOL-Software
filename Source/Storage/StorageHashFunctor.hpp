@@ -16,8 +16,10 @@
 
 #include "IStorageObject.hpp"
 
+// ReSharper disable once CppDoxygenUnresolvedReference
+
 /**
- * @struct std::hash
+ * @class std::hash<Type>
  * @brief The standard (non-transparent) hashing functor, templated to a storable type
  * @tparam Type The concrete storable type for which std::hash should be specialised
  */
@@ -48,8 +50,18 @@ namespace optifol
 template<StorableType Type>
 struct StorageHashFunctor
 {
+    /**
+     * @typedef hash_type
+     * @brief The underlying hasher type
+     */
     using hash_type = std::hash<Type>;
-    using is_transparent = void; // Participate in transparent STL hashing for find calls
+
+    /**
+     * @typedef is_transparent
+     * @brief Indicate that the StorageHashFunctor will participate in transparent STL hashing
+     * @see C++23 JTC standard: [associative.reqmts.general](180) regarding Compare::is_transparent
+     */
+    using is_transparent = void;
 
     /**
      * @brief Compute the hash of the storable object

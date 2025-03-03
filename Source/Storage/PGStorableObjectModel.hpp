@@ -11,29 +11,29 @@
  * @version Development
  */
 
-#ifndef PGSTORABLEOBJECTCACHEBASE_HPP
-#define PGSTORABLEOBJECTCACHEBASE_HPP
+#ifndef PGSTORABLEOBJECTMODEL_HPP
+#define PGSTORABLEOBJECTMODEL_HPP
 
 #include <queue>
 #include <giomm/liststore.h>
 #include <pqxx/connection>
 
-#include "Project.hpp"
 #include "StorageHashFunctor.hpp"
 
 namespace optifol
 {
 
 /**
- * @class PGStorableObjectCacheBase
+ * @class PGStorableObjectModel
  * @brief A container to manage StorableType objects under a cache and a PostgreSQL backend
  * @tparam Type The concrete StorableType cached by the base container
  */
 template<StorableType Type>
-class PGStorableObjectCacheBase
+class PGStorableObjectModel :
+        public Gio::ListStore<Type>
 {
 public:
-    virtual ~PGStorableObjectCacheBase() = default;
+    ~PGStorableObjectModel() override = default;
 
     /**
      * @brief Flush any pending loads queued by the instance
@@ -77,14 +77,12 @@ public:
         unload_queue.push(id);
     }
 
-    Glib::RefPtr<Gio::ListStore<Type>> project_model = Gio::ListStore<Type>::create();
-
 protected:
     /**
      * @brief Construct the object cache base
      * @param connection The established PostgreSQL database connection
      */
-    explicit PGStorableObjectCacheBase(pqxx::connection& connection):
+    explicit PGStorableObjectModel(pqxx::connection& connection):
         connection(connection)
     { }
 
@@ -93,6 +91,8 @@ protected:
     std::queue<std::size_t> load_queue;
     std::queue<std::size_t> reload_queue;
     std::queue<std::size_t> unload_queue;
+
+    const Glib::RefPtr<const Type> dummy_base = Glib::make_refptr_for_instance(new Type(0, {}, {}, {}));
 };
 
 }

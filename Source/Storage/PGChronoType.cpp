@@ -16,15 +16,15 @@ namespace
  */
 enum BufferRequirements
 {
-    Year = 4,
-    Month = 2,
-    Day = 2,
-    Hour = 2,
-    Minute = 2,
-    Second = 2,
-    Millisecond = 6,
-    Delimiter = 1,
-    Null = 1
+    Year = 4, /**< Byte requirements for "YYYY" */
+    Month = 2, /**< Byte requirements for "mm" */
+    Day = 2, /**< Byte requirements for "DD" */
+    Hour = 2, /**< Byte requirements for "HH" */
+    Minute = 2, /**< Byte requirements for "MM" */
+    Second = 2, /**< Byte requirements for "SS" */
+    Millisecond = 6, /**< Byte requirements for "uuuuuu" */
+    Delimiter = 1, /**< Byte requirements for a one-character delimiter */
+    Null = 1 /**< Byte requirements for the pqxx::zview-enforced NULL terminator */
 };
 
 /**

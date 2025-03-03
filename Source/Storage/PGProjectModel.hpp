@@ -14,18 +14,18 @@
 #ifndef PGPROJECTCACHE_HPP
 #define PGPROJECTCACHE_HPP
 
-#include "PGStorableObjectCacheBase.hpp"
+#include "PGStorableObjectModel.hpp"
 #include "Project.hpp"
 
 namespace optifol
 {
 
 /**
- * @class PGProjectCache
+ * @class PGProjectModel
  * @brief The PGStorableObjectCacheBase specialised for project-level stored objects
  */
-class PGProjectCache :
-        public PGStorableObjectCacheBase<Project>
+class PGProjectModel :
+        public PGStorableObjectModel<Project>
 {
 public:
     /**
@@ -34,12 +34,15 @@ public:
      * @param initial_cache_limit The maximum number of projects to initially load into the cache
      * @post The number of cached projects does not exceed the defined limit
      */
-    explicit PGProjectCache(pqxx::connection& connection, std::size_t initial_cache_limit = 128);
+    explicit PGProjectModel(pqxx::connection& connection, std::size_t initial_cache_limit = 128);
 
     void load() override;
 
+    void reload() override;
+
     void unload() override;
 
+private:
     void emplace_project(const pqxx::row& row);
 };
 

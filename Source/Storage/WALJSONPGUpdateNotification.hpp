@@ -32,10 +32,10 @@ public:
      */
     enum class Action
     {
-        NoOp,
-        Insert,
-        Update,
-        Delete
+        NoOp, /**< No substantive update from the DB */
+        Insert, /**< An SQL INSERT-like command, requiring an object load */
+        Update, /**< An SQL UPDATE-like command, requiring an object reload */
+        Delete /**< An SQL DELETE-like command, requiring an object unload */
     };
 
     /**
@@ -44,9 +44,9 @@ public:
      */
     enum class Scope
     {
-        Empty,
-        Project,
-        Subsystem
+        Empty, /**< Unrelated to entities tracked by the IStorageController implementation */
+        Project, /**< Related to a Project-level entity */
+        Subsystem /**< Related to a Subsystem-level entity */
     };
 
     /**

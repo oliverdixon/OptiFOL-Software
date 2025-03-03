@@ -26,15 +26,13 @@ class Project :
         public IStorageObject
 {
 public:
-    // TODO: use std::chrono to parse SQL time strings. Defaulting here just for testing
-    Project(std::size_t id, const std::string& name, const time_t& created_time = {},
-        const time_t& last_modified_time = {});
+    Project(std::size_t id, const std::string& name, const TimeT& created_time, const TimeT& last_modified_time);
 
     [[nodiscard]] std::string get_identifier() const override;
 
-    [[nodiscard]] time_t get_creation_time() const override;
+    [[nodiscard]] TimeT get_creation_time() const override;
 
-    [[nodiscard]] time_t get_modified_time() const override;
+    [[nodiscard]] TimeT get_modified_time() const override;
 
     [[nodiscard]] std::size_t get_controller_id() const noexcept override;
 
@@ -49,10 +47,30 @@ public:
     bool operator==(std::size_t other_id) const noexcept override;
 
 private:
-    const time_t created_time;
-    time_t last_modified_time;
+    /**
+     * @brief Time of initial creation
+     * @note This quantity should be immutable in the model determined by the IStorageController, assigned only upon its
+     *  initial creation.
+     */
+    const TimeT created_time;
+
+    /**
+     * @brief Time of most recent mutation
+     * @note This quantity should be updated upon the changing of Project metadata, or the changing of any data held by
+     *  the Project, such as any of its constituent Subsystems or their requirements.
+     */
+    TimeT last_modified_time;
+
+    /**
+     * @brief The human-readable name of the Project
+     */
     std::string name;
-    std::size_t id;
+
+    /**
+     * @brief The numerical ID of the Project, unique up to being the IStorageController primary key for the Project
+     *  entity
+     */
+    const std::size_t id;
 };
 
 }

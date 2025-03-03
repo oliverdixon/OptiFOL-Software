@@ -25,7 +25,7 @@ PGDatabaseController::PGDatabaseController(const std::string& db_uri)
 {
     try {
         connection.emplace(db_uri);
-        project_cache.emplace(*connection);
+        project_model = Glib::make_refptr_for_instance(new PGProjectModel(*connection));
 
         pqxx::work tx{*connection};
         tx.exec("SELECT 'init' FROM pg_create_logical_replication_slot($1::text, 'wal2json');",
@@ -36,7 +36,7 @@ PGDatabaseController::PGDatabaseController(const std::string& db_uri)
     }
 
     assert(connection.has_value());
-    assert(project_cache.has_value());
+    assert(project_model != nullptr);
 }
 
 PGDatabaseController::~PGDatabaseController()
@@ -63,10 +63,15 @@ void PGDatabaseController::update()
             despatch_json_change(json);
         }
 
-        project_cache->load();
-        // TODO: project_cache.reload();
-        project_cache->unload();
+        project_model->load();
+        project_model->reload();
+        project_model->unload();
     }
+}
+
+const Glib::RefPtr<PGProjectModel>& PGDatabaseController::peek_project_model() const
+{
+    return project_model;
 }
 
 void PGDatabaseController::despatch_json_change(const std::string_view payload)
@@ -82,13 +87,13 @@ void PGDatabaseController::despatch_json_change(const std::string_view payload)
             case WALJSONPGUpdateNotification::Action::NoOp:
                 break;
             case WALJSONPGUpdateNotification::Action::Insert:
-                project_cache->enqueue_load(parsed_payload.id);
+                project_model->enqueue_load(parsed_payload.id);
                 break;
             case WALJSONPGUpdateNotification::Action::Update:
-                project_cache->enqueue_reload(parsed_payload.id);
+                project_model->enqueue_reload(parsed_payload.id);
                 break;
             case WALJSONPGUpdateNotification::Action::Delete:
-                project_cache->enqueue_unload(parsed_payload.id);
+                project_model->enqueue_unload(parsed_payload.id);
                 break;
             }
     }

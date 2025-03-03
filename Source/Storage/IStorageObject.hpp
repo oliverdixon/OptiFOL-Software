@@ -29,7 +29,11 @@ class IStorageObject :
         public Glib::Object
 {
 public:
-    using time_t = std::chrono::system_clock::time_point;
+    /**
+     * @typedef TimeT
+     * @brief The internal C++ type used to manipulate times on the system clock
+     */
+    using TimeT = std::chrono::system_clock::time_point;
 
     /**
      * @brief Destruct the storage object
@@ -46,14 +50,14 @@ public:
      * @brief Gets the time at which the object was created
      * @return The object creation time
      */
-    [[nodiscard]] virtual time_t get_creation_time() const = 0;
+    [[nodiscard]] virtual TimeT get_creation_time() const = 0;
 
     /**
      * @brief Gets the time at which the object was most recently mutated and hence required its place in the storage
      *  model to be invalidated by the StorageController.
      * @return The object last-modified time
      */
-    [[nodiscard]] virtual time_t get_modified_time() const = 0;
+    [[nodiscard]] virtual TimeT get_modified_time() const = 0;
 
     /**
      * @brief Gets the controller-defined internal unique unsigned integer identifier for the object

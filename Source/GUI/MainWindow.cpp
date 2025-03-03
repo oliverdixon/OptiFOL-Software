@@ -39,16 +39,17 @@ MainWindow::MainWindow():
     } catch (const StorageConnectionException& exception) {
         database_alert->set_detail(exception.what());
         database_alert->show(*this);
+        return;
     }
 
-    const auto selection_model = Gtk::SingleSelection::create(storage->get_project_model());
+    const auto selection_model = Gtk::SingleSelection::create(storage->peek_project_model());
     selection_model->set_autoselect(false);
     selection_model->set_can_unselect(true);
     project_view->set_model(selection_model);
 
     const auto factory = Gtk::SignalListItemFactory::create();
     factory->signal_setup().connect(&MainWindow::on_setup_label);
-    factory->signal_bind().connect(sigc::mem_fun(*this, &MainWindow::on_bind_name));
+    factory->signal_bind().connect(sigc::mem_fun(*this, &MainWindow::on_bind_project));
     project_view->set_factory(factory);
 }
 
@@ -67,16 +68,14 @@ void MainWindow::on_update_storage()
     }
 }
 
-void MainWindow::on_bind_name(const Glib::RefPtr<Gtk::ListItem> &item) const
+void MainWindow::on_bind_project(const Glib::RefPtr<Gtk::ListItem> &item) const
 {
     const auto position = item->get_position();
 
     if (position != GTK_INVALID_LIST_POSITION) {
         const auto label = dynamic_cast<Gtk::Label*>(item->get_child());
-        if (label != nullptr) {
-            const auto project = storage->get_project_model()->get_item(position);
-            label->set_text(project->get_identifier());
-        }
+        if (label != nullptr)
+            label->set_text(storage->peek_project_model()->get_item(position)->get_identifier());
     }
 }
 

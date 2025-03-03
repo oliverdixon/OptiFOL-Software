@@ -84,7 +84,7 @@ pkg_check_modules(pq REQUIRED libpq)
 FetchContent_Declare(
         simdjson
         GIT_REPOSITORY https://github.com/simdjson/simdjson.git
-        GIT_TAG  tags/v3.12.2
+        GIT_TAG tags/v3.12.2
         GIT_SHALLOW TRUE
 )
 
@@ -144,6 +144,7 @@ add_library(OptiFOLCommon OBJECT
         Source/Exceptions/ExceptionPrefixes.cpp
         Source/LegacyWrappers.cpp
         Source/LegacyWrappers.hpp
+        Source/OptiFOL.hpp
 )
 
 target_link_libraries(OptiFOLCommon PRIVATE nlohmann_json::nlohmann_json pqxx pq simdjson)
@@ -215,9 +216,9 @@ add_executable(OptiFOLGUI
         Source/Storage/Subsystem.hpp
         Source/Storage/IStorageObject.hpp
         Source/Storage/WALJSONPGUpdateNotification.hpp
-        Source/Storage/PGStorableObjectCacheBase.hpp
-        Source/Storage/PGProjectCache.hpp
-        Source/Storage/PGProjectCache.cpp
+        Source/Storage/PGStorableObjectModel.hpp
+        Source/Storage/PGProjectModel.hpp
+        Source/Storage/PGProjectModel.cpp
         Source/Storage/PGChronoType.hpp
         Source/Storage/PGChronoType.cpp
         Source/Storage/StorageHashFunctor.hpp
@@ -235,7 +236,11 @@ set(COMMON_COMPILER_OPTIONS
         -Wno-shadow-field
 )
 
-# target_compile_definitions(OptiFOLGUI PRIVATE OPTIFOL_DISABLE_GUI)
+if (FALSE)
+    # Disable the GUI? This is for testing the application logic that is unrelated to the GUI e.g. FOL resolution.
+    target_compile_definitions(OptiFOLGUI PRIVATE OPTIFOL_DISABLE_GUI)
+endif ()
+
 target_link_libraries(OptiFOLGUI PRIVATE OptiFOLCommon OptiFOLGenerated ${GTKMM_LIBRARIES})
 target_include_directories(OptiFOLGUI PRIVATE Source/Interpreter/ ${GENERATED_INCLUDE_DIR})
 target_include_directories(OptiFOLGUI SYSTEM PRIVATE ${GTKMM_INCLUDE_DIRS} ${SIMDJSON_INCLUDE_DIR})

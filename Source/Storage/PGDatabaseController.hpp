@@ -19,7 +19,7 @@
 #include <pqxx/connection>
 
 #include "IStorageController.hpp"
-#include "PGProjectCache.hpp"
+#include "PGProjectModel.hpp"
 #include "../LegacyWrappers.hpp"
 
 namespace optifol
@@ -54,10 +54,11 @@ public:
      */
     void update() override;
 
-    Glib::RefPtr<Gio::ListStore<Project>> get_project_model() const override
-    {
-        return project_cache->project_model;
-    }
+    /**
+     * @brief Grabs an immutable reference to the PGProjectModel
+     * @return An immutable observing reference to the Project model
+     */
+    const Glib::RefPtr<PGProjectModel>& peek_project_model() const;
 
 private:
     /**
@@ -72,7 +73,7 @@ private:
 
     std::optional<pqxx::connection> connection;
 
-    std::optional<PGProjectCache> project_cache;
+    Glib::RefPtr<PGProjectModel> project_model;
 };
 
 }
