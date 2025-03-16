@@ -44,6 +44,8 @@ public:
 
 private:
     void emplace_project(const pqxx::row& row);
+
+    const Glib::RefPtr<const Project> dummy_base = Glib::make_refptr_for_instance(new Project(0, {}, {}, {}));
 };
 
 }

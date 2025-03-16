@@ -69,7 +69,7 @@ void PGDatabaseController::update()
     }
 }
 
-const Glib::RefPtr<PGProjectModel>& PGDatabaseController::peek_project_model() const
+const Glib::RefPtr<StorableObjectModelBase<Project>> PGDatabaseController::peek_project_model() const
 {
     return project_model;
 }

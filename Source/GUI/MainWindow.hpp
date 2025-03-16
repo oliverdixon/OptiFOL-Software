@@ -44,14 +44,7 @@ private:
 
     Glib::RefPtr<Gtk::AlertDialog> database_alert;
 
-    /*
-     * TODO: we should be using IStorageController here, but I had to change it to the concrete type temporarily because
-     *  we need (more or less) direct access to the models, which are not currently storage-agnostic. This needs to be
-     *  fixed: there should be a PGStorableObjectModel, as there currently is, but most of the stuff in there should be
-     *  moved to a non-PG interface. Really only the constructor needs to be PG-specific; the rest can be in a
-     *  controller-agnostic base class. Then we can provide observers for the models on IStorageController.
-     */
-    std::unique_ptr<PGDatabaseController> storage;
+    std::unique_ptr<IStorageController> storage;
 };
 
 }

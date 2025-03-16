@@ -72,7 +72,6 @@ set_source_files_properties(
 ##                               ##
 ## Requires:                     ##
 ##  - nlohmann::json >= 3.11.3   ##
-##  - libsigc++ >= 3.0           ##
 ##  - libpq                      ##
 ##  - libpqxx                    ##
 ##  - simdjson >= 3 (acquired)   ##
@@ -148,10 +147,7 @@ add_library(OptiFOLCommon OBJECT
 )
 
 target_link_libraries(OptiFOLCommon PRIVATE nlohmann_json::nlohmann_json pqxx pq simdjson)
-
-# libsigc++-3.0 libraries are poorly expressed on the filesystem, so we need to manually introspect pkg-config to
-# determine the correct include paths.
-target_include_directories(OptiFOLCommon SYSTEM PRIVATE ${sigcxx_INCLUDE_DIRS} ${SIMDJSON_INCLUDE_DIR})
+target_include_directories(OptiFOLCommon SYSTEM PRIVATE ${SIMDJSON_INCLUDE_DIR})
 
 ########################################
 ## OptiFOL GUI Application Executable ##
@@ -222,6 +218,7 @@ add_executable(OptiFOLGUI
         Source/Storage/PGChronoType.hpp
         Source/Storage/PGChronoType.cpp
         Source/Storage/StorageHashFunctor.hpp
+        Source/Storage/StorableObjectModelBase.hpp
 )
 
 set(COMMON_COMPILER_OPTIONS
@@ -281,3 +278,5 @@ target_compile_options(OptiFOLTesting PRIVATE
 )
 
 gtest_discover_tests(OptiFOLTesting)
+
+# TODO: add a Doxygen target like https://github.com/halide/Halide/blob/main/doc/CMakeLists.txt

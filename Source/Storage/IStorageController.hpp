@@ -41,6 +41,12 @@ public:
      *  similarly implementation-defined.
      */
     virtual void update() = 0;
+
+    /**
+     * @brief Grabs an immutable reference to the PGProjectModel
+     * @return An immutable observing reference to the Project model
+     */
+    virtual const Glib::RefPtr<StorableObjectModelBase<Project>> peek_project_model() const = 0;
 };
 
 }
