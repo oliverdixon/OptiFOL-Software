@@ -11,8 +11,8 @@
  * @version Development
  */
 
-#ifndef PGPROJECTCACHE_HPP
-#define PGPROJECTCACHE_HPP
+#ifndef PGPROJECTMODEL_HPP
+#define PGPROJECTMODEL_HPP
 
 #include "PGStorableObjectModel.hpp"
 #include "Project.hpp"
@@ -22,7 +22,7 @@ namespace optifol
 
 /**
  * @class PGProjectModel
- * @brief The PGStorableObjectCacheBase specialised for project-level stored objects
+ * @brief The PGStorableObjectModel specialised for project-level stored objects
  */
 class PGProjectModel :
         public PGStorableObjectModel<Project>

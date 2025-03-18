@@ -159,6 +159,7 @@ target_include_directories(OptiFOLCommon SYSTEM PRIVATE ${SIMDJSON_INCLUDE_DIR})
 
 find_program(GLIB_COMPILE_RESOURCES NAMES glib-compile-resources REQUIRED)
 pkg_check_modules(GTKMM REQUIRED gtkmm-4.0)
+find_package(log4cxx REQUIRED)
 
 set(RESOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Resources)
 set(RESOURCE_XML ${RESOURCE_DIR}/optifol.gresource.xml)
@@ -219,6 +220,8 @@ add_executable(OptiFOLGUI
         Source/Storage/PGChronoType.cpp
         Source/Storage/StorageHashFunctor.hpp
         Source/Storage/StorableObjectModelBase.hpp
+        Source/Storage/PGSubsystemModel.cpp
+        Source/Storage/PGSubsystemModel.hpp
 )
 
 set(COMMON_COMPILER_OPTIONS
@@ -238,10 +241,25 @@ if (FALSE)
     target_compile_definitions(OptiFOLGUI PRIVATE OPTIFOL_DISABLE_GUI)
 endif ()
 
-target_link_libraries(OptiFOLGUI PRIVATE OptiFOLCommon OptiFOLGenerated ${GTKMM_LIBRARIES})
-target_include_directories(OptiFOLGUI PRIVATE Source/Interpreter/ ${GENERATED_INCLUDE_DIR})
-target_include_directories(OptiFOLGUI SYSTEM PRIVATE ${GTKMM_INCLUDE_DIRS} ${SIMDJSON_INCLUDE_DIR})
 target_compile_options(OptiFOLGUI PRIVATE ${COMMON_COMPILER_OPTIONS})
+
+target_link_libraries(OptiFOLGUI PRIVATE
+        OptiFOLCommon
+        OptiFOLGenerated
+        log4cxx
+        ${GTKMM_LIBRARIES}
+        ${LOG4CXX_LIBRARIES}
+)
+
+target_include_directories(OptiFOLGUI PRIVATE
+        Source/Interpreter/
+        ${GENERATED_INCLUDE_DIR}
+)
+
+target_include_directories(OptiFOLGUI SYSTEM PRIVATE
+        ${GTKMM_INCLUDE_DIRS}
+        ${SIMDJSON_INCLUDE_DIR}
+)
 
 utils_strip(OptiFOLGUI)
 

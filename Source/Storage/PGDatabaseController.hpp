@@ -20,6 +20,7 @@
 
 #include "IStorageController.hpp"
 #include "PGProjectModel.hpp"
+#include "PGSubsystemModel.hpp"
 #include "../LegacyWrappers.hpp"
 
 namespace optifol
@@ -70,6 +71,7 @@ private:
     std::optional<pqxx::connection> connection;
 
     Glib::RefPtr<PGProjectModel> project_model;
+    Glib::RefPtr<PGSubsystemModel> subsystem_model;
 };
 
 }

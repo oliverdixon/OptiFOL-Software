@@ -49,7 +49,7 @@ std::size_t Project::get_controller_id() const noexcept
 
 bool Project::operator==(const Project &other) const noexcept
 {
-    return id == other.id; // TODO tomorrow
+    return id == other.id;
 }
 
 bool Project::operator==(std::size_t other_id) const noexcept

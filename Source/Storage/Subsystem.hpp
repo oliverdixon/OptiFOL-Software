@@ -13,6 +13,7 @@
 
 #ifndef SUBSYSTEM_HPP
 #define SUBSYSTEM_HPP
+
 #include "IStorageObject.hpp"
 
 namespace optifol
@@ -28,6 +29,24 @@ class Subsystem :
 {
     Subsystem(std::size_t id, const std::string& name, const TimeT& created_time, const TimeT& last_modified_time);
 
+    [[nodiscard]] std::string get_identifier() const override;
+
+    [[nodiscard]] TimeT get_creation_time() const override;
+
+    [[nodiscard]] TimeT get_modified_time() const override;
+
+    [[nodiscard]] std::size_t get_controller_id() const noexcept override;
+
+    /**
+     * @brief Tests a couple of projects for surface-level equality
+     * @param other The other project
+     * @return Is the current project the same as the other project?
+     * @note This comparator determines equality by project metadata.
+     */
+    bool operator==(const Subsystem& other) const noexcept;
+
+    bool operator==(std::size_t other_id) const noexcept override;
+
 private:
     /**
      * @brief Time of initial creation
@@ -41,7 +60,7 @@ private:
      * @note This quantity should be updated upon the changing of Subsystem metadata, or the changing of any data held
      *  by the Subsystem, such as any of its constituent requirements.
      */
-    TimeT last_modified_time;
+    const TimeT last_modified_time;
 
     /**
      * @brief The human-readable name of the Project
@@ -57,4 +76,4 @@ private:
 
 }
 
-#endif //SUBSYSTEM_HPP
+#endif

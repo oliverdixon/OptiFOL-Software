@@ -15,9 +15,9 @@
 #define OPTIFOL_MAINWINDOW_HPP
 
 #include <gtkmm.h>
+#include <log4cxx/logger.h>
 
 #include "../Storage/PGDatabaseController.hpp"
-#include "../Storage/Project.hpp"
 
 namespace optifol
 {
@@ -29,11 +29,11 @@ public:
     MainWindow();
 
 private:
-    static void on_setup_label(const Glib::RefPtr<Gtk::ListItem> &item);
+    static void on_setup_storable_model(const Glib::RefPtr<Gtk::ListItem> &item);
+
+    void on_bind_storable_label(const Glib::RefPtr<Gtk::ListItem>& item) const;
 
     void on_update_storage();
-
-    void on_bind_project(const Glib::RefPtr<Gtk::ListItem>& item) const;
 
     Glib::RefPtr<Gtk::Builder> builder;
 
@@ -43,8 +43,10 @@ private:
     Gtk::Button * update_storage_button;
 
     Glib::RefPtr<Gtk::AlertDialog> database_alert;
+    Glib::RefPtr<Gtk::TreeListModel> tree_list_model;
 
     std::unique_ptr<IStorageController> storage;
+    static std::shared_ptr<log4cxx::Logger> logger;
 };
 
 }

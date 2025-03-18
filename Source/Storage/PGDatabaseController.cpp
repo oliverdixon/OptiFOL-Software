@@ -26,6 +26,7 @@ PGDatabaseController::PGDatabaseController(const std::string& db_uri)
     try {
         connection.emplace(db_uri);
         project_model = Glib::make_refptr_for_instance(new PGProjectModel(*connection));
+        subsystem_model = Glib::make_refptr_for_instance(new PGSubsystemModel(*connection));
 
         pqxx::work tx{*connection};
         tx.exec("SELECT 'init' FROM pg_create_logical_replication_slot($1::text, 'wal2json');",

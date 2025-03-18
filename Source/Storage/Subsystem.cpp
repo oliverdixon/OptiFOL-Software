@@ -27,4 +27,34 @@ Subsystem::Subsystem(const std::size_t id,
 {
 }
 
+std::string Subsystem::get_identifier() const
+{
+    return name;
+}
+
+IStorageObject::TimeT Subsystem::get_creation_time() const
+{
+    return created_time;
+}
+
+IStorageObject::TimeT Subsystem::get_modified_time() const
+{
+    return last_modified_time;
+}
+
+std::size_t Subsystem::get_controller_id() const noexcept
+{
+    return id;
+}
+
+bool Subsystem::operator==(const Subsystem &other) const noexcept
+{
+    return id == other.id;
+}
+
+bool Subsystem::operator==(std::size_t other_id) const noexcept
+{
+    return id == other_id;
+}
+
 }
