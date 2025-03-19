@@ -12,9 +12,11 @@
  */
 
 #include <iostream>
+#include <log4cxx/logger.h>
 #include <pqxx/pqxx>
 
 #include "PGDatabaseController.hpp"
+
 #include "WALJSONPGUpdateNotification.hpp"
 #include "../Exceptions/StorageConnectionException.hpp"
 
@@ -26,7 +28,6 @@ PGDatabaseController::PGDatabaseController(const std::string& db_uri)
     try {
         connection.emplace(db_uri);
         project_model = Glib::make_refptr_for_instance(new PGProjectModel(*connection));
-        subsystem_model = Glib::make_refptr_for_instance(new PGSubsystemModel(*connection));
 
         pqxx::work tx{*connection};
         tx.exec("SELECT 'init' FROM pg_create_logical_replication_slot($1::text, 'wal2json');",
@@ -67,12 +68,34 @@ void PGDatabaseController::update()
         project_model->load();
         project_model->reload();
         project_model->unload();
+
+        for (const auto& subsystem_model_ref : subsystem_models) {
+            const auto model = subsystem_model_ref.second;
+            model->load();
+            model->reload();
+            model->unload();
+        }
     }
 }
 
-const Glib::RefPtr<StorableObjectModelBase<Project>> PGDatabaseController::peek_project_model() const
+const Glib::RefPtr<PGProjectModel> PGDatabaseController::peek_project_model() const
 {
     return project_model;
+}
+
+const Glib::RefPtr<PGSubsystemModel> PGDatabaseController::expand_project_model(const Glib::RefPtr<Project> &project)
+        const
+{
+    const auto subsystem_model_it = subsystem_models.find(project->get_controller_id());
+
+    if (subsystem_model_it == subsystem_models.cend()) {
+        LOG4CXX_WARN(log4cxx::Logger::getLogger("OptiFOL"), "Controller client requested to an expand an unloaded "
+            "project \"" << project->get_identifier() << "\" (ID " << std::to_string(project->get_controller_id()) <<
+            ").");
+        return nullptr;
+    }
+
+    return subsystem_model_it->second;
 }
 
 void PGDatabaseController::despatch_json_change(const std::string_view payload)
@@ -83,20 +106,70 @@ void PGDatabaseController::despatch_json_change(const std::string_view payload)
 
     for (auto change : change_root) {
         const auto parsed_payload = change.get<WALJSONPGUpdateNotification>().value();
-        if (parsed_payload.scope == WALJSONPGUpdateNotification::Scope::Project)
-            switch (parsed_payload.action) {
-            case WALJSONPGUpdateNotification::Action::NoOp:
-                break;
-            case WALJSONPGUpdateNotification::Action::Insert:
-                project_model->enqueue_load(parsed_payload.id);
-                break;
-            case WALJSONPGUpdateNotification::Action::Update:
-                project_model->enqueue_reload(parsed_payload.id);
-                break;
-            case WALJSONPGUpdateNotification::Action::Delete:
-                project_model->enqueue_unload(parsed_payload.id);
-                break;
-            }
+
+        switch (parsed_payload.scope) {
+        case WALJSONPGUpdateNotification::Scope::Project:
+            handle_project_change(parsed_payload);
+            break;
+
+        case WALJSONPGUpdateNotification::Scope::Subsystem:
+            handle_subsystem_change(parsed_payload);
+            break;
+
+        case WALJSONPGUpdateNotification::Scope::Empty:
+            LOG4CXX_WARN(log4cxx::Logger::getLogger("OptiFOL"), "WAL JSON payload was delivered with an empty scope");
+            break;
+        }
+    }
+}
+
+void PGDatabaseController::handle_project_change(const WALJSONPGUpdateNotification &notification)
+{
+    subsystem_models.emplace(notification.id, Glib::make_refptr_for_instance(new PGSubsystemModel(*connection)));
+
+    switch (notification.action) {
+    case WALJSONPGUpdateNotification::Action::NoOp:
+        break;
+    case WALJSONPGUpdateNotification::Action::Insert:
+        project_model->enqueue_load(notification.id);
+        break;
+    case WALJSONPGUpdateNotification::Action::Update:
+        project_model->enqueue_reload(notification.id);
+        break;
+    case WALJSONPGUpdateNotification::Action::Delete:
+        project_model->enqueue_unload(notification.id);
+        break;
+    }
+}
+
+void PGDatabaseController::handle_subsystem_change(const WALJSONPGUpdateNotification &notification)
+{
+    if (!notification.associated_fk.has_value()) {
+        LOG4CXX_ERROR(log4cxx::Logger::getLogger("OptiFOL"), "WAL JSON payload for subsystem change did not reference "
+            "a master project; ignoring and skipping WAL segment.");
+        return;
+    }
+
+    const auto subsystem_model_it = subsystem_models.find(*notification.associated_fk);
+    if (subsystem_model_it == subsystem_models.end()) {
+        LOG4CXX_WARN(log4cxx::Logger::getLogger("OptiFOL"), "WAL JSON payload for subsystem change referenced "
+            "unloaded project; ignoring and skipping WAL segment.");
+        return;
+    }
+
+    const auto model = subsystem_model_it->second;
+    switch (notification.action) {
+    case WALJSONPGUpdateNotification::Action::NoOp:
+        break;
+    case WALJSONPGUpdateNotification::Action::Insert:
+        model->enqueue_load(notification.id);
+        break;
+    case WALJSONPGUpdateNotification::Action::Update:
+        model->enqueue_reload(notification.id);
+        break;
+    case WALJSONPGUpdateNotification::Action::Delete:
+        model->enqueue_unload(notification.id);
+        break;
     }
 }
 

@@ -27,6 +27,7 @@ namespace optifol
 class Subsystem :
     public IStorageObject
 {
+public:
     Subsystem(std::size_t id, const std::string& name, const TimeT& created_time, const TimeT& last_modified_time);
 
     [[nodiscard]] std::string get_identifier() const override;

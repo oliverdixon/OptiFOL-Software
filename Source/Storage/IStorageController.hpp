@@ -15,6 +15,7 @@
 #define ISTORAGECONTROLLER_HPP
 
 #include "PGProjectModel.hpp"
+#include "PGSubsystemModel.hpp"
 
 namespace optifol
 {
@@ -46,7 +47,14 @@ public:
      * @brief Grabs an immutable reference to the PGProjectModel
      * @return An immutable observing reference to the Project model
      */
-    virtual const Glib::RefPtr<StorableObjectModelBase<Project>> peek_project_model() const = 0;
+    virtual const Glib::RefPtr<PGProjectModel> peek_project_model() const = 0;
+
+    /**
+     * @brief Constructs and/or retrieves the Subsystems composing a Project, in the form of a specialised GTK model
+     * @param project The parent Project associated with the target Subsystems
+     * @return The model containing associated Subsystems
+     */
+    virtual const Glib::RefPtr<PGSubsystemModel> expand_project_model(const Glib::RefPtr<Project>& project) const = 0;
 };
 
 }

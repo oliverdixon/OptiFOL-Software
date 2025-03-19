@@ -13,10 +13,13 @@
 
 #ifndef OPTIFOL_DISABLE_GUI
 
+#include <log4cxx/basicconfigurator.h>
+
 #include "Application.hpp"
 
 int main(const int argc, char **argv)
 {
+    log4cxx::BasicConfigurator::configure();
     const auto app = optifol::Application::create();
     return app->run(argc, argv);
 }

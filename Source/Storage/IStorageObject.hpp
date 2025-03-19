@@ -14,9 +14,9 @@
 #ifndef ISTORAGEOBJECT_HPP
 #define ISTORAGEOBJECT_HPP
 
-#include <chrono>
+#include <glibmm/object.h>
 
-#include "../GUI/GTKHelpers.hpp"
+#include <chrono>
 
 namespace optifol
 {
@@ -84,12 +84,12 @@ public:
     virtual bool operator==(std::size_t other_id) const noexcept = 0;
 };
 
-template<typename T>
-concept StorableType = requires(T a)
+template<typename Test>
+concept StorableType = requires(Test a)
 {
-    std::derived_from<T, IStorageObject>;
+    std::derived_from<Test, IStorageObject>;
 };
 
 }
 
-#endif //ISTORAGEOBJECT_HPP
+#endif

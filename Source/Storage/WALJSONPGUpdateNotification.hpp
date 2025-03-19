@@ -55,6 +55,11 @@ public:
     std::size_t id;
 
     /**
+     * @brief An optional slot for a contextually relevant foreign key
+     */
+    std::optional<std::size_t> associated_fk;
+
+    /**
      * @brief The nature of the SQL update
      */
     Action action{Action::NoOp};
@@ -95,12 +100,21 @@ error_code tag_invoke(deserialize_tag, simdjson_value &value, optifol::WALJSONPG
     if (change_kind == "insert") {
         payload.action = optifol::WALJSONPGUpdateNotification::Action::Insert;
         payload.id = object["columnvalues"].at(0);
+
+        if (table_name == "subsystem") // TODO: what the fuck?
+            payload.associated_fk = object["columnvalues"].at(1);
     } else if (change_kind == "update") {
         payload.action = optifol::WALJSONPGUpdateNotification::Action::Update;
         payload.id = object["columnvalues"].at(0);
+
+        if (table_name == "subsystem") // TODO: what the fuck?
+            payload.associated_fk = object["columnvalues"].at(1);
     } else if (change_kind == "delete") {
         payload.action = optifol::WALJSONPGUpdateNotification::Action::Delete;
         payload.id = object["oldkeys"]["keyvalues"].at(0);
+
+        if (table_name == "subsystem") // TODO: what the fuck? Also we need REPLICA IDENTITY FULL set. Any other way?
+            payload.associated_fk = object["oldkeys"]["keyvalues"].at(1);
     } else
         return error_code::STRING_ERROR;
 

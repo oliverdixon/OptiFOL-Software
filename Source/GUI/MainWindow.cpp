@@ -23,7 +23,7 @@
 namespace optifol
 {
 
-std::shared_ptr<log4cxx::Logger> MainWindow::logger(log4cxx::Logger::getLogger("MyApp"));
+std::shared_ptr<log4cxx::Logger> MainWindow::logger(log4cxx::Logger::getLogger("OptiFOL"));
 
 MainWindow::MainWindow():
     builder(Gtk::Builder::create_from_resource("/uk/ac/york/www_users/od641/optifol/UI/MainWindow.ui")),
@@ -37,11 +37,6 @@ MainWindow::MainWindow():
     set_default_size(600, 400);
     set_child(*scrolled_window);
 
-    log4cxx::BasicConfigurator::configure();
-
-    // TODO: https://logging.apache.org/log4cxx/1.4.0/quick-start.html
-    LOG4CXX_INFO(MainWindow::logger, "Hello world!");
-
     try {
         storage = std::make_unique<PGDatabaseController>("postgresql://owd@localhost/optifol");
         update_storage_button->signal_clicked().connect(sigc::mem_fun(*this, &MainWindow::on_update_storage));
@@ -51,7 +46,8 @@ MainWindow::MainWindow():
         return;
     }
 
-    tree_list_model = Gtk::TreeListModel::create(storage->peek_project_model(), {}, true, false);
+    tree_list_model = Gtk::TreeListModel::create(storage->peek_project_model(),
+        sigc::mem_fun(*this, &MainWindow::on_expand_storable_label), true, false);
     const auto selection_model = Gtk::SingleSelection::create(tree_list_model);
     selection_model->set_autoselect(false);
     selection_model->set_can_unselect(true);
@@ -85,32 +81,52 @@ void MainWindow::on_update_storage()
 
 void MainWindow::on_bind_storable_label(const Glib::RefPtr<Gtk::ListItem> &item) const
 {
-    // TODO: I dislike these dynamic casts. Can we be more type-assured at compile-time?
-
     const auto position = item->get_position();
 
-    if (position == GTK_INVALID_LIST_POSITION)
+    if (position == GTK_INVALID_LIST_POSITION) {
+        LOG4CXX_WARN(logger, "Invalid position " << std::to_string(position) << " selected in the project view.");
         return;
+    }
 
     const auto gui_row = tree_list_model->get_row(position);
-    if (!gui_row)
+    if (!gui_row) {
+        LOG4CXX_WARN(logger, "No row at selected position " << std::to_string(position) << " in the project view.");
         return;
+    }
 
     const auto model_item = std::dynamic_pointer_cast<IStorageObject>(gui_row->get_item());
-    if (!model_item)
+    if (!model_item) {
+        LOG4CXX_WARN(logger, "Unexpected type of entity at row " << std::to_string(position) <<
+            " in the project view.");
         return;
+    }
 
     const auto expander = dynamic_cast<Gtk::TreeExpander*>(item->get_child());
-    if (!expander)
+    if (!expander) {
+        LOG4CXX_WARN(logger, "Unexpected type of expander widget at row " << std::to_string(position) <<
+            " in the project view.");
         return;
+    }
 
     expander->set_list_row(gui_row);
 
     const auto label = dynamic_cast<Gtk::Label*>(expander->get_child());
-    if (!label)
+    if (!label) {
+        LOG4CXX_WARN(logger, "Unexpected type of label in the expander for the row at " << std::to_string(position) <<
+            " in the project view.");
         return;
+    }
 
     label->set_text(model_item->get_identifier());
+}
+
+Glib::RefPtr<Gio::ListModel> MainWindow::on_expand_storable_label(const Glib::RefPtr<Glib::ObjectBase> &item) const
+{
+    const auto project_candidate = std::dynamic_pointer_cast<Project>(item);
+    if (project_candidate != nullptr)
+        return storage->expand_project_model(project_candidate);
+
+    return nullptr;
 }
 
 }

@@ -39,6 +39,9 @@ public:
     void reload() override;
 
     void unload() override;
+
+private:
+    const Glib::RefPtr<const Subsystem> dummy_base = Glib::make_refptr_for_instance(new Subsystem(0, {}, {}, {}));
 };
 
 }

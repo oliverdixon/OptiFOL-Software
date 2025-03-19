@@ -21,6 +21,7 @@
 #include "IStorageController.hpp"
 #include "PGProjectModel.hpp"
 #include "PGSubsystemModel.hpp"
+#include "WALJSONPGUpdateNotification.hpp"
 #include "../LegacyWrappers.hpp"
 
 namespace optifol
@@ -55,7 +56,9 @@ public:
      */
     void update() override;
 
-    const Glib::RefPtr<StorableObjectModelBase<Project>> peek_project_model() const override;
+    const Glib::RefPtr<PGProjectModel> peek_project_model() const override;
+
+    const Glib::RefPtr<PGSubsystemModel> expand_project_model(const Glib::RefPtr<Project>& project) const override;
 
 private:
     /**
@@ -64,6 +67,10 @@ private:
      */
     void despatch_json_change(std::string_view payload);
 
+    void handle_project_change(const WALJSONPGUpdateNotification& notification);
+
+    void handle_subsystem_change(const WALJSONPGUpdateNotification& notification);
+
     const std::string wal_slot_name{"optifol_" + std::to_string(LegacyWrappers::get_pid())};
 
     simdjson::ondemand::parser json_parser;
@@ -71,7 +78,12 @@ private:
     std::optional<pqxx::connection> connection;
 
     Glib::RefPtr<PGProjectModel> project_model;
-    Glib::RefPtr<PGSubsystemModel> subsystem_model;
+
+    /*
+     * TODO: put this in the project model. The DB structure is hierarchical, and then the project model can manipulate
+     *  the subsystem model directly. If performance is an issue, we can mirror the Gio::ListStore with some sort of
+     *  internal map, but I highly doubt that will be a problem. */
+    std::unordered_map<std::size_t, Glib::RefPtr<PGSubsystemModel>> subsystem_models;
 };
 
 }

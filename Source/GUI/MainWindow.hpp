@@ -33,6 +33,8 @@ private:
 
     void on_bind_storable_label(const Glib::RefPtr<Gtk::ListItem>& item) const;
 
+    Glib::RefPtr<Gio::ListModel> on_expand_storable_label(const Glib::RefPtr<Glib::ObjectBase>& item) const;
+
     void on_update_storage();
 
     Glib::RefPtr<Gtk::Builder> builder;
