@@ -222,6 +222,8 @@ add_executable(OptiFOLGUI
         Source/Storage/StorableObjectModelBase.hpp
         Source/Storage/PGSubsystemModel.cpp
         Source/Storage/PGSubsystemModel.hpp
+        Source/Storage/PGStorableObjectModelBase.cpp
+        Source/Storage/PGStorableObjectModelBase.hpp
 )
 
 set(COMMON_COMPILER_OPTIONS

@@ -68,13 +68,6 @@ void PGDatabaseController::update()
         project_model->load();
         project_model->reload();
         project_model->unload();
-
-        for (const auto& subsystem_model_ref : subsystem_models) {
-            const auto model = subsystem_model_ref.second;
-            model->load();
-            model->reload();
-            model->unload();
-        }
     }
 }
 
@@ -86,16 +79,7 @@ const Glib::RefPtr<PGProjectModel> PGDatabaseController::peek_project_model() co
 const Glib::RefPtr<PGSubsystemModel> PGDatabaseController::expand_project_model(const Glib::RefPtr<Project> &project)
         const
 {
-    const auto subsystem_model_it = subsystem_models.find(project->get_controller_id());
-
-    if (subsystem_model_it == subsystem_models.cend()) {
-        LOG4CXX_WARN(log4cxx::Logger::getLogger("OptiFOL"), "Controller client requested to an expand an unloaded "
-            "project \"" << project->get_identifier() << "\" (ID " << std::to_string(project->get_controller_id()) <<
-            ").");
-        return nullptr;
-    }
-
-    return subsystem_model_it->second;
+    return project_model->get_subsystem_model(project);
 }
 
 void PGDatabaseController::despatch_json_change(const std::string_view payload)
@@ -123,10 +107,8 @@ void PGDatabaseController::despatch_json_change(const std::string_view payload)
     }
 }
 
-void PGDatabaseController::handle_project_change(const WALJSONPGUpdateNotification &notification)
+void PGDatabaseController::handle_project_change(const WALJSONPGUpdateNotification &notification) const
 {
-    subsystem_models.emplace(notification.id, Glib::make_refptr_for_instance(new PGSubsystemModel(*connection)));
-
     switch (notification.action) {
     case WALJSONPGUpdateNotification::Action::NoOp:
         break;
@@ -150,27 +132,7 @@ void PGDatabaseController::handle_subsystem_change(const WALJSONPGUpdateNotifica
         return;
     }
 
-    const auto subsystem_model_it = subsystem_models.find(*notification.associated_fk);
-    if (subsystem_model_it == subsystem_models.end()) {
-        LOG4CXX_WARN(log4cxx::Logger::getLogger("OptiFOL"), "WAL JSON payload for subsystem change referenced "
-            "unloaded project; ignoring and skipping WAL segment.");
-        return;
-    }
-
-    const auto model = subsystem_model_it->second;
-    switch (notification.action) {
-    case WALJSONPGUpdateNotification::Action::NoOp:
-        break;
-    case WALJSONPGUpdateNotification::Action::Insert:
-        model->enqueue_load(notification.id);
-        break;
-    case WALJSONPGUpdateNotification::Action::Update:
-        model->enqueue_reload(notification.id);
-        break;
-    case WALJSONPGUpdateNotification::Action::Delete:
-        model->enqueue_unload(notification.id);
-        break;
-    }
+    // TODO handle subsystem change notification
 }
 
 }

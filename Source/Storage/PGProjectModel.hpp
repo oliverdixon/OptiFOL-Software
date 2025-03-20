@@ -15,6 +15,7 @@
 #define PGPROJECTMODEL_HPP
 
 #include "PGStorableObjectModel.hpp"
+#include "PGSubsystemModel.hpp"
 #include "Project.hpp"
 
 namespace optifol
@@ -36,14 +37,14 @@ public:
      */
     explicit PGProjectModel(pqxx::connection& connection, std::size_t initial_cache_limit = 128);
 
-    void load() override;
-
-    void reload() override;
-
-    void unload() override;
+    Glib::RefPtr<PGSubsystemModel> get_subsystem_model(const Glib::RefPtr<Project>& project) const;
 
 private:
-    void emplace_project(const pqxx::row& row);
+    pqxx::result filter_objects(const std::ostringstream& sql_parameter) const override;
+
+    void emplace_object(const pqxx::row& row) override;
+
+    std::unordered_map<Glib::RefPtr<Project>, Glib::RefPtr<PGSubsystemModel>> subsystem_models;
 
     const Glib::RefPtr<const Project> dummy_base = Glib::make_refptr_for_instance(new Project(0, {}, {}, {}));
 };

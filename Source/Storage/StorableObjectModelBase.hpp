@@ -11,10 +11,9 @@
  * @version Development
  */
 
-#ifndef STORABLEOBJECTMODELBASE_HPP
-#define STORABLEOBJECTMODELBASE_HPP
+#ifndef STORAGEMODELOBJECTBASE_HPP
+#define STORAGEMODELOBJECTBASE_HPP
 
-#include <queue>
 #include <giomm/liststore.h>
 
 #include "IStorageObject.hpp"
@@ -53,38 +52,6 @@ public:
      * @brief Flush any pending unloads queued by the instance
      */
     virtual void unload() = 0;
-
-    /**
-     * @brief Enqueue an object, identified by its numerical ID, to be loaded into the cache instance
-     * @param id The ID of the object to enqueue
-     */
-    void enqueue_load(const std::size_t id)
-    {
-        load_queue.push(id);
-    }
-
-    /**
-     * @brief Enqueue an object, identified by its numerical ID, to be reloaded into the cache instance
-     * @param id The ID of the object to enqueue
-     */
-    void enqueue_reload(const std::size_t id)
-    {
-        reload_queue.push(id);
-    }
-
-    /**
-     * @brief Enqueue an object, identified by its numerical ID, to be unloaded from the cache instance
-     * @param id The ID of the object to enqueue
-     */
-    void enqueue_unload(const std::size_t id)
-    {
-        unload_queue.push(id);
-    }
-
-protected:
-    std::queue<std::size_t> load_queue;
-    std::queue<std::size_t> reload_queue;
-    std::queue<std::size_t> unload_queue;
 };
 
 }

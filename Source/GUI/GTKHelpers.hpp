@@ -5,7 +5,7 @@
 
 /**
  * @file
- * @brief Class definition for some handy exception-aware GTK static helpers
+ * @brief Class specification for some handy exception-aware GTK static helpers
  * @author Oliver Dixon
  * @date 2025-02-02
  * @version Development

@@ -5,7 +5,7 @@
 
 /**
  * @file
- * @brief Class definition of the storage connection exception
+ * @brief Class specification of the storage connection exception
  * @author Oliver Dixon
  * @date 2025-02-16
  * @version Development

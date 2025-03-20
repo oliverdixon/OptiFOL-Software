@@ -5,7 +5,7 @@
 
 /**
  * @file
- * @brief Class definition of the bad storage notification exception
+ * @brief Class specification of the bad storage notification exception
  * @author Oliver Dixon
  * @date 2025-02-23
  * @version Development

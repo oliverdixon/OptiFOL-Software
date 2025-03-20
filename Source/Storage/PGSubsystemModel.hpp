@@ -15,6 +15,7 @@
 #define PGSUBSYSTEMMODEL_HPP
 
 #include "PGStorableObjectModel.hpp"
+#include "Project.hpp"
 #include "Subsystem.hpp"
 
 namespace optifol
@@ -31,17 +32,28 @@ public:
     /**
      * @brief Construct a subsystem cache container
      * @param connection The established PostgreSQL database connection
+     * @post The number of cached subsystems is zero
      */
     explicit PGSubsystemModel(pqxx::connection& connection);
 
-    void load() override;
+    /**
+     * @brief Construct a subsystem cache container populated with the subsystems of the given project, up to the
+     *  optionally defined initial cache size limit
+     * @param connection The established PostgreSQL database connection
+     * @param initial_project The initial project with which the subsystem model should be associated. If provided, all
+     *  subsystems of the given project will be loaded into the model, up to the defined limit.
+     * @param initial_cache_limit The maximum number of subsystems to initially load into the cache
+     * @post The number of cached subsystems does not exceed the defined limit
+     */
+    PGSubsystemModel(pqxx::connection& connection, const Project& initial_project,
+        std::size_t initial_cache_limit = 128);
 
-    void reload() override;
-
-    void unload() override;
+    void load_for_project(const Project& project, std::size_t limit = 128);
 
 private:
-    const Glib::RefPtr<const Subsystem> dummy_base = Glib::make_refptr_for_instance(new Subsystem(0, {}, {}, {}));
+    pqxx::result filter_objects(const std::ostringstream &sql_parameter) const override;
+
+    void emplace_object(const pqxx::row& row) override;
 };
 
 }

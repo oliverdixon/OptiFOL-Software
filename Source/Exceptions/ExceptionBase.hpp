@@ -5,7 +5,7 @@
 
 /**
  * @file
- * @brief Class definition for the base OptiFOL C++ exception
+ * @brief Class specification for the base OptiFOL C++ exception
  * @author Oliver Dixon
  * @date 2025-02-09
  * @version Development

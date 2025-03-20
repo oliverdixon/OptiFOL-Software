@@ -67,7 +67,7 @@ private:
      */
     void despatch_json_change(std::string_view payload);
 
-    void handle_project_change(const WALJSONPGUpdateNotification& notification);
+    void handle_project_change(const WALJSONPGUpdateNotification& notification) const;
 
     void handle_subsystem_change(const WALJSONPGUpdateNotification& notification);
 
@@ -78,12 +78,6 @@ private:
     std::optional<pqxx::connection> connection;
 
     Glib::RefPtr<PGProjectModel> project_model;
-
-    /*
-     * TODO: put this in the project model. The DB structure is hierarchical, and then the project model can manipulate
-     *  the subsystem model directly. If performance is an issue, we can mirror the Gio::ListStore with some sort of
-     *  internal map, but I highly doubt that will be a problem. */
-    std::unordered_map<std::size_t, Glib::RefPtr<PGSubsystemModel>> subsystem_models;
 };
 
 }

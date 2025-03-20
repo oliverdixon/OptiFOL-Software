@@ -5,7 +5,7 @@
 
 /**
  * @file
- * @brief Class definition for the Semantic Exception
+ * @brief Class specification for the Semantic Exception
  * @author Oliver Dixon
  * @date 2024-11-30
  * @version Development

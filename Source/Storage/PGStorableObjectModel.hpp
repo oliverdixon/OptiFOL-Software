@@ -14,9 +14,8 @@
 #ifndef PGSTORABLEOBJECTMODEL_HPP
 #define PGSTORABLEOBJECTMODEL_HPP
 
-#include <pqxx/connection>
-
 #include "StorableObjectModelBase.hpp"
+#include "PGStorableObjectModelBase.hpp"
 #include "StorageHashFunctor.hpp"
 
 namespace optifol
@@ -29,10 +28,26 @@ namespace optifol
  */
 template<StorableType Type>
 class PGStorableObjectModel :
-        public StorableObjectModelBase<Type>
+        public StorableObjectModelBase<Type>,
+        public PGStorableObjectModelBase
 {
 public:
     ~PGStorableObjectModel() override = default;
+
+    void load() final
+    {
+        PGStorableObjectModelBase::pq_load();
+    }
+
+    void reload() final
+    {
+        PGStorableObjectModelBase::pq_reload();
+    }
+
+    void unload() final
+    {
+        PGStorableObjectModelBase::pq_unload();
+    }
 
 protected:
     /**

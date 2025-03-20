@@ -5,7 +5,7 @@
 
 /**
  * @file
- * @brief Class definition of base for storage exceptions
+ * @brief Class specification of base for storage exceptions
  * @author Oliver Dixon
  * @date 2025-02-16
  * @version Development
