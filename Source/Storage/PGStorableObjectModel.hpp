@@ -34,17 +34,17 @@ class PGStorableObjectModel :
 public:
     ~PGStorableObjectModel() override = default;
 
-    void load() final
+    void load() override
     {
         PGStorableObjectModelBase::pq_load();
     }
 
-    void reload() final
+    void reload() override
     {
         PGStorableObjectModelBase::pq_reload();
     }
 
-    void unload() final
+    void unload() override
     {
         PGStorableObjectModelBase::pq_unload();
     }

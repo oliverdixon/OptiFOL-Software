@@ -144,6 +144,8 @@ add_library(OptiFOLCommon OBJECT
         Source/LegacyWrappers.cpp
         Source/LegacyWrappers.hpp
         Source/OptiFOL.hpp
+        Source/Logging.hpp
+        Source/Logging.cpp
 )
 
 target_link_libraries(OptiFOLCommon PRIVATE nlohmann_json::nlohmann_json pqxx pq simdjson)
@@ -224,6 +226,7 @@ add_executable(OptiFOLGUI
         Source/Storage/PGSubsystemModel.hpp
         Source/Storage/PGStorableObjectModelBase.cpp
         Source/Storage/PGStorableObjectModelBase.hpp
+        Source/Storage/StorageEqualityFunctor.hpp
 )
 
 set(COMMON_COMPILER_OPTIONS

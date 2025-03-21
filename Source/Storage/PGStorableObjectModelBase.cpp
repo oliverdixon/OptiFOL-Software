@@ -20,32 +20,32 @@ namespace optifol
 
 void PGStorableObjectModelBase::enqueue_load(std::size_t id)
 {
-    load_queue.push(id);
+    load_queue.emplace(id);
 }
 
 void PGStorableObjectModelBase::enqueue_reload(std::size_t id)
 {
-    reload_queue.push(id);
+    reload_queue.emplace(id);
 }
 
 void PGStorableObjectModelBase::enqueue_unload(std::size_t id)
 {
-    unload_queue.push(id);
+    unload_queue.emplace(id);
 }
 
 void PGStorableObjectModelBase::enqueue_load(pqxx::row &&row)
 {
-    load_queue.push(row);
+    load_queue.emplace(row);
 }
 
 void PGStorableObjectModelBase::enqueue_reload(pqxx::row &&row)
 {
-    reload_queue.push(row);
+    reload_queue.emplace(row);
 }
 
 void PGStorableObjectModelBase::enqueue_unload(pqxx::row &&row)
 {
-    unload_queue.push(row);
+    unload_queue.emplace(row);
 }
 
 void PGStorableObjectModelBase::pq_load()
@@ -79,7 +79,7 @@ void PGStorableObjectModelBase::pq_load()
     }
 
     if (sql_parameter_count > 0) {
-        // Remove the trailing delimeter from the stream
+        // Remove the trailing delimiter from the stream
         sql_parameter.seekp(-1, std::ios_base::end);
         sql_parameter << '}';
 
@@ -97,7 +97,26 @@ void PGStorableObjectModelBase::pq_reload()
 
 void PGStorableObjectModelBase::pq_unload()
 {
-    // TODO implement
+    while (!unload_queue.empty()) {
+        std::size_t id;
+
+        std::visit([&id](auto&& arg)
+        {
+            /*
+             * If we have a raw ID, the identity function will suffice to assign an ID to target for deletion. If we
+             * have a full row (unlikely for unloading, but still possible on the API), grab the ID from the row.
+             */
+
+            using DeducedType = std::decay_t<decltype(arg)>;
+            if constexpr (std::is_same_v<DeducedType, std::size_t>)
+                id = arg;
+            else if constexpr (std::is_same_v<DeducedType, pqxx::row>)
+                id = arg[0].template as<std::size_t>();
+        }, unload_queue.front());
+
+        unload_queue.pop();
+        deplace_object(id);
+    }
 }
 
 }

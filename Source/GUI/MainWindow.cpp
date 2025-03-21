@@ -47,7 +47,7 @@ MainWindow::MainWindow():
     }
 
     tree_list_model = Gtk::TreeListModel::create(storage->peek_project_model(),
-        sigc::mem_fun(*this, &MainWindow::on_expand_storable_label), true, false);
+        sigc::mem_fun(*this, &MainWindow::on_expand_storable_label), true, true);
     const auto selection_model = Gtk::SingleSelection::create(tree_list_model);
     selection_model->set_autoselect(false);
     selection_model->set_can_unselect(true);

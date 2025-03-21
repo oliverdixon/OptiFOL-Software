@@ -17,6 +17,7 @@
 #include "PGStorableObjectModel.hpp"
 #include "PGSubsystemModel.hpp"
 #include "Project.hpp"
+#include "StorageEqualityFunctor.hpp"
 
 namespace optifol
 {
@@ -39,12 +40,22 @@ public:
 
     Glib::RefPtr<PGSubsystemModel> get_subsystem_model(const Glib::RefPtr<Project>& project) const;
 
+    Glib::RefPtr<PGSubsystemModel> get_subsystem_model(std::size_t project_id) const;
+
+    void load() override;
+
+    void unload() override;
+
 private:
-    pqxx::result filter_objects(const std::ostringstream& sql_parameter) const override;
+    pqxx::result filter_objects(const std::ostringstream& sql_parameter, std::size_t maximum_return_count) const
+        override;
 
     void emplace_object(const pqxx::row& row) override;
 
-    std::unordered_map<Glib::RefPtr<Project>, Glib::RefPtr<PGSubsystemModel>> subsystem_models;
+    void deplace_object(std::size_t id) override;
+
+    std::unordered_map<Glib::RefPtr<Project>, Glib::RefPtr<PGSubsystemModel>, StorageHashFunctor<Project>,
+        StorageEqualityFunctor<Project>> subsystem_models;
 
     const Glib::RefPtr<const Project> dummy_base = Glib::make_refptr_for_instance(new Project(0, {}, {}, {}));
 };

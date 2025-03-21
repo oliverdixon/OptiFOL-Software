@@ -11,13 +11,12 @@
  * @version Development
  */
 
-#include <iostream>
-#include <log4cxx/logger.h>
 #include <pqxx/pqxx>
 
 #include "PGDatabaseController.hpp"
 
 #include "WALJSONPGUpdateNotification.hpp"
+#include "../Logging.hpp"
 #include "../Exceptions/StorageConnectionException.hpp"
 
 namespace optifol
@@ -101,7 +100,7 @@ void PGDatabaseController::despatch_json_change(const std::string_view payload)
             break;
 
         case WALJSONPGUpdateNotification::Scope::Empty:
-            LOG4CXX_WARN(log4cxx::Logger::getLogger("OptiFOL"), "WAL JSON payload was delivered with an empty scope");
+            LOG4CXX_WARN(Logging::get_logger(), "WAL JSON payload was delivered with an empty scope");
             break;
         }
     }
@@ -110,8 +109,7 @@ void PGDatabaseController::despatch_json_change(const std::string_view payload)
 void PGDatabaseController::handle_project_change(const WALJSONPGUpdateNotification &notification) const
 {
     switch (notification.action) {
-    case WALJSONPGUpdateNotification::Action::NoOp:
-        break;
+    case WALJSONPGUpdateNotification::Action::NoOp: break;
     case WALJSONPGUpdateNotification::Action::Insert:
         project_model->enqueue_load(notification.id);
         break;
@@ -124,15 +122,26 @@ void PGDatabaseController::handle_project_change(const WALJSONPGUpdateNotificati
     }
 }
 
-void PGDatabaseController::handle_subsystem_change(const WALJSONPGUpdateNotification &notification)
+void PGDatabaseController::handle_subsystem_change(const WALJSONPGUpdateNotification &notification) const
 {
     if (!notification.associated_fk.has_value()) {
-        LOG4CXX_ERROR(log4cxx::Logger::getLogger("OptiFOL"), "WAL JSON payload for subsystem change did not reference "
-            "a master project; ignoring and skipping WAL segment.");
+        LOG4CXX_WARN(Logging::get_logger(), "WAL JSON payload for subsystem change did not reference a master project; "
+                                            "ignoring and skipping WAL segment.");
         return;
     }
 
-    // TODO handle subsystem change notification
+    switch (notification.action) {
+    case WALJSONPGUpdateNotification::Action::NoOp: break;
+    case WALJSONPGUpdateNotification::Action::Insert:
+        project_model->get_subsystem_model(*notification.associated_fk)->enqueue_load(notification.id);
+        break;
+    case WALJSONPGUpdateNotification::Action::Update:
+        project_model->get_subsystem_model(*notification.associated_fk)->enqueue_reload(notification.id);
+        break;
+    case WALJSONPGUpdateNotification::Action::Delete:
+        project_model->get_subsystem_model(*notification.associated_fk)->enqueue_unload(notification.id);
+        break;
+    }
 }
 
 }

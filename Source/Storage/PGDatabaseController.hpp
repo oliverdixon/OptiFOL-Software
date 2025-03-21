@@ -69,7 +69,7 @@ private:
 
     void handle_project_change(const WALJSONPGUpdateNotification& notification) const;
 
-    void handle_subsystem_change(const WALJSONPGUpdateNotification& notification);
+    void handle_subsystem_change(const WALJSONPGUpdateNotification& notification) const;
 
     const std::string wal_slot_name{"optifol_" + std::to_string(LegacyWrappers::get_pid())};
 

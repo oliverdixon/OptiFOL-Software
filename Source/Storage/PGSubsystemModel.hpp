@@ -36,6 +36,8 @@ public:
      */
     explicit PGSubsystemModel(pqxx::connection& connection);
 
+    ~PGSubsystemModel() override;
+
     /**
      * @brief Construct a subsystem cache container populated with the subsystems of the given project, up to the
      *  optionally defined initial cache size limit
@@ -51,9 +53,14 @@ public:
     void load_for_project(const Project& project, std::size_t limit = 128);
 
 private:
-    pqxx::result filter_objects(const std::ostringstream &sql_parameter) const override;
+    pqxx::result filter_objects(const std::ostringstream &sql_parameter, std::size_t maximum_return_count) const
+        override;
 
     void emplace_object(const pqxx::row& row) override;
+
+    void deplace_object(std::size_t id) override;
+
+    const Glib::RefPtr<const Subsystem> dummy_base = Glib::make_refptr_for_instance(new Subsystem(0, {}, {}, {}));
 };
 
 }

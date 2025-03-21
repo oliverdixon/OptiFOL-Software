@@ -82,6 +82,11 @@ struct StorageHashFunctor
     {
         return storable_object_id;
     }
+
+    std::size_t operator()(const Glib::RefPtr<Type>& shared_storage_object) const noexcept // TODO is this noexcept?
+    {
+        return hash_type{}(*shared_storage_object);
+    }
 };
 
 }

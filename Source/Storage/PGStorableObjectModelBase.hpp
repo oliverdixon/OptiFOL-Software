@@ -69,9 +69,12 @@ protected:
 
     void pq_unload();
 
-    virtual pqxx::result filter_objects(const std::ostringstream& sql_parameter) const = 0;
+    [[nodiscard]] virtual pqxx::result filter_objects(const std::ostringstream& sql_parameter,
+        std::size_t maximum_return_count = 128) const = 0;
 
     virtual void emplace_object(const pqxx::row& row) = 0;
+
+    virtual void deplace_object(std::size_t id) = 0;
 
     std::queue<std::variant<std::size_t, pqxx::row>> load_queue;
     std::queue<std::variant<std::size_t, pqxx::row>> reload_queue;
