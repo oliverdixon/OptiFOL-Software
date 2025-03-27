@@ -20,6 +20,7 @@
 namespace optifol
 {
 
+// TODO: cannot be used until PGStorableObjectModelBase requirements are satisfied.
 class PGUnitTestModel :
         public PGStorableObjectModel<UnitTest>
 {

@@ -58,8 +58,6 @@ public:
 
     const Glib::RefPtr<PGProjectModel> peek_project_model() const override;
 
-    const Glib::RefPtr<PGSubsystemModel> expand_project_model(const Glib::RefPtr<Project>& project) const override;
-
 private:
     /**
      * @brief Parse and action the changes described by a JSON-formatted WAL replication message from the DB

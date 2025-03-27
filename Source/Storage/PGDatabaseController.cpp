@@ -75,12 +75,6 @@ const Glib::RefPtr<PGProjectModel> PGDatabaseController::peek_project_model() co
     return project_model;
 }
 
-const Glib::RefPtr<PGSubsystemModel> PGDatabaseController::expand_project_model(const Glib::RefPtr<Project> &project)
-        const
-{
-    return project_model->get_subsystem_model(project);
-}
-
 void PGDatabaseController::despatch_json_change(const std::string_view payload)
 {
     const auto json_payload = simdjson::padded_string{payload};

@@ -14,8 +14,10 @@
 #ifndef PGSUBSYSTEMMODEL_HPP
 #define PGSUBSYSTEMMODEL_HPP
 
+#include "PGRequirementModel.hpp"
 #include "PGStorableObjectModel.hpp"
 #include "Project.hpp"
+#include "StorageEqualityFunctor.hpp"
 #include "Subsystem.hpp"
 
 namespace optifol
@@ -36,8 +38,6 @@ public:
      */
     explicit PGSubsystemModel(pqxx::connection& connection);
 
-    ~PGSubsystemModel() override;
-
     /**
      * @brief Construct a subsystem cache container populated with the subsystems of the given project, up to the
      *  optionally defined initial cache size limit
@@ -50,6 +50,8 @@ public:
     PGSubsystemModel(pqxx::connection& connection, const Project& initial_project,
         std::size_t initial_cache_limit = 128);
 
+    ~PGSubsystemModel() override;
+
     void load_for_project(const Project& project, std::size_t limit = 128);
 
 private:
@@ -59,6 +61,9 @@ private:
     void emplace_object(const pqxx::row& row) override;
 
     void deplace_object(std::size_t id) override;
+
+    std::unordered_map<Glib::RefPtr<Subsystem>, Glib::RefPtr<PGRequirementModel>, StorageHashFunctor<Project>,
+        StorageEqualityFunctor<Subsystem>> requirement_models;
 
     const Glib::RefPtr<const Subsystem> dummy_base = Glib::make_refptr_for_instance(new Subsystem(0, {}, {}, {}));
 };

@@ -15,8 +15,8 @@
 #define OPTIFOL_MAINWINDOW_HPP
 
 #include <gtkmm.h>
-#include <log4cxx/logger.h>
 
+#include "ProjectHierarchyPane.hpp"
 #include "../Storage/PGDatabaseController.hpp"
 
 namespace optifol
@@ -29,25 +29,17 @@ public:
     MainWindow();
 
 private:
-    static void on_setup_storable_model(const Glib::RefPtr<Gtk::ListItem> &item);
-
-    void on_bind_storable_label(const Glib::RefPtr<Gtk::ListItem>& item) const;
-
-    Glib::RefPtr<Gio::ListModel> on_expand_storable_label(const Glib::RefPtr<Glib::ObjectBase>& item) const;
-
     void on_update_storage();
 
     Glib::RefPtr<Gtk::Builder> builder;
 
-    Gtk::ListView * project_view;
+    Gtk::ColumnView * requirements_view;
     Gtk::Box * root_grid;
     Gtk::Button * update_storage_button;
-
     Glib::RefPtr<Gtk::AlertDialog> database_alert;
-    Glib::RefPtr<Gtk::TreeListModel> tree_list_model;
 
+    std::unique_ptr<ProjectHierarchyPane> project_hierarchy_pane;
     std::unique_ptr<IStorageController> storage;
-    static std::shared_ptr<log4cxx::Logger> logger;
 };
 
 }
