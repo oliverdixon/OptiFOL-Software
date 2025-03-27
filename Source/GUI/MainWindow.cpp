@@ -27,15 +27,14 @@ std::shared_ptr<log4cxx::Logger> MainWindow::logger(log4cxx::Logger::getLogger("
 
 MainWindow::MainWindow():
     builder(Gtk::Builder::create_from_resource("/uk/ac/york/www_users/od641/optifol/UI/MainWindow.ui")),
-    scrolled_window(GTKHelpers::get_widget<Gtk::ScrolledWindow>("Main Window", builder, "scrolled_window")),
     project_view(GTKHelpers::get_widget<Gtk::ListView>("Main Window", builder, "project_view")),
-    root_grid(GTKHelpers::get_widget<Gtk::Grid>("Main Window", builder, "root_grid")),
+    root_grid(GTKHelpers::get_widget<Gtk::Box>("Main Window", builder, "root_grid")),
     update_storage_button(GTKHelpers::get_widget<Gtk::Button>("Main Window", builder, "update_storage_button")),
     database_alert(GTKHelpers::get_object<Gtk::AlertDialog>("Main Window", builder, "database_alert"))
 {
     set_title("OptiFOL");
     set_default_size(600, 400);
-    set_child(*scrolled_window);
+    set_child(*root_grid);
 
     try {
         storage = std::make_unique<PGDatabaseController>("postgresql://owd@localhost/optifol");
@@ -57,6 +56,10 @@ MainWindow::MainWindow():
     factory->signal_setup().connect(sigc::ptr_fun(MainWindow::on_setup_storable_model));
     factory->signal_bind().connect(sigc::mem_fun(*this, &MainWindow::on_bind_storable_label));
     project_view->set_factory(factory);
+
+    const auto css_provider = Gtk::CssProvider::create();
+    Gtk::StyleProvider::add_provider_for_display(get_display(), css_provider, GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+    css_provider->load_from_resource("/uk/ac/york/www_users/od641/optifol/UI/MainWindow/styles.css");
 }
 
 void MainWindow::on_setup_storable_model(const Glib::RefPtr<Gtk::ListItem> &item)

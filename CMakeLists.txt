@@ -1,5 +1,13 @@
-# OptiFOL CMakeLists
-# Copyright (C) 2025 Oliver Dixon
+# Copyright (c) All Rights Reserved
+# 2025 Oliver Dixon <od641@york.ac.uk>
+
+# File: CMakeLists.txt
+# Brief: Build the OptiFOL system with CMake
+# Author: Oliver Dixon
+# Date: 2024-11-15
+# Version: Development
+
+# TODO: separate this out into multiple CMake files: Generated, Common, GUI, test, and Doxygen (where applicable).
 
 cmake_minimum_required(VERSION 3.7 FATAL_ERROR)
 include(FetchContent)
@@ -156,6 +164,7 @@ target_include_directories(OptiFOLCommon SYSTEM PRIVATE ${SIMDJSON_INCLUDE_DIR})
 ##                                    ##
 ## Requires:                          ##
 ##  - glib-compile-resources          ##
+##  - awk                             ##
 ##  - gtkmm >= 4.0                    ##
 ########################################
 
@@ -164,9 +173,39 @@ pkg_check_modules(GTKMM REQUIRED gtkmm-4.0)
 find_package(log4cxx REQUIRED)
 
 set(RESOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Resources)
-set(RESOURCE_XML ${RESOURCE_DIR}/optifol.gresource.xml)
+set(RESOURCE_XML_IN ${RESOURCE_DIR}/optifol.gresource.xml.in)
+set(RESOURCE_XML ${GENERATED_SRC_DIR}/optifol.gresource.xml)
 set(RESOURCE_OUT ${GENERATED_SRC_DIR}/resources.c)
 set(RESOURCE_DEP ${GENERATED_SRC_DIR}/optifol.gresource.d)
+
+set(AWK_SUBSTITUTION_SCRIPT ${RESOURCE_DIR}/substitute.awk)
+
+set(MAINWINDOW_RESOURCE_INPUT ${RESOURCE_DIR}/UI/MainWindow/MainWindow.ui.in)
+set(MAINWINDOW_RESOURCE_OUTPUT ${GENERATED_SRC_DIR}/MainWindow.ui)
+set(MAINWINDOW_RESOURCE_COMPONENTS
+        ${RESOURCE_DIR}/UI/MainWindow/EditorPane.ui
+        ${RESOURCE_DIR}/UI/MainWindow/ProjectPane.ui
+        ${RESOURCE_DIR}/UI/MainWindow/replacements.txt
+)
+
+# Generate the Main Window UI specification file using the given Awk script. The Awk script nominally takes a number of
+# key-value pairs, defined in ./replacements.txt (relative to the location of the UI files), and replaces all instances
+# of the key with the contents of the file whose path is detained by the value.
+add_custom_command(
+        OUTPUT ${MAINWINDOW_RESOURCE_OUTPUT}
+        MAIN_DEPENDENCY ${MAINWINDOW_RESOURCE_INPUT}
+        DEPENDS ${MAINWINDOW_RESOURCE_COMPONENTS} ${AWK_SUBSTITUTION_SCRIPT}
+        WORKING_DIRECTORY ${RESOURCE_DIR}/UI/MainWindow
+        COMMAND awk -f ${AWK_SUBSTITUTION_SCRIPT} > ${MAINWINDOW_RESOURCE_OUTPUT}
+        ARGS ${MAINWINDOW_RESOURCE_INPUT}
+)
+
+# Performs any CMake variable substitutions in the GResources manifest. This is required due to some included resource
+# files being generated dynamically, hence existing in an implementation-defined generated source directory.
+configure_file(
+        ${RESOURCE_XML_IN}
+        ${RESOURCE_XML}
+)
 
 # The below command generates the 'resources.c' pseudo-blob with 'glib-compile-resources', containing octal
 # representations of GTK resources. This is later linked into the GUI target only. A Make-style depfile is also created
@@ -175,18 +214,19 @@ set(RESOURCE_DEP ${GENERATED_SRC_DIR}/optifol.gresource.d)
 add_custom_command(
         OUTPUT ${RESOURCE_OUT}
         MAIN_DEPENDENCY ${RESOURCE_XML}
+        DEPENDS ${MAINWINDOW_RESOURCE_OUTPUT}
         DEPFILE ${RESOURCE_DEP}
         VERBATIM
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} # Encourage glib-compile-resources to emit relative paths
         BYPRODUCTS ${RESOURCE_DEP} # Don't let Ninja absorb the depfile into its internal database
         COMMAND ${GLIB_COMPILE_RESOURCES}
         ARGS
-        --generate-source
-        --generate-phony-targets # Individual resource files are not generated
-        --dependency-file=${RESOURCE_DEP}
-        --target=${RESOURCE_OUT}
-        --sourcedir=${RESOURCE_DIR}
-        ${RESOURCE_XML}
+            --generate-source
+            --generate-phony-targets # Individual resource files are not generated
+            --dependency-file=${RESOURCE_DEP}
+            --target=${RESOURCE_OUT}
+            --sourcedir=${RESOURCE_DIR}
+            ${RESOURCE_XML}
         COMMAND sed -i "s|${CMAKE_CURRENT_BINARY_DIR}/||g" ${RESOURCE_DEP} # Clean up any paths that should be relative
 )
 
@@ -227,6 +267,14 @@ add_executable(OptiFOLGUI
         Source/Storage/PGStorableObjectModelBase.cpp
         Source/Storage/PGStorableObjectModelBase.hpp
         Source/Storage/StorageEqualityFunctor.hpp
+        Source/Storage/PGRequirementModel.cpp
+        Source/Storage/PGRequirementModel.hpp
+        Source/Storage/Requirement.cpp
+        Source/Storage/Requirement.hpp
+        Source/Storage/UnitTest.cpp
+        Source/Storage/UnitTest.hpp
+        Source/Storage/PGUnitTestModel.cpp
+        Source/Storage/PGUnitTestModel.hpp
 )
 
 set(COMMON_COMPILER_OPTIONS
@@ -294,7 +342,7 @@ add_executable(OptiFOLTesting
 
 target_include_directories(OptiFOLTesting PRIVATE Source/Interpreter/)
 target_include_directories(OptiFOLTesting SYSTEM PRIVATE ${GENERATED_INCLUDE_DIR})
-target_link_libraries(OptiFOLTesting PRIVATE OptiFOLCommon OptiFOLGenerated GTest::gtest_main)
+target_link_libraries(OptiFOLTesting PRIVATE OptiFOLCommon OptiFOLGenerated log4cxx GTest::gtest_main)
 target_compile_options(OptiFOLTesting PRIVATE
         ${COMMON_COMPILER_OPTIONS}
         -Wno-global-constructors # GTest is known to generate declarations which require global constructors

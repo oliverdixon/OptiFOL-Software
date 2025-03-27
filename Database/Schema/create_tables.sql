@@ -27,7 +27,9 @@ CREATE TABLE requirement
     name          TEXT      NOT NULL,
     created_at    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     last_modified TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    sentence      TEXT      NOT NULL
+    sentence      TEXT      NOT NULL,
+    test_id       INTEGER REFERENCES test (id) ON DELETE CASCADE,
+    priority      INTEGER   NOT NULL
 );
 
 CREATE TABLE stakeholder
@@ -41,4 +43,15 @@ CREATE TABLE stakeholder_requirement
     id             INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     stakeholder_id INTEGER NOT NULL REFERENCES stakeholder (id) ON DELETE CASCADE,
     requirement_id INTEGER NOT NULL REFERENCES requirement (id) ON DELETE CASCADE
+);
+
+CREATE TABLE test
+(
+    id            INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    test_suite    TEXT      NOT NULL,
+    note          TEXT,
+    created_at    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    last_modified TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    last_executed TIMESTAMP,
+    last_result   BOOLEAN
 );

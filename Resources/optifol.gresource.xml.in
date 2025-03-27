@@ -6,8 +6,9 @@
 
 <gresources>
     <gresource prefix="/uk/ac/york/www_users/od641/optifol">
-        <file preprocess="xml-stripblanks">UI/MainWindow.ui</file>
+        <file alias="UI/MainWindow.ui" preprocess="xml-stripblanks">${MAINWINDOW_RESOURCE_OUTPUT}</file>
         <file preprocess="xml-stripblanks">UI/Application.ui</file>
+        <file>UI/MainWindow/styles.css</file>
         <file>Images/wide_logo.png</file>
     </gresource>
 </gresources>

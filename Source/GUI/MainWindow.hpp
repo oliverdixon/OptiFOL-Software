@@ -39,9 +39,8 @@ private:
 
     Glib::RefPtr<Gtk::Builder> builder;
 
-    Gtk::ScrolledWindow * scrolled_window;
     Gtk::ListView * project_view;
-    Gtk::Grid * root_grid;
+    Gtk::Box * root_grid;
     Gtk::Button * update_storage_button;
 
     Glib::RefPtr<Gtk::AlertDialog> database_alert;

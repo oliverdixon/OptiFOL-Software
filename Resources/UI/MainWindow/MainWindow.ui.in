@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  - Copyright (c) All Rights Reserved
+  - 2025 Oliver Dixon <od641@york.ac.uk>
+  -->
+
+<interface>
+    <object class="GtkBox" id="root_grid">
+        <property name="orientation">vertical</property>
+        <child>
+            <object class="GtkPaned">
+                <property name="orientation">horizontal</property>
+
+                <!--
+                  - The leftmost container, typically containing project-related views such as the interactive
+                  - hierarchical explorer view and any project metadata.
+                  -->
+                <child>
+                    ${MAINWINDOW_PROJECT_PANE}
+                </child>
+
+                <!--
+                  - The central stack container, typically containing editor-related views such as the tabular
+                  - requirements indexer, project reports: anything extensively graphical or of premier interest to the
+                  - user.
+                  -->
+                <child>
+                    ${MAINWINDOW_EDITOR_PANE}
+                </child>
+            </object>
+        </child>
+        <child>
+            <object class="GtkBox" id="system_status_bar">
+                <style>
+                    <class name="status_bar" />
+                    <class name="boxed" />
+                </style>
+                <child>
+                    <object class="GtkLabel">
+                        <property name="label">Ready.</property>
+                    </object>
+                </child>
+            </object>
+        </child>
+    </object>
+
+    <!--
+      - The modal database alert dialog to inform users of "backend database errors", whatever they are.
+      - TODO:
+      -     This should be replaced with a separate window containing icons, further info, etc. Strings copied directly
+      -     from a third-party application such as libpqxx should be formatted in monospace and placed in a read-only
+      -     editor container with a control to copy verbatim to the clipboard, as it may be poorly formatted or be
+      -     debugging information, which we don't want to expose to the user as a first-class UI label.
+      -->
+    <object class="GtkAlertDialog" id="database_alert">
+        <property name="message">Backend Database Error</property>
+        <property name="modal">TRUE</property>
+    </object>
+</interface>

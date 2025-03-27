@@ -1,0 +1,2 @@
+MAINWINDOW_PROJECT_PANE=./ProjectPane.ui
+MAINWINDOW_EDITOR_PANE=./EditorPane.ui

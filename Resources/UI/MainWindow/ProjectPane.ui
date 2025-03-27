@@ -1,0 +1,42 @@
+<object class="GtkBox">
+    <property name="orientation">vertical</property>
+    <child>
+        <object class="GtkDropDown">
+            <property name="model">
+                <object class="GtkStringList">
+                    <items>
+                        <item>Project Explorer</item>
+                        <item>Project Metadata</item>
+                    </items>
+                </object>
+            </property>
+        </object>
+    </child>
+    <child>
+        <object class="GtkStack">
+            <child>
+                <object class="GtkStackPage">
+                    <property name="child">
+                        <object class="GtkBox">
+                            <property name="orientation">vertical</property>
+                            <child>
+                                <object class="GtkScrolledWindow">
+                                    <property name="vexpand">TRUE</property>
+                                    <child>
+                                        <object class="GtkListView" id="project_view">
+                                        </object>
+                                    </child>
+                                </object>
+                            </child>
+                            <child>
+                                <object class="GtkButton" id="update_storage_button">
+                                    <property name="label">Update Storage</property>
+                                </object>
+                            </child>
+                        </object>
+                    </property>
+                </object>
+            </child>
+        </object>
+    </child>
+</object>
