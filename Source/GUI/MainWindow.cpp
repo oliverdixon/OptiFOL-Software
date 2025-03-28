@@ -24,7 +24,6 @@ namespace optifol
 
 MainWindow::MainWindow():
     builder(Gtk::Builder::create_from_resource("/uk/ac/york/www_users/od641/optifol/UI/MainWindow.ui")),
-    requirements_view(GTKHelpers::get_widget<Gtk::ColumnView>("Main Window", builder, "requirements_view")),
     root_grid(GTKHelpers::get_widget<Gtk::Box>("Main Window", builder, "root_grid")),
     update_storage_button(GTKHelpers::get_widget<Gtk::Button>("Main Window", builder, "update_storage_button")),
     database_alert(GTKHelpers::get_object<Gtk::AlertDialog>("Main Window", builder, "database_alert"))
@@ -40,6 +39,15 @@ MainWindow::MainWindow():
         project_hierarchy_pane = std::make_unique<ProjectHierarchyPane>(
             GTKHelpers::get_widget<Gtk::ListView>("Main Window", builder, "project_view"),
             storage->peek_project_model()
+        );
+
+        const auto test_model = storage->peek_project_model()->get_subsystem_model(218)->get_requirement_model(547);
+        test_model->enqueue_load(1);
+        test_model->load();
+
+        requirements_index_area = std::make_unique<RequirementsIndexArea>(
+            GTKHelpers::get_widget<Gtk::ColumnView>("Main Window", builder, "requirements_view"),
+            test_model
         );
     } catch (const StorageConnectionException& exception) {
         database_alert->set_detail(exception.what());

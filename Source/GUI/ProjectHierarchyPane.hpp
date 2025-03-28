@@ -33,9 +33,9 @@ public:
     /**
      * @brief Construct a project pane manager given a managed Gtk::ListView resource and backend model
      * @param view The list view UI element into which the entries are rendered
-     * @param model The backend storage model used to populate the model and stream data updates
+     * @param initial_model The backend storage model used to populate the model and stream data updates
      */
-    ProjectHierarchyPane(Gtk::ListView * view, const Glib::RefPtr<PGProjectModel> &model);
+    ProjectHierarchyPane(Gtk::ListView * view, const Glib::RefPtr<PGProjectModel> &initial_model);
 
 private:
     /**

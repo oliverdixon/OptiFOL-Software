@@ -32,6 +32,8 @@ public:
 
     ~PGRequirementModel() override = default;
 
+    void load_for_subsystem(const Subsystem& subsystem, std::size_t limit = 4096);
+
 private:
     pqxx::result filter_objects(const std::ostringstream &sql_parameter, std::size_t maximum_return_count) const
         override;

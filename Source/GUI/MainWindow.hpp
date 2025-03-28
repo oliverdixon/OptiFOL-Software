@@ -17,6 +17,7 @@
 #include <gtkmm.h>
 
 #include "ProjectHierarchyPane.hpp"
+#include "RequirementsIndexArea.hpp"
 #include "../Storage/PGDatabaseController.hpp"
 
 namespace optifol
@@ -33,12 +34,13 @@ private:
 
     Glib::RefPtr<Gtk::Builder> builder;
 
-    Gtk::ColumnView * requirements_view;
     Gtk::Box * root_grid;
     Gtk::Button * update_storage_button;
     Glib::RefPtr<Gtk::AlertDialog> database_alert;
 
     std::unique_ptr<ProjectHierarchyPane> project_hierarchy_pane;
+    std::unique_ptr<RequirementsIndexArea> requirements_index_area;
+
     std::unique_ptr<IStorageController> storage;
 };
 

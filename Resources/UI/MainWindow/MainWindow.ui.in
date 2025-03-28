@@ -32,8 +32,8 @@
         <child>
             <object class="GtkBox" id="system_status_bar">
                 <style>
-                    <class name="status_bar" />
-                    <class name="boxed" />
+                    <class name="optifol_status_bar" />
+                    <class name="optifol_boxed" />
                 </style>
                 <child>
                     <object class="GtkLabel">

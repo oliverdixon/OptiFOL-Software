@@ -54,6 +54,10 @@ public:
 
     void load_for_project(const Project& project, std::size_t limit = 128);
 
+    Glib::RefPtr<PGRequirementModel> get_requirement_model(const Glib::RefPtr<Subsystem>& subsystem) const;
+
+    Glib::RefPtr<PGRequirementModel> get_requirement_model(std::size_t subsystem_id) const;
+
 private:
     pqxx::result filter_objects(const std::ostringstream &sql_parameter, std::size_t maximum_return_count) const
         override;
@@ -62,7 +66,7 @@ private:
 
     void deplace_object(std::size_t id) override;
 
-    std::unordered_map<Glib::RefPtr<Subsystem>, Glib::RefPtr<PGRequirementModel>, StorageHashFunctor<Project>,
+    std::unordered_map<Glib::RefPtr<Subsystem>, Glib::RefPtr<PGRequirementModel>, StorageHashFunctor<Subsystem>,
         StorageEqualityFunctor<Subsystem>> requirement_models;
 
     const Glib::RefPtr<const Subsystem> dummy_base = Glib::make_refptr_for_instance(new Subsystem(0, {}, {}, {}));

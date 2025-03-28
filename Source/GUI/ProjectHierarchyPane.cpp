@@ -21,10 +21,10 @@ namespace optifol
 
 std::shared_ptr<log4cxx::Logger> ProjectHierarchyPane::logger(log4cxx::Logger::getLogger("OptiFOL"));
 
-ProjectHierarchyPane::ProjectHierarchyPane(Gtk::ListView *view, const Glib::RefPtr<PGProjectModel>& model) :
-    project_model(model)
+ProjectHierarchyPane::ProjectHierarchyPane(Gtk::ListView *view, const Glib::RefPtr<PGProjectModel>& initial_model) :
+    project_model(initial_model)
 {
-    tree_model = Gtk::TreeListModel::create(model,
+    tree_model = Gtk::TreeListModel::create(initial_model,
         sigc::mem_fun(*this, &ProjectHierarchyPane::on_expand), true, true);
     const auto selection_model = Gtk::SingleSelection::create(tree_model);
     selection_model->set_autoselect(false);

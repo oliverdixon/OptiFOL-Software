@@ -277,6 +277,8 @@ add_executable(OptiFOLGUI
         Source/Storage/PGUnitTestModel.hpp
         Source/GUI/ProjectHierarchyPane.cpp
         Source/GUI/ProjectHierarchyPane.hpp
+        Source/GUI/RequirementsIndexArea.cpp
+        Source/GUI/RequirementsIndexArea.hpp
 )
 
 set(COMMON_COMPILER_OPTIONS

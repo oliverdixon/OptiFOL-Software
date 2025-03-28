@@ -65,13 +65,13 @@ void PGStorableObjectModelBase::pq_load()
          * it immediately.
          */
 
-        std::visit([this, &sql_parameter, &sql_parameter_count](auto&& arg)
+        std::visit([this, &sql_parameter, &sql_parameter_count]<typename DeducedType>(DeducedType&& arg)
         {
-            using DeducedType = std::decay_t<decltype(arg)>;
-            if constexpr (std::is_same_v<DeducedType, std::size_t>) {
+            using DecayedType = std::decay_t<DeducedType>;
+            if constexpr (std::is_same_v<DecayedType, std::size_t>) {
                 sql_parameter << arg << ',';
                 ++sql_parameter_count;
-            } else if constexpr (std::is_same_v<DeducedType, pqxx::row>)
+            } else if constexpr (std::is_same_v<DecayedType, pqxx::row>)
                 emplace_object(arg);
         }, load_queue.front());
 
@@ -100,17 +100,17 @@ void PGStorableObjectModelBase::pq_unload()
     while (!unload_queue.empty()) {
         std::size_t id;
 
-        std::visit([&id](auto&& arg)
+        std::visit([&id]<typename DeducedType>(DeducedType&& arg)
         {
             /*
              * If we have a raw ID, the identity function will suffice to assign an ID to target for deletion. If we
              * have a full row (unlikely for unloading, but still possible on the API), grab the ID from the row.
              */
 
-            using DeducedType = std::decay_t<decltype(arg)>;
-            if constexpr (std::is_same_v<DeducedType, std::size_t>)
+            using DecayedType = std::decay_t<DeducedType>;
+            if constexpr (std::is_same_v<DecayedType, std::size_t>)
                 id = arg;
-            else if constexpr (std::is_same_v<DeducedType, pqxx::row>)
+            else if constexpr (std::is_same_v<DecayedType, pqxx::row>)
                 id = arg[0].template as<std::size_t>();
         }, unload_queue.front());
 

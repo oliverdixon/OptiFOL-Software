@@ -3,11 +3,15 @@
  * 2025 Oliver Dixon <od641@york.ac.uk>
  */
 
-.status_bar {
+.optifol_status_bar {
     font-style: italic;
 }
 
-.boxed {
+.optifol_boxed {
     padding: 0.5ex;
     border: 1px solid lightgray; /* TODO: can we inherit the colours from the GTK application context? */
+}
+
+.optifol_fol_statement {
+    font-family: monospace;
 }
