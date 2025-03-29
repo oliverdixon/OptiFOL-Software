@@ -23,6 +23,21 @@
                                     </style>
                                     <child>
                                         <object class="GtkButton">
+                                            <property name="icon-name">document-save-symbolic</property>
+                                        </object>
+                                    </child>
+                                    <child>
+                                        <object class="GtkButton">
+                                            <property name="icon-name">view-refresh-symbolic</property>
+                                        </object>
+                                    </child>
+                                    <child>
+                                        <object class="GtkSeparator">
+                                            <property name="orientation">vertical</property>
+                                        </object>
+                                    </child>
+                                    <child>
+                                        <object class="GtkButton">
                                             <property name="icon-name">document-new-symbolic</property>
                                         </object>
                                     </child>

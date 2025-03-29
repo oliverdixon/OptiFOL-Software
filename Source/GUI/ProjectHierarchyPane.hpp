@@ -31,11 +31,19 @@ class ProjectHierarchyPane
 {
 public:
     /**
+     * @typedef CallbackSignature
+     * @brief The function signature of the callback to handles changes in subsystem selection
+     */
+    using CallbackSignature = void(const Glib::RefPtr<PGRequirementModel>&);
+
+    /**
      * @brief Construct a project pane manager given a managed Gtk::ListView resource and backend model
      * @param view The list view UI element into which the entries are rendered
      * @param initial_model The backend storage model used to populate the model and stream data updates
+     * @param changed_subsystem_callback The callback to execute when the subsystem selection changes
      */
-    ProjectHierarchyPane(Gtk::ListView * view, const Glib::RefPtr<PGProjectModel> &initial_model);
+    ProjectHierarchyPane(Gtk::ListView * view, const Glib::RefPtr<PGProjectModel> &initial_model,
+        sigc::slot<CallbackSignature>&& changed_subsystem_callback);
 
 private:
     /**
@@ -52,11 +60,19 @@ private:
     void on_bind(const Glib::RefPtr<Gtk::ListItem>& item) const;
 
     /**
+     * @brief Handle a change to the selected project/subsystem entry
+     * @param position The tree position (as if the entire tree were a flattened list) of the selection item
+     */
+    void on_activate(guint position) const;
+
+    /**
      * @brief GTK callback for expanding a node and producing the child model
      * @param item The item representing the parent of the desired child model
      * @return The child model of the given item, or nullptr if the given item is a leaf node
      */
     Glib::RefPtr<Gio::ListModel> on_expand(const Glib::RefPtr<Glib::ObjectBase>& item) const;
+
+    sigc::signal<CallbackSignature> signal_update_view;
 
     static std::shared_ptr<log4cxx::Logger> logger;
     Glib::RefPtr<Gtk::TreeListModel> tree_model;

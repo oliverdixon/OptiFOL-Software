@@ -16,14 +16,18 @@
 namespace optifol
 {
 
-Requirement::Requirement(const std::size_t id, const std::string &name, const TimeT &created_time,
-        const TimeT &last_modified_time, const std::string& statement, const std::size_t priority) :
+Requirement::Requirement(const std::size_t id, std::string&& name, const TimeT& created_time,
+        const TimeT& last_modified_time, std::string&& statement, const std::size_t priority,
+        std::string&& description, const std::optional<std::size_t> test, const std::size_t stakeholder) :
     created_time(created_time),
     last_modified_time(last_modified_time),
-    name(name),
+    name(std::move(name)),
     id(id),
-    statement(statement),
-    priority(priority)
+    statement(std::move(statement)),
+    priority(priority),
+    description(std::move(description)),
+    test(test),
+    stakeholder(stakeholder)
 {
 }
 
@@ -65,6 +69,21 @@ std::string Requirement::get_statement() const
 std::size_t Requirement::get_priority() const
 {
     return priority;
+}
+
+std::string Requirement::get_description() const
+{
+    return description;
+}
+
+std::optional<std::size_t> Requirement::get_test() const
+{
+    return test;
+}
+
+std::size_t Requirement::get_stakeholder() const
+{
+    return stakeholder;
 }
 
 }

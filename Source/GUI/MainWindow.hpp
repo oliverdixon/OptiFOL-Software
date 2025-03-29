@@ -34,8 +34,10 @@ private:
 
     Glib::RefPtr<Gtk::Builder> builder;
 
-    Gtk::Box * root_grid;
-    Gtk::Button * update_storage_button;
+    Gtk::Box * const root_grid;
+    Gtk::ListView * const project_view;
+    Gtk::Button * const update_storage_button;
+
     Glib::RefPtr<Gtk::AlertDialog> database_alert;
 
     std::unique_ptr<ProjectHierarchyPane> project_hierarchy_pane;

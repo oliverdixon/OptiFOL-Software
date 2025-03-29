@@ -23,6 +23,7 @@ CREATE TABLE subsystem
 CREATE TABLE requirement
 (
     id            INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    description   TEXT,
     subsystem_id  INTEGER   NOT NULL REFERENCES subsystem (id) ON DELETE CASCADE,
     name          TEXT      NOT NULL,
     created_at    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,

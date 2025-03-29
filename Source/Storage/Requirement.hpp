@@ -23,8 +23,9 @@ class Requirement :
         public IStorageObject
 {
 public:
-    Requirement(std::size_t id, const std::string& name, const TimeT& created_time, const TimeT& last_modified_time,
-        const std::string& statement, std::size_t priority);
+    Requirement(std::size_t id, std::string&& name, const TimeT& created_time, const TimeT& last_modified_time,
+        std::string&& statement, std::size_t priority, std::string&& description, std::optional<std::size_t> test,
+        std::size_t stakeholder);
 
     [[nodiscard]] std::string get_identifier() const override;
 
@@ -47,6 +48,12 @@ public:
     [[nodiscard]] std::string get_statement() const;
 
     [[nodiscard]] std::size_t get_priority() const;
+
+    [[nodiscard]] std::string get_description() const;
+
+    [[nodiscard]] std::optional<std::size_t> get_test() const;
+
+    [[nodiscard]] std::size_t get_stakeholder() const;
 
 private:
     /**
@@ -86,6 +93,14 @@ private:
     std::string statement;
 
     std::size_t priority;
+
+    std::string description;
+
+    // TODO: reference actual test (UML 1-1, optional)
+    std::optional<std::size_t> test;
+
+    // TODO: reference actual stakeholder(s) (UML M-M)
+    std::size_t stakeholder;
 };
 
 }

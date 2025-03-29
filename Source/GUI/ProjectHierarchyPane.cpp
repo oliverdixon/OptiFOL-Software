@@ -21,15 +21,19 @@ namespace optifol
 
 std::shared_ptr<log4cxx::Logger> ProjectHierarchyPane::logger(log4cxx::Logger::getLogger("OptiFOL"));
 
-ProjectHierarchyPane::ProjectHierarchyPane(Gtk::ListView *view, const Glib::RefPtr<PGProjectModel>& initial_model) :
+ProjectHierarchyPane::ProjectHierarchyPane(Gtk::ListView *view, const Glib::RefPtr<PGProjectModel>& initial_model,
+        sigc::slot<CallbackSignature>&& changed_subsystem_callback) :
     project_model(initial_model)
 {
+    signal_update_view.connect(changed_subsystem_callback);
     tree_model = Gtk::TreeListModel::create(initial_model,
         sigc::mem_fun(*this, &ProjectHierarchyPane::on_expand), true, true);
+
     const auto selection_model = Gtk::SingleSelection::create(tree_model);
     selection_model->set_autoselect(false);
     selection_model->set_can_unselect(true);
     view->set_model(selection_model);
+    view->signal_activate().connect(sigc::mem_fun(*this, &ProjectHierarchyPane::on_activate));
 
     const auto factory = Gtk::SignalListItemFactory::create();
     factory->signal_setup().connect(sigc::ptr_fun(ProjectHierarchyPane::on_setup));
@@ -86,6 +90,42 @@ void ProjectHierarchyPane::on_bind(const Glib::RefPtr<Gtk::ListItem> &item) cons
     }
 
     label->set_text(model_item->get_identifier());
+}
+
+void ProjectHierarchyPane::on_activate(const guint position) const
+{
+    const auto project_model_n = project_model->get_n_items();
+    std::remove_const_t<decltype(project_model_n)> cumulative_position = 0;
+
+    for (guint project_idx = 0; project_idx < project_model_n; ++project_idx) {
+        const auto& subsystem_model =
+            project_model->get_subsystem_model(project_model->get_typed_object<Project>(project_idx));
+        const auto end_idx = cumulative_position + subsystem_model->get_n_items();
+
+        if (end_idx >= position) {
+            /*
+             * If the tree index of the last subsystem in this project is greater than the tree index of the desired
+             * subsystem, then the desired subsystem is definitely within this project (assuming this branch breaks out
+             * of the project loop). Therefore, we can normalise the tree index of the desired subsystem to its index
+             * within the current project. The cumulative position holds the tree index of the root node of the current
+             * project, so just subtract.
+             */
+
+            if (position - cumulative_position == 0)
+                // A project root has been selected, as the cumulative position always sits on a project boundary.
+                break;
+
+            signal_update_view(subsystem_model->get_requirement_model(
+                subsystem_model->get_typed_object<Subsystem>(position - cumulative_position - 1)->get_controller_id()));
+            break;
+        }
+
+        /*
+         * Skip to the tree index of one past the last subsystem. If there's more projects, this is the index of the
+         * following project root node.
+         */
+        cumulative_position = end_idx + 1;
+    }
 }
 
 Glib::RefPtr<Gio::ListModel> ProjectHierarchyPane::on_expand(

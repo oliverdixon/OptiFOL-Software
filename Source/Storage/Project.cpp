@@ -17,12 +17,12 @@ namespace optifol
 {
 
 Project::Project(const std::size_t id,
-                 const std::string &name,
+                 std::string &&name,
                  const TimeT &created_time,
                  const TimeT &last_modified_time):
     created_time(created_time),
     last_modified_time(last_modified_time),
-    name(name),
+    name(std::move(name)),
     id(id)
 {
 }

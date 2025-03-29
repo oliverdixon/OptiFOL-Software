@@ -26,7 +26,7 @@ class Project :
         public IStorageObject
 {
 public:
-    Project(std::size_t id, const std::string& name, const TimeT& created_time, const TimeT& last_modified_time);
+    Project(std::size_t id, std::string&& name, const TimeT& created_time, const TimeT& last_modified_time);
 
     [[nodiscard]] std::string get_identifier() const override;
 

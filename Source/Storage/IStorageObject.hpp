@@ -85,10 +85,7 @@ public:
 };
 
 template<typename Test>
-concept StorableType = requires(Test a)
-{
-    std::derived_from<Test, IStorageObject>;
-};
+concept StorableType = std::derived_from<Test, IStorageObject>;
 
 }
 

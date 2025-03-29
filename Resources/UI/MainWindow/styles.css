@@ -15,3 +15,8 @@
 .optifol_fol_statement {
     font-family: monospace;
 }
+
+.optifol_unknown {
+    font-style: italic;
+    color: gray;
+}

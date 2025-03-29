@@ -37,8 +37,8 @@ void PGRequirementModel::load_for_subsystem(const Subsystem &subsystem, std::siz
 {
     pqxx::work tx{connection};
     const pqxx::result result{tx.exec(
-            "SELECT requirement.id, name, created_at, last_modified, sentence, priority FROM requirement WHERE "
-                "subsystem_id = $1 LIMIT $2;",
+            "SELECT requirement.id, name, created_at, last_modified, sentence, priority, description, test_id "
+            "FROM requirement WHERE subsystem_id = $1 LIMIT $2;",
             pqxx::params{ subsystem.get_controller_id(), limit }
     )};
 
@@ -55,8 +55,8 @@ pqxx::result PGRequirementModel::filter_objects(const std::ostringstream &sql_pa
 {
     pqxx::work tx{connection};
     const pqxx::result result{tx.exec(
-        "SELECT requirement.id, name, created_at, last_modified, sentence, priority FROM requirement JOIN "
-            "UNNEST($1::bigint[]) AS filter(id) ON requirement.id = filter.id LIMIT $2;",
+        "SELECT requirement.id, name, created_at, last_modified, sentence, priority, description, test_id "
+        "FROM requirement JOIN UNNEST($1::bigint[]) AS filter(id) ON requirement.id = filter.id LIMIT $2;",
         pqxx::params{ sql_parameter.str(), maximum_return_count }
     )};
 
@@ -66,7 +66,11 @@ pqxx::result PGRequirementModel::filter_objects(const std::ostringstream &sql_pa
 
 void PGRequirementModel::emplace_object(const pqxx::row &row)
 {
+    // TODO: need a better way of matching fields to indexes
     const auto id = row[0].as<std::size_t>();
+    std::optional<std::size_t> test_id;
+    if (!row[7].is_null())
+        test_id.emplace(row[7].as<std::size_t>());
 
     append(Glib::make_refptr_for_instance(new Requirement(
         id,
@@ -74,7 +78,10 @@ void PGRequirementModel::emplace_object(const pqxx::row &row)
         row[2].as<std::chrono::system_clock::time_point>(),
         row[3].as<std::chrono::system_clock::time_point>(),
         row[4].as<std::string>(),
-        row[5].as<std::size_t>())
+        row[5].as<std::size_t>(),
+        row[6].as<std::string>(),
+        test_id,
+        0) // TODO: stakeholder
     ));
 }
 

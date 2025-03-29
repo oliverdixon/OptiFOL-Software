@@ -25,6 +25,7 @@ namespace optifol
 MainWindow::MainWindow():
     builder(Gtk::Builder::create_from_resource("/uk/ac/york/www_users/od641/optifol/UI/MainWindow.ui")),
     root_grid(GTKHelpers::get_widget<Gtk::Box>("Main Window", builder, "root_grid")),
+    project_view(GTKHelpers::get_widget<Gtk::ListView>("Main Window", builder, "project_view")),
     update_storage_button(GTKHelpers::get_widget<Gtk::Button>("Main Window", builder, "update_storage_button")),
     database_alert(GTKHelpers::get_object<Gtk::AlertDialog>("Main Window", builder, "database_alert"))
 {
@@ -34,20 +35,17 @@ MainWindow::MainWindow():
 
     try {
         storage = std::make_unique<PGDatabaseController>("postgresql://owd@localhost/optifol");
-        update_storage_button->signal_clicked().connect(sigc::mem_fun(*this, &MainWindow::on_update_storage));
 
-        project_hierarchy_pane = std::make_unique<ProjectHierarchyPane>(
-            GTKHelpers::get_widget<Gtk::ListView>("Main Window", builder, "project_view"),
-            storage->peek_project_model()
-        );
-
-        const auto test_model = storage->peek_project_model()->get_subsystem_model(218)->get_requirement_model(547);
-        test_model->enqueue_load(1);
-        test_model->load();
-
+        // TODO: default to a dummy empty model, and once the project hierarchy has loaded, emit a signal.
         requirements_index_area = std::make_unique<RequirementsIndexArea>(
             GTKHelpers::get_widget<Gtk::ColumnView>("Main Window", builder, "requirements_view"),
-            test_model
+            storage->peek_project_model()->get_subsystem_model(217)->get_requirement_model(544)
+        );
+
+        project_hierarchy_pane = std::make_unique<ProjectHierarchyPane>(
+            project_view,
+            storage->peek_project_model(),
+            sigc::mem_fun(*requirements_index_area, &RequirementsIndexArea::set_model)
         );
     } catch (const StorageConnectionException& exception) {
         database_alert->set_detail(exception.what());
@@ -58,6 +56,8 @@ MainWindow::MainWindow():
     const auto css_provider = Gtk::CssProvider::create();
     Gtk::StyleProvider::add_provider_for_display(get_display(), css_provider, GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
     css_provider->load_from_resource("/uk/ac/york/www_users/od641/optifol/UI/MainWindow/styles.css");
+
+    update_storage_button->signal_clicked().connect(sigc::mem_fun(*this, &MainWindow::on_update_storage));
 }
 
 void MainWindow::on_update_storage()

@@ -24,6 +24,7 @@
                                     <property name="vexpand">TRUE</property>
                                     <child>
                                         <object class="GtkListView" id="project_view">
+                                            <property name="single-click-activate">FALSE</property>
                                         </object>
                                     </child>
                                 </object>
