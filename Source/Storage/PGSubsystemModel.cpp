@@ -15,13 +15,14 @@
 
 #include "PGSubsystemModel.hpp"
 #include "PGChronoType.hpp"
+#include "PGRequirementModel.hpp"
 #include "../Logging.hpp"
 
 namespace optifol
 {
 
 PGSubsystemModel::PGSubsystemModel(pqxx::connection &connection) :
-    PGStorableObjectModel(connection)
+    PGStorableObjectModelBase(connection)
 {
     assert(get_n_items() == 0);
 }
@@ -33,8 +34,8 @@ PGSubsystemModel::~PGSubsystemModel()
 }
 
 PGSubsystemModel::PGSubsystemModel(pqxx::connection &connection, const Project &initial_project,
-        const std::size_t initial_cache_limit) :
-    PGStorableObjectModel(connection)
+                                   const std::size_t initial_cache_limit) :
+    PGStorableObjectModelBase(connection)
 {
     load_for_project(initial_project, initial_cache_limit);
     assert(get_n_items() <= initial_cache_limit);
@@ -50,21 +51,9 @@ void PGSubsystemModel::load_for_project(const Project &project, const std::size_
     tx.commit();
 
     for (auto &&row: result)
-        enqueue_load(std::move(row));
+        PGStorableObjectModelBase::enqueue_load(std::move(row));
 
     flush_inbound_insert();
-}
-
-Glib::RefPtr<PGRequirementModel> PGSubsystemModel::get_requirement_model(const Glib::RefPtr<Subsystem> &subsystem) const
-{
-    const auto &ss_model_it = requirement_models.find(subsystem);
-    return ss_model_it == requirement_models.cend() ? nullptr : ss_model_it->second;
-}
-
-Glib::RefPtr<PGRequirementModel> PGSubsystemModel::get_requirement_model(const std::size_t subsystem_id) const
-{
-    const auto &ss_model_it = requirement_models.find(subsystem_id);
-    return ss_model_it == requirement_models.cend() ? nullptr : ss_model_it->second;
 }
 
 pqxx::result PGSubsystemModel::filter_objects(const std::ostringstream &sql_parameter,
@@ -87,7 +76,7 @@ void PGSubsystemModel::emplace_object(const pqxx::row &row)
     const auto id = row[0].as<std::size_t>();
     LOG4CXX_INFO(Logging::get_logger(), "Loading subsystem with ID " << std::to_string(id));
 
-    auto loaded = Glib::make_refptr_for_instance(new Subsystem(
+    const auto loaded = Glib::make_refptr_for_instance(new Subsystem(
             id,
             row[1].as<std::string>(),
             row[2].as<std::chrono::system_clock::time_point>(),
@@ -95,8 +84,7 @@ void PGSubsystemModel::emplace_object(const pqxx::row &row)
     );
 
     append(loaded);
-    requirement_models.emplace(loaded, Glib::make_refptr_for_instance(new PGRequirementModel(connection,
-        *loaded)));
+    add_requirement_model(loaded, Glib::make_refptr_for_instance(new PGRequirementModel(connection, *loaded)));
 }
 
 void PGSubsystemModel::deplace_object(std::size_t id)

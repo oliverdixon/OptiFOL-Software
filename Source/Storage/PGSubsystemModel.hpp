@@ -14,21 +14,21 @@
 #ifndef PGSUBSYSTEMMODEL_HPP
 #define PGSUBSYSTEMMODEL_HPP
 
-#include "PGRequirementModel.hpp"
-#include "PGStorableObjectModel.hpp"
+#include "PGStorableObjectModelBase.hpp"
 #include "Project.hpp"
-#include "StorageEqualityFunctor.hpp"
 #include "Subsystem.hpp"
+#include "SubsystemModel.hpp"
 
 namespace optifol
 {
 
 /**
  * @class PGSubsystemModel
- * @brief The PGStorableObjectModel specialised for subsystem-level stored objects
+ * @brief TODO
  */
 class PGSubsystemModel :
-        public PGStorableObjectModel<Subsystem>
+        virtual public SubsystemModel,
+        virtual public PGStorableObjectModelBase<Subsystem>
 {
 public:
     /**
@@ -42,8 +42,7 @@ public:
      * @brief Construct a subsystem cache container populated with the subsystems of the given project, up to the
      *  optionally defined initial cache size limit
      * @param connection The established PostgreSQL database connection
-     * @param initial_project The initial project with which the subsystem model should be associated. If provided, all
-     *  subsystems of the given project will be loaded into the model, up to the defined limit.
+     * @param initial_project The project with which the subsystem model should be associated.
      * @param initial_cache_limit The maximum number of subsystems to initially load into the cache
      * @post The number of cached subsystems does not exceed the defined limit
      */
@@ -52,22 +51,15 @@ public:
 
     ~PGSubsystemModel() override;
 
+private:
     void load_for_project(const Project& project, std::size_t limit = 128);
 
-    Glib::RefPtr<PGRequirementModel> get_requirement_model(const Glib::RefPtr<Subsystem>& subsystem) const;
-
-    Glib::RefPtr<PGRequirementModel> get_requirement_model(std::size_t subsystem_id) const;
-
-private:
     pqxx::result filter_objects(const std::ostringstream &sql_parameter, std::size_t maximum_return_count) const
         override;
 
     void emplace_object(const pqxx::row& row) override;
 
     void deplace_object(std::size_t id) override;
-
-    std::unordered_map<Glib::RefPtr<Subsystem>, Glib::RefPtr<PGRequirementModel>, StorageHashFunctor<Subsystem>,
-        StorageEqualityFunctor<Subsystem>> requirement_models;
 
     const Glib::RefPtr<const Subsystem> dummy_base = Glib::make_refptr_for_instance(new Subsystem(0, {}, {}, {}));
 };

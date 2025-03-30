@@ -14,20 +14,20 @@
 #ifndef PGPROJECTMODEL_HPP
 #define PGPROJECTMODEL_HPP
 
-#include "PGStorableObjectModel.hpp"
-#include "PGSubsystemModel.hpp"
+#include "PGStorableObjectModelBase.hpp"
 #include "Project.hpp"
-#include "StorageEqualityFunctor.hpp"
+#include "ProjectModel.hpp"
 
 namespace optifol
 {
 
 /**
  * @class PGProjectModel
- * @brief The PGStorableObjectModel specialised for project-level stored objects
+ * @brief TODO
  */
 class PGProjectModel :
-        public PGStorableObjectModel<Project>
+        virtual public ProjectModel,
+        virtual public PGStorableObjectModelBase<Project>
 {
 public:
     /**
@@ -37,10 +37,6 @@ public:
      * @post The number of cached projects does not exceed the defined limit
      */
     explicit PGProjectModel(pqxx::connection& connection, std::size_t initial_cache_limit = 128);
-
-    Glib::RefPtr<PGSubsystemModel> get_subsystem_model(const Glib::RefPtr<Project>& project) const;
-
-    Glib::RefPtr<PGSubsystemModel> get_subsystem_model(std::size_t project_id) const;
 
     void flush_inbound_insert() override;
 
@@ -53,9 +49,6 @@ private:
     void emplace_object(const pqxx::row& row) override;
 
     void deplace_object(std::size_t id) override;
-
-    std::unordered_map<Glib::RefPtr<Project>, Glib::RefPtr<PGSubsystemModel>, StorageHashFunctor<Project>,
-        StorageEqualityFunctor<Project>> subsystem_models;
 
     const Glib::RefPtr<const Project> dummy_base = Glib::make_refptr_for_instance(new Project(0, {}, {}, {}));
 };

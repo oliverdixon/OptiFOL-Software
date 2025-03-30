@@ -15,13 +15,14 @@
 
 #include "PGProjectModel.hpp"
 #include "PGChronoType.hpp"
+#include "PGSubsystemModel.hpp"
 #include "../Logging.hpp"
 
 namespace optifol
 {
 
 PGProjectModel::PGProjectModel(pqxx::connection &connection, std::size_t initial_cache_limit):
-    PGStorableObjectModel(connection)
+    PGStorableObjectModelBase(connection)
 {
     pqxx::work tx{connection};
     const pqxx::result result{tx.exec("SELECT id, name, created_at, last_modified FROM project ORDER BY last_modified "
@@ -34,21 +35,9 @@ PGProjectModel::PGProjectModel(pqxx::connection &connection, std::size_t initial
     assert(get_n_items() <= initial_cache_limit);
 }
 
-Glib::RefPtr<PGSubsystemModel> PGProjectModel::get_subsystem_model(const Glib::RefPtr<Project> &project) const
-{
-    const auto& ss_model_it = subsystem_models.find(project);
-    return ss_model_it == subsystem_models.cend() ? nullptr : ss_model_it->second;
-}
-
-Glib::RefPtr<PGSubsystemModel> PGProjectModel::get_subsystem_model(const std::size_t project_id) const
-{
-    const auto& ss_model_it = subsystem_models.find(project_id);
-    return ss_model_it == subsystem_models.cend() ? nullptr : ss_model_it->second;
-}
-
 void PGProjectModel::flush_inbound_insert()
 {
-    PGStorableObjectModelBase::pq_load();
+    PGStorableObjectModelBase::flush_inbound_insert();
 
     // TODO: can we do any sanity assert-checks here?
     for (const auto& ss_model : subsystem_models)
@@ -57,7 +46,7 @@ void PGProjectModel::flush_inbound_insert()
 
 void PGProjectModel::flush_inbound_delete()
 {
-    PGStorableObjectModelBase::pq_unload();
+    PGStorableObjectModelBase::flush_inbound_delete();
 
     /*
      * We need to propagate the unload queue for all subsystems owned by projects encapsulated by this project model.
@@ -73,7 +62,7 @@ void PGProjectModel::flush_inbound_delete()
 }
 
 pqxx::result PGProjectModel::filter_objects(const std::ostringstream& sql_parameter,
-        const std::size_t maximum_return_count) const
+                                            const std::size_t maximum_return_count) const
 {
     pqxx::work tx{connection};
     const pqxx::result result{tx.exec(
@@ -90,7 +79,7 @@ void PGProjectModel::emplace_object(const pqxx::row &row)
     const auto id = row[0].as<std::size_t>();
     LOG4CXX_INFO(Logging::get_logger(), "Loading project with ID " << std::to_string(id));
 
-    auto loaded = Glib::make_refptr_for_instance(new Project(
+    const auto loaded = Glib::make_refptr_for_instance(new Project(
         id,
         row[1].as<std::string>(),
         row[2].as<std::chrono::system_clock::time_point>(),
@@ -102,7 +91,7 @@ void PGProjectModel::emplace_object(const pqxx::row &row)
      * subsystem such that a slot for a subsystem model is associated with the master project.
      */
     append(loaded);
-    subsystem_models.emplace(loaded, Glib::make_refptr_for_instance(new PGSubsystemModel(connection, *loaded)));
+    add_subsystem_model(loaded, Glib::make_refptr_for_instance<SubsystemModel>(new PGSubsystemModel(connection, *loaded)));
 }
 
 void PGProjectModel::deplace_object(std::size_t id)
@@ -117,14 +106,7 @@ void PGProjectModel::deplace_object(std::size_t id)
 
     if (found) {
         LOG4CXX_INFO(Logging::get_logger(), "Unloading project with ID " << std::to_string(id));
-
-        /*
-         * Cumbersome, but std::unordered_map::erase doesn't support transparent lookup. (Why not?) Anyway, remove the
-         * subsystem slot thus calling the destructing of the mapped value (subsystem model), then remove the project
-         * itself from ourselves as the project model.
-         */
-        const auto project_it = subsystem_models.find(id);
-        subsystem_models.erase(project_it);
+        unregister_subsystem_model(id);
         remove(position);
     }
 }

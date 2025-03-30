@@ -14,15 +14,16 @@
 #ifndef PGREQUIREMENTMODEL_HPP
 #define PGREQUIREMENTMODEL_HPP
 
-#include "PGStorableObjectModel.hpp"
-#include "Requirement.hpp"
+#include "PGStorableObjectModelBase.hpp"
+#include "RequirementModel.hpp"
 #include "Subsystem.hpp"
 
 namespace optifol
 {
 
 class PGRequirementModel :
-        public PGStorableObjectModel<Requirement>
+        virtual public RequirementModel,
+        virtual public PGStorableObjectModelBase<Requirement>
 {
 public:
     explicit PGRequirementModel(pqxx::connection& connection);
@@ -32,9 +33,9 @@ public:
 
     ~PGRequirementModel() override = default;
 
+private:
     void load_for_subsystem(const Subsystem& subsystem, std::size_t limit = 4096);
 
-private:
     pqxx::result filter_objects(const std::ostringstream &sql_parameter, std::size_t maximum_return_count) const
         override;
 

@@ -17,7 +17,7 @@
 #include <gtkmm.h>
 #include <log4cxx/logger.h>
 
-#include "../Storage/PGProjectModel.hpp"
+#include "../Storage/ProjectModel.hpp"
 
 namespace optifol
 {
@@ -31,19 +31,27 @@ class ProjectHierarchyPane
 {
 public:
     /**
-     * @typedef CallbackSignature
-     * @brief The function signature of the callback to handles changes in subsystem selection
+     * @typedef SelectedCallbackSignature
+     * @brief The function signature of the callback to handle updates in subsystem selection
      */
-    using CallbackSignature = void(const Glib::RefPtr<PGRequirementModel>&);
+    using SelectedCallbackSignature = void(const Glib::RefPtr<RequirementModel>&);
+
+    /**
+     * @typedef DeselectedCallbackSignature
+     * @brief The function signature of the callback to handle a subsystem being deselected
+     */
+    using DeselectedCallbackSignature = void();
 
     /**
      * @brief Construct a project pane manager given a managed Gtk::ListView resource and backend model
      * @param view The list view UI element into which the entries are rendered
      * @param initial_model The backend storage model used to populate the model and stream data updates
-     * @param changed_subsystem_callback The callback to execute when the subsystem selection changes
+     * @param selected_subsystem_callback The callback to execute when the subsystem selection changes
+     * @param deselected_subsystem_callback The callback to execute when the subsystem is deselected
      */
-    ProjectHierarchyPane(Gtk::ListView * view, const Glib::RefPtr<PGProjectModel> &initial_model,
-        sigc::slot<CallbackSignature>&& changed_subsystem_callback);
+    ProjectHierarchyPane(Gtk::ListView * view, const Glib::RefPtr<ProjectModel> &initial_model,
+        sigc::slot<SelectedCallbackSignature>&& selected_subsystem_callback,
+        sigc::slot<DeselectedCallbackSignature>&& deselected_subsystem_callback);
 
 private:
     /**
@@ -72,11 +80,12 @@ private:
      */
     Glib::RefPtr<Gio::ListModel> on_expand(const Glib::RefPtr<Glib::ObjectBase>& item) const;
 
-    sigc::signal<CallbackSignature> signal_update_view;
+    sigc::signal<SelectedCallbackSignature> signal_select_subsystem;
+    sigc::signal<DeselectedCallbackSignature> signal_deselect_subsystem;
 
     static std::shared_ptr<log4cxx::Logger> logger;
     Glib::RefPtr<Gtk::TreeListModel> tree_model;
-    Glib::RefPtr<PGProjectModel> project_model;
+    Glib::RefPtr<ProjectModel> project_model;
 };
 
 }

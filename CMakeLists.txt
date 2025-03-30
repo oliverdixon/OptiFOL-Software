@@ -255,7 +255,6 @@ add_executable(OptiFOLGUI
         Source/Storage/Subsystem.hpp
         Source/Storage/IStorageObject.hpp
         Source/Storage/PGUpdateNotification.hpp
-        Source/Storage/PGStorableObjectModel.hpp
         Source/Storage/PGProjectModel.hpp
         Source/Storage/PGProjectModel.cpp
         Source/Storage/PGChronoType.hpp
@@ -264,21 +263,22 @@ add_executable(OptiFOLGUI
         Source/Storage/StorableObjectModelBase.hpp
         Source/Storage/PGSubsystemModel.cpp
         Source/Storage/PGSubsystemModel.hpp
-        Source/Storage/PGStorableObjectModelBase.cpp
         Source/Storage/PGStorableObjectModelBase.hpp
         Source/Storage/StorageEqualityFunctor.hpp
         Source/Storage/PGRequirementModel.cpp
         Source/Storage/PGRequirementModel.hpp
         Source/Storage/Requirement.cpp
         Source/Storage/Requirement.hpp
-        Source/Storage/UnitTest.cpp
-        Source/Storage/UnitTest.hpp
-        Source/Storage/PGUnitTestModel.cpp
-        Source/Storage/PGUnitTestModel.hpp
         Source/GUI/ProjectHierarchyPane.cpp
         Source/GUI/ProjectHierarchyPane.hpp
         Source/GUI/RequirementsIndexArea.cpp
         Source/GUI/RequirementsIndexArea.hpp
+        Source/Storage/ProjectModel.cpp
+        Source/Storage/ProjectModel.hpp
+        Source/Storage/SubsystemModel.cpp
+        Source/Storage/SubsystemModel.hpp
+        Source/Storage/RequirementModel.cpp
+        Source/Storage/RequirementModel.hpp
 )
 
 set(COMMON_COMPILER_OPTIONS

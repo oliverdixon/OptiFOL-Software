@@ -15,107 +15,126 @@
                         <object class="GtkBox">
                             <property name="orientation">vertical</property>
                             <child>
-                                <object class="GtkBox">
-                                    <property name="halign">GTK_ALIGN_FILL</property>
+                                <object class="GtkLabel" id="requirements_index_advice">
                                     <style>
-                                        <class name="toolbar" />
+                                        <class name="optifol_advisory" />
                                         <class name="optifol_boxed" />
                                     </style>
-                                    <child>
-                                        <object class="GtkButton">
-                                            <property name="icon-name">document-save-symbolic</property>
-                                        </object>
-                                    </child>
-                                    <child>
-                                        <object class="GtkButton">
-                                            <property name="icon-name">view-refresh-symbolic</property>
-                                        </object>
-                                    </child>
-                                    <child>
-                                        <object class="GtkSeparator">
-                                            <property name="orientation">vertical</property>
-                                        </object>
-                                    </child>
-                                    <child>
-                                        <object class="GtkButton">
-                                            <property name="icon-name">document-new-symbolic</property>
-                                        </object>
-                                    </child>
-                                    <child>
-                                        <object class="GtkButton">
-                                            <property name="icon-name">edit-delete-symbolic</property>
-                                        </object>
-                                    </child>
-                                    <child>
-                                        <object class="GtkButton">
-                                            <property name="icon-name">document-edit-symbolic</property>
-                                        </object>
-                                    </child>
+                                    <property name="use-markup">TRUE</property>
+                                    <property name="label"><![CDATA[To view a <i>Requirements Index</i>, select a Subsystem from the left-hand <i>Project Explorer</i> pane.]]></property>
+                                    <property name="visible">TRUE</property>
+                                    <property name="hexpand">TRUE</property>
+                                </object>
+                            </child>
+                            <child>
+                                <object class="GtkBox" id="requirements_index_content">
+                                    <property name="visible">FALSE</property>
+                                    <property name="orientation">vertical</property>
                                     <child>
                                         <object class="GtkBox">
-                                            <property name="hexpand">TRUE</property>
-                                            <property name="halign">GTK_ALIGN_END</property>
+                                            <property name="halign">GTK_ALIGN_FILL</property>
+                                            <style>
+                                                <class name="toolbar" />
+                                                <class name="optifol_boxed" />
+                                            </style>
                                             <child>
-                                                <object class="GtkEntry">
-                                                    <property name="placeholder-text">Search by Name</property>
+                                                <object class="GtkButton">
+                                                    <property name="icon-name">document-save-symbolic</property>
                                                 </object>
                                             </child>
                                             <child>
                                                 <object class="GtkButton">
-                                                    <property name="icon-name">edit-find-symbolic</property>
+                                                    <property name="icon-name">view-refresh-symbolic</property>
+                                                </object>
+                                            </child>
+                                            <child>
+                                                <object class="GtkSeparator">
+                                                    <property name="orientation">vertical</property>
+                                                </object>
+                                            </child>
+                                            <child>
+                                                <object class="GtkButton">
+                                                    <property name="icon-name">document-new-symbolic</property>
+                                                </object>
+                                            </child>
+                                            <child>
+                                                <object class="GtkButton">
+                                                    <property name="icon-name">edit-delete-symbolic</property>
+                                                </object>
+                                            </child>
+                                            <child>
+                                                <object class="GtkButton">
+                                                    <property name="icon-name">document-edit-symbolic</property>
+                                                </object>
+                                            </child>
+                                            <child>
+                                                <object class="GtkBox">
+                                                    <property name="hexpand">TRUE</property>
+                                                    <property name="halign">GTK_ALIGN_END</property>
+                                                    <child>
+                                                        <object class="GtkEntry">
+                                                            <property name="placeholder-text">Search by Name</property>
+                                                        </object>
+                                                    </child>
+                                                    <child>
+                                                        <object class="GtkButton">
+                                                            <property name="icon-name">edit-find-symbolic</property>
+                                                        </object>
+                                                    </child>
                                                 </object>
                                             </child>
                                         </object>
                                     </child>
-                                </object>
-                            </child>
-                            <child>
-                                <object class="GtkScrolledWindow">
                                     <child>
-                                        <object class="GtkColumnView" id="requirements_view">
-                                            <style>
-                                                <class name="data-table" />
-                                            </style>
+                                        <object class="GtkScrolledWindow">
+                                            <property name="vexpand">TRUE</property>
                                             <child>
-                                                <object class="GtkColumnViewColumn">
-                                                    <property name="id">requirement_name</property>
-                                                    <property name="title">Name</property>
-                                                    <property name="resizable">TRUE</property>
-                                                </object>
-                                            </child>
-                                            <child>
-                                                <object class="GtkColumnViewColumn">
-                                                    <property name="id">requirement_description</property>
-                                                    <property name="title">Description</property>
-                                                    <property name="resizable">TRUE</property>
-                                                </object>
-                                            </child>
-                                            <child>
-                                                <object class="GtkColumnViewColumn">
-                                                    <property name="id">requirement_statement</property>
-                                                    <property name="title">Statement</property>
-                                                    <property name="resizable">TRUE</property>
-                                                </object>
-                                            </child>
-                                            <child>
-                                                <object class="GtkColumnViewColumn">
-                                                    <property name="id">requirement_priority</property>
-                                                    <property name="title">Priority</property>
-                                                    <property name="resizable">TRUE</property>
-                                                </object>
-                                            </child>
-                                            <child>
-                                                <object class="GtkColumnViewColumn">
-                                                    <property name="id">requirement_test</property>
-                                                    <property name="title">Test</property>
-                                                    <property name="resizable">TRUE</property>
-                                                </object>
-                                            </child>
-                                            <child>
-                                                <object class="GtkColumnViewColumn">
-                                                    <property name="id">requirement_stakeholder</property>
-                                                    <property name="title">Stakeholder</property>
-                                                    <property name="resizable">TRUE</property>
+                                                <object class="GtkColumnView" id="requirements_view">
+                                                    <style>
+                                                        <class name="data-table" />
+                                                    </style>
+                                                    <child>
+                                                        <object class="GtkColumnViewColumn">
+                                                            <property name="id">requirement_name</property>
+                                                            <property name="title">Name</property>
+                                                            <property name="resizable">TRUE</property>
+                                                        </object>
+                                                    </child>
+                                                    <child>
+                                                        <object class="GtkColumnViewColumn">
+                                                            <property name="id">requirement_description</property>
+                                                            <property name="title">Description</property>
+                                                            <property name="resizable">TRUE</property>
+                                                        </object>
+                                                    </child>
+                                                    <child>
+                                                        <object class="GtkColumnViewColumn">
+                                                            <property name="id">requirement_statement</property>
+                                                            <property name="title">Statement</property>
+                                                            <property name="resizable">TRUE</property>
+                                                        </object>
+                                                    </child>
+                                                    <child>
+                                                        <object class="GtkColumnViewColumn">
+                                                            <property name="id">requirement_priority</property>
+                                                            <property name="title">Priority</property>
+                                                            <property name="resizable">TRUE</property>
+                                                        </object>
+                                                    </child>
+                                                    <child>
+                                                        <object class="GtkColumnViewColumn">
+                                                            <property name="id">requirement_test</property>
+                                                            <property name="title">Test</property>
+                                                            <property name="resizable">TRUE</property>
+                                                        </object>
+                                                    </child>
+                                                    <child>
+                                                        <object class="GtkColumnViewColumn">
+                                                            <property name="id">requirement_stakeholder</property>
+                                                            <property name="title">Stakeholder</property>
+                                                            <property name="resizable">TRUE</property>
+                                                        </object>
+                                                    </child>
                                                 </object>
                                             </child>
                                         </object>

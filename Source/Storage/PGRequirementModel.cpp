@@ -20,14 +20,14 @@ namespace optifol
 {
 
 PGRequirementModel::PGRequirementModel(pqxx::connection &connection) :
-    PGStorableObjectModel(connection)
+    PGStorableObjectModelBase(connection)
 {
     assert(get_n_items() == 0);
 }
 
 PGRequirementModel::PGRequirementModel(pqxx::connection &connection, const Subsystem &initial_subsystem,
         const std::size_t initial_cache_limit):
-    PGStorableObjectModel(connection)
+    PGStorableObjectModelBase(connection)
 {
     load_for_subsystem(initial_subsystem, initial_cache_limit);
     assert(get_n_items() <= initial_cache_limit);
@@ -45,7 +45,7 @@ void PGRequirementModel::load_for_subsystem(const Subsystem &subsystem, std::siz
     tx.commit();
 
     for (auto &&row: result)
-        enqueue_load(std::move(row));
+        PGStorableObjectModelBase::enqueue_load(std::move(row));
 
     flush_inbound_insert();
 }

@@ -13,14 +13,11 @@
 
 #include "RequirementsIndexArea.hpp"
 
-#include <iostream>
-
 namespace optifol
 {
 
-RequirementsIndexArea::RequirementsIndexArea(Gtk::ColumnView *view,
-        const Glib::RefPtr<PGRequirementModel> &initial_model) :
-    selection_model(Gtk::SingleSelection::create(initial_model))
+RequirementsIndexArea::RequirementsIndexArea(Gtk::ColumnView *view, Gtk::Widget * widget_off, Gtk::Widget * widget_on) :
+    on_off_widgets(widget_off, widget_on)
 {
     selection_model->set_autoselect(false);
     selection_model->set_can_unselect(true);
@@ -82,9 +79,18 @@ RequirementsIndexArea::RequirementsIndexArea(Gtk::ColumnView *view,
 #endif
 }
 
-void RequirementsIndexArea::set_model(const Glib::RefPtr<PGRequirementModel> &new_model) const
+void RequirementsIndexArea::select_model(const Glib::RefPtr<RequirementModel> &new_model) const
 {
+    on_off_widgets.first->set_visible(false);
+    on_off_widgets.second->set_visible(true);
     selection_model->set_model(new_model);
+}
+
+void RequirementsIndexArea::deselect_model() const
+{
+    on_off_widgets.second->set_visible(false);
+    on_off_widgets.first->set_visible(true);
+    selection_model->set_model(nullptr);
 }
 
 template<typename SetterFunc>
@@ -110,7 +116,7 @@ void RequirementsIndexArea::on_setup_label(const Glib::RefPtr<Gtk::ListItem> &li
 
     label->set_halign(Gtk::Align::START);
     if (mono_styling)
-        label->add_css_class("optifol_fol_statement");
+        label->add_css_class("optifol_monospace");
 
     list_item->set_child(*label);
 }

@@ -17,7 +17,6 @@
 #include "ProjectHierarchyPane.hpp"
 #include "../Exceptions/BadStorageNotificationException.hpp"
 #include "../Exceptions/StorageConnectionException.hpp"
-#include "../Storage/PGDatabaseController.hpp"
 
 namespace optifol
 {
@@ -36,16 +35,17 @@ MainWindow::MainWindow():
     try {
         storage = std::make_unique<PGDatabaseController>("postgresql://owd@localhost/optifol");
 
-        // TODO: default to a dummy empty model, and once the project hierarchy has loaded, emit a signal.
         requirements_index_area = std::make_unique<RequirementsIndexArea>(
             GTKHelpers::get_widget<Gtk::ColumnView>("Main Window", builder, "requirements_view"),
-            storage->peek_project_model()->get_subsystem_model(217)->get_requirement_model(544)
+            GTKHelpers::get_widget<Gtk::Widget>("Main Window", builder, "requirements_index_advice"),
+            GTKHelpers::get_widget<Gtk::Widget>("Main Window", builder, "requirements_index_content")
         );
 
         project_hierarchy_pane = std::make_unique<ProjectHierarchyPane>(
             project_view,
             storage->peek_project_model(),
-            sigc::mem_fun(*requirements_index_area, &RequirementsIndexArea::set_model)
+            sigc::mem_fun(*requirements_index_area, &RequirementsIndexArea::select_model),
+            sigc::mem_fun(*requirements_index_area, &RequirementsIndexArea::deselect_model)
         );
     } catch (const StorageConnectionException& exception) {
         database_alert->set_detail(exception.what());

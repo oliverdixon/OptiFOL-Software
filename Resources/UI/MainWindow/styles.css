@@ -12,11 +12,17 @@
     border: 1px solid lightgray; /* TODO: can we inherit the colours from the GTK application context? */
 }
 
-.optifol_fol_statement {
+.optifol_monospace {
     font-family: monospace;
 }
 
 .optifol_unknown {
     font-style: italic;
     color: gray;
+}
+
+.optifol_advisory {
+    font-size: large;
+    color: gray;
+    margin: 1ex;
 }

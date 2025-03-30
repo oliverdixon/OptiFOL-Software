@@ -21,11 +21,15 @@ namespace optifol
 
 std::shared_ptr<log4cxx::Logger> ProjectHierarchyPane::logger(log4cxx::Logger::getLogger("OptiFOL"));
 
-ProjectHierarchyPane::ProjectHierarchyPane(Gtk::ListView *view, const Glib::RefPtr<PGProjectModel>& initial_model,
-        sigc::slot<CallbackSignature>&& changed_subsystem_callback) :
+ProjectHierarchyPane::ProjectHierarchyPane(Gtk::ListView *view,
+        const Glib::RefPtr<ProjectModel>& initial_model,
+        sigc::slot<SelectedCallbackSignature>&& selected_subsystem_callback,
+        sigc::slot<DeselectedCallbackSignature>&& deselected_subsystem_callback) :
     project_model(initial_model)
 {
-    signal_update_view.connect(changed_subsystem_callback);
+    signal_select_subsystem.connect(selected_subsystem_callback);
+    signal_deselect_subsystem.connect(deselected_subsystem_callback);
+
     tree_model = Gtk::TreeListModel::create(initial_model,
         sigc::mem_fun(*this, &ProjectHierarchyPane::on_expand), true, true);
 
@@ -111,11 +115,16 @@ void ProjectHierarchyPane::on_activate(const guint position) const
              * project, so just subtract.
              */
 
-            if (position - cumulative_position == 0)
-                // A project root has been selected, as the cumulative position always sits on a project boundary.
+            if (position - cumulative_position == 0) {
+                /*
+                 * A project root has been selected, as the cumulative position always sits on a project boundary. This
+                 * qualifies as a deselection, since we only care about selection of subsystems.
+                 */
+                signal_deselect_subsystem();
                 break;
+            }
 
-            signal_update_view(subsystem_model->get_requirement_model(
+            signal_select_subsystem(subsystem_model->get_requirement_model(
                 subsystem_model->get_typed_object<Subsystem>(position - cumulative_position - 1)->get_controller_id()));
             break;
         }
