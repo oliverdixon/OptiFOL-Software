@@ -55,6 +55,18 @@ public:
 
     [[nodiscard]] std::size_t get_stakeholder() const;
 
+    void set_identifier(const std::string &name_candidate) override;
+
+    void set_description(const std::string &description_candidate);
+
+    void attempt_set_statement(const std::string &statement_candidate);
+
+    void attempt_set_priority(const std::string &priority_candidate);
+
+    void attempt_set_test(const std::string &test_candidate);
+
+    void attempt_set_stakeholder(const std::string &stakeholder_candidate);
+
 private:
     /**
      * @brief Time of initial creation

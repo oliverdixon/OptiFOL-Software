@@ -48,6 +48,8 @@ public:
 
     bool operator==(std::size_t other_id) const noexcept override;
 
+    void set_identifier(const std::string &name_candidate) override;
+
 private:
     /**
      * @brief Time of initial creation
@@ -61,7 +63,7 @@ private:
      * @note This quantity should be updated upon the changing of Subsystem metadata, or the changing of any data held
      *  by the Subsystem, such as any of its constituent requirements.
      */
-    const TimeT last_modified_time;
+    TimeT last_modified_time;
 
     /**
      * @brief The human-readable name of the Project

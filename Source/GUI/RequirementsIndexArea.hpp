@@ -33,19 +33,21 @@ public:
 private:
     Glib::RefPtr<Gtk::SingleSelection> selection_model;
 
-    static void on_setup_static(const Glib::RefPtr<Gtk::ListItem>& list_item);
+    template<typename SetterFunc>
+    void on_setup_label(const Glib::RefPtr<Gtk::ListItem> &list_item, SetterFunc&& setter_function,
+        bool mono_styling = false);
 
-    static void on_setup_static_mono(const Glib::RefPtr<Gtk::ListItem>& list_item);
+    std::pair<Glib::RefPtr<Requirement>, Gtk::EditableLabel*> on_bind_setup(
+        const Glib::RefPtr<Gtk::ListItem>& list_item) const;
 
-    void on_setup_edit(const Glib::RefPtr<Gtk::ListItem>& list_item, Glib::SignalProxyProperty::SlotType&& edit_callback);
+    template<typename GetterFunc>
+    void on_bind_label(const Glib::RefPtr<Gtk::ListItem>& list_item, GetterFunc&& getter_function) const;
 
-    std::pair<Glib::RefPtr<Requirement>, Gtk::Label*> on_bind_setup(const Glib::RefPtr<Gtk::ListItem>& list_item) const;
+    template<mp_helpers::OptionalReturner GetterFunc>
+    void on_bind_label(const Glib::RefPtr<Gtk::ListItem>& list_item, GetterFunc&& getter_function) const;
 
-    template<typename InfoFunc>
-    void on_bind_label(const Glib::RefPtr<Gtk::ListItem>& list_item, InfoFunc&& information_function) const;
-
-    template<mp_helpers::OptionalReturner InfoFunc>
-    void on_bind_label(const Glib::RefPtr<Gtk::ListItem>& list_item, InfoFunc&& information_function) const;
+    template<typename SetterFunc>
+    void on_edit_label(const Glib::RefPtr<Gtk::ListItem>& list_item, SetterFunc&& setter_function);
 };
 
 }

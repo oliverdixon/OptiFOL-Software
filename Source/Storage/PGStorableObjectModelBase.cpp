@@ -84,7 +84,7 @@ void PGStorableObjectModelBase::pq_load()
         sql_parameter << '}';
 
         // Run the query to filter the queued IDs from the DB object table, and load into the cache
-        const auto db_result = filter_objects(sql_parameter);
+        const auto db_result = filter_objects(sql_parameter, 128);
         for (const auto& row : db_result)
             emplace_object(row);
     }

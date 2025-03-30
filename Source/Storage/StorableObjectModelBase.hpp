@@ -39,19 +39,25 @@ public:
     ~StorableObjectModelBase() override = default;
 
     /**
-     * @brief Flush any pending loads queued by the instance
+     * @brief Propagate any loads from the database as requested by the instance
      */
-    virtual void load() = 0;
+    virtual void flush_inbound_insert() = 0;
 
     /**
-     * @brief Flush any pending reloads queued by the instance
+     * @brief Propagate any reloads from the database as requested by the instance
      */
-    virtual void reload() = 0;
+    virtual void flush_inbound_update() = 0;
 
     /**
-     * @brief Flush any pending unloads queued by the instance
+     * @brief Propagate any unloads from the database as requested by the instance
      */
-    virtual void unload() = 0;
+    virtual void flush_inbound_delete() = 0;
+
+    virtual void flush_outbound_insert() = 0;
+
+    virtual void flush_outbound_update() = 0;
+
+    virtual void flush_outbound_delete() = 0;
 };
 
 }

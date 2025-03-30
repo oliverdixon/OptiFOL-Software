@@ -86,4 +86,40 @@ std::size_t Requirement::get_stakeholder() const
     return stakeholder;
 }
 
+void Requirement::set_identifier(const std::string &name_candidate)
+{
+    this->name = name_candidate;
+    last_modified_time = std::chrono::system_clock::now();
+}
+
+void Requirement::set_description(const std::string &description_candidate)
+{
+    this->description = description_candidate;
+    last_modified_time = std::chrono::system_clock::now();
+}
+
+void Requirement::attempt_set_statement(const std::string &statement_candidate)
+{
+    this->statement = statement_candidate;
+    last_modified_time = std::chrono::system_clock::now();
+}
+
+void Requirement::attempt_set_priority(const std::string &priority_candidate)
+{
+    priority = std::stoul(priority_candidate);
+    last_modified_time = std::chrono::system_clock::now();
+}
+
+void Requirement::attempt_set_test(const std::string &test_candidate)
+{
+    test = std::stoul(test_candidate);
+    last_modified_time = std::chrono::system_clock::now();
+}
+
+void Requirement::attempt_set_stakeholder(const std::string &stakeholder_candidate)
+{
+    stakeholder = std::stoul(stakeholder_candidate);
+    last_modified_time = std::chrono::system_clock::now();
+}
+
 }

@@ -46,6 +46,8 @@ public:
 
     bool operator==(std::size_t other_id) const noexcept override;
 
+    void set_identifier(const std::string& name_candidate) override;
+
 private:
     /**
      * @brief Time of initial creation

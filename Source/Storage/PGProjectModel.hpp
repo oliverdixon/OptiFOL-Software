@@ -42,9 +42,9 @@ public:
 
     Glib::RefPtr<PGSubsystemModel> get_subsystem_model(std::size_t project_id) const;
 
-    void load() override;
+    void flush_inbound_insert() override;
 
-    void unload() override;
+    void flush_inbound_delete() override;
 
 private:
     pqxx::result filter_objects(const std::ostringstream& sql_parameter, std::size_t maximum_return_count) const

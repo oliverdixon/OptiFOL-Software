@@ -254,7 +254,7 @@ add_executable(OptiFOLGUI
         Source/Storage/Subsystem.cpp
         Source/Storage/Subsystem.hpp
         Source/Storage/IStorageObject.hpp
-        Source/Storage/WALJSONPGUpdateNotification.hpp
+        Source/Storage/PGUpdateNotification.hpp
         Source/Storage/PGStorableObjectModel.hpp
         Source/Storage/PGProjectModel.hpp
         Source/Storage/PGProjectModel.cpp

@@ -18,6 +18,8 @@
 #include <variant>
 #include <pqxx/row>
 
+#include "PGUpdateNotification.hpp"
+
 namespace optifol
 {
 
@@ -70,7 +72,7 @@ protected:
     void pq_unload();
 
     [[nodiscard]] virtual pqxx::result filter_objects(const std::ostringstream& sql_parameter,
-        std::size_t maximum_return_count = 128) const = 0;
+        std::size_t maximum_return_count) const = 0;
 
     virtual void emplace_object(const pqxx::row& row) = 0;
 

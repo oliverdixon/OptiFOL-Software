@@ -34,19 +34,37 @@ class PGStorableObjectModel :
 public:
     ~PGStorableObjectModel() override = default;
 
-    void load() override
+    void flush_inbound_insert() override
     {
         PGStorableObjectModelBase::pq_load();
     }
 
-    void reload() override
+    void flush_inbound_update() override
     {
         PGStorableObjectModelBase::pq_reload();
     }
 
-    void unload() override
+    void flush_inbound_delete() override
     {
         PGStorableObjectModelBase::pq_unload();
+    }
+
+    void flush_outbound_insert() override
+    {
+        // TODO
+        throw std::runtime_error("Sync-back not implemented.");
+    }
+
+    void flush_outbound_update() override
+    {
+        // TODO
+        throw std::runtime_error("Sync-back not implemented.");
+    }
+
+    void flush_outbound_delete() override
+    {
+        // TODO
+        throw std::runtime_error("Sync-back not implemented.");
     }
 
 protected:

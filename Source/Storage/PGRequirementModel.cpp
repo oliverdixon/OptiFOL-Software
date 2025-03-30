@@ -47,7 +47,7 @@ void PGRequirementModel::load_for_subsystem(const Subsystem &subsystem, std::siz
     for (auto &&row: result)
         enqueue_load(std::move(row));
 
-    load();
+    flush_inbound_insert();
 }
 
 pqxx::result PGRequirementModel::filter_objects(const std::ostringstream &sql_parameter,

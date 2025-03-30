@@ -46,16 +46,16 @@ Glib::RefPtr<PGSubsystemModel> PGProjectModel::get_subsystem_model(const std::si
     return ss_model_it == subsystem_models.cend() ? nullptr : ss_model_it->second;
 }
 
-void PGProjectModel::load()
+void PGProjectModel::flush_inbound_insert()
 {
     PGStorableObjectModelBase::pq_load();
 
     // TODO: can we do any sanity assert-checks here?
     for (const auto& ss_model : subsystem_models)
-        ss_model.second->load();
+        ss_model.second->flush_inbound_insert();
 }
 
-void PGProjectModel::unload()
+void PGProjectModel::flush_inbound_delete()
 {
     PGStorableObjectModelBase::pq_unload();
 
@@ -69,7 +69,7 @@ void PGProjectModel::unload()
     assert(get_n_items() == subsystem_models.size());
 
     for (const auto& ss_model : subsystem_models)
-        ss_model.second->unload();
+        ss_model.second->flush_inbound_delete();
 }
 
 pqxx::result PGProjectModel::filter_objects(const std::ostringstream& sql_parameter,

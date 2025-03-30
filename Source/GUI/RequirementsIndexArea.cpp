@@ -38,27 +38,33 @@ RequirementsIndexArea::RequirementsIndexArea(Gtk::ColumnView *view,
             const auto factory = Gtk::SignalListItemFactory::create();
 
             if (gtk_id == "requirement_name") {
-                factory->signal_setup().connect(sigc::ptr_fun(&RequirementsIndexArea::on_setup_static_mono));
+                factory->signal_setup().connect([this](const Glib::RefPtr<Gtk::ListItem> &list_item)
+                    { on_setup_label(list_item, &Requirement::set_identifier, true); });
                 factory->signal_bind().connect([this](const Glib::RefPtr<Gtk::ListItem> &list_item)
                     { return on_bind_label(list_item, &Requirement::get_identifier); });
             } else if (gtk_id == "requirement_statement") {
-                factory->signal_setup().connect(sigc::ptr_fun(&RequirementsIndexArea::on_setup_static_mono));
+                factory->signal_setup().connect([this](const Glib::RefPtr<Gtk::ListItem> &list_item)
+                    { on_setup_label(list_item, &Requirement::attempt_set_statement, true); });
                 factory->signal_bind().connect([this](const Glib::RefPtr<Gtk::ListItem> &list_item)
                     { return on_bind_label(list_item, &Requirement::get_statement); });
             } else if (gtk_id == "requirement_description") {
-                factory->signal_setup().connect(sigc::ptr_fun(&RequirementsIndexArea::on_setup_static));
+                factory->signal_setup().connect([this](const Glib::RefPtr<Gtk::ListItem> &list_item)
+                    { on_setup_label(list_item, &Requirement::set_description); });
                 factory->signal_bind().connect([this](const Glib::RefPtr<Gtk::ListItem> &list_item)
                     { return on_bind_label(list_item, &Requirement::get_description); });
             } else if (gtk_id == "requirement_priority") {
-                factory->signal_setup().connect(sigc::ptr_fun(&RequirementsIndexArea::on_setup_static));
+                factory->signal_setup().connect([this](const Glib::RefPtr<Gtk::ListItem> &list_item)
+                    { on_setup_label(list_item, &Requirement::attempt_set_priority); });
                 factory->signal_bind().connect([this](const Glib::RefPtr<Gtk::ListItem> &list_item)
                     { return on_bind_label(list_item, &Requirement::get_priority); });
             } else if (gtk_id == "requirement_test") {
-                factory->signal_setup().connect(sigc::ptr_fun(&RequirementsIndexArea::on_setup_static));
+                factory->signal_setup().connect([this](const Glib::RefPtr<Gtk::ListItem> &list_item)
+                    { on_setup_label(list_item, &Requirement::attempt_set_test); });
                 factory->signal_bind().connect([this](const Glib::RefPtr<Gtk::ListItem> &list_item)
                     { return on_bind_label(list_item, &Requirement::get_test); });
             } else if (gtk_id == "requirement_stakeholder") {
-                factory->signal_setup().connect(sigc::ptr_fun(&RequirementsIndexArea::on_setup_static));
+                factory->signal_setup().connect([this](const Glib::RefPtr<Gtk::ListItem> &list_item)
+                    { on_setup_label(list_item, &Requirement::attempt_set_stakeholder); });
                 factory->signal_bind().connect([this](const Glib::RefPtr<Gtk::ListItem> &list_item)
                     { return on_bind_label(list_item, &Requirement::get_stakeholder); });
             } else
@@ -81,27 +87,35 @@ void RequirementsIndexArea::set_model(const Glib::RefPtr<PGRequirementModel> &ne
     selection_model->set_model(new_model);
 }
 
-void RequirementsIndexArea::on_setup_static(const Glib::RefPtr<Gtk::ListItem> &list_item)
+template<typename SetterFunc>
+void RequirementsIndexArea::on_setup_label(const Glib::RefPtr<Gtk::ListItem> &list_item, SetterFunc&& setter_function,
+        const bool mono_styling)
 {
-    const auto label = Gtk::make_managed<Gtk::Label>();
+    const auto label = Gtk::make_managed<Gtk::EditableLabel>();
+
+    /*
+     * Subtlety note: this setup function is called when a particular Gtk::ListItem is being constructed for usage in
+     * the Gtk::ColumnView. Between being constructed and later edited, the list item shared pointer may go out of
+     * scope. To avoid this, and express correct ownership semantics, the list item is captured by value by this lambda.
+     * It is then passed to the label-edit callback by reference for short-term observation within the lifetime scope of
+     * the lambda. Thus, the below lambda function itself holds ownership of the ListItem.
+     *
+     * Once the Gtk::EditableLabel to which the signal is attached is destructed, this lambda will go out of scope and
+     * release ownership, allowing the list item reference to be destructed appropriately.
+     */
+    label->property_editing().signal_changed().connect([this, list_item, setter_function]
+    {
+        on_edit_label(list_item, setter_function);
+    });
+
     label->set_halign(Gtk::Align::START);
+    if (mono_styling)
+        label->add_css_class("optifol_fol_statement");
+
     list_item->set_child(*label);
 }
 
-void RequirementsIndexArea::on_setup_static_mono(const Glib::RefPtr<Gtk::ListItem> &list_item)
-{
-    const auto label = Gtk::make_managed<Gtk::Label>();
-    label->set_halign(Gtk::Align::START);
-    label->add_css_class("optifol_fol_statement");
-    list_item->set_child(*label);
-}
-
-void RequirementsIndexArea::on_setup_edit(const Glib::RefPtr<Gtk::ListItem> &list_item,
-                                          Glib::SignalProxyProperty::SlotType &&edit_callback)
-{
-}
-
-std::pair<Glib::RefPtr<Requirement>, Gtk::Label*> RequirementsIndexArea::on_bind_setup(
+std::pair<Glib::RefPtr<Requirement>, Gtk::EditableLabel*> RequirementsIndexArea::on_bind_setup(
         const Glib::RefPtr<Gtk::ListItem> &list_item) const
 {
     const auto position = list_item->get_position();
@@ -113,22 +127,22 @@ std::pair<Glib::RefPtr<Requirement>, Gtk::Label*> RequirementsIndexArea::on_bind
     if (!model_item)
         return {nullptr, nullptr}; // TODO log
 
-    const auto label = dynamic_cast<Gtk::Label*>(list_item->get_child());
+    const auto label = dynamic_cast<Gtk::EditableLabel*>(list_item->get_child());
     if (!label)
         return {model_item, nullptr}; // TODO log
 
     return {model_item, label};
 }
 
-template<typename InfoFunc>
+template<typename GetterFunc>
 void RequirementsIndexArea::on_bind_label(const Glib::RefPtr<Gtk::ListItem> &list_item,
-        InfoFunc &&information_function) const
+        GetterFunc &&getter_function) const
 {
     const auto [model_item, label] = on_bind_setup(list_item);
     if (model_item == nullptr || label == nullptr)
         return;
 
-    const auto& value = std::invoke(std::forward<InfoFunc>(information_function), model_item);
+    const auto& value = std::invoke(std::forward<GetterFunc>(getter_function), model_item);
 
     if constexpr (std::is_convertible_v<Glib::ustring, decltype(value)>)
         // If the information function will give us something convertible to a GTK string, just pass it through.
@@ -141,9 +155,9 @@ void RequirementsIndexArea::on_bind_label(const Glib::RefPtr<Gtk::ListItem> &lis
         label->set_text(std::to_string(value));
 }
 
-template<mp_helpers::OptionalReturner InfoFunc>
+template<mp_helpers::OptionalReturner GetterFunc>
 void RequirementsIndexArea::on_bind_label(const Glib::RefPtr<Gtk::ListItem> &list_item,
-        InfoFunc &&information_function) const
+        GetterFunc &&getter_function) const
 {
     const auto [model_item, label] = on_bind_setup(list_item);
     if (model_item == nullptr || label == nullptr)
@@ -159,7 +173,7 @@ void RequirementsIndexArea::on_bind_label(const Glib::RefPtr<Gtk::ListItem> &lis
     const bool is_already_unknown = label->has_css_class(unknown_css_class_name);
     bool unknown_value = false;
 
-    const auto& optional_value = std::invoke(std::forward<InfoFunc>(information_function), model_item);
+    const auto& optional_value = std::invoke(std::forward<GetterFunc>(getter_function), model_item);
     if (optional_value.has_value()) {
         if constexpr (std::is_convertible_v<Glib::ustring, decltype(*optional_value)>)
             // If we have plain string value, just pass it through.
@@ -177,6 +191,33 @@ void RequirementsIndexArea::on_bind_label(const Glib::RefPtr<Gtk::ListItem> &lis
     else if (!is_already_unknown && unknown_value)
         label->add_css_class(unknown_css_class_name);
 
+}
+
+template<typename SetterFunc>
+void RequirementsIndexArea::on_edit_label(const Glib::RefPtr<Gtk::ListItem> &list_item, SetterFunc&& setter_function)
+{
+    const auto position = list_item->get_position();
+
+    if (position == GTK_INVALID_LIST_POSITION)
+        return; // TODO log
+
+    const auto label = dynamic_cast<Gtk::EditableLabel*>(list_item->get_child());
+    if (!label)
+        return; // TODO log
+
+    if (label->get_editing())
+        /*
+         * The Gtk::EditableLabel signal is very trigger-happy, and often fires before changes have been fully committed
+         * (e.g. while the user is still typing). Ensure that we only process changes that have been committed to the
+         * entry field.
+         */
+        return;
+
+    const auto model_item = selection_model->get_model()->get_typed_object<Requirement>(position);
+    if (!model_item)
+        return; // TODO log
+
+    std::invoke(std::forward<SetterFunc>(setter_function), model_item, label->get_text());
 }
 
 }

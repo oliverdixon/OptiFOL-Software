@@ -57,4 +57,10 @@ bool Project::operator==(std::size_t other_id) const noexcept
     return id == other_id;
 }
 
+void Project::set_identifier(const std::string &name_candidate)
+{
+    this->name = name_candidate;
+    last_modified_time = std::chrono::system_clock::now();
+}
+
 }

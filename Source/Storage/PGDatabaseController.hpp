@@ -21,7 +21,7 @@
 #include "IStorageController.hpp"
 #include "PGProjectModel.hpp"
 #include "PGSubsystemModel.hpp"
-#include "WALJSONPGUpdateNotification.hpp"
+#include "PGUpdateNotification.hpp"
 #include "../LegacyWrappers.hpp"
 
 namespace optifol
@@ -65,9 +65,9 @@ private:
      */
     void despatch_json_change(std::string_view payload);
 
-    void handle_project_change(const WALJSONPGUpdateNotification& notification) const;
+    void handle_project_change(const PGUpdateNotification& notification) const;
 
-    void handle_subsystem_change(const WALJSONPGUpdateNotification& notification) const;
+    void handle_subsystem_change(const PGUpdateNotification& notification) const;
 
     const std::string wal_slot_name{"optifol_" + std::to_string(LegacyWrappers::get_pid())};
 

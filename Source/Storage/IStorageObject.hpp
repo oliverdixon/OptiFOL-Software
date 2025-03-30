@@ -82,6 +82,8 @@ public:
      * @see StorageHashFunctor
      */
     virtual bool operator==(std::size_t other_id) const noexcept = 0;
+
+    virtual void set_identifier(const std::string& name_candidate) = 0;
 };
 
 template<typename Test>

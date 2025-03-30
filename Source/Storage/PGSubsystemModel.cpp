@@ -52,7 +52,7 @@ void PGSubsystemModel::load_for_project(const Project &project, const std::size_
     for (auto &&row: result)
         enqueue_load(std::move(row));
 
-    load();
+    flush_inbound_insert();
 }
 
 Glib::RefPtr<PGRequirementModel> PGSubsystemModel::get_requirement_model(const Glib::RefPtr<Subsystem> &subsystem) const

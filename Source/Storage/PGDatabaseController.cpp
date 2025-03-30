@@ -15,7 +15,7 @@
 
 #include "PGDatabaseController.hpp"
 
-#include "WALJSONPGUpdateNotification.hpp"
+#include "PGUpdateNotification.hpp"
 #include "../Logging.hpp"
 #include "../Exceptions/StorageConnectionException.hpp"
 
@@ -64,9 +64,9 @@ void PGDatabaseController::update()
             despatch_json_change(json);
         }
 
-        project_model->load();
-        project_model->reload();
-        project_model->unload();
+        project_model->flush_inbound_insert();
+        project_model->flush_inbound_update();
+        project_model->flush_inbound_delete();
     }
 }
 
@@ -82,41 +82,41 @@ void PGDatabaseController::despatch_json_change(const std::string_view payload)
     auto change_root = document["change"];
 
     for (auto change : change_root) {
-        const auto parsed_payload = change.get<WALJSONPGUpdateNotification>().value();
+        const auto parsed_payload = change.get<PGUpdateNotification>().value();
 
         switch (parsed_payload.scope) {
-        case WALJSONPGUpdateNotification::Scope::Project:
+        case PGUpdateNotification::Scope::Project:
             handle_project_change(parsed_payload);
             break;
 
-        case WALJSONPGUpdateNotification::Scope::Subsystem:
+        case PGUpdateNotification::Scope::Subsystem:
             handle_subsystem_change(parsed_payload);
             break;
 
-        case WALJSONPGUpdateNotification::Scope::Empty:
+        case PGUpdateNotification::Scope::Empty:
             LOG4CXX_WARN(Logging::get_logger(), "WAL JSON payload was delivered with an empty scope");
             break;
         }
     }
 }
 
-void PGDatabaseController::handle_project_change(const WALJSONPGUpdateNotification &notification) const
+void PGDatabaseController::handle_project_change(const PGUpdateNotification &notification) const
 {
     switch (notification.action) {
-    case WALJSONPGUpdateNotification::Action::NoOp: break;
-    case WALJSONPGUpdateNotification::Action::Insert:
+    case PGUpdateNotification::Action::NoOp: break;
+    case PGUpdateNotification::Action::Insert:
         project_model->enqueue_load(notification.id);
         break;
-    case WALJSONPGUpdateNotification::Action::Update:
+    case PGUpdateNotification::Action::Update:
         project_model->enqueue_reload(notification.id);
         break;
-    case WALJSONPGUpdateNotification::Action::Delete:
+    case PGUpdateNotification::Action::Delete:
         project_model->enqueue_unload(notification.id);
         break;
     }
 }
 
-void PGDatabaseController::handle_subsystem_change(const WALJSONPGUpdateNotification &notification) const
+void PGDatabaseController::handle_subsystem_change(const PGUpdateNotification &notification) const
 {
     if (!notification.associated_fk.has_value()) {
         LOG4CXX_WARN(Logging::get_logger(), "WAL JSON payload for subsystem change did not reference a master project; "
@@ -125,14 +125,14 @@ void PGDatabaseController::handle_subsystem_change(const WALJSONPGUpdateNotifica
     }
 
     switch (notification.action) {
-    case WALJSONPGUpdateNotification::Action::NoOp: break;
-    case WALJSONPGUpdateNotification::Action::Insert:
+    case PGUpdateNotification::Action::NoOp: break;
+    case PGUpdateNotification::Action::Insert:
         project_model->get_subsystem_model(*notification.associated_fk)->enqueue_load(notification.id);
         break;
-    case WALJSONPGUpdateNotification::Action::Update:
+    case PGUpdateNotification::Action::Update:
         project_model->get_subsystem_model(*notification.associated_fk)->enqueue_reload(notification.id);
         break;
-    case WALJSONPGUpdateNotification::Action::Delete:
+    case PGUpdateNotification::Action::Delete:
         project_model->get_subsystem_model(*notification.associated_fk)->enqueue_unload(notification.id);
         break;
     }
