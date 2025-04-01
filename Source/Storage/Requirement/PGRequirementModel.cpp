@@ -14,7 +14,7 @@
 #include <pqxx/pqxx>
 
 #include "PGRequirementModel.hpp"
-#include "PGChronoType.hpp"
+#include "../PGChronoType.hpp"
 
 namespace optifol
 {
@@ -22,32 +22,48 @@ namespace optifol
 PGRequirementModel::PGRequirementModel(pqxx::connection &connection) :
     PGStorableObjectModelBase(connection)
 {
-    assert(get_n_items() == 0);
 }
 
-PGRequirementModel::PGRequirementModel(pqxx::connection &connection, const Subsystem &initial_subsystem,
-        const std::size_t initial_cache_limit):
-    PGStorableObjectModelBase(connection)
+std::size_t PGRequirementModel::get_item_count() const noexcept
 {
-    load_for_subsystem(initial_subsystem, initial_cache_limit);
-    assert(get_n_items() <= initial_cache_limit);
+    return requirements.size();
 }
 
-void PGRequirementModel::load_for_subsystem(const Subsystem &subsystem, std::size_t limit)
+void PGRequirementModel::register_requirement(Glib::RefPtr<Requirement> &&requirement)
 {
-    pqxx::work tx{connection};
-    const pqxx::result result{tx.exec(
-            "SELECT requirement.id, name, created_at, last_modified, sentence, priority, description, test_id "
-            "FROM requirement WHERE subsystem_id = $1 LIMIT $2;",
-            pqxx::params{ subsystem.get_controller_id(), limit }
-    )};
+    requirements.insert(std::move(requirement));
+}
 
-    tx.commit();
+Glib::RefPtr<Requirement> PGRequirementModel::get_requirement(const Requirement &requirement)
+{
+    const auto it = requirements.find(requirement);
+    if (it == requirements.cend())
+        return {};
 
-    for (auto &&row: result)
-        PGStorableObjectModelBase::enqueue_load(std::move(row));
+    return *it;
+}
 
-    flush_inbound_insert();
+Glib::RefPtr<Requirement> PGRequirementModel::get_requirement(const std::size_t requirement_id)
+{
+    const auto it = requirements.find(requirement_id);
+    if (it == requirements.cend())
+        return {};
+
+    return *it;
+}
+
+void PGRequirementModel::remove_requirement(const Requirement &requirement)
+{
+    const auto it = requirements.find(requirement);
+    if (it != requirements.cend())
+        requirements.erase(it);
+}
+
+void PGRequirementModel::remove_requirement(const std::size_t requirement_id)
+{
+    const auto it = requirements.find(requirement_id);
+    if (it != requirements.cend())
+        requirements.erase(it);
 }
 
 pqxx::result PGRequirementModel::filter_objects(const std::ostringstream &sql_parameter,
@@ -67,13 +83,13 @@ pqxx::result PGRequirementModel::filter_objects(const std::ostringstream &sql_pa
 void PGRequirementModel::emplace_object(const pqxx::row &row)
 {
     // TODO: need a better way of matching fields to indexes
-    const auto id = row[0].as<std::size_t>();
+
     std::optional<std::size_t> test_id;
     if (!row[7].is_null())
         test_id.emplace(row[7].as<std::size_t>());
 
-    append(Glib::make_refptr_for_instance(new Requirement(
-        id,
+    register_requirement(Glib::make_refptr_for_instance(new Requirement(
+        row[0].as<std::size_t>(),
         row[1].as<std::string>(),
         row[2].as<std::chrono::system_clock::time_point>(),
         row[3].as<std::chrono::system_clock::time_point>(),
@@ -81,13 +97,13 @@ void PGRequirementModel::emplace_object(const pqxx::row &row)
         row[5].as<std::size_t>(),
         row[6].as<std::string>(),
         test_id,
-        0) // TODO: stakeholder
-    ));
+        0 // TODO: stakeholder
+    )));
 }
 
 void PGRequirementModel::deplace_object(const std::size_t id)
 {
-    std::ignore = id;
+    remove_requirement(id);
 }
 
 }

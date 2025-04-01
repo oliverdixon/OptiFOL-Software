@@ -14,9 +14,6 @@
 #ifndef ISTORAGECONTROLLER_HPP
 #define ISTORAGECONTROLLER_HPP
 
-#include "PGProjectModel.hpp"
-#include "PGSubsystemModel.hpp"
-
 namespace optifol
 {
 
@@ -42,12 +39,6 @@ public:
      *  similarly implementation-defined.
      */
     virtual void update() = 0;
-
-    /**
-     * @brief Grabs an immutable reference to the PGProjectModel
-     * @return An immutable observing reference to the Project model
-     */
-    virtual const Glib::RefPtr<PGProjectModel> peek_project_model() const = 0;
 };
 
 }

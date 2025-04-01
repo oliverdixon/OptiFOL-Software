@@ -19,8 +19,6 @@
 #include <pqxx/connection>
 
 #include "IStorageController.hpp"
-#include "PGProjectModel.hpp"
-#include "PGSubsystemModel.hpp"
 #include "PGUpdateNotification.hpp"
 #include "../LegacyWrappers.hpp"
 
@@ -56,26 +54,12 @@ public:
      */
     void update() override;
 
-    const Glib::RefPtr<PGProjectModel> peek_project_model() const override;
-
 private:
-    /**
-     * @brief Parse and action the changes described by a JSON-formatted WAL replication message from the DB
-     * @param payload The JSON string posted to the WAL slot
-     */
-    void despatch_json_change(std::string_view payload);
-
-    void handle_project_change(const PGUpdateNotification& notification) const;
-
-    void handle_subsystem_change(const PGUpdateNotification& notification) const;
-
     const std::string wal_slot_name{"optifol_" + std::to_string(LegacyWrappers::get_pid())};
 
     simdjson::ondemand::parser json_parser;
 
     std::optional<pqxx::connection> connection;
-
-    Glib::RefPtr<PGProjectModel> project_model;
 };
 
 }

@@ -5,28 +5,30 @@
 
 /**
  * @file
- * @brief Class specification for the project-level storage object
+ * @brief Class specification for the subsystem-level storage object
  * @author Oliver Dixon
  * @date 2025-02-22
  * @version Development
  */
 
-#ifndef PROJECT_HPP
-#define PROJECT_HPP
+#ifndef SUBSYSTEM_HPP
+#define SUBSYSTEM_HPP
 
-#include "IStorageObject.hpp"
+#include "../IStorageObject.hpp"
 
 namespace optifol
 {
+
 /**
- * @class Project
- * @brief The Project storage forms the top level of the OptiFOL object hierarchy; it contains many subsystems.
+ * @class Subsystem
+ * @brief The Subsystem storage object forms the second level of the OptiFOL object hierarchy; it belongs to a Project,
+ *  and consists of many individual requirements.
  */
-class Project :
-        public IStorageObject
+class Subsystem :
+    public IStorageObject
 {
 public:
-    Project(std::size_t id, std::string&& name, const TimeT& created_time, const TimeT& last_modified_time);
+    Subsystem(std::size_t id, std::string&& name, const TimeT& created_time, const TimeT& last_modified_time);
 
     [[nodiscard]] std::string get_identifier() const override;
 
@@ -42,11 +44,11 @@ public:
      * @return Is the current project the same as the other project?
      * @note This comparator determines equality by project metadata.
      */
-    bool operator==(const Project& other) const noexcept;
+    bool operator==(const Subsystem& other) const noexcept;
 
     bool operator==(std::size_t other_id) const noexcept override;
 
-    void set_identifier(const std::string& name_candidate) override;
+    void set_identifier(const std::string &name_candidate) override;
 
 private:
     /**
@@ -58,8 +60,8 @@ private:
 
     /**
      * @brief Time of most recent mutation
-     * @note This quantity should be updated upon the changing of Project metadata, or the changing of any data held by
-     *  the Project, such as any of its constituent Subsystems or their requirements.
+     * @note This quantity should be updated upon the changing of Subsystem metadata, or the changing of any data held
+     *  by the Subsystem, such as any of its constituent requirements.
      */
     TimeT last_modified_time;
 
@@ -69,7 +71,7 @@ private:
     std::string name;
 
     /**
-     * @brief The numerical ID of the Project, unique up to being the IStorageController primary key for the Project
+     * @brief The numerical ID of the Subsystem, unique up to being the IStorageController primary key for the Subsystem
      *  entity
      */
     const std::size_t id;

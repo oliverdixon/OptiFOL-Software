@@ -17,10 +17,12 @@
 #include <gtkmm.h>
 #include <log4cxx/logger.h>
 
-#include "../Storage/ProjectModel.hpp"
+#include "../../Storage/Project/ProjectHierarchicalModel.hpp"
+#include "../Storage/Project/IProjectModel.hpp"
 
 namespace optifol
 {
+class Subsystem;
 
 /**
  * @class ProjectHierarchyPane
@@ -34,7 +36,7 @@ public:
      * @typedef SelectedCallbackSignature
      * @brief The function signature of the callback to handle updates in subsystem selection
      */
-    using SelectedCallbackSignature = void(const Glib::RefPtr<RequirementModel>&);
+    using SelectedCallbackSignature = void(const Glib::RefPtr<SubsystemHierarchicalModel>&);
 
     /**
      * @typedef DeselectedCallbackSignature
@@ -49,7 +51,7 @@ public:
      * @param selected_subsystem_callback The callback to execute when the subsystem selection changes
      * @param deselected_subsystem_callback The callback to execute when the subsystem is deselected
      */
-    ProjectHierarchyPane(Gtk::ListView * view, const Glib::RefPtr<ProjectModel> &initial_model,
+    ProjectHierarchyPane(Gtk::ListView * view, const Glib::RefPtr<IProjectModel> &initial_model,
         sigc::slot<SelectedCallbackSignature>&& selected_subsystem_callback,
         sigc::slot<DeselectedCallbackSignature>&& deselected_subsystem_callback);
 
@@ -85,7 +87,9 @@ private:
 
     static std::shared_ptr<log4cxx::Logger> logger;
     Glib::RefPtr<Gtk::TreeListModel> tree_model;
-    Glib::RefPtr<ProjectModel> project_model;
+
+    Glib::RefPtr<ProjectHierarchicalModel> hierarchical_model =
+        Glib::make_refptr_for_instance(new ProjectHierarchicalModel());
 };
 
 }

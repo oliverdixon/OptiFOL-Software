@@ -16,9 +16,9 @@
 
 #include <gtkmm.h>
 
-#include "ProjectHierarchyPane.hpp"
-#include "RequirementsIndexArea.hpp"
 #include "../Storage/PGDatabaseController.hpp"
+#include "Panels/ProjectHierarchyPane.hpp"
+#include "Panels/RequirementsIndexArea.hpp"
 
 namespace optifol
 {

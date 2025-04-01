@@ -246,39 +246,43 @@ add_executable(OptiFOLGUI
         Source/GUI/Application.cpp
         Source/GUI/Application.hpp
         Source/GUI/GTKHelpers.hpp
-        Source/Storage/Project.cpp
-        Source/Storage/Project.hpp
+        Source/Storage/Project/Project.cpp
+        Source/Storage/Project/Project.hpp
         Source/Storage/PGDatabaseController.cpp
         Source/Storage/PGDatabaseController.hpp
         Source/Storage/IStorageController.hpp
-        Source/Storage/Subsystem.cpp
-        Source/Storage/Subsystem.hpp
+        Source/Storage/Subsystem/Subsystem.cpp
+        Source/Storage/Subsystem/Subsystem.hpp
         Source/Storage/IStorageObject.hpp
         Source/Storage/PGUpdateNotification.hpp
-        Source/Storage/PGProjectModel.hpp
-        Source/Storage/PGProjectModel.cpp
+        Source/Storage/Project/PGProjectModel.hpp
+        Source/Storage/Project/PGProjectModel.cpp
         Source/Storage/PGChronoType.hpp
         Source/Storage/PGChronoType.cpp
         Source/Storage/StorageHashFunctor.hpp
-        Source/Storage/StorableObjectModelBase.hpp
-        Source/Storage/PGSubsystemModel.cpp
-        Source/Storage/PGSubsystemModel.hpp
+        Source/Storage/Subsystem/PGSubsystemModel.cpp
+        Source/Storage/Subsystem/PGSubsystemModel.hpp
         Source/Storage/PGStorableObjectModelBase.hpp
         Source/Storage/StorageEqualityFunctor.hpp
-        Source/Storage/PGRequirementModel.cpp
-        Source/Storage/PGRequirementModel.hpp
-        Source/Storage/Requirement.cpp
-        Source/Storage/Requirement.hpp
-        Source/GUI/ProjectHierarchyPane.cpp
-        Source/GUI/ProjectHierarchyPane.hpp
-        Source/GUI/RequirementsIndexArea.cpp
-        Source/GUI/RequirementsIndexArea.hpp
-        Source/Storage/ProjectModel.cpp
-        Source/Storage/ProjectModel.hpp
-        Source/Storage/SubsystemModel.cpp
-        Source/Storage/SubsystemModel.hpp
-        Source/Storage/RequirementModel.cpp
-        Source/Storage/RequirementModel.hpp
+        Source/Storage/Requirement/PGRequirementModel.cpp
+        Source/Storage/Requirement/PGRequirementModel.hpp
+        Source/Storage/Requirement/Requirement.cpp
+        Source/Storage/Requirement/Requirement.hpp
+        Source/GUI/Panels/ProjectHierarchyPane.cpp
+        Source/GUI/Panels/ProjectHierarchyPane.hpp
+        Source/GUI/Panels/RequirementsIndexArea.cpp
+        Source/GUI/Panels/RequirementsIndexArea.hpp
+        Source/Storage/Project/IProjectModel.hpp
+        Source/Storage/Subsystem/ISubsystemModel.hpp
+        Source/Storage/Requirement/IRequirementModel.hpp
+        Source/Storage/PGStorableObjectModelBase.cpp
+        Source/Storage/Project/ProjectHierarchicalModel.cpp
+        Source/Storage/Project/ProjectHierarchicalModel.hpp
+        Source/Storage/ICacheableStorableObjectModel.hpp
+        Source/Storage/Subsystem/SubsystemHierarchicalModel.cpp
+        Source/Storage/Subsystem/SubsystemHierarchicalModel.hpp
+        Source/Storage/Requirement/RequirementHierarchicalModel.cpp
+        Source/Storage/Requirement/RequirementHierarchicalModel.hpp
 )
 
 set(COMMON_COMPILER_OPTIONS

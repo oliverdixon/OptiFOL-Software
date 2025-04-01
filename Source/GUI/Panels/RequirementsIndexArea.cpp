@@ -79,7 +79,7 @@ RequirementsIndexArea::RequirementsIndexArea(Gtk::ColumnView *view, Gtk::Widget 
 #endif
 }
 
-void RequirementsIndexArea::select_model(const Glib::RefPtr<RequirementModel> &new_model) const
+void RequirementsIndexArea::select_model(const Glib::RefPtr<SubsystemHierarchicalModel> &new_model) const
 {
     on_off_widgets.first->set_visible(false);
     on_off_widgets.second->set_visible(true);

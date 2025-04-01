@@ -22,15 +22,14 @@ namespace optifol
 std::shared_ptr<log4cxx::Logger> ProjectHierarchyPane::logger(log4cxx::Logger::getLogger("OptiFOL"));
 
 ProjectHierarchyPane::ProjectHierarchyPane(Gtk::ListView *view,
-        const Glib::RefPtr<ProjectModel>& initial_model,
+        const Glib::RefPtr<IProjectModel>& initial_model,
         sigc::slot<SelectedCallbackSignature>&& selected_subsystem_callback,
-        sigc::slot<DeselectedCallbackSignature>&& deselected_subsystem_callback) :
-    project_model(initial_model)
+        sigc::slot<DeselectedCallbackSignature>&& deselected_subsystem_callback)
 {
     signal_select_subsystem.connect(selected_subsystem_callback);
     signal_deselect_subsystem.connect(deselected_subsystem_callback);
 
-    tree_model = Gtk::TreeListModel::create(initial_model,
+    tree_model = Gtk::TreeListModel::create(hierarchical_model,
         sigc::mem_fun(*this, &ProjectHierarchyPane::on_expand), true, true);
 
     const auto selection_model = Gtk::SingleSelection::create(tree_model);
@@ -98,12 +97,11 @@ void ProjectHierarchyPane::on_bind(const Glib::RefPtr<Gtk::ListItem> &item) cons
 
 void ProjectHierarchyPane::on_activate(const guint position) const
 {
-    const auto project_model_n = project_model->get_n_items();
+    const auto project_model_n = hierarchical_model->get_n_items();
     std::remove_const_t<decltype(project_model_n)> cumulative_position = 0;
 
     for (guint project_idx = 0; project_idx < project_model_n; ++project_idx) {
-        const auto& subsystem_model =
-            project_model->get_subsystem_model(project_model->get_typed_object<Project>(project_idx));
+        const auto& subsystem_model = hierarchical_model->expand_project(project_idx);
         const auto end_idx = cumulative_position + subsystem_model->get_n_items();
 
         if (end_idx >= position) {
@@ -124,8 +122,7 @@ void ProjectHierarchyPane::on_activate(const guint position) const
                 break;
             }
 
-            signal_select_subsystem(subsystem_model->get_requirement_model(
-                subsystem_model->get_typed_object<Subsystem>(position - cumulative_position - 1)->get_controller_id()));
+            signal_select_subsystem(hierarchical_model->expand_project(position - cumulative_position - 1));
             break;
         }
 
@@ -142,7 +139,7 @@ Glib::RefPtr<Gio::ListModel> ProjectHierarchyPane::on_expand(
 {
     const auto project_candidate = std::dynamic_pointer_cast<Project>(item);
     if (project_candidate != nullptr)
-        return project_model->get_subsystem_model(project_candidate);
+        return hierarchical_model->expand_project(*project_candidate);
 
     return nullptr;
 }

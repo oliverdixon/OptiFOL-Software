@@ -14,9 +14,13 @@
 #ifndef PGPROJECTMODEL_HPP
 #define PGPROJECTMODEL_HPP
 
-#include "PGStorableObjectModelBase.hpp"
+#include <unordered_set>
+
+#include "IProjectModel.hpp"
 #include "Project.hpp"
-#include "ProjectModel.hpp"
+#include "../PGStorableObjectModelBase.hpp"
+#include "../StorageEqualityFunctor.hpp"
+#include "../StorageHashFunctor.hpp"
 
 namespace optifol
 {
@@ -26,8 +30,8 @@ namespace optifol
  * @brief TODO
  */
 class PGProjectModel :
-        virtual public ProjectModel,
-        virtual public PGStorableObjectModelBase<Project>
+        public PGStorableObjectModelBase,
+        public IProjectModel
 {
 public:
     /**
@@ -38,19 +42,27 @@ public:
      */
     explicit PGProjectModel(pqxx::connection& connection, std::size_t initial_cache_limit = 128);
 
-    void flush_inbound_insert() override;
+    [[nodiscard]] std::size_t get_item_count() const noexcept override;
 
-    void flush_inbound_delete() override;
+    void register_project(Glib::RefPtr<Project>&& project) override;
+
+    [[nodiscard]] Glib::RefPtr<Project> get_project(const Project& project) override;
+
+    [[nodiscard]] Glib::RefPtr<Project> get_project(std::size_t project_id) override;
+
+    void remove_project(const Project& project) override;
+
+    void remove_project(std::size_t project_id) override;
 
 private:
-    pqxx::result filter_objects(const std::ostringstream& sql_parameter, std::size_t maximum_return_count) const
-        override;
+    [[nodiscard]] pqxx::result filter_objects(const std::ostringstream& sql_parameter, std::size_t maximum_return_count)
+        const override;
 
     void emplace_object(const pqxx::row& row) override;
 
     void deplace_object(std::size_t id) override;
 
-    const Glib::RefPtr<const Project> dummy_base = Glib::make_refptr_for_instance(new Project(0, {}, {}, {}));
+    std::unordered_set<Glib::RefPtr<Project>, StorageHashFunctor<Project>, StorageEqualityFunctor<Project>> projects;
 };
 
 }

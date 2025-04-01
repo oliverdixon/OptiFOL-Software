@@ -14,9 +14,10 @@
 #include "MainWindow.hpp"
 
 #include "GTKHelpers.hpp"
-#include "ProjectHierarchyPane.hpp"
 #include "../Exceptions/BadStorageNotificationException.hpp"
 #include "../Exceptions/StorageConnectionException.hpp"
+#include "Panels/ProjectHierarchyPane.hpp"
+#include "Panels/RequirementsIndexArea.hpp"
 
 namespace optifol
 {
@@ -37,13 +38,13 @@ MainWindow::MainWindow():
 
         requirements_index_area = std::make_unique<RequirementsIndexArea>(
             GTKHelpers::get_widget<Gtk::ColumnView>("Main Window", builder, "requirements_view"),
-            GTKHelpers::get_widget<Gtk::Widget>("Main Window", builder, "requirements_index_advice"),
+            GTKHelpers::get_widget<Gtk::Widget>("Main Window", builder, "requirements_index_advice_unselected"),
             GTKHelpers::get_widget<Gtk::Widget>("Main Window", builder, "requirements_index_content")
         );
 
         project_hierarchy_pane = std::make_unique<ProjectHierarchyPane>(
             project_view,
-            storage->peek_project_model(),
+            Glib::make_refptr_for_instance(new ProjectHierarchicalModel()), // TODO
             sigc::mem_fun(*requirements_index_area, &RequirementsIndexArea::select_model),
             sigc::mem_fun(*requirements_index_area, &RequirementsIndexArea::deselect_model)
         );

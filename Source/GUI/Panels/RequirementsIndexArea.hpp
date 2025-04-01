@@ -16,8 +16,9 @@
 
 #include <gtkmm.h>
 
-#include "GTKHelpers.hpp"
-#include "../Storage/RequirementModel.hpp"
+#include "../GTKHelpers.hpp"
+#include "../../Storage/Subsystem/SubsystemHierarchicalModel.hpp"
+#include "../Storage/Requirement/IRequirementModel.hpp"
 
 namespace optifol
 {
@@ -41,11 +42,10 @@ public:
 
     /**
      * @brief Replace the requirements model displayed by the view
-     * @todo This should take a non-PG-specific requirements model
      * @param new_model The new requirements model to display in the view
      * @post The off-widget is hidden, and the on-widget is displayed
      */
-    void select_model(const Glib::RefPtr<RequirementModel>& new_model) const;
+    void select_model(const Glib::RefPtr<SubsystemHierarchicalModel>& new_model) const;
 
     /**
      * @brief Disconnect the view from its currently displayed model
@@ -76,7 +76,6 @@ private:
      */
     std::pair<Glib::RefPtr<Requirement>, Gtk::EditableLabel*> on_bind_setup(
         const Glib::RefPtr<Gtk::ListItem>& list_item) const;
-
 
     /**
      * @brief Bind a non-optional Requirement attribute to a label
