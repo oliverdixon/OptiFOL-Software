@@ -102,7 +102,8 @@ void ProjectHierarchyPane::on_activate(const guint position) const
     std::remove_const_t<decltype(project_model_n)> cumulative_position = 0;
 
     for (guint project_idx = 0; project_idx < project_model_n; ++project_idx) {
-        const auto& subsystem_model = hierarchical_model->expand_project(project_idx);
+        const auto& subsystem_model =
+            hierarchical_model->expand_project(*hierarchical_model->get_typed_object<Project>(project_idx));
         const auto end_idx = cumulative_position + subsystem_model->get_n_items();
 
         if (end_idx >= position) {

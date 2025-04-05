@@ -18,9 +18,9 @@
 #include <unordered_set>
 #include <variant>
 #include <pqxx/row>
-#include <sigc++/signal.h>
 
 #include "ICacheableStorableObjectModel.hpp"
+#include "ModelPublisherBase.hpp"
 #include "StorageEqualityFunctor.hpp"
 #include "StorageHashFunctor.hpp"
 
@@ -41,9 +41,30 @@ namespace optifol
  */
 template<StorableType Type>
 class PGStorableObjectModelBase :
-        public ICacheableStorableObjectModel<Type>
+        public ICacheableStorableObjectModel<Type>,
+        public ModelPublisherBase<Type>
 {
 public:
+    Glib::RefPtr<Type>* begin() const
+    {
+        return model_contents.begin();
+    }
+
+    Glib::RefPtr<Type>* end() const
+    {
+        return model_contents.end();
+    }
+
+    Glib::RefPtr<Type>* cbegin() const
+    {
+        return model_contents.cbegin();
+    }
+
+    Glib::RefPtr<Type>* cend() const
+    {
+        return model_contents.cend();
+    }
+
     /**
      * @brief Enqueue an object, already loaded from the DB, to be loaded into the cache instance
      * @param row The complete row of the object to enqueue
@@ -172,12 +193,19 @@ public:
         throw std::runtime_error("Unimplemented"); // TODO
     }
 
-    void add_insert_subscriber(
-        sigc::slot<typename ICacheableStorableObjectModel<Type>::InsertionCallbackSignature>&& slot,
-        const bool onboard) override
+    /**
+     * @copybrief ModelPublisherBase<Type>::add_insert_subscriber
+     * @param slot The callback exposed by the subscriber's API
+     * @param onboard Should the instance immediately send signals to the new subscriber for each model item?
+     * @return The newly added signal
+     */
+    const sigc::signal<typename ModelPublisherBase<Type>::InsertionCallbackSignature>&
+        add_insert_subscriber(
+            sigc::slot<typename ModelPublisherBase<Type>::InsertionCallbackSignature>&& slot,
+            const bool onboard) override
     {
-        auto& signal = insert_callbacks.emplace_back();
-        signal.connect(std::move(slot));
+        auto& signal = ModelPublisherBase<Type>::add_insert_subscriber(
+            std::forward<decltype(slot)>(slot), onboard);
 
         if (onboard)
             for (auto item : model_contents)
@@ -186,12 +214,20 @@ public:
                  * scoped to the loop, and immediately converted to an r-value.
                  */
                 signal(std::move(item));
+
+        return signal;
     }
 
 protected:
     /**
      * @brief Construct the PostgreSQL storable object model with a pre-connected PG DB instance
      * @param connection The active database connection reference
+     * @warning It is implicitly assumed that any model bases will be encapsulated within the scope of the corresponding
+     *  database controller, which will maintain mutable references to the active database connection. If the connection
+     *  reference becomes unscoped and hence destructed, behaviour is undefined. Also, if the connection drops out of
+     *  the Connected state, the behaviour is not undefined but member functions of models are likely to throw
+     *  PG-specific exceptions; it is the responsibility of the database controller to ensure that these specialised
+     *  exception types are not passed directly to the storage-agnostic handler.
      */
     explicit PGStorableObjectModelBase(pqxx::connection& connection) :
             connection(connection)
@@ -224,16 +260,6 @@ protected:
      */
     virtual void deplace_object(std::size_t id) = 0;
 
-    /**
-     * @brief Inform all insert-subscribers of a new insertion to the model
-     * @param inserted_item A copy of the ref-counted pointer holding the newly inserted item
-     */
-    void inform_insertion(Glib::RefPtr<Type> inserted_item) const
-    {
-        for (const auto& signal : insert_callbacks)
-            signal(std::move(inserted_item));
-    }
-
     std::queue<std::variant<std::size_t, pqxx::row>> load_queue;
     std::queue<std::variant<std::size_t, pqxx::row>> reload_queue;
     std::queue<std::variant<std::size_t, pqxx::row>> unload_queue;
@@ -241,10 +267,6 @@ protected:
     pqxx::connection& connection;
 
     std::unordered_set<Glib::RefPtr<Type>, StorageHashFunctor<Type>, StorageEqualityFunctor<Type>> model_contents;
-
-private:
-    std::vector<sigc::signal<typename ICacheableStorableObjectModel<Type>::InsertionCallbackSignature>>
-        insert_callbacks;
 };
 
 }

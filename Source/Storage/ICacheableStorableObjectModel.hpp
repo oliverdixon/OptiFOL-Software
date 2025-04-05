@@ -22,22 +22,13 @@ namespace optifol
 /**
  * @class ICacheableStorableObjectModel
  * @brief The basis for cacheable storage object models, supporting deferred propagation with abstract queue-like
- *  structures, and multi-subscriber callbacks for broadcasting updates.
+ *  structures
  * @tparam Type The concrete type of the objects to be stored
  */
 template<StorableType Type>
 class ICacheableStorableObjectModel
 {
 public:
-
-    /**
-     * @typedef InsertionCallbackSignature
-     * @brief The function signature of the callback used to inform subscribers of insertions
-     * @details For the insertion case, the function should return no value and accept only an r-value reference to a
-     *  shared ref-counted pointer of the concrete type managed by the instance.
-     */
-    using InsertionCallbackSignature = void(Glib::RefPtr<Type>&&);
-
     /**
      * @brief The virtual destructor for the cacheable storable object base
      */
@@ -90,14 +81,6 @@ public:
      * @brief Propagate any unloads to the permanent storage as requested by the instance
      */
     virtual void flush_outbound_delete() = 0;
-
-
-    /**
-     * @brief Add a new subscriber to listen for insertions on the current model instance
-     * @param slot The callback exposed by the subscriber's API
-     * @param onboard Should the instance immediately send signals to the new subscriber for each model item?
-     */
-    virtual void add_insert_subscriber(sigc::slot<InsertionCallbackSignature>&& slot, bool onboard) = 0;
 
     /**
      * @brief Get the number of storable objects in the model

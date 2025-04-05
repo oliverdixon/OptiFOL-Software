@@ -83,11 +83,25 @@ public:
      */
     virtual bool operator==(std::size_t other_id) const noexcept = 0;
 
+    /**
+     * @brief Set the human-readable identifier of the
+     * @param name_candidate The new string identifier
+     */
     virtual void set_identifier(const std::string& name_candidate) = 0;
 };
 
-template<typename Test>
-concept StorableType = std::derived_from<Test, IStorageObject>;
+
+// Current Clang 18 bug reports Doxygen violations for uses of @tparam on templated concepts.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdocumentation"
+/**
+ * @concept StorableType
+ * @brief Represents a type that is declared to be a permanently storable object in the OptiFOL type system
+ * @tparam Type The implementing type of the storable object
+ */
+template<typename Type>
+concept StorableType = std::derived_from<Type, IStorageObject>;
+#pragma clang diagnostic pop
 
 }
 

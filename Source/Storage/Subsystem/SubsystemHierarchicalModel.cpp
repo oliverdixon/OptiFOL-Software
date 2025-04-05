@@ -16,10 +16,17 @@
 namespace optifol
 {
 
+SubsystemHierarchicalModel::SubsystemHierarchicalModel(std::size_t relevant_project_tag) :
+        relevant_project_tag(relevant_project_tag)
+{
+}
+
 void SubsystemHierarchicalModel::register_object(Glib::RefPtr<Subsystem> &&subsystem)
 {
-    requirement_models.emplace(subsystem, Glib::make_refptr_for_instance(new RequirementHierarchicalModel()));
-    append(subsystem);
+    if (subsystem->get_relevant_project_tag() == relevant_project_tag) {
+        requirement_models.emplace(subsystem, Glib::make_refptr_for_instance(new RequirementHierarchicalModel()));
+        append(subsystem);
+    }
 }
 
 Glib::RefPtr<Subsystem> SubsystemHierarchicalModel::get_object(const Subsystem &subsystem)

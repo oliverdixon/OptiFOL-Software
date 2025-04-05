@@ -20,7 +20,8 @@ namespace optifol
 
 void ProjectHierarchicalModel::register_object(Glib::RefPtr<Project> &&project)
 {
-    hierarchy.emplace(project, Glib::make_refptr_for_instance(new SubsystemHierarchicalModel()));
+    hierarchy.emplace(project, Glib::make_refptr_for_instance(
+        new SubsystemHierarchicalModel(project->get_controller_id())));
     append(project);
 }
 

@@ -99,7 +99,7 @@ void PGProjectModel::emplace_object(const pqxx::row &row)
         row[3].as<std::chrono::system_clock::time_point>()
     ));
 
-    auto project_insertion_ref = project;
+    const auto project_insertion_ref = project;
 
     register_object(std::move(project));
     inform_insertion(project_insertion_ref);

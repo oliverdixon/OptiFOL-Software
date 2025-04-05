@@ -281,6 +281,7 @@ add_executable(OptiFOLGUI
         Source/Storage/Requirement/RequirementHierarchicalModel.hpp
         Source/Storage/IStorableObjectModel.hpp
         Source/Storage/GlibStorableObjectModelBase.hpp
+        Source/Storage/ModelPublisherBase.hpp
 )
 
 set(COMMON_COMPILER_OPTIONS

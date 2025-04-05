@@ -57,6 +57,15 @@ public:
      */
     void update() override;
 
+    /**
+     * @copybrief IStorageController::build_project_hierarchical_model
+     * @details This builder creates a new hierarchical project view synchronised to the contents of the storable
+     *  objects in the present database controller instance. The synchronisation is two-way, such that the built
+     *  hierarchical model may update the database model of changes, and vise versa. This function should be tested
+     *  extensively to verify absence of scoping issues, noting that all signal-trackers support automatic signal
+     *  disconnection via the libsigc++ framework.
+     * @return A Glib-wrapped project hierarchical model, suitable for use with GTK components.
+     */
     [[nodiscard]] Glib::RefPtr<ProjectHierarchicalModel> build_project_hierarchical_model() const override;
 
 private:

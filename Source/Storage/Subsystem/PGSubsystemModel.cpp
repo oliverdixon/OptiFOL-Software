@@ -19,7 +19,8 @@
 namespace optifol
 {
 
-PGSubsystemModel::PGSubsystemModel(pqxx::connection &connection) : PGStorableObjectModelBase(connection)
+PGSubsystemModel::PGSubsystemModel(pqxx::connection &connection) :
+    PGStorableObjectModelBase(connection)
 {
 }
 
@@ -65,14 +66,30 @@ void PGSubsystemModel::remove_object(const std::size_t subsystem_id)
         model_contents.erase(it);
 }
 
+void PGSubsystemModel::load_for_project(Glib::RefPtr<Project>&& project)
+{
+    pqxx::work tx{connection};
+    const pqxx::result result{
+        tx.exec("SELECT id, project_id, name, created_at, last_modified FROM subsystem WHERE project_id = $1;",
+            pqxx::params{project->get_controller_id()})
+    };
+    tx.commit();
+
+    for (auto &&row: result)
+        enqueue_load(std::move(row));
+
+    flush_inbound_insert();
+}
+
 pqxx::result PGSubsystemModel::filter_objects(const std::ostringstream &sql_parameter,
                                               const std::size_t maximum_return_count) const
 {
     pqxx::work tx{connection};
     const pqxx::result result{
         tx.exec(
-            "SELECT subsystem.id, name, created_at, last_modified FROM subsystem JOIN UNNEST($1::bigint[]) AS "
-            "filter(id) ON subsystem.id = filter.id LIMIT $2;", pqxx::params{sql_parameter.str(), maximum_return_count}
+            "SELECT subsystem.id, project_id, name, created_at, last_modified FROM subsystem JOIN UNNEST($1::bigint[]) "
+            "AS filter(id) ON subsystem.id = filter.id LIMIT $2;",
+            pqxx::params{sql_parameter.str(), maximum_return_count}
         )
     };
 
@@ -84,9 +101,10 @@ void PGSubsystemModel::emplace_object(const pqxx::row &row)
 {
     register_object(Glib::make_refptr_for_instance(new Subsystem(
         row[0].as<std::size_t>(),
-        row[1].as<std::string>(),
-        row[2].as<std::chrono::system_clock::time_point>(),
-        row[3].as<std::chrono::system_clock::time_point>()
+        row[1].as<std::size_t>(),
+        row[2].as<std::string>(),
+        row[3].as<std::chrono::system_clock::time_point>(),
+        row[4].as<std::chrono::system_clock::time_point>()
     )));
 }
 

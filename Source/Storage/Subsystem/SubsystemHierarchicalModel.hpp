@@ -33,6 +33,8 @@ class SubsystemHierarchicalModel :
         public GlibStorableObjectModelBase<Subsystem>
 {
 public:
+    explicit SubsystemHierarchicalModel(std::size_t relevant_project_tag);
+
     void register_object(Glib::RefPtr<Subsystem>&& subsystem) override;
 
     [[nodiscard]] Glib::RefPtr<Subsystem> get_object(const Subsystem& subsystem) override;
@@ -64,10 +66,12 @@ private:
 
     std::optional<guint> find_object_position(std::size_t subsystem_id) const override;
 
-    Glib::RefPtr<Subsystem> dummy_subsystem = Glib::make_refptr_for_instance(new Subsystem(0, {}, {}, {}));
+    Glib::RefPtr<Subsystem> dummy_subsystem = Glib::make_refptr_for_instance(new Subsystem(0, 0, {}, {}, {}));
 
     std::unordered_map<Glib::RefPtr<Subsystem>, Glib::RefPtr<RequirementHierarchicalModel>,
         StorageHashFunctor<Subsystem>, StorageEqualityFunctor<Subsystem>> requirement_models;
+
+    const std::size_t relevant_project_tag;
 };
 
 }

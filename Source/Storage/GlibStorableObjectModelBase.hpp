@@ -17,6 +17,7 @@
 #include <giomm/liststore.h>
 
 #include "IStorageObject.hpp"
+#include "ModelPublisherBase.hpp"
 
 namespace optifol
 {
@@ -32,8 +33,33 @@ namespace optifol
  */
 template<StorableType Type>
 class GlibStorableObjectModelBase :
-        public Gio::ListStore<Type>
+        public Gio::ListStore<Type>,
+        public ModelPublisherBase<Type>
 {
+public:
+    /**
+     * @copybrief ModelPublisherBase<Type>::add_insert_subscriber
+     * @param slot The callback exposed by the subscriber's API
+     * @param onboard Should the instance immediately send signals to the new subscriber for each model item?
+     * @return The newly added signal
+     */
+    const sigc::signal<typename ModelPublisherBase<Type>::InsertionCallbackSignature>&
+        add_insert_subscriber(
+            sigc::slot<typename ModelPublisherBase<Type>::InsertionCallbackSignature>&& slot,
+            const bool onboard) override
+    {
+        auto& signal = ModelPublisherBase<Type>::add_insert_subscriber(
+            std::forward<decltype(slot)>(slot), onboard);
+
+        if (onboard) {
+            const auto elements_n = this->get_n_items();
+            for (guint position_idx = 0; position_idx < elements_n; ++position_idx)
+                signal(std::move(this->template get_typed_object<Type>(position_idx)));
+        }
+
+        return signal;
+    }
+
 protected:
     /**
      * @brief Query the model for the implementation-defined index of a particular project in the model

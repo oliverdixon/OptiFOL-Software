@@ -15,6 +15,7 @@
 #define PGSUBSYSTEMMODEL_HPP
 
 #include "Subsystem.hpp"
+#include "../Project/Project.hpp"
 #include "../IStorableObjectModel.hpp"
 #include "../PGStorableObjectModelBase.hpp"
 
@@ -47,6 +48,8 @@ public:
     void remove_object(const Subsystem& subsystem) override;
 
     void remove_object(std::size_t subsystem_id) override;
+
+    void load_for_project(Glib::RefPtr<Project>&& project);
 
 private:
     pqxx::result filter_objects(const std::ostringstream &sql_parameter, std::size_t maximum_return_count) const

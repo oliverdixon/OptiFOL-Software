@@ -28,7 +28,8 @@ class Subsystem :
     public IStorageObject
 {
 public:
-    Subsystem(std::size_t id, std::string&& name, const TimeT& created_time, const TimeT& last_modified_time);
+    Subsystem(std::size_t id, std::size_t relevant_project_tag, std::string&& name, const TimeT& created_time,
+        const TimeT& last_modified_time);
 
     [[nodiscard]] std::string get_identifier() const override;
 
@@ -49,6 +50,8 @@ public:
     bool operator==(std::size_t other_id) const noexcept override;
 
     void set_identifier(const std::string &name_candidate) override;
+
+    std::size_t get_relevant_project_tag() const noexcept;
 
 private:
     /**
@@ -75,6 +78,11 @@ private:
      *  entity
      */
     const std::size_t id;
+
+    /**
+     * @brief The controller ID of the project to which the subsystem belongs
+     */
+    std::size_t relevant_project_tag;
 };
 
 }

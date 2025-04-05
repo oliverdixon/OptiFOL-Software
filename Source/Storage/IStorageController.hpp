@@ -41,6 +41,15 @@ public:
      */
     virtual void update() = 0;
 
+    /**
+     * @brief Build a hierarchical view of the project model from the storage-specialised project model
+     * @note This operation is typically cheap, though not free (especially in multithreaded environments), as
+     *  reference-counted pointers are utilised extensively. A single implementation-defined controller acts as the
+     *  object registry, wherein the single project references are heap-allocated, and the models referencing the shared
+     *  memory keep one another in sync via a minimal framework of slots and signals. For more details, see the
+     *  implementations of this virtual member function.
+     * @return A Glib-wrapped project hierarchical model, suitable for use with GTK components.
+     */
     [[nodiscard]] virtual Glib::RefPtr<ProjectHierarchicalModel> build_project_hierarchical_model() const = 0;
 };
 

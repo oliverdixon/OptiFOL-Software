@@ -24,6 +24,9 @@ PGDatabaseController::PGDatabaseController(const std::string& db_uri)
     try {
         connection.emplace(db_uri);
         project_model = std::make_unique<PGProjectModel>(*connection);
+        subsystem_model = std::make_unique<PGSubsystemModel>(*connection);
+        project_model->add_insert_subscriber(sigc::mem_fun(*subsystem_model, &PGSubsystemModel::load_for_project),
+            true);
 
         pqxx::work tx{*connection};
         tx.exec("SELECT 'init' FROM pg_create_logical_replication_slot($1::text, 'wal2json');",
@@ -60,9 +63,29 @@ void PGDatabaseController::update()
 
 Glib::RefPtr<ProjectHierarchicalModel> PGDatabaseController::build_project_hierarchical_model() const
 {
-    auto model = Glib::make_refptr_for_instance(new ProjectHierarchicalModel());
-    project_model->add_insert_subscriber(sigc::mem_fun(*model, &ProjectHierarchicalModel::register_object), true);
-    return model;
+    auto hierarchical_model = Glib::make_refptr_for_instance(new ProjectHierarchicalModel());
+
+    // Set up the two-way insertion synchronisation on the project
+    project_model->add_insert_subscriber(sigc::mem_fun(*hierarchical_model,
+        &ProjectHierarchicalModel::register_object), true);
+    hierarchical_model->add_insert_subscriber(sigc::mem_fun(*project_model,
+        &PGProjectModel::register_object), false);
+
+    const auto project_count = hierarchical_model->get_n_items();
+    assert(project_count == project_model->get_item_count());
+
+    // Set up the two-way insertion synchronisation on the subsystem models: one for each project
+    for (guint project_idx = 0; project_idx < project_count; ++project_idx) {
+        const auto& subsystem_hierarchical_model =
+            hierarchical_model->expand_project(*hierarchical_model->get_typed_object<Project>(project_idx));
+
+        subsystem_model->add_insert_subscriber(sigc::mem_fun(*subsystem_hierarchical_model,
+            &SubsystemHierarchicalModel::register_object), true);
+        subsystem_hierarchical_model->add_insert_subscriber(sigc::mem_fun(*subsystem_model,
+            &PGSubsystemModel::register_object), false);
+    }
+
+    return hierarchical_model;
 }
 
 }

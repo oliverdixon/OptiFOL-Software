@@ -17,13 +17,15 @@ namespace optifol
 {
 
 Subsystem::Subsystem(const std::size_t id,
+                 const std::size_t relevant_project_tag,
                  std::string &&name,
                  const TimeT &created_time,
                  const TimeT &last_modified_time):
     created_time(created_time),
     last_modified_time(last_modified_time),
     name(std::move(name)),
-    id(id)
+    id(id),
+    relevant_project_tag(relevant_project_tag)
 {
 }
 
@@ -61,6 +63,11 @@ void Subsystem::set_identifier(const std::string &name_candidate)
 {
     this->name = name_candidate;
     last_modified_time = std::chrono::system_clock::now();
+}
+
+std::size_t Subsystem::get_relevant_project_tag() const noexcept
+{
+    return relevant_project_tag;
 }
 
 }
