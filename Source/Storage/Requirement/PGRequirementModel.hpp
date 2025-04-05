@@ -17,6 +17,7 @@
 #include "Requirement.hpp"
 #include "../IStorableObjectModel.hpp"
 #include "../PGStorableObjectModelBase.hpp"
+#include "../Subsystem/Subsystem.hpp"
 
 namespace optifol
 {
@@ -40,7 +41,22 @@ public:
 
     void remove_object(std::size_t requirement_id) override;
 
+    void load_for_subsystem(Glib::RefPtr<Subsystem>&& subsystem);
+
 private:
+    struct DBFieldIdx
+    {
+        static constexpr pqxx::row_size_type ID = 0;
+        static constexpr pqxx::row_size_type SubsystemID = 1;
+        static constexpr pqxx::row_size_type Name = 2;
+        static constexpr pqxx::row_size_type CreatedAt = 3;
+        static constexpr pqxx::row_size_type LastModified = 4;
+        static constexpr pqxx::row_size_type Sentence = 5;
+        static constexpr pqxx::row_size_type Priority = 6;
+        static constexpr pqxx::row_size_type Description = 7;
+        static constexpr pqxx::row_size_type TestID = 8;
+    };
+
     [[nodiscard]] pqxx::result filter_objects(const std::ostringstream &sql_parameter, std::size_t maximum_return_count)
         const override;
 

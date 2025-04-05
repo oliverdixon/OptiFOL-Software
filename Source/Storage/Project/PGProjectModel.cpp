@@ -93,16 +93,15 @@ pqxx::result PGProjectModel::filter_objects(const std::ostringstream& sql_parame
 void PGProjectModel::emplace_object(const pqxx::row &row)
 {
     auto project = Glib::make_refptr_for_instance(new Project(
-        row[0].as<std::size_t>(),
-        row[1].as<std::string>(),
-        row[2].as<std::chrono::system_clock::time_point>(),
-        row[3].as<std::chrono::system_clock::time_point>()
+        row[DBFieldIdx::ID].as<std::size_t>(),
+        row[DBFieldIdx::Name].as<std::string>(),
+        row[DBFieldIdx::CreatedAt].as<std::chrono::system_clock::time_point>(),
+        row[DBFieldIdx::LastModified].as<std::chrono::system_clock::time_point>()
     ));
 
-    const auto project_insertion_ref = project;
-
+    auto project_insertion_ref = project;
     register_object(std::move(project));
-    inform_insertion(project_insertion_ref);
+    inform_insertion(std::move(project_insertion_ref));
 }
 
 void PGProjectModel::deplace_object(const std::size_t id)

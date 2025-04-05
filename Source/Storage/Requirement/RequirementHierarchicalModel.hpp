@@ -30,6 +30,8 @@ class RequirementHierarchicalModel :
         public GlibStorableObjectModelBase<Requirement>
 {
 public:
+    explicit RequirementHierarchicalModel(std::size_t relevant_subsystem_tag);
+
     void register_object(Glib::RefPtr<Requirement>&& requirement) override;
 
     [[nodiscard]] Glib::RefPtr<Requirement> get_object(const Requirement& requirement) override;
@@ -45,8 +47,10 @@ private:
 
     std::optional<guint> find_object_position(std::size_t requirement_id) const override;
 
-    Glib::RefPtr<Requirement> dummy_requirement = Glib::make_refptr_for_instance(new Requirement(0, {}, {}, {}, {}, 0,
-        {}, 0, 0));
+    Glib::RefPtr<Requirement> dummy_requirement = Glib::make_refptr_for_instance(new Requirement(0, 0, {}, {}, {}, {},
+        0, {}, 0, 0));
+
+    const std::size_t relevant_subsystem_tag;
 };
 
 }

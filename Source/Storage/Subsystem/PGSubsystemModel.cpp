@@ -99,13 +99,17 @@ pqxx::result PGSubsystemModel::filter_objects(const std::ostringstream &sql_para
 
 void PGSubsystemModel::emplace_object(const pqxx::row &row)
 {
-    register_object(Glib::make_refptr_for_instance(new Subsystem(
-        row[0].as<std::size_t>(),
-        row[1].as<std::size_t>(),
-        row[2].as<std::string>(),
-        row[3].as<std::chrono::system_clock::time_point>(),
-        row[4].as<std::chrono::system_clock::time_point>()
-    )));
+    auto subsystem = Glib::make_refptr_for_instance(new Subsystem(
+        row[DBFieldIdx::ID].as<std::size_t>(),
+        row[DBFieldIdx::ProjectID].as<std::size_t>(),
+        row[DBFieldIdx::Name].as<std::string>(),
+        row[DBFieldIdx::CreatedAt].as<std::chrono::system_clock::time_point>(),
+        row[DBFieldIdx::LastModified].as<std::chrono::system_clock::time_point>()
+    ));
+
+    auto subsystem_insertion_ref = subsystem;
+    register_object(std::move(subsystem));
+    inform_insertion(std::move(subsystem_insertion_ref));
 }
 
 void PGSubsystemModel::deplace_object(const std::size_t id)

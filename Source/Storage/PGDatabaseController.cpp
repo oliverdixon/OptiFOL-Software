@@ -23,10 +23,16 @@ PGDatabaseController::PGDatabaseController(const std::string& db_uri)
 {
     try {
         connection.emplace(db_uri);
+
         project_model = std::make_unique<PGProjectModel>(*connection);
+
         subsystem_model = std::make_unique<PGSubsystemModel>(*connection);
         project_model->add_insert_subscriber(sigc::mem_fun(*subsystem_model, &PGSubsystemModel::load_for_project),
             true);
+
+        requirement_model = std::make_unique<PGRequirementModel>(*connection);
+        subsystem_model->add_insert_subscriber(sigc::mem_fun(*requirement_model,
+            &PGRequirementModel::load_for_subsystem), true);
 
         pqxx::work tx{*connection};
         tx.exec("SELECT 'init' FROM pg_create_logical_replication_slot($1::text, 'wal2json');",
@@ -83,6 +89,19 @@ Glib::RefPtr<ProjectHierarchicalModel> PGDatabaseController::build_project_hiera
             &SubsystemHierarchicalModel::register_object), true);
         subsystem_hierarchical_model->add_insert_subscriber(sigc::mem_fun(*subsystem_model,
             &PGSubsystemModel::register_object), false);
+
+        // Set up the two-way insertion synchronisation on the requirement models: one for each subsystem
+        const auto subsystem_count = subsystem_hierarchical_model->get_n_items();
+        for (guint subsystem_idx = 0; subsystem_idx < subsystem_count; ++subsystem_idx) {
+            const auto& requirement_hierarchical_model =
+                subsystem_hierarchical_model->query_object(*subsystem_hierarchical_model->
+                    get_typed_object<Subsystem>(subsystem_idx));
+
+            requirement_model->add_insert_subscriber(sigc::mem_fun(*requirement_hierarchical_model,
+                &RequirementHierarchicalModel::register_object), true);
+            requirement_hierarchical_model->add_insert_subscriber(sigc::mem_fun(*requirement_model,
+                &PGRequirementModel::register_object), false);
+        }
     }
 
     return hierarchical_model;

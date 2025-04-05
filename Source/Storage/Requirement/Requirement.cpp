@@ -16,9 +16,9 @@
 namespace optifol
 {
 
-Requirement::Requirement(const std::size_t id, std::string&& name, const TimeT& created_time,
-        const TimeT& last_modified_time, std::string&& statement, const std::size_t priority,
-        std::string&& description, const std::optional<std::size_t> test, const std::size_t stakeholder) :
+Requirement::Requirement(const std::size_t id, const std::size_t relevant_subsystem_tag, std::string&& name,
+        const TimeT& created_time, const TimeT& last_modified_time, std::string&& statement, const std::size_t priority,
+        std::string&& description, const std::optional<std::size_t> test_id, const std::size_t stakeholder) :
     created_time(created_time),
     last_modified_time(last_modified_time),
     name(std::move(name)),
@@ -26,8 +26,9 @@ Requirement::Requirement(const std::size_t id, std::string&& name, const TimeT& 
     statement(std::move(statement)),
     priority(priority),
     description(std::move(description)),
-    test(test),
-    stakeholder(stakeholder)
+    test_id(test_id),
+    stakeholder(stakeholder),
+    relevant_subsystem_tag(relevant_subsystem_tag)
 {
 }
 
@@ -78,7 +79,7 @@ std::string Requirement::get_description() const
 
 std::optional<std::size_t> Requirement::get_test() const
 {
-    return test;
+    return test_id;
 }
 
 std::size_t Requirement::get_stakeholder() const
@@ -112,7 +113,7 @@ void Requirement::attempt_set_priority(const std::string &priority_candidate)
 
 void Requirement::attempt_set_test(const std::string &test_candidate)
 {
-    test = std::stoul(test_candidate);
+    test_id = std::stoul(test_candidate);
     last_modified_time = std::chrono::system_clock::now();
 }
 
@@ -120,6 +121,11 @@ void Requirement::attempt_set_stakeholder(const std::string &stakeholder_candida
 {
     stakeholder = std::stoul(stakeholder_candidate);
     last_modified_time = std::chrono::system_clock::now();
+}
+
+std::size_t Requirement::get_relevant_subsystem_tag() const noexcept
+{
+    return relevant_subsystem_tag;
 }
 
 }

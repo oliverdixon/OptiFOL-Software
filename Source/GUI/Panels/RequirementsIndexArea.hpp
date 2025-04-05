@@ -44,7 +44,7 @@ public:
      * @param new_model The new requirements model to display in the view
      * @post The off-widget is hidden, and the on-widget is displayed
      */
-    void select_model(const Glib::RefPtr<SubsystemHierarchicalModel>& new_model) const;
+    void select_model(const Glib::RefPtr<RequirementHierarchicalModel>& new_model) const;
 
     /**
      * @brief Disconnect the view from its currently displayed model

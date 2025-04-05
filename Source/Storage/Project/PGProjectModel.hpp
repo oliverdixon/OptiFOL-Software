@@ -51,6 +51,14 @@ public:
     void remove_object(std::size_t project_id) override;
 
 private:
+    struct DBFieldIdx
+    {
+        static constexpr pqxx::row_size_type ID = 0;
+        static constexpr pqxx::row_size_type Name = 1;
+        static constexpr pqxx::row_size_type CreatedAt = 2;
+        static constexpr pqxx::row_size_type LastModified = 3;
+    };
+
     [[nodiscard]] pqxx::result filter_objects(const std::ostringstream& sql_parameter, std::size_t maximum_return_count)
         const override;
 

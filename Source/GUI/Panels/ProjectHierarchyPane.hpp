@@ -35,7 +35,7 @@ public:
      * @typedef SelectedCallbackSignature
      * @brief The function signature of the callback to handle updates in subsystem selection
      */
-    using SelectedCallbackSignature = void(const Glib::RefPtr<SubsystemHierarchicalModel>&);
+    using SelectedCallbackSignature = void(const Glib::RefPtr<RequirementHierarchicalModel>&);
 
     /**
      * @typedef DeselectedCallbackSignature

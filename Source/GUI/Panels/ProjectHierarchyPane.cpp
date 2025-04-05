@@ -124,7 +124,8 @@ void ProjectHierarchyPane::on_activate(const guint position) const
                 break;
             }
 
-            signal_select_subsystem(hierarchical_model->expand_project(position - cumulative_position - 1));
+            signal_select_subsystem(subsystem_model->query_object(*subsystem_model->get_typed_object<Subsystem>(
+                position - cumulative_position - 1)));
             break;
         }
 

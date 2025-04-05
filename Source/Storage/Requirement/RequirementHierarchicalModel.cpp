@@ -16,9 +16,15 @@
 namespace optifol
 {
 
+RequirementHierarchicalModel::RequirementHierarchicalModel(std::size_t relevant_subsystem_tag) :
+    relevant_subsystem_tag(relevant_subsystem_tag)
+{
+}
+
 void RequirementHierarchicalModel::register_object(Glib::RefPtr<Requirement> &&requirement)
 {
-    append(requirement);
+    if (requirement->get_relevant_subsystem_tag() == relevant_subsystem_tag)
+        append(requirement);
 }
 
 Glib::RefPtr<Requirement> RequirementHierarchicalModel::get_object(const Requirement &requirement)

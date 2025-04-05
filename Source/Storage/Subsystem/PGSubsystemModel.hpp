@@ -52,6 +52,15 @@ public:
     void load_for_project(Glib::RefPtr<Project>&& project);
 
 private:
+    struct DBFieldIdx
+    {
+        static constexpr pqxx::row_size_type ID = 0;
+        static constexpr pqxx::row_size_type ProjectID = 1;
+        static constexpr pqxx::row_size_type Name = 2;
+        static constexpr pqxx::row_size_type CreatedAt = 3;
+        static constexpr pqxx::row_size_type LastModified = 4;
+    };
+
     pqxx::result filter_objects(const std::ostringstream &sql_parameter, std::size_t maximum_return_count) const
         override;
 

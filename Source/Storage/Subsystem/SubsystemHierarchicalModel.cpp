@@ -24,7 +24,8 @@ SubsystemHierarchicalModel::SubsystemHierarchicalModel(std::size_t relevant_proj
 void SubsystemHierarchicalModel::register_object(Glib::RefPtr<Subsystem> &&subsystem)
 {
     if (subsystem->get_relevant_project_tag() == relevant_project_tag) {
-        requirement_models.emplace(subsystem, Glib::make_refptr_for_instance(new RequirementHierarchicalModel()));
+        requirement_models.emplace(subsystem, Glib::make_refptr_for_instance(new RequirementHierarchicalModel(
+            subsystem->get_controller_id())));
         append(subsystem);
     }
 }
