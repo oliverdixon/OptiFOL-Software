@@ -27,13 +27,25 @@
 namespace optifol
 {
 
+/**
+ * @class PGStorableObjectModelBase
+ * @brief The PostgreSQL-specialised implementation base for the ICacheableStorageObjectModel.
+ * @details This class provides implementations for the suite of caching, propagation, and subscription functions,
+ *  specialised to the PostgreSQL database backend. For this model implementation, fast lookup and insertion is
+ *  prioritised over iteration, hence an unordered set is used as the STL container. Derived classes may override any
+ *  virtuals, as required for each particular template specialisation on StorableType. Deriving classes must always
+ *  implement emplacement and deplacement logic for constructing/registering and destructing/de-registering items,
+ *  respectively. They're also required to provide a DB-native filtering operation based on some given SQL parameter
+ *  string. 
+ * @tparam Type The concrete type of the objects to be stored
+ */
 template<StorableType Type>
 class PGStorableObjectModelBase :
         public ICacheableStorableObjectModel<Type>
 {
 public:
     /**
-     * @brief Enqueue an object, identified by its numerical ID, to be loaded into the cache instance
+     * @brief Enqueue an object, already loaded from the DB, to be loaded into the cache instance
      * @param row The complete row of the object to enqueue
      */
     void enqueue_load(pqxx::row&& row)
@@ -42,7 +54,7 @@ public:
     }
 
     /**
-     * @brief Enqueue an object, identified by its numerical ID, to be reloaded into the cache instance
+     * @brief Enqueue an object, already loaded from the DB, to be reloaded into the cache instance
      * @param row The complete row of the object to enqueue
      */
     void enqueue_reload(pqxx::row&& row)
@@ -51,7 +63,7 @@ public:
     }
 
     /**
-     * @brief Enqueue an object, identified by its numerical ID, to be unloaded from the cache instance
+     * @brief Enqueue an object, already loaded from the DB, to be unloaded from the cache instance
      * @param row The complete row of the object to enqueue
      */
     void enqueue_unload(pqxx::row&& row)
@@ -87,8 +99,8 @@ public:
 
         while (!load_queue.empty()) {
             /*
-             * If we have a raw ID, build it into the stream to be fetched from the DB. If we have a prefetched row, emplace
-             * it immediately.
+             * If we have a raw ID, build it into the stream to be fetched from the DB. If we have a prefetched row,
+             * emplace it immediately.
              */
 
             std::visit([this, &sql_parameter, &sql_parameter_count]<typename DeducedType>(DeducedType &&arg)
@@ -162,31 +174,63 @@ public:
 
     void add_insert_subscriber(
         sigc::slot<typename ICacheableStorableObjectModel<Type>::InsertionCallbackSignature>&& slot,
-        const bool onboard = true) override
+        const bool onboard) override
     {
-        auto& signal = insert_signals.emplace_back();
+        auto& signal = insert_callbacks.emplace_back();
         signal.connect(std::move(slot));
 
         if (onboard)
-            for (const auto& item : model_contents)
-                inform_insertion(item);
+            for (auto item : model_contents)
+                /*
+                 * The signal needs an r-value. The iterator provides constant references, so a temporary copy is made,
+                 * scoped to the loop, and immediately converted to an r-value.
+                 */
+                signal(std::move(item));
     }
 
 protected:
+    /**
+     * @brief Construct the PostgreSQL storable object model with a pre-connected PG DB instance
+     * @param connection The active database connection reference
+     */
     explicit PGStorableObjectModelBase(pqxx::connection& connection) :
             connection(connection)
     { }
 
+    /**
+     * @brief Query and collect the results of a read SELECT..WHERE-like statement on the database, filtered according
+     *  to primary keys enumerated by the given parameter vector.
+     * @param sql_parameter The streamed SQL parameter to splice into the filtering query, typically an unordered
+     *  comma-separated (SQL-syntax-compliant) list of record IDs to retrieve from the DB.
+     * @param maximum_return_count The maximum number of records to return
+     * @return The records received from the database query
+     * @warning The SQL parameter query is trusted and directly passed to the database; it is not sanitised nor used as
+     *  part of a prepared statement. Thus, this member function is liable to injection and should not be invoked
+     *  directly on the result of untrusted (e.g. user-sourced) input.
+     * @throws pqxx::failure The failure of the PQXX backend while executing the query
+     */
     [[nodiscard]] virtual pqxx::result filter_objects(const std::ostringstream& sql_parameter,
         std::size_t maximum_return_count) const = 0;
 
+    /**
+     * @brief Construct an object described by the given PG DB row and store it in the model
+     * @param row The row retrieved from the DB, which describes the item to be constructed and appended.
+     */
     virtual void emplace_object(const pqxx::row& row) = 0;
 
+    /**
+     * @brief Remove (and potentially destruct) the item with the given identifier from the model
+     * @param id The ID of the item to be removed from the model
+     */
     virtual void deplace_object(std::size_t id) = 0;
 
+    /**
+     * @brief Inform all insert-subscribers of a new insertion to the model
+     * @param inserted_item A copy of the ref-counted pointer holding the newly inserted item
+     */
     void inform_insertion(Glib::RefPtr<Type> inserted_item) const
     {
-        for (const auto& signal : insert_signals)
+        for (const auto& signal : insert_callbacks)
             signal(std::move(inserted_item));
     }
 
@@ -199,7 +243,8 @@ protected:
     std::unordered_set<Glib::RefPtr<Type>, StorageHashFunctor<Type>, StorageEqualityFunctor<Type>> model_contents;
 
 private:
-    std::vector<sigc::signal<typename ICacheableStorableObjectModel<Type>::InsertionCallbackSignature>> insert_signals;
+    std::vector<sigc::signal<typename ICacheableStorableObjectModel<Type>::InsertionCallbackSignature>>
+        insert_callbacks;
 };
 
 }

@@ -14,8 +14,8 @@
 #ifndef PGPROJECTMODEL_HPP
 #define PGPROJECTMODEL_HPP
 
-#include "IProjectModel.hpp"
 #include "Project.hpp"
+#include "../IStorableObjectModel.hpp"
 #include "../PGStorableObjectModelBase.hpp"
 
 namespace optifol
@@ -27,7 +27,7 @@ namespace optifol
  */
 class PGProjectModel :
         public PGStorableObjectModelBase<Project>,
-        public IProjectModel
+        public IStorableObjectModel<Project>
 {
 public:
     /**
@@ -40,15 +40,15 @@ public:
 
     [[nodiscard]] std::size_t get_item_count() const noexcept override;
 
-    void register_project(Glib::RefPtr<Project>&& project) override;
+    void register_object(Glib::RefPtr<Project>&& project) override;
 
-    [[nodiscard]] Glib::RefPtr<Project> get_project(const Project& project) override;
+    [[nodiscard]] Glib::RefPtr<Project> get_object(const Project& project) override;
 
-    [[nodiscard]] Glib::RefPtr<Project> get_project(std::size_t project_id) override;
+    [[nodiscard]] Glib::RefPtr<Project> get_object(std::size_t project_id) override;
 
-    void remove_project(const Project& project) override;
+    void remove_object(const Project& project) override;
 
-    void remove_project(std::size_t project_id) override;
+    void remove_object(std::size_t project_id) override;
 
 private:
     [[nodiscard]] pqxx::result filter_objects(const std::ostringstream& sql_parameter, std::size_t maximum_return_count)

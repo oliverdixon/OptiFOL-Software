@@ -3,39 +3,47 @@
  * 2025 Oliver Dixon <od641@york.ac.uk>
  */
 
-//
-// Created by owd on 4/1/25.
-//
+/**
+ * @file
+ * @brief Class specification of the Glib-backed hierarchical-based storable object for requirements
+ * @author Oliver Dixon
+ * @date 2025-04-05
+ * @version Development
+ */
 
 #ifndef REQUIREMENTHIERARCHICALMODEL_HPP
 #define REQUIREMENTHIERARCHICALMODEL_HPP
 
-#include <giomm/liststore.h>
-
-#include "IRequirementModel.hpp"
+#include "Requirement.hpp"
+#include "../GlibStorableObjectModelBase.hpp"
+#include "../IStorableObjectModel.hpp"
 
 namespace optifol
 {
 
+/**
+ * @class RequirementHierarchicalModel
+ * @brief The requirements model forming part of a hierarchical Glib-backed list model
+ */
 class RequirementHierarchicalModel :
-        public IRequirementModel,
-        public Gio::ListStore<Requirement>
+        public IStorableObjectModel<Requirement>,
+        public GlibStorableObjectModelBase<Requirement>
 {
 public:
-    void register_requirement(Glib::RefPtr<Requirement>&& requirement) override;
+    void register_object(Glib::RefPtr<Requirement>&& requirement) override;
 
-    [[nodiscard]] Glib::RefPtr<Requirement> get_requirement(const Requirement& requirement) override;
+    [[nodiscard]] Glib::RefPtr<Requirement> get_object(const Requirement& requirement) override;
 
-    [[nodiscard]] Glib::RefPtr<Requirement> get_requirement(std::size_t requirement_id) override;
+    [[nodiscard]] Glib::RefPtr<Requirement> get_object(std::size_t requirement_id) override;
 
-    void remove_requirement(const Requirement& requirement) override;
+    void remove_object(const Requirement& requirement) override;
 
-    void remove_requirement(std::size_t requirement_id) override;
+    void remove_object(std::size_t requirement_id) override;
 
 private:
-    std::optional<guint> find_requirement_position(const Requirement& requirement) const;
+    std::optional<guint> find_object_position(const Requirement& requirement) const override;
 
-    std::optional<guint> find_requirement_position(std::size_t requirement_id) const;
+    std::optional<guint> find_object_position(std::size_t requirement_id) const override;
 
     Glib::RefPtr<Requirement> dummy_requirement = Glib::make_refptr_for_instance(new Requirement(0, {}, {}, {}, {}, 0,
         {}, 0, 0));

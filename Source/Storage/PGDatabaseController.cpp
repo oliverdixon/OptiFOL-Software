@@ -61,7 +61,7 @@ void PGDatabaseController::update()
 Glib::RefPtr<ProjectHierarchicalModel> PGDatabaseController::build_project_hierarchical_model() const
 {
     auto model = Glib::make_refptr_for_instance(new ProjectHierarchicalModel());
-    project_model->add_insert_subscriber(sigc::mem_fun(*model, &ProjectHierarchicalModel::register_project));
+    project_model->add_insert_subscriber(sigc::mem_fun(*model, &ProjectHierarchicalModel::register_object), true);
     return model;
 }
 

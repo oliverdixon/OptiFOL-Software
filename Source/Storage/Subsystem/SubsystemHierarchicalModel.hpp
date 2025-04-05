@@ -3,16 +3,20 @@
  * 2025 Oliver Dixon <od641@york.ac.uk>
  */
 
-//
-// Created by owd on 4/1/25.
-//
+/**
+ * @file
+ * @brief Class specification of the Glib-backed hierarchical-based storable object for subsystems
+ * @author Oliver Dixon
+ * @date 2025-04-05
+ * @version Development
+ */
 
 #ifndef SUBSYSTEMHIERARCHICALMODEL_HPP
 #define SUBSYSTEMHIERARCHICALMODEL_HPP
 
-#include <giomm/liststore.h>
-
-#include "ISubsystemModel.hpp"
+#include "Subsystem.hpp"
+#include "../GlibStorableObjectModelBase.hpp"
+#include "../IStorableObjectModel.hpp"
 #include "../StorageEqualityFunctor.hpp"
 #include "../StorageHashFunctor.hpp"
 #include "../Requirement/RequirementHierarchicalModel.hpp"
@@ -20,29 +24,45 @@
 namespace optifol
 {
 
+/**
+ * @class SubsystemHierarchicalModel
+ * @brief The subsystems model forming part of a hierarchical Glib-backed list model
+ */
 class SubsystemHierarchicalModel :
-        public ISubsystemModel,
-        public Gio::ListStore<Subsystem>
+        public IStorableObjectModel<Subsystem>,
+        public GlibStorableObjectModelBase<Subsystem>
 {
 public:
-    void register_subsystem(Glib::RefPtr<Subsystem>&& subsystem) override;
+    void register_object(Glib::RefPtr<Subsystem>&& subsystem) override;
 
-    [[nodiscard]] Glib::RefPtr<Subsystem> get_subsystem(const Subsystem& subsystem) override;
+    [[nodiscard]] Glib::RefPtr<Subsystem> get_object(const Subsystem& subsystem) override;
 
-    [[nodiscard]] Glib::RefPtr<Subsystem> get_subsystem(std::size_t subsystem_id) override;
+    [[nodiscard]] Glib::RefPtr<Subsystem> get_object(std::size_t subsystem_id) override;
 
-    void remove_subsystem(const Subsystem& subsystem) override;
+    void remove_object(const Subsystem& subsystem) override;
 
-    void remove_subsystem(std::size_t subsystem_id) override;
+    void remove_object(std::size_t subsystem_id) override;
 
-    [[nodiscard]] Glib::RefPtr<RequirementHierarchicalModel> query_subsystem(const Subsystem& subsystem);
+    /**
+     * @brief Query the model for a particular subsystem, and get the associated requirements model
+     * @param subsystem A full instantiation of the target subsystem
+     * @return The requirements model associated with the target subsystem, or an empty ref-counted container if there
+     *  was no suitable subsystem loaded into the model
+     */
+    [[nodiscard]] Glib::RefPtr<RequirementHierarchicalModel> query_object(const Subsystem& subsystem);
 
-    [[nodiscard]] Glib::RefPtr<RequirementHierarchicalModel> query_subsystem(std::size_t subsystem_id);
+    /**
+     * @brief Query the model for a particular subsystem, and get the associated requirements model
+     * @param subsystem_id The ID of the target subsystem
+     * @return The requirements model associated with the target subsystem, or an empty ref-counted container if there
+     *  was no suitable subsystem loaded into the model
+     */
+    [[nodiscard]] Glib::RefPtr<RequirementHierarchicalModel> query_object(std::size_t subsystem_id);
 
 private:
-    std::optional<guint> find_subsystem_position(const Subsystem& subsystem) const;
+    std::optional<guint> find_object_position(const Subsystem& subsystem) const override;
 
-    std::optional<guint> find_subsystem_position(std::size_t subsystem_id) const;
+    std::optional<guint> find_object_position(std::size_t subsystem_id) const override;
 
     Glib::RefPtr<Subsystem> dummy_subsystem = Glib::make_refptr_for_instance(new Subsystem(0, {}, {}, {}));
 

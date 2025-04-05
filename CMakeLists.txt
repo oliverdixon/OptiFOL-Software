@@ -272,9 +272,6 @@ add_executable(OptiFOLGUI
         Source/GUI/Panels/ProjectHierarchyPane.hpp
         Source/GUI/Panels/RequirementsIndexArea.cpp
         Source/GUI/Panels/RequirementsIndexArea.hpp
-        Source/Storage/Project/IProjectModel.hpp
-        Source/Storage/Subsystem/ISubsystemModel.hpp
-        Source/Storage/Requirement/IRequirementModel.hpp
         Source/Storage/Project/ProjectHierarchicalModel.cpp
         Source/Storage/Project/ProjectHierarchicalModel.hpp
         Source/Storage/ICacheableStorableObjectModel.hpp
@@ -282,7 +279,8 @@ add_executable(OptiFOLGUI
         Source/Storage/Subsystem/SubsystemHierarchicalModel.hpp
         Source/Storage/Requirement/RequirementHierarchicalModel.cpp
         Source/Storage/Requirement/RequirementHierarchicalModel.hpp
-        Source/Storage/IAbstractModel.hpp
+        Source/Storage/IStorableObjectModel.hpp
+        Source/Storage/GlibStorableObjectModelBase.hpp
 )
 
 set(COMMON_COMPILER_OPTIONS

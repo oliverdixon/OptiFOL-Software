@@ -14,7 +14,8 @@
 #ifndef PGREQUIREMENTMODEL_HPP
 #define PGREQUIREMENTMODEL_HPP
 
-#include "IRequirementModel.hpp"
+#include "Requirement.hpp"
+#include "../IStorableObjectModel.hpp"
 #include "../PGStorableObjectModelBase.hpp"
 
 namespace optifol
@@ -22,22 +23,22 @@ namespace optifol
 
 class PGRequirementModel :
         public PGStorableObjectModelBase<Requirement>,
-        public IRequirementModel
+        public IStorableObjectModel<Requirement>
 {
 public:
     explicit PGRequirementModel(pqxx::connection& connection);
 
     [[nodiscard]] std::size_t get_item_count() const noexcept override;
 
-    void register_requirement(Glib::RefPtr<Requirement>&& requirement) override;
+    void register_object(Glib::RefPtr<Requirement>&& requirement) override;
 
-    [[nodiscard]] Glib::RefPtr<Requirement> get_requirement(const Requirement& requirement) override;
+    [[nodiscard]] Glib::RefPtr<Requirement> get_object(const Requirement& requirement) override;
 
-    [[nodiscard]] Glib::RefPtr<Requirement> get_requirement(std::size_t requirement_id) override;
+    [[nodiscard]] Glib::RefPtr<Requirement> get_object(std::size_t requirement_id) override;
 
-    void remove_requirement(const Requirement& requirement) override;
+    void remove_object(const Requirement& requirement) override;
 
-    void remove_requirement(std::size_t requirement_id) override;
+    void remove_object(std::size_t requirement_id) override;
 
 private:
     [[nodiscard]] pqxx::result filter_objects(const std::ostringstream &sql_parameter, std::size_t maximum_return_count)

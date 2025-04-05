@@ -3,16 +3,20 @@
  * 2025 Oliver Dixon <od641@york.ac.uk>
  */
 
-//
-// Created by owd on 4/1/25.
-//
+/**
+ * @file
+ * @brief Class specification of the Glib-backed hierarchical-based storable object for projects
+ * @author Oliver Dixon
+ * @date 2025-04-05
+ * @version Development
+ */
 
-#ifndef HIERARCHICALPROJECTMODEL_HPP
-#define HIERARCHICALPROJECTMODEL_HPP
+#ifndef PROJECTHIERARCHICALMODEL_HPP
+#define PROJECTHIERARCHICALMODEL_HPP
 
-#include <giomm/liststore.h>
-
-#include "IProjectModel.hpp"
+#include "Project.hpp"
+#include "../GlibStorableObjectModelBase.hpp"
+#include "../IStorableObjectModel.hpp"
 #include "../StorageEqualityFunctor.hpp"
 #include "../StorageHashFunctor.hpp"
 #include "../Subsystem/SubsystemHierarchicalModel.hpp"
@@ -20,29 +24,45 @@
 namespace optifol
 {
 
+/**
+ * @class ProjectHierarchicalModel
+ * @brief The projects model forming part of a hierarchical Glib-backed list model
+ */
 class ProjectHierarchicalModel :
-        public IProjectModel,
-        public Gio::ListStore<Project>
+        public IStorableObjectModel<Project>,
+        public GlibStorableObjectModelBase<Project>
 {
 public:
-    void register_project(Glib::RefPtr<Project>&& project) override;
+    void register_object(Glib::RefPtr<Project>&& project) override;
 
-    [[nodiscard]] Glib::RefPtr<Project> get_project(const Project& project) override;
+    [[nodiscard]] Glib::RefPtr<Project> get_object(const Project& project) override;
 
-    [[nodiscard]] Glib::RefPtr<Project> get_project(std::size_t project_id) override;
+    [[nodiscard]] Glib::RefPtr<Project> get_object(std::size_t project_id) override;
 
-    void remove_project(const Project& project) override;
+    void remove_object(const Project& project) override;
 
-    void remove_project(std::size_t project_id) override;
+    void remove_object(std::size_t project_id) override;
 
+    /**
+     * @brief Query the model for a particular project, and get the associated subsystems model
+     * @param project A full instantiation of the target project
+     * @return The subsystems model associated with the target project, or an empty ref-counted container if there
+     *  was no suitable project loaded into the model
+     */
     [[nodiscard]] Glib::RefPtr<SubsystemHierarchicalModel> expand_project(const Project& project);
 
+    /**
+     * @brief Query the model for a particular project, and get the associated subsystems model
+     * @param project_id The ID of the target project
+     * @return The subsystems model associated with the target project, or an empty ref-counted container if there
+     *  was no suitable project loaded into the model
+     */
     [[nodiscard]] Glib::RefPtr<SubsystemHierarchicalModel> expand_project(std::size_t project_id);
 
 private:
-    std::optional<guint> find_project_position(const Project& project) const;
+    std::optional<guint> find_object_position(const Project& project) const override;
 
-    std::optional<guint> find_project_position(std::size_t project_id) const;
+    std::optional<guint> find_object_position(std::size_t project_id) const override;
 
     Glib::RefPtr<Project> dummy_project = Glib::make_refptr_for_instance(new Project(0, {}, {}, {}));
 

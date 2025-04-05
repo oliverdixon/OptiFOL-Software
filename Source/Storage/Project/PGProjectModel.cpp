@@ -40,12 +40,12 @@ std::size_t PGProjectModel::get_item_count() const noexcept
     return model_contents.size();
 }
 
-void PGProjectModel::register_project(Glib::RefPtr<Project> &&project)
+void PGProjectModel::register_object(Glib::RefPtr<Project> &&project)
 {
     model_contents.insert(std::move(project));
 }
 
-Glib::RefPtr<Project> PGProjectModel::get_project(const Project &project)
+Glib::RefPtr<Project> PGProjectModel::get_object(const Project &project)
 {
     const auto it = model_contents.find(project);
     if (it == model_contents.cend())
@@ -54,7 +54,7 @@ Glib::RefPtr<Project> PGProjectModel::get_project(const Project &project)
     return *it;
 }
 
-Glib::RefPtr<Project> PGProjectModel::get_project(const std::size_t project_id)
+Glib::RefPtr<Project> PGProjectModel::get_object(const std::size_t project_id)
 {
     const auto it = model_contents.find(project_id);
     if (it == model_contents.cend())
@@ -63,14 +63,14 @@ Glib::RefPtr<Project> PGProjectModel::get_project(const std::size_t project_id)
     return *it;
 }
 
-void PGProjectModel::remove_project(const Project &project)
+void PGProjectModel::remove_object(const Project &project)
 {
     const auto it = model_contents.find(project);
     if (it != model_contents.cend())
         model_contents.erase(it);
 }
 
-void PGProjectModel::remove_project(const std::size_t project_id)
+void PGProjectModel::remove_object(const std::size_t project_id)
 {
     const auto it = model_contents.find(project_id);
     if (it != model_contents.cend())
@@ -101,13 +101,13 @@ void PGProjectModel::emplace_object(const pqxx::row &row)
 
     auto project_insertion_ref = project;
 
-    register_project(std::move(project));
+    register_object(std::move(project));
     inform_insertion(project_insertion_ref);
 }
 
 void PGProjectModel::deplace_object(const std::size_t id)
 {
-    remove_project(id);
+    remove_object(id);
 }
 
 }

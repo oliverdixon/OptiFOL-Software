@@ -14,8 +14,8 @@
 #ifndef PGSUBSYSTEMMODEL_HPP
 #define PGSUBSYSTEMMODEL_HPP
 
-#include "ISubsystemModel.hpp"
 #include "Subsystem.hpp"
+#include "../IStorableObjectModel.hpp"
 #include "../PGStorableObjectModelBase.hpp"
 
 namespace optifol
@@ -27,7 +27,7 @@ namespace optifol
  */
 class PGSubsystemModel :
         public PGStorableObjectModelBase<Subsystem>,
-        public ISubsystemModel
+        public IStorableObjectModel<Subsystem>
 {
 public:
     /**
@@ -38,15 +38,15 @@ public:
 
     [[nodiscard]] std::size_t get_item_count() const noexcept override;
 
-    void register_subsystem(Glib::RefPtr<Subsystem>&& subsystem) override;
+    void register_object(Glib::RefPtr<Subsystem>&& subsystem) override;
 
-    [[nodiscard]] Glib::RefPtr<Subsystem> get_subsystem(const Subsystem& subsystem) override;
+    [[nodiscard]] Glib::RefPtr<Subsystem> get_object(const Subsystem& subsystem) override;
 
-    [[nodiscard]] Glib::RefPtr<Subsystem> get_subsystem(std::size_t subsystem_id) override;
+    [[nodiscard]] Glib::RefPtr<Subsystem> get_object(std::size_t subsystem_id) override;
 
-    void remove_subsystem(const Subsystem& subsystem) override;
+    void remove_object(const Subsystem& subsystem) override;
 
-    void remove_subsystem(std::size_t subsystem_id) override;
+    void remove_object(std::size_t subsystem_id) override;
 
 private:
     pqxx::result filter_objects(const std::ostringstream &sql_parameter, std::size_t maximum_return_count) const

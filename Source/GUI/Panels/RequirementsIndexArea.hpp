@@ -18,7 +18,6 @@
 
 #include "../GTKHelpers.hpp"
 #include "../../Storage/Subsystem/SubsystemHierarchicalModel.hpp"
-#include "../Storage/Requirement/IRequirementModel.hpp"
 
 namespace optifol
 {

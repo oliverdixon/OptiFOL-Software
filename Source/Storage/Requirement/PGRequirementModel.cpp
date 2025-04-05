@@ -29,12 +29,12 @@ std::size_t PGRequirementModel::get_item_count() const noexcept
     return model_contents.size();
 }
 
-void PGRequirementModel::register_requirement(Glib::RefPtr<Requirement> &&requirement)
+void PGRequirementModel::register_object(Glib::RefPtr<Requirement> &&requirement)
 {
     model_contents.insert(std::move(requirement));
 }
 
-Glib::RefPtr<Requirement> PGRequirementModel::get_requirement(const Requirement &requirement)
+Glib::RefPtr<Requirement> PGRequirementModel::get_object(const Requirement &requirement)
 {
     const auto it = model_contents.find(requirement);
     if (it == model_contents.cend())
@@ -43,7 +43,7 @@ Glib::RefPtr<Requirement> PGRequirementModel::get_requirement(const Requirement 
     return *it;
 }
 
-Glib::RefPtr<Requirement> PGRequirementModel::get_requirement(const std::size_t requirement_id)
+Glib::RefPtr<Requirement> PGRequirementModel::get_object(const std::size_t requirement_id)
 {
     const auto it = model_contents.find(requirement_id);
     if (it == model_contents.cend())
@@ -52,14 +52,14 @@ Glib::RefPtr<Requirement> PGRequirementModel::get_requirement(const std::size_t 
     return *it;
 }
 
-void PGRequirementModel::remove_requirement(const Requirement &requirement)
+void PGRequirementModel::remove_object(const Requirement &requirement)
 {
     const auto it = model_contents.find(requirement);
     if (it != model_contents.cend())
         model_contents.erase(it);
 }
 
-void PGRequirementModel::remove_requirement(const std::size_t requirement_id)
+void PGRequirementModel::remove_object(const std::size_t requirement_id)
 {
     const auto it = model_contents.find(requirement_id);
     if (it != model_contents.cend())
@@ -88,7 +88,7 @@ void PGRequirementModel::emplace_object(const pqxx::row &row)
     if (!row[7].is_null())
         test_id.emplace(row[7].as<std::size_t>());
 
-    register_requirement(Glib::make_refptr_for_instance(new Requirement(
+    register_object(Glib::make_refptr_for_instance(new Requirement(
         row[0].as<std::size_t>(),
         row[1].as<std::string>(),
         row[2].as<std::chrono::system_clock::time_point>(),
@@ -103,7 +103,7 @@ void PGRequirementModel::emplace_object(const pqxx::row &row)
 
 void PGRequirementModel::deplace_object(const std::size_t id)
 {
-    remove_requirement(id);
+    remove_object(id);
 }
 
 }
