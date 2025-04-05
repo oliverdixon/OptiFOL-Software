@@ -9,9 +9,12 @@
 namespace optifol
 {
 
+template<StorableType Type>
 class ICacheableStorableObjectModel
 {
 public:
+    using InsertionCallbackSignature = void(Glib::RefPtr<Type>&&);
+
     virtual ~ICacheableStorableObjectModel() = default;
 
     /**
@@ -52,6 +55,8 @@ public:
     virtual void flush_outbound_update() = 0;
 
     virtual void flush_outbound_delete() = 0;
+
+    virtual void add_insert_subscriber(sigc::slot<InsertionCallbackSignature>&& slot, bool onboard) = 0;
 
     /**
      * @brief Get the number of storable objects in the model

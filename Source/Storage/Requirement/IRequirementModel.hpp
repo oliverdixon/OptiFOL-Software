@@ -11,15 +11,15 @@
 #define IREQUIREMENTMODEL_HPP
 
 #include "Requirement.hpp"
+#include "../IAbstractModel.hpp"
 
 namespace optifol
 {
 
-class IRequirementModel
+class IRequirementModel :
+        public IAbstractModel
 {
 public:
-    virtual ~IRequirementModel() = default;
-
     virtual void register_requirement(Glib::RefPtr<Requirement>&& requirement) = 0;
 
     [[nodiscard]] virtual Glib::RefPtr<Requirement> get_requirement(const Requirement& requirement) = 0;

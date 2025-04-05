@@ -9,6 +9,8 @@
 
 #include "ProjectHierarchicalModel.hpp"
 
+#include <iostream>
+
 namespace optifol
 {
 

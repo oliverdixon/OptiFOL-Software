@@ -11,16 +11,15 @@
 #define IPROJECTMODEL_HPP
 
 #include "Project.hpp"
-#include "../PGStorableObjectModelBase.hpp"
+#include "../IAbstractModel.hpp"
 
 namespace optifol
 {
 
-class IProjectModel
+class IProjectModel :
+        public IAbstractModel
 {
 public:
-    virtual ~IProjectModel() = default;
-
     virtual void register_project(Glib::RefPtr<Project>&& project) = 0;
 
     [[nodiscard]] virtual Glib::RefPtr<Project> get_project(const Project& project) = 0;

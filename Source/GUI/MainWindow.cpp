@@ -44,7 +44,7 @@ MainWindow::MainWindow():
 
         project_hierarchy_pane = std::make_unique<ProjectHierarchyPane>(
             project_view,
-            Glib::make_refptr_for_instance(new ProjectHierarchicalModel()), // TODO
+            storage->build_project_hierarchical_model(),
             sigc::mem_fun(*requirements_index_area, &RequirementsIndexArea::select_model),
             sigc::mem_fun(*requirements_index_area, &RequirementsIndexArea::deselect_model)
         );

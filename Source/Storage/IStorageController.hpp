@@ -13,6 +13,7 @@
 
 #ifndef ISTORAGECONTROLLER_HPP
 #define ISTORAGECONTROLLER_HPP
+#include "Project/ProjectHierarchicalModel.hpp"
 
 namespace optifol
 {
@@ -39,6 +40,8 @@ public:
      *  similarly implementation-defined.
      */
     virtual void update() = 0;
+
+    [[nodiscard]] virtual Glib::RefPtr<ProjectHierarchicalModel> build_project_hierarchical_model() const = 0;
 };
 
 }

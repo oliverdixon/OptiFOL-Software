@@ -23,6 +23,7 @@ PGDatabaseController::PGDatabaseController(const std::string& db_uri)
 {
     try {
         connection.emplace(db_uri);
+        project_model = std::make_unique<PGProjectModel>(*connection);
 
         pqxx::work tx{*connection};
         tx.exec("SELECT 'init' FROM pg_create_logical_replication_slot($1::text, 'wal2json');",
@@ -33,6 +34,7 @@ PGDatabaseController::PGDatabaseController(const std::string& db_uri)
     }
 
     assert(connection.has_value());
+    assert(project_model != nullptr);
 }
 
 PGDatabaseController::~PGDatabaseController()
@@ -54,6 +56,13 @@ void PGDatabaseController::update()
     tx.commit();
 
     // TODO restore
+}
+
+Glib::RefPtr<ProjectHierarchicalModel> PGDatabaseController::build_project_hierarchical_model() const
+{
+    auto model = Glib::make_refptr_for_instance(new ProjectHierarchicalModel());
+    project_model->add_insert_subscriber(sigc::mem_fun(*model, &ProjectHierarchicalModel::register_project));
+    return model;
 }
 
 }

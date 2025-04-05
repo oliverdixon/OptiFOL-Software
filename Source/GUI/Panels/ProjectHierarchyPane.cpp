@@ -22,9 +22,10 @@ namespace optifol
 std::shared_ptr<log4cxx::Logger> ProjectHierarchyPane::logger(log4cxx::Logger::getLogger("OptiFOL"));
 
 ProjectHierarchyPane::ProjectHierarchyPane(Gtk::ListView *view,
-        const Glib::RefPtr<IProjectModel>& initial_model,
+        const Glib::RefPtr<ProjectHierarchicalModel>& initial_model,
         sigc::slot<SelectedCallbackSignature>&& selected_subsystem_callback,
-        sigc::slot<DeselectedCallbackSignature>&& deselected_subsystem_callback)
+        sigc::slot<DeselectedCallbackSignature>&& deselected_subsystem_callback) :
+    hierarchical_model(initial_model)
 {
     signal_select_subsystem.connect(selected_subsystem_callback);
     signal_deselect_subsystem.connect(deselected_subsystem_callback);

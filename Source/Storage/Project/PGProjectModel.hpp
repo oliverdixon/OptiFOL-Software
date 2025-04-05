@@ -14,13 +14,9 @@
 #ifndef PGPROJECTMODEL_HPP
 #define PGPROJECTMODEL_HPP
 
-#include <unordered_set>
-
 #include "IProjectModel.hpp"
 #include "Project.hpp"
 #include "../PGStorableObjectModelBase.hpp"
-#include "../StorageEqualityFunctor.hpp"
-#include "../StorageHashFunctor.hpp"
 
 namespace optifol
 {
@@ -30,7 +26,7 @@ namespace optifol
  * @brief TODO
  */
 class PGProjectModel :
-        public PGStorableObjectModelBase,
+        public PGStorableObjectModelBase<Project>,
         public IProjectModel
 {
 public:
@@ -61,8 +57,6 @@ private:
     void emplace_object(const pqxx::row& row) override;
 
     void deplace_object(std::size_t id) override;
-
-    std::unordered_set<Glib::RefPtr<Project>, StorageHashFunctor<Project>, StorageEqualityFunctor<Project>> projects;
 };
 
 }

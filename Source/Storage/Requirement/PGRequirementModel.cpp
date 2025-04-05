@@ -26,18 +26,18 @@ PGRequirementModel::PGRequirementModel(pqxx::connection &connection) :
 
 std::size_t PGRequirementModel::get_item_count() const noexcept
 {
-    return requirements.size();
+    return model_contents.size();
 }
 
 void PGRequirementModel::register_requirement(Glib::RefPtr<Requirement> &&requirement)
 {
-    requirements.insert(std::move(requirement));
+    model_contents.insert(std::move(requirement));
 }
 
 Glib::RefPtr<Requirement> PGRequirementModel::get_requirement(const Requirement &requirement)
 {
-    const auto it = requirements.find(requirement);
-    if (it == requirements.cend())
+    const auto it = model_contents.find(requirement);
+    if (it == model_contents.cend())
         return {};
 
     return *it;
@@ -45,8 +45,8 @@ Glib::RefPtr<Requirement> PGRequirementModel::get_requirement(const Requirement 
 
 Glib::RefPtr<Requirement> PGRequirementModel::get_requirement(const std::size_t requirement_id)
 {
-    const auto it = requirements.find(requirement_id);
-    if (it == requirements.cend())
+    const auto it = model_contents.find(requirement_id);
+    if (it == model_contents.cend())
         return {};
 
     return *it;
@@ -54,16 +54,16 @@ Glib::RefPtr<Requirement> PGRequirementModel::get_requirement(const std::size_t 
 
 void PGRequirementModel::remove_requirement(const Requirement &requirement)
 {
-    const auto it = requirements.find(requirement);
-    if (it != requirements.cend())
-        requirements.erase(it);
+    const auto it = model_contents.find(requirement);
+    if (it != model_contents.cend())
+        model_contents.erase(it);
 }
 
 void PGRequirementModel::remove_requirement(const std::size_t requirement_id)
 {
-    const auto it = requirements.find(requirement_id);
-    if (it != requirements.cend())
-        requirements.erase(it);
+    const auto it = model_contents.find(requirement_id);
+    if (it != model_contents.cend())
+        model_contents.erase(it);
 }
 
 pqxx::result PGRequirementModel::filter_objects(const std::ostringstream &sql_parameter,

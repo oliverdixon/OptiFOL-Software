@@ -19,7 +19,7 @@
 namespace optifol
 {
 
-PGProjectModel::PGProjectModel(pqxx::connection &connection, std::size_t initial_cache_limit) :
+PGProjectModel::PGProjectModel(pqxx::connection &connection, const std::size_t initial_cache_limit) :
     PGStorableObjectModelBase(connection)
 {
     pqxx::work tx{connection};
@@ -37,18 +37,18 @@ PGProjectModel::PGProjectModel(pqxx::connection &connection, std::size_t initial
 
 std::size_t PGProjectModel::get_item_count() const noexcept
 {
-    return projects.size();
+    return model_contents.size();
 }
 
 void PGProjectModel::register_project(Glib::RefPtr<Project> &&project)
 {
-    projects.insert(std::move(project));
+    model_contents.insert(std::move(project));
 }
 
 Glib::RefPtr<Project> PGProjectModel::get_project(const Project &project)
 {
-    const auto it = projects.find(project);
-    if (it == projects.cend())
+    const auto it = model_contents.find(project);
+    if (it == model_contents.cend())
         return {};
 
     return *it;
@@ -56,8 +56,8 @@ Glib::RefPtr<Project> PGProjectModel::get_project(const Project &project)
 
 Glib::RefPtr<Project> PGProjectModel::get_project(const std::size_t project_id)
 {
-    const auto it = projects.find(project_id);
-    if (it == projects.cend())
+    const auto it = model_contents.find(project_id);
+    if (it == model_contents.cend())
         return {};
 
     return *it;
@@ -65,16 +65,16 @@ Glib::RefPtr<Project> PGProjectModel::get_project(const std::size_t project_id)
 
 void PGProjectModel::remove_project(const Project &project)
 {
-    const auto it = projects.find(project);
-    if (it != projects.cend())
-        projects.erase(it);
+    const auto it = model_contents.find(project);
+    if (it != model_contents.cend())
+        model_contents.erase(it);
 }
 
 void PGProjectModel::remove_project(const std::size_t project_id)
 {
-    const auto it = projects.find(project_id);
-    if (it != projects.cend())
-        projects.erase(it);
+    const auto it = model_contents.find(project_id);
+    if (it != model_contents.cend())
+        model_contents.erase(it);
 }
 
 pqxx::result PGProjectModel::filter_objects(const std::ostringstream& sql_parameter,
@@ -92,12 +92,17 @@ pqxx::result PGProjectModel::filter_objects(const std::ostringstream& sql_parame
 
 void PGProjectModel::emplace_object(const pqxx::row &row)
 {
-    register_project(Glib::make_refptr_for_instance(new Project(
+    auto project = Glib::make_refptr_for_instance(new Project(
         row[0].as<std::size_t>(),
         row[1].as<std::string>(),
         row[2].as<std::chrono::system_clock::time_point>(),
         row[3].as<std::chrono::system_clock::time_point>()
-    )));
+    ));
+
+    auto project_insertion_ref = project;
+
+    register_project(std::move(project));
+    inform_insertion(project_insertion_ref);
 }
 
 void PGProjectModel::deplace_object(const std::size_t id)

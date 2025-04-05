@@ -14,13 +14,9 @@
 #ifndef PGSUBSYSTEMMODEL_HPP
 #define PGSUBSYSTEMMODEL_HPP
 
-#include <unordered_set>
-
 #include "ISubsystemModel.hpp"
 #include "Subsystem.hpp"
 #include "../PGStorableObjectModelBase.hpp"
-#include "../StorageEqualityFunctor.hpp"
-#include "../StorageHashFunctor.hpp"
 
 namespace optifol
 {
@@ -30,7 +26,7 @@ namespace optifol
  * @brief TODO
  */
 class PGSubsystemModel :
-        public PGStorableObjectModelBase,
+        public PGStorableObjectModelBase<Subsystem>,
         public ISubsystemModel
 {
 public:
@@ -59,9 +55,6 @@ private:
     void emplace_object(const pqxx::row& row) override;
 
     void deplace_object(std::size_t id) override;
-
-    std::unordered_set<Glib::RefPtr<Subsystem>, StorageHashFunctor<Subsystem>, StorageEqualityFunctor<Subsystem>>
-        subsystems;
 };
 
 }

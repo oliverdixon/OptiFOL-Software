@@ -19,8 +19,11 @@
 #include <pqxx/connection>
 
 #include "IStorageController.hpp"
-#include "PGUpdateNotification.hpp"
 #include "../LegacyWrappers.hpp"
+#include "Project/PGProjectModel.hpp"
+#include "Project/ProjectHierarchicalModel.hpp"
+#include "Requirement/PGRequirementModel.hpp"
+#include "Subsystem/PGSubsystemModel.hpp"
 
 namespace optifol
 {
@@ -54,12 +57,20 @@ public:
      */
     void update() override;
 
+    [[nodiscard]] Glib::RefPtr<ProjectHierarchicalModel> build_project_hierarchical_model() const override;
+
 private:
     const std::string wal_slot_name{"optifol_" + std::to_string(LegacyWrappers::get_pid())};
 
     simdjson::ondemand::parser json_parser;
 
     std::optional<pqxx::connection> connection;
+
+    std::unique_ptr<PGProjectModel> project_model;
+
+    std::unique_ptr<PGSubsystemModel> subsystem_model;
+
+    std::unique_ptr<PGRequirementModel> requirement_model;
 };
 
 }

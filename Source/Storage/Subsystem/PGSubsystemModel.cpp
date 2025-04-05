@@ -25,18 +25,18 @@ PGSubsystemModel::PGSubsystemModel(pqxx::connection &connection) : PGStorableObj
 
 std::size_t PGSubsystemModel::get_item_count() const noexcept
 {
-    return subsystems.size();
+    return model_contents.size();
 }
 
 void PGSubsystemModel::register_subsystem(Glib::RefPtr<Subsystem> &&subsystem)
 {
-    subsystems.insert(std::move(subsystem));
+    model_contents.insert(std::move(subsystem));
 }
 
 Glib::RefPtr<Subsystem> PGSubsystemModel::get_subsystem(const Subsystem &subsystem)
 {
-    const auto it = subsystems.find(subsystem);
-    if (it == subsystems.cend())
+    const auto it = model_contents.find(subsystem);
+    if (it == model_contents.cend())
         return {};
 
     return *it;
@@ -44,8 +44,8 @@ Glib::RefPtr<Subsystem> PGSubsystemModel::get_subsystem(const Subsystem &subsyst
 
 Glib::RefPtr<Subsystem> PGSubsystemModel::get_subsystem(const std::size_t subsystem_id)
 {
-    const auto it = subsystems.find(subsystem_id);
-    if (it == subsystems.cend())
+    const auto it = model_contents.find(subsystem_id);
+    if (it == model_contents.cend())
         return {};
 
     return *it;
@@ -53,16 +53,16 @@ Glib::RefPtr<Subsystem> PGSubsystemModel::get_subsystem(const std::size_t subsys
 
 void PGSubsystemModel::remove_subsystem(const Subsystem &subsystem)
 {
-    const auto it = subsystems.find(subsystem);
-    if (it != subsystems.cend())
-        subsystems.erase(it);
+    const auto it = model_contents.find(subsystem);
+    if (it != model_contents.cend())
+        model_contents.erase(it);
 }
 
 void PGSubsystemModel::remove_subsystem(const std::size_t subsystem_id)
 {
-    const auto it = subsystems.find(subsystem_id);
-    if (it != subsystems.cend())
-        subsystems.erase(it);
+    const auto it = model_contents.find(subsystem_id);
+    if (it != model_contents.cend())
+        model_contents.erase(it);
 }
 
 pqxx::result PGSubsystemModel::filter_objects(const std::ostringstream &sql_parameter,

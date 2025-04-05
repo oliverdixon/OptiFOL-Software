@@ -14,18 +14,14 @@
 #ifndef PGREQUIREMENTMODEL_HPP
 #define PGREQUIREMENTMODEL_HPP
 
-#include <unordered_set>
-
 #include "IRequirementModel.hpp"
 #include "../PGStorableObjectModelBase.hpp"
-#include "../StorageEqualityFunctor.hpp"
-#include "../StorageHashFunctor.hpp"
 
 namespace optifol
 {
 
 class PGRequirementModel :
-        public PGStorableObjectModelBase,
+        public PGStorableObjectModelBase<Requirement>,
         public IRequirementModel
 {
 public:
@@ -50,9 +46,6 @@ private:
     void emplace_object(const pqxx::row& row) override;
 
     void deplace_object(std::size_t id) override;
-
-    std::unordered_set<Glib::RefPtr<Requirement>, StorageHashFunctor<Requirement>, StorageEqualityFunctor<Requirement>>
-        requirements;
 };
 
 }
