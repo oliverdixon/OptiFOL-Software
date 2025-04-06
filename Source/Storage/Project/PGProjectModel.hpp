@@ -46,8 +46,6 @@ public:
 
     [[nodiscard]] Glib::RefPtr<Project> get_object(std::size_t project_id) override;
 
-    void remove_object(const Project& project) override;
-
     void remove_object(std::size_t project_id) override;
 
 private:

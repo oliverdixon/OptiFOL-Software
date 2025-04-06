@@ -16,8 +16,10 @@
 namespace optifol
 {
 
-RequirementsIndexArea::RequirementsIndexArea(Gtk::ColumnView *view, Gtk::Widget * widget_off, Gtk::Widget * widget_on) :
-    on_off_widgets(widget_off, widget_on)
+RequirementsIndexArea::RequirementsIndexArea(Gtk::ColumnView *view, Gtk::Widget * widget_off, Gtk::Widget * widget_on,
+        Gtk::Widget * widget_empty) :
+    on_off_widgets(widget_off, widget_on),
+    empty_widget(widget_empty)
 {
     selection_model->set_autoselect(false);
     selection_model->set_can_unselect(true);
@@ -83,6 +85,8 @@ void RequirementsIndexArea::select_model(const Glib::RefPtr<RequirementHierarchi
 {
     on_off_widgets.first->set_visible(false);
     on_off_widgets.second->set_visible(true);
+    empty_widget->set_visible(new_model->get_n_items() == 0);
+
     selection_model->set_model(new_model);
 }
 
@@ -90,6 +94,8 @@ void RequirementsIndexArea::deselect_model() const
 {
     on_off_widgets.second->set_visible(false);
     on_off_widgets.first->set_visible(true);
+    empty_widget->set_visible(false);
+
     selection_model->set_model(nullptr);
 }
 

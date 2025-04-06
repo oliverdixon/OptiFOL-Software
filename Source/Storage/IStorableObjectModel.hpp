@@ -86,12 +86,6 @@ public:
     [[nodiscard]] virtual Glib::RefPtr<Type> get_object(std::size_t object_id) = 0;
     
     /**
-     * @brief Remove an existing object, identified by an instantiation of the target object, from the model
-     * @param object The object to remove
-     */
-    virtual void remove_object(const Type& object) = 0;
-    
-    /**
      * @brief Remove an existing object, identified by the numerical ID of the target object, from the model
      * @param object_id The numerical ID of the object to remove
      */

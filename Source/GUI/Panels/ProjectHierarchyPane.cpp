@@ -13,6 +13,8 @@
 
 #include "ProjectHierarchyPane.hpp"
 
+#include <iostream>
+
 #include "../Logging.hpp"
 #include "../Storage/IStorageObject.hpp"
 
@@ -24,7 +26,11 @@ std::shared_ptr<log4cxx::Logger> ProjectHierarchyPane::logger(log4cxx::Logger::g
 ProjectHierarchyPane::ProjectHierarchyPane(Gtk::ListView *view,
         const Glib::RefPtr<ProjectHierarchicalModel>& initial_model,
         sigc::slot<SelectedCallbackSignature>&& selected_subsystem_callback,
-        sigc::slot<DeselectedCallbackSignature>&& deselected_subsystem_callback) :
+        sigc::slot<DeselectedCallbackSignature>&& deselected_subsystem_callback,
+        Gtk::DropDown * project_pane_switcher,
+        Gtk::Stack * project_pane_stack) :
+    stack_switcher(project_pane_switcher),
+    stack(project_pane_stack),
     hierarchical_model(initial_model)
 {
     signal_select_subsystem.connect(selected_subsystem_callback);
@@ -32,6 +38,8 @@ ProjectHierarchyPane::ProjectHierarchyPane(Gtk::ListView *view,
 
     tree_model = Gtk::TreeListModel::create(hierarchical_model,
         sigc::mem_fun(*this, &ProjectHierarchyPane::on_expand), true, true);
+    stack_switcher->property_selected().signal_changed().connect(sigc::mem_fun(*this,
+        &ProjectHierarchyPane::on_dropdown_changed));
 
     const auto selection_model = Gtk::SingleSelection::create(tree_model);
     selection_model->set_autoselect(false);
@@ -134,6 +142,20 @@ void ProjectHierarchyPane::on_activate(const guint position) const
          * following project root node.
          */
         cumulative_position = end_idx + 1;
+    }
+}
+
+void ProjectHierarchyPane::on_dropdown_changed() const
+{
+    switch (stack_switcher->get_selected()) {
+    case static_cast<guint>(ProjectStackSwitcherIdx::Explorer):
+        stack->set_visible_child("project_explorer");
+        break;
+    case static_cast<guint>(ProjectStackSwitcherIdx::Metadata):
+        stack->set_visible_child("project_metadata");
+        break;
+    default:
+        break;
     }
 }
 

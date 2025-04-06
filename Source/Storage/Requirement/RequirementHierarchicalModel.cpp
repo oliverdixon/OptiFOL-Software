@@ -45,13 +45,6 @@ Glib::RefPtr<Requirement> RequirementHierarchicalModel::get_object(const std::si
     return {};
 }
 
-void RequirementHierarchicalModel::remove_object(const Requirement &requirement)
-{
-    const auto list_index = find_object_position(requirement);
-    if (list_index.has_value())
-        remove(*list_index);
-}
-
 void RequirementHierarchicalModel::remove_object(const std::size_t requirement_id)
 {
     const auto list_index = find_object_position(requirement_id);

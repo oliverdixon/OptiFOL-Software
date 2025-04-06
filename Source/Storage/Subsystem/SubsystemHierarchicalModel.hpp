@@ -41,8 +41,6 @@ public:
 
     [[nodiscard]] Glib::RefPtr<Subsystem> get_object(std::size_t subsystem_id) override;
 
-    void remove_object(const Subsystem& subsystem) override;
-
     void remove_object(std::size_t subsystem_id) override;
 
     /**

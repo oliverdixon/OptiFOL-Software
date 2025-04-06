@@ -41,6 +41,13 @@ public:
     using InsertionCallbackSignature = void(Glib::RefPtr<Type>&&);
 
     /**
+     * @typedef DeletionCallbackSignature
+     * @brief The function signature of the callback used to inform subscribers of deletions
+     * @details The functions should take a single numerical as the controller ID of the deleted object.
+     */
+    using DeletionCallbackSignature = void(std::size_t);
+
+    /**
      * Default virtual destructor
      */
     virtual ~ModelPublisherBase() = default;
@@ -61,6 +68,19 @@ public:
     }
 
     /**
+     * @brief Add a new subscriber to listen for deletions on the current model instance
+     * @param slot The callback exposed by the subscriber's API
+     * @return The newly added signal
+     */
+    virtual const sigc::signal<DeletionCallbackSignature>& add_delete_subscriber(
+        sigc::slot<DeletionCallbackSignature>&& slot)
+    {
+        auto& signal = delete_callbacks.emplace_back();
+        signal.connect(std::move(slot));
+        return signal;
+    }
+
+    /**
      * @brief Inform all insert-subscribers of a new insertion to the model
      * @param inserted_item A copy of the ref-counted pointer holding the newly inserted item
      */
@@ -70,8 +90,20 @@ public:
             signal(std::move(inserted_item));
     }
 
+    /**
+     * @brief Inform all delete-subscribers of a new deletion from the model
+     * @param deleted_item_id The controller ID of the deleted item
+     */
+    void inform_deletion(const std::size_t deleted_item_id) const
+    {
+        for (const auto& signal : delete_callbacks)
+            signal(deleted_item_id);
+    }
+
 private:
     std::vector<sigc::signal<InsertionCallbackSignature>> insert_callbacks;
+
+    std::vector<sigc::signal<DeletionCallbackSignature>> delete_callbacks;
 };
 
 }

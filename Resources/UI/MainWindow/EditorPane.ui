@@ -6,7 +6,6 @@
             <property name="stack">central_stack</property>
         </object>
     </child>
-    <!-- TODO: attach with signal names in the XML, and attach in code. So we don't have to keep grabbing from the builder. -->
     <child>
         <object class="GtkStack" id="central_stack">
             <child>
@@ -30,7 +29,9 @@
                                     <property name="max-width-chars">80</property>
                                     <property name="wrap">TRUE</property>
                                     <property name="label">
-<![CDATA[The <i>Requirements Index</i> presents a tabular view of all Requirements within the active Subsystem.
+<![CDATA[<b>The Requirements Index is not applicable to Project-level scopes.</b>
+
+The <i>Requirements Index</i> presents a tabular view of all Requirements within the active Subsystem.
 
 From the Index, you can review, modify, search, and filter Requirements in preparation for formal analysis, compliance verification, and report generation.
 
@@ -112,29 +113,6 @@ To view an Index, select a Subsystem from the left-hand <i>Project Explorer</i> 
                                         <object class="GtkBox">
                                             <property name="orientation">vertical</property>
                                             <child>
-                                                <object class="GtkLabel" id="requirements_index_advice_empty">
-                                                    <style>
-                                                        <class name="optifol_advisory"/>
-                                                        <class name="optifol_boxed"/>
-                                                    </style>
-                                                    <property name="use-markup">TRUE</property> <!-- TODO template -->
-                                                    <property name="justify">GTK_JUSTIFY_CENTER</property>
-                                                    <property name="halign">GTK_ALIGN_CENTER</property>
-                                                    <property name="valign">GTK_ALIGN_CENTER</property>
-                                                    <property name="hexpand">TRUE</property>
-                                                    <property name="vexpand">TRUE</property>
-                                                    <property name="max-width-chars">80</property>
-                                                    <property name="wrap">TRUE</property>
-                                                    <property name="label">
-<![CDATA[The <i>Requirements Index</i> presents a tabular view of all Requirements within the active Subsystem.
-
-From the Index, you can review, modify, search, and filter Requirements in preparation for formal analysis, compliance verification, and report generation.
-
-To create a Requirement within the active Subsystem, select <i>New Requirement</i> in the Index toolbar. Requirements can be committed to storage with the <i>Save All Requirements</i> and <i>Refresh Requirements</i> toolbar options, respectively.]]>
-                                                    </property>
-                                                </object>
-                                            </child>
-                                            <child>
                                                 <object class="GtkScrolledWindow">
                                                     <property name="vexpand">TRUE</property>
                                                     <child>
@@ -186,6 +164,31 @@ To create a Requirement within the active Subsystem, select <i>New Requirement</
                                                             </child>
                                                         </object>
                                                     </child>
+                                                </object>
+                                            </child>
+                                            <child>
+                                                <object class="GtkLabel" id="requirements_index_advice_empty">
+                                                    <style>
+                                                        <class name="optifol_advisory"/>
+                                                        <class name="optifol_boxed"/>
+                                                    </style>
+                                                    <property name="use-markup">TRUE</property> <!-- TODO template -->
+                                                    <property name="justify">GTK_JUSTIFY_CENTER</property>
+                                                    <property name="halign">GTK_ALIGN_CENTER</property>
+                                                    <property name="valign">GTK_ALIGN_CENTER</property>
+                                                    <property name="hexpand">TRUE</property>
+                                                    <property name="vexpand">TRUE</property>
+                                                    <property name="max-width-chars">80</property>
+                                                    <property name="wrap">TRUE</property>
+                                                    <property name="label">
+<![CDATA[<b>The selected Subsystem does not have any defined Requirements.</b>
+
+The <i>Requirements Index</i> presents a tabular view of all Requirements within the active Subsystem.
+
+From the Index, you can review, modify, search, and filter Requirements in preparation for formal analysis, compliance verification, and report generation.
+
+To create a Requirement within the active Subsystem, select <i>New Requirement</i> in the Index toolbar. Requirements can be committed to storage with the <i>Save All Requirements</i> and <i>Refresh Requirements</i> toolbar options, respectively.]]>
+                                                    </property>
                                                 </object>
                                             </child>
                                         </object>

@@ -52,13 +52,6 @@ Glib::RefPtr<Subsystem> PGSubsystemModel::get_object(const std::size_t subsystem
     return *it;
 }
 
-void PGSubsystemModel::remove_object(const Subsystem &subsystem)
-{
-    const auto it = model_contents.find(subsystem);
-    if (it != model_contents.cend())
-        model_contents.erase(it);
-}
-
 void PGSubsystemModel::remove_object(const std::size_t subsystem_id)
 {
     const auto it = model_contents.find(subsystem_id);
@@ -115,6 +108,7 @@ void PGSubsystemModel::emplace_object(const pqxx::row &row)
 void PGSubsystemModel::deplace_object(const std::size_t id)
 {
     remove_object(id);
+    inform_deletion(id);
 }
 
 }

@@ -83,6 +83,26 @@ public:
     virtual void flush_outbound_delete() = 0;
 
     /**
+     * @brief Flush all outbound operations to the permanent storage
+     */
+    void flush_outbound()
+    {
+        flush_outbound_insert();
+        flush_outbound_update();
+        flush_outbound_delete();
+    }
+
+    /**
+     * @brief Flush all inbound operations to the permanent storage
+     */
+    void flush_inbound()
+    {
+        flush_inbound_insert();
+        flush_inbound_update();
+        flush_inbound_delete();
+    }
+
+    /**
      * @brief Get the number of storable objects in the model
      * @return The number of objects in the model
      */

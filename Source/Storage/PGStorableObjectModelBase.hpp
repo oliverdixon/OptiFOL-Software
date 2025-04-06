@@ -151,7 +151,7 @@ public:
 
     void flush_inbound_update() override
     {
-        throw std::runtime_error("Unimplemented"); // TODO
+        // TODO
     }
 
     void flush_inbound_delete() override
@@ -180,17 +180,17 @@ public:
 
     void flush_outbound_insert() override
     {
-        throw std::runtime_error("Unimplemented"); // TODO
+        // TODO
     }
 
     void flush_outbound_update() override
     {
-        throw std::runtime_error("Unimplemented"); // TODO
+        // TODO
     }
 
     void flush_outbound_delete() override
     {
-        throw std::runtime_error("Unimplemented"); // TODO
+        // TODO
     }
 
     /**

@@ -39,14 +39,17 @@ MainWindow::MainWindow():
         requirements_index_area = std::make_unique<RequirementsIndexArea>(
             GTKHelpers::get_widget<Gtk::ColumnView>("Main Window", builder, "requirements_view"),
             GTKHelpers::get_widget<Gtk::Widget>("Main Window", builder, "requirements_index_advice_unselected"),
-            GTKHelpers::get_widget<Gtk::Widget>("Main Window", builder, "requirements_index_content")
+            GTKHelpers::get_widget<Gtk::Widget>("Main Window", builder, "requirements_index_content"),
+            GTKHelpers::get_widget<Gtk::Widget>("Main Window", builder, "requirements_index_advice_empty")
         );
 
         project_hierarchy_pane = std::make_unique<ProjectHierarchyPane>(
             project_view,
             storage->build_project_hierarchical_model(),
             sigc::mem_fun(*requirements_index_area, &RequirementsIndexArea::select_model),
-            sigc::mem_fun(*requirements_index_area, &RequirementsIndexArea::deselect_model)
+            sigc::mem_fun(*requirements_index_area, &RequirementsIndexArea::deselect_model),
+            GTKHelpers::get_widget<Gtk::DropDown>("Main Window", builder, "project_pane_switcher"),
+            GTKHelpers::get_widget<Gtk::Stack>("Main Window", builder, "project_pane_stack")
         );
     } catch (const StorageConnectionException& exception) {
         database_alert->set_detail(exception.what());

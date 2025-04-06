@@ -63,13 +63,6 @@ Glib::RefPtr<Project> PGProjectModel::get_object(const std::size_t project_id)
     return *it;
 }
 
-void PGProjectModel::remove_object(const Project &project)
-{
-    const auto it = model_contents.find(project);
-    if (it != model_contents.cend())
-        model_contents.erase(it);
-}
-
 void PGProjectModel::remove_object(const std::size_t project_id)
 {
     const auto it = model_contents.find(project_id);
@@ -107,6 +100,7 @@ void PGProjectModel::emplace_object(const pqxx::row &row)
 void PGProjectModel::deplace_object(const std::size_t id)
 {
     remove_object(id);
+    inform_deletion(id);
 }
 
 }

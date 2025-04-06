@@ -36,8 +36,10 @@ public:
      * @param view The GTK requirements view table consisting of columns for each requirement attribute
      * @param widget_off The abstract GTK widget to display when there is no model to display in the view
      * @param widget_on The abstract GTK widget to display when there is a model to display in the view
+     * @param widget_empty The abstract GTK widget to display only when there is an empty model to display in the view
      */
-    explicit RequirementsIndexArea(Gtk::ColumnView * view, Gtk::Widget * widget_off, Gtk::Widget * widget_on);
+    explicit RequirementsIndexArea(Gtk::ColumnView * view, Gtk::Widget * widget_off, Gtk::Widget * widget_on,
+        Gtk::Widget * widget_empty);
 
     /**
      * @brief Replace the requirements model displayed by the view
@@ -56,6 +58,8 @@ private:
     Glib::RefPtr<Gtk::SingleSelection> selection_model = Gtk::SingleSelection::create();
 
     std::pair<Gtk::Widget*, Gtk::Widget*> on_off_widgets;
+
+    Gtk::Widget * empty_widget;
 
     /**
      * @brief Set up an editable GTK label within the given container

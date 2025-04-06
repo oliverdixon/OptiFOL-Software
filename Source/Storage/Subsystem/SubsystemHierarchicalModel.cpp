@@ -48,18 +48,6 @@ Glib::RefPtr<Subsystem> SubsystemHierarchicalModel::get_object(const std::size_t
     return {};
 }
 
-void SubsystemHierarchicalModel::remove_object(const Subsystem &subsystem)
-{
-    const auto list_index = find_object_position(subsystem);
-    if (list_index.has_value()) {
-        const auto model_it = requirement_models.find(subsystem);
-        if (model_it != requirement_models.cend())
-            requirement_models.erase(model_it);
-
-        remove(*list_index);
-    }
-}
-
 void SubsystemHierarchicalModel::remove_object(const std::size_t subsystem_id)
 {
     const auto list_index = find_object_position(subsystem_id);

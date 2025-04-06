@@ -49,12 +49,21 @@ public:
      * @param initial_model The backend storage model used to populate the model and stream data updates
      * @param selected_subsystem_callback The callback to execute when the subsystem selection changes
      * @param deselected_subsystem_callback The callback to execute when the subsystem is deselected
+     * @param project_pane_switcher The GTK menu used to select the active stack page in the project pane
+     * @param project_pane_stack The GTK stack containing pages
      */
     ProjectHierarchyPane(Gtk::ListView * view, const Glib::RefPtr<ProjectHierarchicalModel> &initial_model,
         sigc::slot<SelectedCallbackSignature>&& selected_subsystem_callback,
-        sigc::slot<DeselectedCallbackSignature>&& deselected_subsystem_callback);
+        sigc::slot<DeselectedCallbackSignature>&& deselected_subsystem_callback,
+        Gtk::DropDown * project_pane_switcher, Gtk::Stack * project_pane_stack);
 
 private:
+    enum class ProjectStackSwitcherIdx
+    {
+        Explorer = 0,
+        Metadata = 1
+    };
+
     /**
      * @brief GTK callback for a new Gtk::ListItem
      * @param item The new list item to configure for placement within the tree view
@@ -74,6 +83,8 @@ private:
      */
     void on_activate(guint position) const;
 
+    void on_dropdown_changed() const;
+
     /**
      * @brief GTK callback for expanding a node and producing the child model
      * @param item The item representing the parent of the desired child model
@@ -86,6 +97,8 @@ private:
 
     static std::shared_ptr<log4cxx::Logger> logger;
     Glib::RefPtr<Gtk::TreeListModel> tree_model;
+    Gtk::DropDown * stack_switcher;
+    Gtk::Stack * stack;
 
     Glib::RefPtr<ProjectHierarchicalModel> hierarchical_model;
 };

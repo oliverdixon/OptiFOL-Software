@@ -52,13 +52,6 @@ Glib::RefPtr<Requirement> PGRequirementModel::get_object(const std::size_t requi
     return *it;
 }
 
-void PGRequirementModel::remove_object(const Requirement &requirement)
-{
-    const auto it = model_contents.find(requirement);
-    if (it != model_contents.cend())
-        model_contents.erase(it);
-}
-
 void PGRequirementModel::remove_object(const std::size_t requirement_id)
 {
     const auto it = model_contents.find(requirement_id);
@@ -123,6 +116,7 @@ void PGRequirementModel::emplace_object(const pqxx::row &row)
 void PGRequirementModel::deplace_object(const std::size_t id)
 {
     remove_object(id);
+    inform_deletion(id);
 }
 
 }

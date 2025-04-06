@@ -1,21 +1,22 @@
 <object class="GtkBox">
     <property name="orientation">vertical</property>
     <child>
-        <object class="GtkDropDown">
+        <object class="GtkDropDown" id="project_pane_switcher">
             <property name="model">
                 <object class="GtkStringList">
                     <items>
                         <item>Project Explorer</item>
-                        <item>Project Metadata</item>
+                        <item>System Metadata</item>
                     </items>
                 </object>
             </property>
         </object>
     </child>
     <child>
-        <object class="GtkStack">
+        <object class="GtkStack" id="project_pane_stack">
             <child>
                 <object class="GtkStackPage">
+                    <property name="name">project_explorer</property>
                     <property name="child">
                         <object class="GtkBox">
                             <property name="orientation">vertical</property>
@@ -32,6 +33,37 @@
                             <child>
                                 <object class="GtkButton" id="update_storage_button">
                                     <property name="label">Update Storage</property>
+                                </object>
+                            </child>
+                        </object>
+                    </property>
+                </object>
+            </child>
+            <child>
+                <object class="GtkStackPage">
+                    <property name="name">project_metadata</property>
+                    <property name="child">
+                        <object class="GtkScrolledWindow">
+                            <property name="vexpand">TRUE</property>
+                            <child>
+                                <object class="GtkColumnView">
+                                    <style>
+                                        <class name="data-table"/>
+                                    </style>
+                                    <child>
+                                        <object class="GtkColumnViewColumn">
+                                            <property name="id">project_metadata_attribute</property>
+                                            <property name="title">Attribute</property>
+                                            <property name="resizable">TRUE</property>
+                                        </object>
+                                    </child>
+                                    <child>
+                                        <object class="GtkColumnViewColumn">
+                                            <property name="id">project_metadata_value</property>
+                                            <property name="title">Value</property>
+                                            <property name="resizable">TRUE</property>
+                                        </object>
+                                    </child>
                                 </object>
                             </child>
                         </object>
