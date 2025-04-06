@@ -1,0 +1,4 @@
+id	subsystem_id	name	created_at	last_modified	sentence	test_id	priority	description
+13	559	REQ_01_WORKS	2025-04-06 20:13:34.863008	2025-04-06 20:13:34.863008	Ax ( Sonar(x) -> Works(x) )	1	5	Sonar must work
+14	559	REQ_02_REPORTING	2025-04-06 20:13:34.863008	2025-04-06 20:13:34.863008	Ax Ay ( ( Sonar(x) & Detected(x, y) ) -> Report(x, y) )		4	Sonar report detected objects
+18	563	REQ_01_FALLBACK	2025-04-06 20:17:16.908794	2025-04-06 20:17:16.908794	Ax ( Comms(x) -> Ey ( Comms(y) & IsFallbackFor(y, x) ) )		5	Comms system needs a fallback
