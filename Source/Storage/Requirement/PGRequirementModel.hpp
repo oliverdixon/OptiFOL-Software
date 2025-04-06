@@ -22,6 +22,10 @@
 namespace optifol
 {
 
+/**
+ * @class PGRequirementModel
+ * @brief The PostgreSQL-specialised storage model for Requirement objects
+ */
 class PGRequirementModel :
         public PGStorableObjectModelBase<Requirement>,
         public IStorableObjectModel<Requirement>
@@ -58,9 +62,17 @@ private:
     [[nodiscard]] pqxx::result filter_objects(const std::ostringstream &sql_parameter, std::size_t maximum_return_count)
         const override;
 
-    void emplace_object(const pqxx::row& row) override;
+    void emplace_inbound_object(const pqxx::row& row) override;
 
-    void deplace_object(std::size_t id) override;
+    void update_inbound_object(const pqxx::row& row) override;
+
+    void deplace_inbound_object(std::size_t id) override;
+
+    void emplace_outbound_object(const Glib::RefPtr<Requirement>& item, pqxx::work& tx) const override;
+
+    void update_outbound_object(const Glib::RefPtr<Requirement>& item, pqxx::work& tx) const override;
+
+    void deplace_outbound_object(std::size_t id, pqxx::work& tx) const override;
 };
 
 }

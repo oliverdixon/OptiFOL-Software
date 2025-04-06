@@ -42,8 +42,8 @@ void Application::on_startup()
     add_action("help", &Application::open_application_help);
 
     builder = Gtk::Builder::create_from_resource("/uk/ac/york/www_users/od641/optifol/UI/Application.ui");
-    set_menubar(GTKHelpers::get_object<Gio::Menu>("Application Root", builder, "top_menu"));
-    about_dialog = GTKHelpers::get_widget<Gtk::AboutDialog>("Application Root", builder, "about_dialog");
+    set_menubar(GTKHelpers::get_object<Gio::Menu>("Application Root", *builder, "top_menu"));
+    about_dialog = GTKHelpers::get_widget<Gtk::AboutDialog>("Application Root", *builder, "about_dialog");
     about_dialog->set_hide_on_close();
 }
 

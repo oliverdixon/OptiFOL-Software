@@ -38,19 +38,19 @@ public:
      * @brief Enqueue an object, identified by its numerical ID, to be loaded into the cache instance
      * @param id The ID of the object to enqueue
      */
-    virtual void enqueue_load(std::size_t id) = 0;
+    virtual void enqueue_inbound_load(std::size_t id) = 0;
 
     /**
      * @brief Enqueue an object, identified by its numerical ID, to be reloaded into the cache instance
      * @param id The ID of the object to enqueue
      */
-    virtual void enqueue_reload(std::size_t id) = 0;
+    virtual void enqueue_inbound_reload(std::size_t id) = 0;
 
     /**
      * @brief Enqueue an object, identified by its numerical ID, to be unloaded from the cache instance
      * @param id The ID of the object to enqueue
      */
-    virtual void enqueue_unload(std::size_t id) = 0;
+    virtual void enqueue_inbound_unload(std::size_t id) = 0;
 
     /**
      * @brief Propagate any loads from the permanent storage as requested by the instance

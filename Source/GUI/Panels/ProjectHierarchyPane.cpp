@@ -15,6 +15,7 @@
 
 #include <iostream>
 
+#include "../GTKHelpers.hpp"
 #include "../Logging.hpp"
 #include "../Storage/IStorageObject.hpp"
 
@@ -23,18 +24,23 @@ namespace optifol
 
 std::shared_ptr<log4cxx::Logger> ProjectHierarchyPane::logger(log4cxx::Logger::getLogger("OptiFOL"));
 
-ProjectHierarchyPane::ProjectHierarchyPane(Gtk::ListView *view,
-        const Glib::RefPtr<ProjectHierarchicalModel>& initial_model,
-        sigc::slot<SelectedCallbackSignature>&& selected_subsystem_callback,
-        sigc::slot<DeselectedCallbackSignature>&& deselected_subsystem_callback,
-        Gtk::DropDown * project_pane_switcher,
-        Gtk::Stack * project_pane_stack) :
-    stack_switcher(project_pane_switcher),
-    stack(project_pane_stack),
+const char * const ProjectHierarchyPane::area_name = "Project Pane Area";
+
+ProjectHierarchyPane::ProjectHierarchyPane(Gtk::Builder &builder,
+        const Glib::RefPtr<ProjectHierarchicalModel> &initial_model,
+        sigc::slot<SelectedCallbackSignature> &&selected_subsystem_callback,
+        sigc::slot<DeselectedCallbackSignature> &&deselected_subsystem_callback,
+        sigc::slot<RefreshStorageCallbackSignature>&& refresh_storage_callback) :
+    stack_switcher(GTKHelpers::get_widget<Gtk::DropDown>(area_name, builder, "project_pane_switcher")),
+    stack(GTKHelpers::get_widget<Gtk::Stack>(area_name, builder, "project_pane_stack")),
     hierarchical_model(initial_model)
 {
+    const auto view = GTKHelpers::get_widget<Gtk::ListView>(area_name, builder, "project_view");
+
     signal_select_subsystem.connect(selected_subsystem_callback);
     signal_deselect_subsystem.connect(deselected_subsystem_callback);
+    GTKHelpers::get_widget<Gtk::Button>(area_name, builder, "update_storage_button")->signal_clicked().connect(
+        std::move(refresh_storage_callback));
 
     tree_model = Gtk::TreeListModel::create(hierarchical_model,
         sigc::mem_fun(*this, &ProjectHierarchyPane::on_expand), true, true);

@@ -16,13 +16,24 @@
 namespace optifol
 {
 
-RequirementsIndexArea::RequirementsIndexArea(Gtk::ColumnView *view, Gtk::Widget * widget_off, Gtk::Widget * widget_on,
-        Gtk::Widget * widget_empty) :
-    on_off_widgets(widget_off, widget_on),
-    empty_widget(widget_empty)
+const char * const RequirementsIndexArea::area_name = "Requirements Index Area";
+
+RequirementsIndexArea::RequirementsIndexArea(Gtk::Builder& builder) :
+    on_off_widgets(
+        GTKHelpers::get_widget<Gtk::Widget>(area_name, builder, "requirements_index_advice_unselected"),
+        GTKHelpers::get_widget<Gtk::Widget>(area_name, builder, "requirements_index_content")
+    ),
+    empty_widget(GTKHelpers::get_widget<Gtk::Widget>(area_name, builder, "requirements_index_advice_empty"))
 {
+    const auto view = GTKHelpers::get_widget<Gtk::ColumnView>(area_name, builder, "requirements_view");
+
     selection_model->set_autoselect(false);
     selection_model->set_can_unselect(true);
+    selection_model->property_n_items().signal_changed().connect([this]
+    {
+        empty_widget->set_visible(selection_model->get_n_items() == 0);
+    });
+
     view->set_model(selection_model);
 
     const auto columns = view->get_columns();
@@ -81,12 +92,13 @@ RequirementsIndexArea::RequirementsIndexArea(Gtk::ColumnView *view, Gtk::Widget 
 #endif
 }
 
-void RequirementsIndexArea::select_model(const Glib::RefPtr<RequirementHierarchicalModel> &new_model) const
+void RequirementsIndexArea::select_model(const Glib::RefPtr<RequirementHierarchicalModel> &new_model)
 {
     on_off_widgets.first->set_visible(false);
     on_off_widgets.second->set_visible(true);
     empty_widget->set_visible(new_model->get_n_items() == 0);
 
+    data_model = new_model;
     selection_model->set_model(new_model);
 }
 
@@ -135,7 +147,7 @@ std::pair<Glib::RefPtr<Requirement>, Gtk::EditableLabel*> RequirementsIndexArea:
     if (position == GTK_INVALID_LIST_POSITION)
         return {nullptr, nullptr}; // TODO log
 
-    const auto model_item = selection_model->get_model()->get_typed_object<Requirement>(position);
+    const auto model_item = data_model->get_typed_object<Requirement>(position);
     if (!model_item)
         return {nullptr, nullptr}; // TODO log
 
@@ -225,11 +237,12 @@ void RequirementsIndexArea::on_edit_label(const Glib::RefPtr<Gtk::ListItem> &lis
          */
         return;
 
-    const auto model_item = selection_model->get_model()->get_typed_object<Requirement>(position);
+    const auto model_item = data_model->get_typed_object<Requirement>(position);
     if (!model_item)
         return; // TODO log
 
     std::invoke(std::forward<SetterFunc>(setter_function), model_item, label->get_text());
+    data_model->inform_update(model_item);
 }
 
 }

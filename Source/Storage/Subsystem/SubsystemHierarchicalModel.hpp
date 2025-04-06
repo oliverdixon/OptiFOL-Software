@@ -26,7 +26,7 @@ namespace optifol
 
 /**
  * @class SubsystemHierarchicalModel
- * @brief The subsystems model forming part of a hierarchical Glib-backed list model
+ * @brief The Subsystem object model forming part of a hierarchical Glib-backed list model
  */
 class SubsystemHierarchicalModel :
         public IStorableObjectModel<Subsystem>,

@@ -26,7 +26,7 @@ namespace optifol
 
 /**
  * @class ProjectHierarchicalModel
- * @brief The projects model forming part of a hierarchical Glib-backed list model
+ * @brief The Project object model forming part of a hierarchical Glib-backed list model
  */
 class ProjectHierarchicalModel :
         public IStorableObjectModel<Project>,

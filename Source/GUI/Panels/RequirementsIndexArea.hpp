@@ -33,20 +33,16 @@ class RequirementsIndexArea :
 public:
     /**
      * @brief Construct a new compartmentalised area for displaying and managing sets of subsystem requirements
-     * @param view The GTK requirements view table consisting of columns for each requirement attribute
-     * @param widget_off The abstract GTK widget to display when there is no model to display in the view
-     * @param widget_on The abstract GTK widget to display when there is a model to display in the view
-     * @param widget_empty The abstract GTK widget to display only when there is an empty model to display in the view
+     * @param builder The GTK builder attached to the main window
      */
-    explicit RequirementsIndexArea(Gtk::ColumnView * view, Gtk::Widget * widget_off, Gtk::Widget * widget_on,
-        Gtk::Widget * widget_empty);
+    explicit RequirementsIndexArea(Gtk::Builder& builder);
 
     /**
      * @brief Replace the requirements model displayed by the view
      * @param new_model The new requirements model to display in the view
      * @post The off-widget is hidden, and the on-widget is displayed
      */
-    void select_model(const Glib::RefPtr<RequirementHierarchicalModel>& new_model) const;
+    void select_model(const Glib::RefPtr<RequirementHierarchicalModel>& new_model);
 
     /**
      * @brief Disconnect the view from its currently displayed model
@@ -55,11 +51,13 @@ public:
     void deselect_model() const;
 
 private:
+    Glib::RefPtr<RequirementHierarchicalModel> data_model;
     Glib::RefPtr<Gtk::SingleSelection> selection_model = Gtk::SingleSelection::create();
 
     std::pair<Gtk::Widget*, Gtk::Widget*> on_off_widgets;
-
     Gtk::Widget * empty_widget;
+
+    static const char * const area_name;
 
     /**
      * @brief Set up an editable GTK label within the given container

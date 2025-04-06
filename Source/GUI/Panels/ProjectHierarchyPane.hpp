@@ -44,18 +44,24 @@ public:
     using DeselectedCallbackSignature = void();
 
     /**
+     * @typedef RefreshStorageCallbackSignature
+     * @brief The function signature of the callback to handle a request to read any changes reported by the storage
+     *  backend
+     */
+    using RefreshStorageCallbackSignature = void();
+
+    /**
      * @brief Construct a project pane manager given a managed Gtk::ListView resource and backend model
-     * @param view The list view UI element into which the entries are rendered
+     * @param builder The GTK builder attached to the main window
      * @param initial_model The backend storage model used to populate the model and stream data updates
      * @param selected_subsystem_callback The callback to execute when the subsystem selection changes
      * @param deselected_subsystem_callback The callback to execute when the subsystem is deselected
-     * @param project_pane_switcher The GTK menu used to select the active stack page in the project pane
-     * @param project_pane_stack The GTK stack containing pages
+     * @param refresh_storage_callback The callback to execute when the storage controller should update the model
      */
-    ProjectHierarchyPane(Gtk::ListView * view, const Glib::RefPtr<ProjectHierarchicalModel> &initial_model,
+    ProjectHierarchyPane(Gtk::Builder& builder, const Glib::RefPtr<ProjectHierarchicalModel> &initial_model,
         sigc::slot<SelectedCallbackSignature>&& selected_subsystem_callback,
         sigc::slot<DeselectedCallbackSignature>&& deselected_subsystem_callback,
-        Gtk::DropDown * project_pane_switcher, Gtk::Stack * project_pane_stack);
+        sigc::slot<RefreshStorageCallbackSignature>&& refresh_storage_callback);
 
 private:
     enum class ProjectStackSwitcherIdx
@@ -92,13 +98,15 @@ private:
      */
     Glib::RefPtr<Gio::ListModel> on_expand(const Glib::RefPtr<Glib::ObjectBase>& item) const;
 
+    static const char * const area_name;
+
     sigc::signal<SelectedCallbackSignature> signal_select_subsystem;
     sigc::signal<DeselectedCallbackSignature> signal_deselect_subsystem;
 
     static std::shared_ptr<log4cxx::Logger> logger;
     Glib::RefPtr<Gtk::TreeListModel> tree_model;
-    Gtk::DropDown * stack_switcher;
-    Gtk::Stack * stack;
+    Gtk::DropDown * const stack_switcher;
+    Gtk::Stack * const stack;
 
     Glib::RefPtr<ProjectHierarchicalModel> hierarchical_model;
 };

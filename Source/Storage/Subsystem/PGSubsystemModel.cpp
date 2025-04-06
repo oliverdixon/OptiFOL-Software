@@ -69,7 +69,7 @@ void PGSubsystemModel::load_for_project(Glib::RefPtr<Project>&& project)
     tx.commit();
 
     for (auto &&row: result)
-        enqueue_load(std::move(row));
+        enqueue_inbound_load(std::move(row));
 
     flush_inbound_insert();
 }
@@ -90,7 +90,7 @@ pqxx::result PGSubsystemModel::filter_objects(const std::ostringstream &sql_para
     return result;
 }
 
-void PGSubsystemModel::emplace_object(const pqxx::row &row)
+void PGSubsystemModel::emplace_inbound_object(const pqxx::row &row)
 {
     auto subsystem = Glib::make_refptr_for_instance(new Subsystem(
         row[DBFieldIdx::ID].as<std::size_t>(),
@@ -105,10 +105,32 @@ void PGSubsystemModel::emplace_object(const pqxx::row &row)
     inform_insertion(std::move(subsystem_insertion_ref));
 }
 
-void PGSubsystemModel::deplace_object(const std::size_t id)
+void PGSubsystemModel::update_inbound_object(const pqxx::row &row)
+{
+    // TODO
+}
+
+void PGSubsystemModel::deplace_inbound_object(const std::size_t id)
 {
     remove_object(id);
     inform_deletion(id);
+}
+
+void PGSubsystemModel::emplace_outbound_object(const Glib::RefPtr<Subsystem> &item, pqxx::work &tx) const
+{
+    tx.exec("INSERT INTO subsystem (id, project_id, name, created_at, last_modified) VALUES ($1, $2, $3, $4, $5);",
+        pqxx::params{ item->get_controller_id(), item->get_relevant_project_tag(), item->get_identifier(),
+            item->get_creation_time(), item->get_modified_time() });
+}
+
+void PGSubsystemModel::update_outbound_object(const Glib::RefPtr<Subsystem> &item, pqxx::work &tx) const
+{
+    // TODO
+}
+
+void PGSubsystemModel::deplace_outbound_object(std::size_t id, pqxx::work &tx) const
+{
+    // TODO
 }
 
 }

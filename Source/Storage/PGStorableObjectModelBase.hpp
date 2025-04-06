@@ -18,6 +18,7 @@
 #include <unordered_set>
 #include <variant>
 #include <pqxx/row>
+#include <pqxx/transaction>
 
 #include "ICacheableStorableObjectModel.hpp"
 #include "ModelPublisherBase.hpp"
@@ -45,21 +46,37 @@ class PGStorableObjectModelBase :
         public ModelPublisherBase<Type>
 {
 public:
+    /**
+     * @brief Get a non-constant iterator to the beginning of the internal STL-like storage model
+     * @return The beginning iterator
+     */
     Glib::RefPtr<Type>* begin() const
     {
         return model_contents.begin();
     }
 
+    /**
+     * @brief Get a non-constant iterator to one past the end of the internal STL-like storage model
+     * @return The end iterator
+     */
     Glib::RefPtr<Type>* end() const
     {
         return model_contents.end();
     }
 
+    /**
+     * @brief Get a constant iterator to the beginning of the internal STL-like storage model
+     * @return The beginning iterator
+     */
     Glib::RefPtr<Type>* cbegin() const
     {
         return model_contents.cbegin();
     }
 
+    /**
+     * @brief Get a constant iterator to one past the end of the internal STL-like storage model
+     * @return The end iterator
+     */
     Glib::RefPtr<Type>* cend() const
     {
         return model_contents.cend();
@@ -69,47 +86,47 @@ public:
      * @brief Enqueue an object, already loaded from the DB, to be loaded into the cache instance
      * @param row The complete row of the object to enqueue
      */
-    void enqueue_load(pqxx::row&& row)
+    void enqueue_inbound_load(pqxx::row&& row)
     {
-        load_queue.emplace(row);
+        inbound_load_queue.emplace(row);
     }
 
     /**
      * @brief Enqueue an object, already loaded from the DB, to be reloaded into the cache instance
      * @param row The complete row of the object to enqueue
      */
-    void enqueue_reload(pqxx::row&& row)
+    void enqueue_inbound_reload(pqxx::row&& row)
     {
-        reload_queue.emplace(row);
+        inbound_reload_queue.emplace(row);
     }
 
     /**
      * @brief Enqueue an object, already loaded from the DB, to be unloaded from the cache instance
      * @param row The complete row of the object to enqueue
      */
-    void enqueue_unload(pqxx::row&& row)
+    void enqueue_inbound_unload(pqxx::row&& row)
     {
-        unload_queue.emplace(row);
+        inbound_unload_queue.emplace(row);
     }
 
-    void enqueue_load(std::size_t id) override
+    void enqueue_inbound_load(std::size_t id) override
     {
-        load_queue.emplace(id);
+        inbound_load_queue.emplace(id);
     }
 
-    void enqueue_reload(std::size_t id) override
+    void enqueue_inbound_reload(std::size_t id) override
     {
-        reload_queue.emplace(id);
+        inbound_reload_queue.emplace(id);
     }
 
-    void enqueue_unload(std::size_t id) override
+    void enqueue_inbound_unload(std::size_t id) override
     {
-        unload_queue.emplace(id);
+        inbound_unload_queue.emplace(id);
     }
 
     void flush_inbound_insert() override
     {
-        if (load_queue.empty())
+        if (inbound_load_queue.empty())
             return;
 
         // Build the queued IDs into a stream for substitution into the SQL query
@@ -118,7 +135,7 @@ public:
 
         sql_parameter << '{';
 
-        while (!load_queue.empty()) {
+        while (!inbound_load_queue.empty()) {
             /*
              * If we have a raw ID, build it into the stream to be fetched from the DB. If we have a prefetched row,
              * emplace it immediately.
@@ -131,10 +148,10 @@ public:
                     sql_parameter << arg << ',';
                     ++sql_parameter_count;
                 } else if constexpr (std::is_same_v<DecayedType, pqxx::row>)
-                    emplace_object(arg);
-            }, load_queue.front());
+                    emplace_inbound_object(arg);
+            }, inbound_load_queue.front());
 
-            load_queue.pop();
+            inbound_load_queue.pop();
         }
 
         if (sql_parameter_count > 0) {
@@ -145,7 +162,7 @@ public:
             // Run the query to filter the queued IDs from the DB object table, and load into the cache
             const auto db_result = filter_objects(sql_parameter, 128);
             for (const auto &row: db_result)
-                emplace_object(row);
+                emplace_inbound_object(row);
         }
     }
 
@@ -156,7 +173,7 @@ public:
 
     void flush_inbound_delete() override
     {
-        while (!unload_queue.empty()) {
+        while (!inbound_unload_queue.empty()) {
             std::size_t id;
 
             std::visit([&id]<typename DeducedType>(DeducedType &&arg)
@@ -171,10 +188,10 @@ public:
                     id = arg;
                 else if constexpr (std::is_same_v<DecayedType, pqxx::row>)
                     id = arg[0].template as<std::size_t>();
-            }, unload_queue.front());
+            }, inbound_unload_queue.front());
 
-            unload_queue.pop();
-            deplace_object(id);
+            inbound_unload_queue.pop();
+            deplace_inbound_object(id);
         }
     }
 
@@ -252,21 +269,53 @@ protected:
      * @brief Construct an object described by the given PG DB row and store it in the model
      * @param row The row retrieved from the DB, which describes the item to be constructed and appended.
      */
-    virtual void emplace_object(const pqxx::row& row) = 0;
+    virtual void emplace_inbound_object(const pqxx::row& row) = 0;
+
+    /**
+     * @brief Insert or update an object described by the given PG DB row
+     * @param row The row retrieved from the DB, which describes the new state of the model
+     */
+    virtual void update_inbound_object(const pqxx::row& row) = 0;
 
     /**
      * @brief Remove (and potentially destruct) the item with the given identifier from the model
      * @param id The ID of the item to be removed from the model
      */
-    virtual void deplace_object(std::size_t id) = 0;
+    virtual void deplace_inbound_object(std::size_t id) = 0;
 
-    std::queue<std::variant<std::size_t, pqxx::row>> load_queue;
-    std::queue<std::variant<std::size_t, pqxx::row>> reload_queue;
-    std::queue<std::variant<std::size_t, pqxx::row>> unload_queue;
+    /**
+     * @brief Execute an SQL query to insert the given item into the PG DB
+     * @param item The item to insert into the DB
+     * @param tx The active database transaction on which the query should be executed
+     */
+    virtual void emplace_outbound_object(const Glib::RefPtr<Type>& item, pqxx::work& tx) const = 0;
+
+    /**
+     * @brief Execute an SQL query to update the given item into the PG DB
+     * @param item The item to update in the DB
+     * @param tx The active database transaction on which the query should be executed
+     */
+    virtual void update_outbound_object(const Glib::RefPtr<Type>& item, pqxx::work& tx) const = 0;
+
+    /**
+     * @brief Execute an SQL query to delete the item identified by the given numerical ID from the PG DB
+     * @param id The item to remove from the DB
+     * @param tx The active database transaction on which the query should be executed
+     */
+    virtual void deplace_outbound_object(std::size_t id, pqxx::work& tx) const = 0;
 
     pqxx::connection& connection;
 
     std::unordered_set<Glib::RefPtr<Type>, StorageHashFunctor<Type>, StorageEqualityFunctor<Type>> model_contents;
+
+private:
+    std::queue<std::variant<std::size_t, pqxx::row>> inbound_load_queue;
+    std::queue<std::variant<std::size_t, pqxx::row>> inbound_reload_queue;
+    std::queue<std::variant<std::size_t, pqxx::row>> inbound_unload_queue;
+
+    std::queue<Glib::RefPtr<Type>> outbound_insert_queue;
+    std::queue<Glib::RefPtr<Type>> outbound_update_queue;
+    std::queue<std::size_t> outbound_delete_queue;
 };
 
 }

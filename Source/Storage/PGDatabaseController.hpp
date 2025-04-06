@@ -114,13 +114,13 @@ inline void PGDatabaseController::handle_change<Project>(const PGUpdateNotificat
     switch (notification.action) {
     case PGUpdateNotification::Action::NoOp: break;
     case PGUpdateNotification::Action::Insert:
-        project_model->enqueue_load(notification.id);
+        project_model->enqueue_inbound_load(notification.id);
         break;
     case PGUpdateNotification::Action::Update:
-        project_model->enqueue_reload(notification.id);
+        project_model->enqueue_inbound_reload(notification.id);
         break;
     case PGUpdateNotification::Action::Delete:
-        project_model->enqueue_unload(notification.id);
+        project_model->enqueue_inbound_unload(notification.id);
         break;
     }
 }
@@ -133,13 +133,13 @@ inline void PGDatabaseController::handle_change<Subsystem>(const PGUpdateNotific
     switch (notification.action) {
     case PGUpdateNotification::Action::NoOp: break;
     case PGUpdateNotification::Action::Insert:
-        subsystem_model->enqueue_load(notification.id);
+        subsystem_model->enqueue_inbound_load(notification.id);
         break;
     case PGUpdateNotification::Action::Update:
-        subsystem_model->enqueue_reload(notification.id);
+        subsystem_model->enqueue_inbound_reload(notification.id);
         break;
     case PGUpdateNotification::Action::Delete:
-        subsystem_model->enqueue_unload(notification.id);
+        subsystem_model->enqueue_inbound_unload(notification.id);
         break;
     }
 }
@@ -152,13 +152,13 @@ inline void PGDatabaseController::handle_change<Requirement>(const PGUpdateNotif
     switch (notification.action) {
     case PGUpdateNotification::Action::NoOp: break;
     case PGUpdateNotification::Action::Insert:
-        requirement_model->enqueue_load(notification.id);
+        requirement_model->enqueue_inbound_load(notification.id);
         break;
     case PGUpdateNotification::Action::Update:
-        requirement_model->enqueue_reload(notification.id);
+        requirement_model->enqueue_inbound_reload(notification.id);
         break;
     case PGUpdateNotification::Action::Delete:
-        requirement_model->enqueue_unload(notification.id);
+        requirement_model->enqueue_inbound_unload(notification.id);
         break;
     }
 }

@@ -23,7 +23,7 @@ namespace optifol
 
 /**
  * @class RequirementHierarchicalModel
- * @brief The requirements model forming part of a hierarchical Glib-backed list model
+ * @brief The Requirement object model forming part of a hierarchical Glib-backed list model
  */
 class RequirementHierarchicalModel :
         public IStorableObjectModel<Requirement>,

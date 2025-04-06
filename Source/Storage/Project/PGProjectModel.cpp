@@ -30,7 +30,7 @@ PGProjectModel::PGProjectModel(pqxx::connection &connection, const std::size_t i
     tx.commit();
 
     for (const auto &row: result)
-        PGProjectModel::emplace_object(row);
+        PGProjectModel::emplace_inbound_object(row);
 
     assert(PGProjectModel::get_item_count() <= initial_cache_limit);
 }
@@ -83,7 +83,7 @@ pqxx::result PGProjectModel::filter_objects(const std::ostringstream& sql_parame
     return result;
 }
 
-void PGProjectModel::emplace_object(const pqxx::row &row)
+void PGProjectModel::emplace_inbound_object(const pqxx::row &row)
 {
     auto project = Glib::make_refptr_for_instance(new Project(
         row[DBFieldIdx::ID].as<std::size_t>(),
@@ -97,10 +97,44 @@ void PGProjectModel::emplace_object(const pqxx::row &row)
     inform_insertion(std::move(project_insertion_ref));
 }
 
-void PGProjectModel::deplace_object(const std::size_t id)
+void PGProjectModel::update_inbound_object(const pqxx::row &row)
+{
+    const auto project_idx = row[DBFieldIdx::ID].as<std::size_t>();
+    const auto project_it = model_contents.find(project_idx);
+
+    if (project_it == model_contents.end())
+        emplace_inbound_object(row);
+    else {
+        const auto project = *project_it;
+
+        const std::string_view name = row[DBFieldIdx::Name].as<std::string_view>();
+        if (project->get_identifier() != name) project->set_identifier(std::string(name));
+
+        // TODO: all other fields.
+    }
+}
+
+void PGProjectModel::deplace_inbound_object(const std::size_t id)
 {
     remove_object(id);
     inform_deletion(id);
+}
+
+void PGProjectModel::emplace_outbound_object(const Glib::RefPtr<Project> &item, pqxx::work& tx) const
+{
+    tx.exec("INSERT INTO project (id, name, created_at, last_modified) VALUES ($1, $2, $3, $4);",
+        pqxx::params{ item->get_controller_id(), item->get_identifier(), item->get_creation_time(),
+            item->get_modified_time() });
+}
+
+void PGProjectModel::update_outbound_object(const Glib::RefPtr<Project> &item, pqxx::work &tx) const
+{
+    // TODO
+}
+
+void PGProjectModel::deplace_outbound_object(const std::size_t id, pqxx::work &tx) const
+{
+    // TODO
 }
 
 }

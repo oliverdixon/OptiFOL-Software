@@ -41,9 +41,16 @@ public:
     using InsertionCallbackSignature = void(Glib::RefPtr<Type>&&);
 
     /**
+     * @typedef UpdateCallbackSignature
+     * @brief The function signature of the callback used to inform subscribers of updates
+     * @details The callback should take an r-value to a ref-counted pointer of the updated model element.
+     */
+    using UpdateCallbackSignature = void(Glib::RefPtr<Type>&&);
+
+    /**
      * @typedef DeletionCallbackSignature
      * @brief The function signature of the callback used to inform subscribers of deletions
-     * @details The functions should take a single numerical as the controller ID of the deleted object.
+     * @details The callback should take a single numerical as the controller ID of the deleted object.
      */
     using DeletionCallbackSignature = void(std::size_t);
 
@@ -55,14 +62,29 @@ public:
     /**
      * @brief Add a new subscriber to listen for insertions on the current model instance
      * @param slot The callback exposed by the subscriber's API
-     * @param onboard Ignored for the storage-agnostic base implementation
+     * @param onboard Should the instance immediately send signals to the new subscriber for each model item?
      * @return The newly added signal
+     * @warning The 'onboard' option requires implementors to override this function to inject their own emplacement
+     *  logic. In the base implementation, it does nothing.
      */
     virtual const sigc::signal<InsertionCallbackSignature>& add_insert_subscriber(
         sigc::slot<InsertionCallbackSignature>&& slot, const bool onboard)
     {
         std::ignore = onboard;
         auto& signal = insert_callbacks.emplace_back();
+        signal.connect(std::move(slot));
+        return signal;
+    }
+
+    /**
+     * @brief Add a new subscriber to listen for updates on the current model instance
+     * @param slot The callback exposed by the subscriber's API
+     * @return The newly added signal
+     */
+    virtual const sigc::signal<UpdateCallbackSignature>& add_update_subscriber(
+        sigc::slot<UpdateCallbackSignature>&& slot)
+    {
+        auto& signal = update_callbacks.emplace_back();
         signal.connect(std::move(slot));
         return signal;
     }
@@ -91,6 +113,16 @@ public:
     }
 
     /**
+     * @brief Inform all update-subscribers of a new update from the model
+     * @param updated_item A copy of the ref-counted pointer holding the newly updated item
+     */
+    void inform_update(Glib::RefPtr<Type> updated_item) const
+    {
+        for (const auto& signal : update_callbacks)
+            signal(std::move(updated_item));
+    }
+
+    /**
      * @brief Inform all delete-subscribers of a new deletion from the model
      * @param deleted_item_id The controller ID of the deleted item
      */
@@ -102,6 +134,8 @@ public:
 
 private:
     std::vector<sigc::signal<InsertionCallbackSignature>> insert_callbacks;
+
+    std::vector<sigc::signal<UpdateCallbackSignature>> update_callbacks;
 
     std::vector<sigc::signal<DeletionCallbackSignature>> delete_callbacks;
 };

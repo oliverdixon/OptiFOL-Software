@@ -33,10 +33,9 @@ private:
     void on_update_storage();
 
     Glib::RefPtr<Gtk::Builder> builder;
+    static const char * const area_name;
 
     Gtk::Box * const root_grid;
-    Gtk::ListView * const project_view;
-    Gtk::Button * const update_storage_button;
 
     Glib::RefPtr<Gtk::AlertDialog> database_alert;
 

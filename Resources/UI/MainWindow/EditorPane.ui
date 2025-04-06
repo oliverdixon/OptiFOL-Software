@@ -70,7 +70,7 @@ To view an Index, select a Subsystem from the left-hand <i>Project Explorer</i> 
                                             </child>
                                             <child>
                                                 <object class="GtkButton">
-                                                    <property name="icon-name">document-new-symbolic</property>
+                                                    <property name="icon-name">tab-new-symbolic</property>
                                                     <property name="tooltip-text">Add Requirement</property>
                                                 </object>
                                             </child>

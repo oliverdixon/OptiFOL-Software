@@ -70,7 +70,7 @@ void PGRequirementModel::load_for_subsystem(Glib::RefPtr<Subsystem> &&subsystem)
     tx.commit();
 
     for (auto &&row: result)
-        enqueue_load(std::move(row));
+        enqueue_inbound_load(std::move(row));
 
     flush_inbound_insert();
 }
@@ -89,7 +89,7 @@ pqxx::result PGRequirementModel::filter_objects(const std::ostringstream &sql_pa
     return result;
 }
 
-void PGRequirementModel::emplace_object(const pqxx::row &row)
+void PGRequirementModel::emplace_inbound_object(const pqxx::row &row)
 {
     std::optional<std::size_t> test_id;
     if (!row[DBFieldIdx::TestID].is_null())
@@ -113,10 +113,34 @@ void PGRequirementModel::emplace_object(const pqxx::row &row)
     inform_insertion(std::move(requirement_insertion_ref));
 }
 
-void PGRequirementModel::deplace_object(const std::size_t id)
+void PGRequirementModel::update_inbound_object(const pqxx::row &row)
+{
+    // TODO
+}
+
+void PGRequirementModel::deplace_inbound_object(const std::size_t id)
 {
     remove_object(id);
     inform_deletion(id);
+}
+
+void PGRequirementModel::emplace_outbound_object(const Glib::RefPtr<Requirement> &item, pqxx::work &tx) const
+{
+    tx.exec("INSERT INTO requirement (id, description, subsystem_id, name, created_at, last_modified, sentence, "
+            "test_id, priority) VALUES ($1, $2, $3, $4, $5);",
+            pqxx::params{ item->get_controller_id(), item->get_description(), item->get_relevant_subsystem_tag(),
+                item->get_identifier(), item->get_creation_time(), item->get_modified_time(), item->get_statement(),
+                item->get_test(), item->get_priority() });
+}
+
+void PGRequirementModel::update_outbound_object(const Glib::RefPtr<Requirement> &item, pqxx::work &tx) const
+{
+    // TODO
+}
+
+void PGRequirementModel::deplace_outbound_object(std::size_t id, pqxx::work &tx) const
+{
+    // TODO
 }
 
 }
