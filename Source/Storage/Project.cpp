@@ -13,19 +13,16 @@
 
 #include "Project.hpp"
 
-#include "../../Logging.hpp"
+#include "StorageHashFunctor.hpp"
+#include "../Logging.hpp"
 
 namespace optifol
 {
 
-Project::Project(const std::size_t id,
-                 std::string &&name,
-                 const TimeT &created_time,
-                 const TimeT &last_modified_time):
+Project::Project(std::string &&name, const TimeT &created_time, const TimeT &last_modified_time):
     created_time(created_time),
     last_modified_time(last_modified_time),
-    name(std::move(name)),
-    id(id)
+    name(std::move(name))
 {
 }
 
@@ -44,19 +41,9 @@ IStorageObject::TimeT Project::get_modified_time() const
     return last_modified_time;
 }
 
-std::size_t Project::get_controller_id() const noexcept
-{
-    return id;
-}
-
 bool Project::operator==(const Project &other) const noexcept
 {
-    return id == other.id;
-}
-
-bool Project::operator==(std::size_t other_id) const noexcept
-{
-    return id == other_id;
+    return std::hash<Project>{}(*this) == std::hash<Project>{}(other);
 }
 
 void Project::set_identifier(const std::string &name_candidate)

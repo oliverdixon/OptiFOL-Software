@@ -14,7 +14,6 @@
 #include "MainWindow.hpp"
 
 #include "GTKHelpers.hpp"
-#include "../Exceptions/BadStorageNotificationException.hpp"
 #include "../Exceptions/StorageConnectionException.hpp"
 #include "Panels/ProjectHierarchyPane.hpp"
 #include "Panels/RequirementsIndexArea.hpp"
@@ -34,14 +33,12 @@ MainWindow::MainWindow():
     set_child(*root_grid);
 
     try {
-        storage = std::make_unique<PGDatabaseController>("postgresql://owd@localhost/optifol");
         requirements_index_area = std::make_unique<RequirementsIndexArea>(*builder);
         project_hierarchy_pane = std::make_unique<ProjectHierarchyPane>(
             *builder,
-            storage->build_project_hierarchical_model(),
+            Gio::ListStore<Project>::create(),
             sigc::mem_fun(*requirements_index_area, &RequirementsIndexArea::select_model),
-            sigc::mem_fun(*requirements_index_area, &RequirementsIndexArea::deselect_model),
-            sigc::mem_fun(*this, &MainWindow::on_update_storage)
+            sigc::mem_fun(*requirements_index_area, &RequirementsIndexArea::deselect_model)
         );
     } catch (const StorageConnectionException& exception) {
         database_alert->set_detail(exception.what());
@@ -52,16 +49,6 @@ MainWindow::MainWindow():
     const auto css_provider = Gtk::CssProvider::create();
     Gtk::StyleProvider::add_provider_for_display(get_display(), css_provider, GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
     css_provider->load_from_resource("/uk/ac/york/www_users/od641/optifol/UI/MainWindow/styles.css");
-}
-
-void MainWindow::on_update_storage()
-{
-    try {
-        storage->update();
-    } catch (const BadStorageNotificationException& exception) {
-        database_alert->set_detail(exception.what());
-        database_alert->show(*this);
-    }
 }
 
 }

@@ -17,7 +17,7 @@
 #include <gtkmm.h>
 
 #include "../GTKHelpers.hpp"
-#include "../../Storage/Subsystem/SubsystemHierarchicalModel.hpp"
+#include "../../Storage/Requirement.hpp"
 
 namespace optifol
 {
@@ -42,7 +42,7 @@ public:
      * @param new_model The new requirements model to display in the view
      * @post The off-widget is hidden, and the on-widget is displayed
      */
-    void select_model(const Glib::RefPtr<RequirementHierarchicalModel>& new_model);
+    void select_model(const Glib::RefPtr<Gio::ListStore<Requirement>>& new_model);
 
     /**
      * @brief Disconnect the view from its currently displayed model
@@ -51,15 +51,13 @@ public:
     void deselect_model() const;
 
 private:
-    Glib::RefPtr<RequirementHierarchicalModel> data_model;
+    Glib::RefPtr<Gio::ListStore<Requirement>> data_model;
     Glib::RefPtr<Gtk::SingleSelection> selection_model = Gtk::SingleSelection::create();
 
     std::pair<Gtk::Widget*, Gtk::Widget*> on_off_widgets;
     Gtk::Widget * empty_widget;
 
     static const char * const area_name;
-
-    void on_create_requirement();
 
     /**
      * @brief Set up an editable GTK label within the given container

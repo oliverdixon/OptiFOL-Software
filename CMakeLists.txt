@@ -80,14 +80,10 @@ set_source_files_properties(
 ##                               ##
 ## Requires:                     ##
 ##  - nlohmann::json >= 3.11.3   ##
-##  - libpq                      ##
-##  - libpqxx                    ##
 ##  - simdjson >= 3 (acquired)   ##
 ###################################
 
 find_package(nlohmann_json 3.11.3 REQUIRED)
-pkg_check_modules(pqxx REQUIRED libpqxx)
-pkg_check_modules(pq REQUIRED libpq)
 FetchContent_Declare(
         simdjson
         GIT_REPOSITORY https://github.com/simdjson/simdjson.git
@@ -156,7 +152,7 @@ add_library(OptifolCommon OBJECT
         Source/Logging.cpp
 )
 
-target_link_libraries(OptifolCommon PRIVATE nlohmann_json::nlohmann_json pqxx pq simdjson)
+target_link_libraries(OptifolCommon PRIVATE nlohmann_json::nlohmann_json simdjson)
 target_include_directories(OptifolCommon SYSTEM PRIVATE ${SIMDJSON_INCLUDE_DIR})
 
 ########################################
@@ -246,42 +242,18 @@ add_executable(OptifolGUI
         Source/GUI/Application.cpp
         Source/GUI/Application.hpp
         Source/GUI/GTKHelpers.hpp
-        Source/Storage/Project/Project.cpp
-        Source/Storage/Project/Project.hpp
-        Source/Storage/PGDatabaseController.cpp
-        Source/Storage/PGDatabaseController.hpp
-        Source/Storage/IStorageController.hpp
-        Source/Storage/Subsystem/Subsystem.cpp
-        Source/Storage/Subsystem/Subsystem.hpp
+        Source/Storage/Project.cpp
+        Source/Storage/Project.hpp
+        Source/Storage/Subsystem.cpp
+        Source/Storage/Subsystem.hpp
         Source/Storage/IStorageObject.hpp
-        Source/Storage/PGUpdateNotification.hpp
-        Source/Storage/Project/PGProjectModel.hpp
-        Source/Storage/Project/PGProjectModel.cpp
-        Source/Storage/PGChronoType.hpp
-        Source/Storage/PGChronoType.cpp
         Source/Storage/StorageHashFunctor.hpp
-        Source/Storage/Subsystem/PGSubsystemModel.cpp
-        Source/Storage/Subsystem/PGSubsystemModel.hpp
-        Source/Storage/PGStorableObjectModelBase.hpp
-        Source/Storage/StorageEqualityFunctor.hpp
-        Source/Storage/Requirement/PGRequirementModel.cpp
-        Source/Storage/Requirement/PGRequirementModel.hpp
-        Source/Storage/Requirement/Requirement.cpp
-        Source/Storage/Requirement/Requirement.hpp
+        Source/Storage/Requirement.cpp
+        Source/Storage/Requirement.hpp
         Source/GUI/Panels/ProjectHierarchyPane.cpp
         Source/GUI/Panels/ProjectHierarchyPane.hpp
         Source/GUI/Panels/RequirementsIndexArea.cpp
         Source/GUI/Panels/RequirementsIndexArea.hpp
-        Source/Storage/Project/ProjectHierarchicalModel.cpp
-        Source/Storage/Project/ProjectHierarchicalModel.hpp
-        Source/Storage/ICacheableStorableObjectModel.hpp
-        Source/Storage/Subsystem/SubsystemHierarchicalModel.cpp
-        Source/Storage/Subsystem/SubsystemHierarchicalModel.hpp
-        Source/Storage/Requirement/RequirementHierarchicalModel.cpp
-        Source/Storage/Requirement/RequirementHierarchicalModel.hpp
-        Source/Storage/IStorableObjectModel.hpp
-        Source/Storage/GlibStorableObjectModelBase.hpp
-        Source/Storage/ModelPublisherBase.hpp
 )
 
 set(COMMON_COMPILER_OPTIONS

@@ -27,31 +27,41 @@ std::shared_ptr<log4cxx::Logger> ProjectHierarchyPane::logger(log4cxx::Logger::g
 const char * const ProjectHierarchyPane::area_name = "Project Pane Area";
 
 ProjectHierarchyPane::ProjectHierarchyPane(Gtk::Builder &builder,
-        const Glib::RefPtr<ProjectHierarchicalModel> &initial_model,
+        const Glib::RefPtr<Gio::ListStore<Project>> &initial_model,
         sigc::slot<SelectedCallbackSignature> &&selected_subsystem_callback,
-        sigc::slot<DeselectedCallbackSignature> &&deselected_subsystem_callback,
-        sigc::slot<RefreshStorageCallbackSignature>&& refresh_storage_callback) :
+        sigc::slot<DeselectedCallbackSignature> &&deselected_subsystem_callback) :
     stack_switcher(GTKHelpers::get_widget<Gtk::DropDown>(area_name, builder, "project_pane_switcher")),
     stack(GTKHelpers::get_widget<Gtk::Stack>(area_name, builder, "project_pane_stack")),
-    hierarchical_model(initial_model)
+    model(initial_model)
 {
     const auto view = GTKHelpers::get_widget<Gtk::ListView>(area_name, builder, "project_view");
 
     signal_select_subsystem.connect(selected_subsystem_callback);
     signal_deselect_subsystem.connect(deselected_subsystem_callback);
-    GTKHelpers::get_widget<Gtk::Button>(area_name, builder, "update_storage_button")->signal_clicked().connect(
-        std::move(refresh_storage_callback));
 
-    tree_model = Gtk::TreeListModel::create(hierarchical_model,
-        sigc::mem_fun(*this, &ProjectHierarchyPane::on_expand), true, true);
+    tree_model = Gtk::TreeListModel::create(model, sigc::mem_fun(*this, &ProjectHierarchyPane::on_expand), true,
+        true);
     stack_switcher->property_selected().signal_changed().connect(sigc::mem_fun(*this,
         &ProjectHierarchyPane::on_dropdown_changed));
+
+    const auto new_project_button = GTKHelpers::get_widget<Gtk::Button>(area_name, builder, "new_project_button");
+    new_project_button->signal_clicked().connect([this]
+        { model->append(Glib::make_refptr_for_instance(new Project("New Project"))); });
 
     const auto selection_model = Gtk::SingleSelection::create(tree_model);
     selection_model->set_autoselect(false);
     selection_model->set_can_unselect(true);
     view->set_model(selection_model);
-    view->signal_activate().connect(sigc::mem_fun(*this, &ProjectHierarchyPane::on_activate));
+
+    const auto new_subsystem_button = GTKHelpers::get_widget<Gtk::Button>(area_name, builder,
+        "new_subsystem_button");
+    new_subsystem_button->signal_clicked().connect([selection_model]
+    {
+        const auto subsystem_model = selection_model->get_model()->
+            get_typed_object<Project>(selection_model->get_selected())->subsystems;
+
+        subsystem_model->append(Glib::make_refptr_for_instance(new Subsystem("New Subsystem")));
+    });
 
     const auto factory = Gtk::SignalListItemFactory::create();
     factory->signal_setup().connect(sigc::ptr_fun(ProjectHierarchyPane::on_setup));
@@ -110,47 +120,6 @@ void ProjectHierarchyPane::on_bind(const Glib::RefPtr<Gtk::ListItem> &item) cons
     label->set_text(model_item->get_identifier());
 }
 
-void ProjectHierarchyPane::on_activate(const guint position) const
-{
-    const auto project_model_n = hierarchical_model->get_n_items();
-    std::remove_const_t<decltype(project_model_n)> cumulative_position = 0;
-
-    for (guint project_idx = 0; project_idx < project_model_n; ++project_idx) {
-        const auto& subsystem_model =
-            hierarchical_model->expand_project(*hierarchical_model->get_typed_object<Project>(project_idx));
-        const auto end_idx = cumulative_position + subsystem_model->get_n_items();
-
-        if (end_idx >= position) {
-            /*
-             * If the tree index of the last subsystem in this project is greater than the tree index of the desired
-             * subsystem, then the desired subsystem is definitely within this project (assuming this branch breaks out
-             * of the project loop). Therefore, we can normalise the tree index of the desired subsystem to its index
-             * within the current project. The cumulative position holds the tree index of the root node of the current
-             * project, so just subtract.
-             */
-
-            if (position - cumulative_position == 0) {
-                /*
-                 * A project root has been selected, as the cumulative position always sits on a project boundary. This
-                 * qualifies as a deselection, since we only care about selection of subsystems.
-                 */
-                signal_deselect_subsystem();
-                break;
-            }
-
-            signal_select_subsystem(subsystem_model->query_object(*subsystem_model->get_typed_object<Subsystem>(
-                position - cumulative_position - 1)));
-            break;
-        }
-
-        /*
-         * Skip to the tree index of one past the last subsystem. If there's more projects, this is the index of the
-         * following project root node.
-         */
-        cumulative_position = end_idx + 1;
-    }
-}
-
 void ProjectHierarchyPane::on_dropdown_changed() const
 {
     switch (stack_switcher->get_selected()) {
@@ -169,8 +138,20 @@ Glib::RefPtr<Gio::ListModel> ProjectHierarchyPane::on_expand(
         const Glib::RefPtr<Glib::ObjectBase> &item) const
 {
     const auto project_candidate = std::dynamic_pointer_cast<Project>(item);
-    if (project_candidate != nullptr)
-        return hierarchical_model->expand_project(*project_candidate);
+
+    if (project_candidate != nullptr) {
+        // Find the project being expanded in the model
+        const auto [found, position] = model->find(project_candidate);
+        if (found)
+            return model->get_item(position)->subsystems;
+    } else {
+        const auto subsystem_candidate = std::dynamic_pointer_cast<Subsystem>(item);
+        if (subsystem_candidate != nullptr) {
+            // Find the subsystem being expanded in the model, noting that subsystems can be nested to arbitrary levels
+            // TODO: recurse down the tree; provide a way of calculating the index.
+            // https://github.com/oliverdixon/OptiFOL-Software/blob/e991dbf40855841ac5e0c6dafdea4df218c1dcd5/Source/GUI/Panels/ProjectHierarchyPane.cpp#L113
+        }
+    }
 
     return nullptr;
 }

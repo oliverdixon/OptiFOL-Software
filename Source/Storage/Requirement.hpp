@@ -14,7 +14,7 @@
 #ifndef REQUIREMENT_HPP
 #define REQUIREMENT_HPP
 
-#include "../IStorageObject.hpp"
+#include "IStorageObject.hpp"
 
 namespace optifol
 {
@@ -23,7 +23,7 @@ class Requirement :
         public IStorageObject
 {
 public:
-    Requirement(std::size_t id, std::size_t relevant_subsystem_tag, std::string&& name, const TimeT& created_time,
+    Requirement(std::string&& name, const TimeT& created_time,
         const TimeT& last_modified_time, std::string&& statement, std::size_t priority, std::string&& description,
         std::optional<std::size_t> test_id, std::size_t stakeholder);
 
@@ -33,17 +33,13 @@ public:
 
     [[nodiscard]] TimeT get_modified_time() const override;
 
-    [[nodiscard]] std::size_t get_controller_id() const noexcept override;
-
     /**
-     * @brief Tests a couple of requirements for surface-level equality
+     * @brief Tests a couple of requirements for equality
      * @param other The other requirement
      * @return Is the current requirement the same as the other requirement?
      * @note This comparator determines equality by requirement metadata.
      */
     bool operator==(const Requirement& other) const noexcept;
-
-    bool operator==(std::size_t other_id) const noexcept override;
 
     [[nodiscard]] std::string get_statement() const;
 
@@ -73,10 +69,6 @@ public:
 
     void set_stakeholder(const std::string &stakeholder_candidate);
 
-    std::size_t get_relevant_subsystem_tag() const noexcept;
-
-    void set_subsystem_tag(std::size_t subsystem_tag);
-
 private:
     /**
      * @brief Time of initial creation
@@ -97,21 +89,6 @@ private:
      */
     std::string name;
 
-    /**
-     * @brief The numerical ID of the requirement, unique up to being the IStorageController primary key for the
-     *  requirement entity
-     */
-    const std::size_t id;
-
-    /*
-     * TODO: put an actual statement in here. Will need to implement a PQXX "parser" to convert a sentence to the IR
-     *  model. We could do this naively by passing the string to Flex, but could we devise a better binary format? But
-     *  that would make error correction more difficult. Need to profile: does removing the lexer but keeping the parser
-     *  give us significant gains? If so, just store in an equivalent binary format that can be trivially lexed and send
-     *  to the parser for validation. But I suspect that Bison is taking up most of the time anyway, so I don't think it
-     *  would be worth the extra effort. Just something to think about later down the road... How much EC is suitable
-     *  for a DB? Can we trust our own DB? Could we add hashes?
-     */
     std::string statement;
 
     std::size_t priority;
@@ -123,8 +100,6 @@ private:
 
     // TODO: reference actual stakeholder(s) (UML M-M)
     std::size_t stakeholder;
-
-    std::size_t relevant_subsystem_tag;
 };
 
 }

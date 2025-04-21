@@ -16,7 +16,6 @@
 
 #include <gtkmm.h>
 
-#include "../Storage/PGDatabaseController.hpp"
 #include "Panels/ProjectHierarchyPane.hpp"
 #include "Panels/RequirementsIndexArea.hpp"
 
@@ -30,8 +29,6 @@ public:
     MainWindow();
 
 private:
-    void on_update_storage();
-
     Glib::RefPtr<Gtk::Builder> builder;
     static const char * const area_name;
 
@@ -41,8 +38,6 @@ private:
 
     std::unique_ptr<ProjectHierarchyPane> project_hierarchy_pane;
     std::unique_ptr<RequirementsIndexArea> requirements_index_area;
-
-    std::unique_ptr<IStorageController> storage;
 };
 
 }

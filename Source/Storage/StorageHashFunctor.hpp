@@ -16,6 +16,25 @@
 
 #include "IStorageObject.hpp"
 
+#if __cpp_lib_chrono < 202306L
+
+// ReSharper disable once CppDoxygenUnresolvedReference
+
+/**
+ * @class std::hash<std::chrono::system_clock::time_point>
+ * @brief Standard hasher specialisation for the system clock, only required prior to C++26.
+ */
+template<>
+struct std::hash<std::chrono::system_clock::time_point>
+{
+    std::size_t operator()(const std::chrono::system_clock::time_point& time) const noexcept
+    {
+        return static_cast<std::size_t>(time.time_since_epoch().count());
+    }
+};
+
+#endif
+
 // ReSharper disable once CppDoxygenUnresolvedReference
 
 /**
@@ -27,14 +46,35 @@ template<optifol::StorableType Type>
 struct std::hash<Type> // NOLINT(*-dcl58-cpp): Specialising std::hash not result in UB
 {
     /**
-     * @brief Compute the hash of the given storable object
+     * @brief Compute the hash of the given storable object using the string identifier and creation time
      * @param storable_object The storable object to hash
      * @return The hash of the storable object
-     * @todo The ID alone is rubbish hash. Can we combine it with the creation date perhaps?
      */
     std::size_t operator()(const Type& storable_object) const noexcept
     {
-        return static_cast<const optifol::IStorageObject&>(storable_object).get_controller_id();
+        const auto& object = static_cast<const optifol::IStorageObject&>(storable_object);
+        return hash_combine(std::hash<std::string>{}(object.get_identifier()),
+            std::hash<std::chrono::system_clock::time_point>{}(object.get_creation_time()));
+    }
+
+private:
+    /**
+     * @brief Combine two hashes using sensible constants, inspired by boost::hash_combine.
+     * @param lhs The LHS hash value
+     * @param rhs The RHS hash value
+     * @return The LHS-RHS combined hash value
+     */
+    static std::size_t hash_combine(std::size_t lhs, const std::size_t rhs)
+    {
+        if constexpr (sizeof(std::size_t) >= 8)
+            // For 64-bit+ platforms, use the expansion of pi as the constant; it is odd at 64 bits.
+            lhs ^= rhs + 0x517cc1b727220a95 + (lhs << 6) + (lhs >> 2);
+        else
+            // Otherwise, use the inverse of the golden ratio as a 32-bit fixed point fraction.
+            // ReSharper disable once CppDFAUnreachableCode
+            lhs ^= rhs + 0x9e3779b9 + (lhs << 6) + (lhs >> 2);
+
+        return lhs;
     }
 };
 
@@ -57,13 +97,6 @@ struct StorageHashFunctor
     using hash_type = std::hash<Type>;
 
     /**
-     * @typedef is_transparent
-     * @brief Indicate that the StorageHashFunctor will participate in transparent STL hashing
-     * @see C++23 JTC standard: [associative.reqmts.general](180) regarding Compare::is_transparent
-     */
-    using is_transparent = void;
-
-    /**
      * @brief Compute the hash of the storable object
      * @param storable_object The storable object to hash
      * @return The hash of the storable object
@@ -73,17 +106,7 @@ struct StorageHashFunctor
         return hash_type{}(storable_object);
     }
 
-    /**
-     * @brief Compute the hash of the object represented by the given ID
-     * @param storable_object_id The ID of the storable object to hash
-     * @return The hash of the storable object represented by the ID
-     */
-    std::size_t operator()(const std::size_t storable_object_id) const noexcept
-    {
-        return storable_object_id;
-    }
-
-    std::size_t operator()(const Glib::RefPtr<Type>& shared_storage_object) const noexcept // TODO is this noexcept?
+    std::size_t operator()(const Glib::RefPtr<Type>& shared_storage_object) const noexcept
     {
         return hash_type{}(*shared_storage_object);
     }

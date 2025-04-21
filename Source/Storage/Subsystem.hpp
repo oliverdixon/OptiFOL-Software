@@ -14,7 +14,7 @@
 #ifndef SUBSYSTEM_HPP
 #define SUBSYSTEM_HPP
 
-#include "../IStorageObject.hpp"
+#include "IStorageObject.hpp"
 
 namespace optifol
 {
@@ -28,8 +28,8 @@ class Subsystem :
     public IStorageObject
 {
 public:
-    Subsystem(std::size_t id, std::size_t relevant_project_tag, std::string&& name, const TimeT& created_time,
-        const TimeT& last_modified_time);
+    explicit Subsystem(std::string&& name, const TimeT& created_time = std::chrono::system_clock::now(),
+        const TimeT& last_modified_time = std::chrono::system_clock::now());
 
     [[nodiscard]] std::string get_identifier() const override;
 
@@ -37,27 +37,19 @@ public:
 
     [[nodiscard]] TimeT get_modified_time() const override;
 
-    [[nodiscard]] std::size_t get_controller_id() const noexcept override;
-
     /**
-     * @brief Tests a couple of projects for surface-level equality
-     * @param other The other project
-     * @return Is the current project the same as the other project?
-     * @note This comparator determines equality by project metadata.
+     * @brief Tests a couple of subsystem for equality
+     * @param other The other subsystem
+     * @return Is the current subsystem the same as the other subsystem?
+     * @note This comparator determines equality by subsystem metadata.
      */
     bool operator==(const Subsystem& other) const noexcept;
-
-    bool operator==(std::size_t other_id) const noexcept override;
 
     void set_identifier(const std::string &name_candidate) override;
 
     void set_creation_time(const TimeT& time_candidate) override;
 
     void set_modified_time(const TimeT& time_candidate) override;
-
-    void set_project_tag(std::size_t project_tag_candidate);
-
-    std::size_t get_relevant_project_tag() const noexcept;
 
 private:
     /**
@@ -78,17 +70,6 @@ private:
      * @brief The human-readable name of the Project
      */
     std::string name;
-
-    /**
-     * @brief The numerical ID of the Subsystem, unique up to being the IStorageController primary key for the Subsystem
-     *  entity
-     */
-    const std::size_t id;
-
-    /**
-     * @brief The controller ID of the project to which the subsystem belongs
-     */
-    std::size_t relevant_project_tag;
 };
 
 }

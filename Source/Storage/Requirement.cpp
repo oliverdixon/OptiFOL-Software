@@ -13,24 +13,23 @@
 
 #include "Requirement.hpp"
 
-#include "../../Logging.hpp"
+#include "StorageHashFunctor.hpp"
+#include "../Logging.hpp"
 
 namespace optifol
 {
 
-Requirement::Requirement(const std::size_t id, const std::size_t relevant_subsystem_tag, std::string&& name,
-        const TimeT& created_time, const TimeT& last_modified_time, std::string&& statement, const std::size_t priority,
-        std::string&& description, const std::optional<std::size_t> test_id, const std::size_t stakeholder) :
+Requirement::Requirement(std::string&& name, const TimeT& created_time, const TimeT& last_modified_time,
+        std::string&& statement, const std::size_t priority, std::string&& description,
+        const std::optional<std::size_t> test_id, const std::size_t stakeholder) :
     created_time(created_time),
     last_modified_time(last_modified_time),
     name(std::move(name)),
-    id(id),
     statement(std::move(statement)),
     priority(priority),
     description(std::move(description)),
     test_id(test_id),
-    stakeholder(stakeholder),
-    relevant_subsystem_tag(relevant_subsystem_tag)
+    stakeholder(stakeholder)
 {
 }
 
@@ -49,19 +48,9 @@ IStorageObject::TimeT Requirement::get_modified_time() const
     return last_modified_time;
 }
 
-std::size_t Requirement::get_controller_id() const noexcept
-{
-    return id;
-}
-
 bool Requirement::operator==(const Requirement &other) const noexcept
 {
-    return id == other.id;
-}
-
-bool Requirement::operator==(const std::size_t other_id) const noexcept
-{
-    return id == other_id;
+    return std::hash<Requirement>{}(*this) == std::hash<Requirement>{}(other);
 }
 
 std::string Requirement::get_statement() const
@@ -140,17 +129,6 @@ void Requirement::set_test(const std::string &test_candidate)
 void Requirement::set_stakeholder(const std::string &stakeholder_candidate)
 {
     stakeholder = std::stoul(stakeholder_candidate);
-    last_modified_time = std::chrono::system_clock::now();
-}
-
-std::size_t Requirement::get_relevant_subsystem_tag() const noexcept
-{
-    return relevant_subsystem_tag;
-}
-
-void Requirement::set_subsystem_tag(const std::size_t subsystem_tag)
-{
-    this->relevant_subsystem_tag = subsystem_tag;
     last_modified_time = std::chrono::system_clock::now();
 }
 

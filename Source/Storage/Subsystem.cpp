@@ -13,21 +13,16 @@
 
 #include "Subsystem.hpp"
 
-#include "../../Logging.hpp"
+#include "StorageHashFunctor.hpp"
+#include "../Logging.hpp"
 
 namespace optifol
 {
 
-Subsystem::Subsystem(const std::size_t id,
-                 const std::size_t relevant_project_tag,
-                 std::string &&name,
-                 const TimeT &created_time,
-                 const TimeT &last_modified_time):
+Subsystem::Subsystem(std::string &&name, const TimeT &created_time, const TimeT &last_modified_time):
     created_time(created_time),
     last_modified_time(last_modified_time),
-    name(std::move(name)),
-    id(id),
-    relevant_project_tag(relevant_project_tag)
+    name(std::move(name))
 {
 }
 
@@ -46,19 +41,9 @@ IStorageObject::TimeT Subsystem::get_modified_time() const
     return last_modified_time;
 }
 
-std::size_t Subsystem::get_controller_id() const noexcept
-{
-    return id;
-}
-
 bool Subsystem::operator==(const Subsystem &other) const noexcept
 {
-    return id == other.id;
-}
-
-bool Subsystem::operator==(std::size_t other_id) const noexcept
-{
-    return id == other_id;
+    return std::hash<Subsystem>{}(*this) == std::hash<Subsystem>{}(other);
 }
 
 void Subsystem::set_identifier(const std::string &name_candidate)
@@ -77,16 +62,6 @@ void Subsystem::set_creation_time(const TimeT &time_candidate)
 void Subsystem::set_modified_time(const TimeT &time_candidate)
 {
     this->last_modified_time = time_candidate;
-}
-
-void Subsystem::set_project_tag(const std::size_t project_tag_candidate)
-{
-    this->relevant_project_tag = project_tag_candidate;
-}
-
-std::size_t Subsystem::get_relevant_project_tag() const noexcept
-{
-    return relevant_project_tag;
 }
 
 }

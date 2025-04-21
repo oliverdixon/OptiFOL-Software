@@ -14,7 +14,10 @@
 #ifndef PROJECT_HPP
 #define PROJECT_HPP
 
-#include "../IStorageObject.hpp"
+#include <giomm/liststore.h>
+
+#include "IStorageObject.hpp"
+#include "Subsystem.hpp"
 
 namespace optifol
 {
@@ -26,7 +29,8 @@ class Project :
         public IStorageObject
 {
 public:
-    Project(std::size_t id, std::string&& name, const TimeT& created_time, const TimeT& last_modified_time);
+    explicit Project(std::string&& name, const TimeT& created_time = std::chrono::system_clock::now(),
+        const TimeT& last_modified_time = std::chrono::system_clock::now());
 
     [[nodiscard]] std::string get_identifier() const override;
 
@@ -34,23 +38,22 @@ public:
 
     [[nodiscard]] TimeT get_modified_time() const override;
 
-    [[nodiscard]] std::size_t get_controller_id() const noexcept override;
-
     /**
-     * @brief Tests a couple of projects for surface-level equality
+     * @brief Tests a couple of projects for equality
      * @param other The other project
      * @return Is the current project the same as the other project?
      * @note This comparator determines equality by project metadata.
      */
     bool operator==(const Project& other) const noexcept;
 
-    bool operator==(std::size_t other_id) const noexcept override;
-
     void set_identifier(const std::string& name_candidate) override;
 
     void set_creation_time(const TimeT& time_candidate) override;
 
     void set_modified_time(const TimeT& time_candidate) override;
+
+    // TODO should be private and controlled through the Project API
+    Glib::RefPtr<Gio::ListStore<Subsystem>> subsystems = Gio::ListStore<Subsystem>::create();
 
 private:
     /**
@@ -71,12 +74,6 @@ private:
      * @brief The human-readable name of the Project
      */
     std::string name;
-
-    /**
-     * @brief The numerical ID of the Project, unique up to being the IStorageController primary key for the Project
-     *  entity
-     */
-    const std::size_t id;
 };
 
 }

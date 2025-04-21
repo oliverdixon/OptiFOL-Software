@@ -17,7 +17,8 @@
 #include <gtkmm.h>
 #include <log4cxx/logger.h>
 
-#include "../../Storage/Project/ProjectHierarchicalModel.hpp"
+#include "../../Storage/Project.hpp"
+#include "../../Storage/Requirement.hpp"
 
 namespace optifol
 {
@@ -35,7 +36,7 @@ public:
      * @typedef SelectedCallbackSignature
      * @brief The function signature of the callback to handle updates in subsystem selection
      */
-    using SelectedCallbackSignature = void(const Glib::RefPtr<RequirementHierarchicalModel>&);
+    using SelectedCallbackSignature = void(const Glib::RefPtr<Gio::ListStore<Requirement>>&);
 
     /**
      * @typedef DeselectedCallbackSignature
@@ -56,12 +57,10 @@ public:
      * @param initial_model The backend storage model used to populate the model and stream data updates
      * @param selected_subsystem_callback The callback to execute when the subsystem selection changes
      * @param deselected_subsystem_callback The callback to execute when the subsystem is deselected
-     * @param refresh_storage_callback The callback to execute when the storage controller should update the model
      */
-    ProjectHierarchyPane(Gtk::Builder& builder, const Glib::RefPtr<ProjectHierarchicalModel> &initial_model,
+    ProjectHierarchyPane(Gtk::Builder& builder, const Glib::RefPtr<Gio::ListStore<Project>> &initial_model,
         sigc::slot<SelectedCallbackSignature>&& selected_subsystem_callback,
-        sigc::slot<DeselectedCallbackSignature>&& deselected_subsystem_callback,
-        sigc::slot<RefreshStorageCallbackSignature>&& refresh_storage_callback);
+        sigc::slot<DeselectedCallbackSignature>&& deselected_subsystem_callback);
 
 private:
     enum class ProjectStackSwitcherIdx
@@ -83,20 +82,14 @@ private:
      */
     void on_bind(const Glib::RefPtr<Gtk::ListItem>& item) const;
 
-    /**
-     * @brief Handle a change to the selected project/subsystem entry
-     * @param position The tree position (as if the entire tree were a flattened list) of the selection item
-     */
-    void on_activate(guint position) const;
-
     void on_dropdown_changed() const;
 
     /**
-     * @brief GTK callback for expanding a node and producing the child model
-     * @param item The item representing the parent of the desired child model
-     * @return The child model of the given item, or nullptr if the given item is a leaf node
+     * @brief Retrieves sub-models for tree items being expanded
+     * @param item The item being expanded
+     * @return The model representing the children of the expanded object
      */
-    Glib::RefPtr<Gio::ListModel> on_expand(const Glib::RefPtr<Glib::ObjectBase>& item) const;
+    Glib::RefPtr<Gio::ListModel> on_expand(const Glib::RefPtr<Glib::ObjectBase> &item) const;
 
     static const char * const area_name;
 
@@ -108,7 +101,7 @@ private:
     Gtk::DropDown * const stack_switcher;
     Gtk::Stack * const stack;
 
-    Glib::RefPtr<ProjectHierarchicalModel> hierarchical_model;
+    Glib::RefPtr<Gio::ListStore<Project>> model;
 };
 
 }
