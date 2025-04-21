@@ -46,7 +46,7 @@ public:
 
     [[nodiscard]] Glib::RefPtr<Project> get_object(std::size_t project_id) override;
 
-    void remove_object(std::size_t project_id) override;
+    bool remove_object(std::size_t project_id) override;
 
 private:
     struct DBFieldIdx

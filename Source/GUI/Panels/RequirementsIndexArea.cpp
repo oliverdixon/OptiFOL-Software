@@ -26,6 +26,7 @@ RequirementsIndexArea::RequirementsIndexArea(Gtk::Builder& builder) :
     empty_widget(GTKHelpers::get_widget<Gtk::Widget>(area_name, builder, "requirements_index_advice_empty"))
 {
     const auto view = GTKHelpers::get_widget<Gtk::ColumnView>(area_name, builder, "requirements_view");
+    const auto add_button = GTKHelpers::get_widget<Gtk::Button>(area_name, builder, "add_requirement");
 
     selection_model->set_autoselect(false);
     selection_model->set_can_unselect(true);
@@ -35,6 +36,7 @@ RequirementsIndexArea::RequirementsIndexArea(Gtk::Builder& builder) :
     });
 
     view->set_model(selection_model);
+    add_button->signal_clicked().connect(sigc::mem_fun(*this, &RequirementsIndexArea::on_create_requirement));
 
     const auto columns = view->get_columns();
     const auto column_count = columns->get_n_items();
@@ -54,7 +56,7 @@ RequirementsIndexArea::RequirementsIndexArea(Gtk::Builder& builder) :
                     { return on_bind_label(list_item, &Requirement::get_identifier); });
             } else if (gtk_id == "requirement_statement") {
                 factory->signal_setup().connect([this](const Glib::RefPtr<Gtk::ListItem> &list_item)
-                    { on_setup_label(list_item, &Requirement::attempt_set_statement, true); });
+                    { on_setup_label(list_item, &Requirement::set_statement, true); });
                 factory->signal_bind().connect([this](const Glib::RefPtr<Gtk::ListItem> &list_item)
                     { return on_bind_label(list_item, &Requirement::get_statement); });
             } else if (gtk_id == "requirement_description") {
@@ -69,12 +71,12 @@ RequirementsIndexArea::RequirementsIndexArea(Gtk::Builder& builder) :
                     { return on_bind_label(list_item, &Requirement::get_priority); });
             } else if (gtk_id == "requirement_test") {
                 factory->signal_setup().connect([this](const Glib::RefPtr<Gtk::ListItem> &list_item)
-                    { on_setup_label(list_item, &Requirement::attempt_set_test); });
+                    { on_setup_label(list_item, &Requirement::set_test); });
                 factory->signal_bind().connect([this](const Glib::RefPtr<Gtk::ListItem> &list_item)
                     { return on_bind_label(list_item, &Requirement::get_test); });
             } else if (gtk_id == "requirement_stakeholder") {
                 factory->signal_setup().connect([this](const Glib::RefPtr<Gtk::ListItem> &list_item)
-                    { on_setup_label(list_item, &Requirement::attempt_set_stakeholder); });
+                    { on_setup_label(list_item, &Requirement::set_stakeholder); });
                 factory->signal_bind().connect([this](const Glib::RefPtr<Gtk::ListItem> &list_item)
                     { return on_bind_label(list_item, &Requirement::get_stakeholder); });
             } else
@@ -137,6 +139,12 @@ void RequirementsIndexArea::on_setup_label(const Glib::RefPtr<Gtk::ListItem> &li
         label->add_css_class("optifol_monospace");
 
     list_item->set_child(*label);
+}
+
+void RequirementsIndexArea::on_create_requirement()
+{
+    data_model->register_object(Glib::make_refptr_for_instance(new Requirement(0, data_model->get_subsystem_tag(), "",
+        std::chrono::system_clock::now(), std::chrono::system_clock::now(), "", 0, "", 0, 0)));
 }
 
 std::pair<Glib::RefPtr<Requirement>, Gtk::EditableLabel*> RequirementsIndexArea::on_bind_setup(

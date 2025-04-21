@@ -23,7 +23,7 @@ namespace optifol
 
 /**
  * @class IStorageObject
- * @brief Defines the interface for a storable object in the OptiFOL object hierarchy
+ * @brief Defines the interface for a storable object in the Optifol object hierarchy
  */
 class IStorageObject :
         public Glib::Object
@@ -84,10 +84,27 @@ public:
     virtual bool operator==(std::size_t other_id) const noexcept = 0;
 
     /**
-     * @brief Set the human-readable identifier of the
+     * @brief Set the human-readable identifier of the storable object
      * @param name_candidate The new string identifier
+     * @note This member function updates the last-modified time to the current time
      */
     virtual void set_identifier(const std::string& name_candidate) = 0;
+
+    /**
+     * @brief Set the creation time of the storable object
+     * @param time_candidate The new creation time
+     * @note This member function updates the last-modified time to the current time
+     * @warning Invoking this function will produce a Log4cxx warning record due to the supposed immutability of the
+     *  creation time. We provide a mutator here for flexibility with all storage backends (e.g. external databases).
+     */
+    virtual void set_creation_time(const TimeT& time_candidate) = 0;
+
+    /**
+     * @brief Set the last-modified time of the storable object
+     * @param time_candidate The new last-modified time
+     * @note This member function does not update the last-modified time of the storable object
+     */
+    virtual void set_modified_time(const TimeT& time_candidate) = 0;
 };
 
 
@@ -96,7 +113,7 @@ public:
 #pragma clang diagnostic ignored "-Wdocumentation"
 /**
  * @concept StorableType
- * @brief Represents a type that is declared to be a permanently storable object in the OptiFOL type system
+ * @brief Represents a type that is declared to be a permanently storable object in the Optifol type system
  * @tparam Type The implementing type of the storable object
  */
 template<typename Type>

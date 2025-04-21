@@ -5,7 +5,7 @@
 
 /**
  * @file
- * @brief Class specification for the OptiFOL GTK Application
+ * @brief Class specification for the Optifol GTK Application
  * @author Oliver Dixon
  * @date 2025-02-02
  * @version Development

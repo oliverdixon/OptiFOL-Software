@@ -45,11 +45,21 @@ Glib::RefPtr<Requirement> RequirementHierarchicalModel::get_object(const std::si
     return {};
 }
 
-void RequirementHierarchicalModel::remove_object(const std::size_t requirement_id)
+bool RequirementHierarchicalModel::remove_object(const std::size_t requirement_id)
 {
     const auto list_index = find_object_position(requirement_id);
-    if (list_index.has_value())
+
+    if (list_index.has_value()) {
         remove(*list_index);
+        return true;
+    }
+
+    return false;
+}
+
+std::size_t RequirementHierarchicalModel::get_subsystem_tag() const
+{
+    return relevant_subsystem_tag;
 }
 
 std::optional<guint> RequirementHierarchicalModel::find_object_position(const Requirement &requirement) const

@@ -1,4 +1,4 @@
-# OptiFOL Software
+# Optifol Software
 
 `uk.ac.york.www_users.od641.optifol`
 

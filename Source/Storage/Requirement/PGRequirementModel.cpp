@@ -52,11 +52,16 @@ Glib::RefPtr<Requirement> PGRequirementModel::get_object(const std::size_t requi
     return *it;
 }
 
-void PGRequirementModel::remove_object(const std::size_t requirement_id)
+bool PGRequirementModel::remove_object(const std::size_t requirement_id)
 {
     const auto it = model_contents.find(requirement_id);
-    if (it != model_contents.cend())
+
+    if (it != model_contents.cend()) {
         model_contents.erase(it);
+        return true;
+    }
+
+    return false;
 }
 
 void PGRequirementModel::load_for_subsystem(Glib::RefPtr<Subsystem> &&subsystem)
@@ -115,13 +120,69 @@ void PGRequirementModel::emplace_inbound_object(const pqxx::row &row)
 
 void PGRequirementModel::update_inbound_object(const pqxx::row &row)
 {
-    // TODO
+    const auto requirement_idx = row[DBFieldIdx::ID].as<std::size_t>();
+    const auto requirement_it = model_contents.find(requirement_idx);
+
+    if (requirement_it == model_contents.end())
+        emplace_inbound_object(row);
+    else {
+        const auto& requirement = *requirement_it;
+        bool changed = false;
+
+        const auto name = row[DBFieldIdx::Name].as<std::string_view>();
+        const auto subsystem_tag = row[DBFieldIdx::SubsystemID].as<std::size_t>();
+        const auto creation_time = row[DBFieldIdx::CreatedAt].as<std::chrono::system_clock::time_point>();
+        const auto modified_time = row[DBFieldIdx::LastModified].as<std::chrono::system_clock::time_point>();
+        const auto statement = row[DBFieldIdx::Sentence].as<std::string>();
+        const auto priority = row[DBFieldIdx::Priority].as<std::size_t>();
+        const auto description = row[DBFieldIdx::Description].as<std::string>();
+
+        if (requirement->get_identifier() != name) {
+            requirement->set_identifier(std::string(name));
+            changed = true;
+        }
+
+        if (requirement->get_relevant_subsystem_tag() != subsystem_tag) {
+            requirement->set_subsystem_tag(subsystem_tag);
+            changed = true;
+        }
+
+        if (requirement->get_creation_time() != creation_time) {
+            requirement->set_creation_time(creation_time);
+            changed = true;
+        }
+
+        if (requirement->get_modified_time() != modified_time) {
+            requirement->set_modified_time(modified_time);
+            changed = true;
+        }
+
+        if (requirement->get_statement() != statement) {
+            requirement->set_statement(statement);
+            changed = true;
+        }
+
+        if (requirement->get_priority() != priority) {
+            requirement->set_priority(priority);
+            changed = true;
+        }
+
+        if (requirement->get_description() != description) {
+            requirement->set_description(description);
+            changed = true;
+        }
+
+        // TODO: test ID and stakeholder
+
+        if (changed)
+            inform_update(requirement);
+    }
 }
 
 void PGRequirementModel::deplace_inbound_object(const std::size_t id)
 {
-    remove_object(id);
-    inform_deletion(id);
+    if (remove_object(id))
+        inform_deletion(id);
 }
 
 void PGRequirementModel::emplace_outbound_object(const Glib::RefPtr<Requirement> &item, pqxx::work &tx) const

@@ -43,16 +43,20 @@ Glib::RefPtr<Project> ProjectHierarchicalModel::get_object(const std::size_t pro
     return {};
 }
 
-void ProjectHierarchicalModel::remove_object(const std::size_t project_id)
+bool ProjectHierarchicalModel::remove_object(const std::size_t project_id)
 {
     const auto list_index = find_object_position(project_id);
+
     if (list_index.has_value()) {
         const auto hierarchy_it = hierarchy.find(project_id);
         if (hierarchy_it != hierarchy.cend())
             hierarchy.erase(hierarchy_it);
 
         remove(*list_index);
+        return true;
     }
+
+    return false;
 }
 
 Glib::RefPtr<SubsystemHierarchicalModel> ProjectHierarchicalModel::expand_project(const Project &project)

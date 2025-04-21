@@ -21,7 +21,7 @@ namespace optifol
 
 /**
  * @class Subsystem
- * @brief The Subsystem storage object forms the second level of the OptiFOL object hierarchy; it belongs to a Project,
+ * @brief The Subsystem storage object forms the second level of the Optifol object hierarchy; it belongs to a Project,
  *  and consists of many individual requirements.
  */
 class Subsystem :
@@ -51,6 +51,12 @@ public:
 
     void set_identifier(const std::string &name_candidate) override;
 
+    void set_creation_time(const TimeT& time_candidate) override;
+
+    void set_modified_time(const TimeT& time_candidate) override;
+
+    void set_project_tag(std::size_t project_tag_candidate);
+
     std::size_t get_relevant_project_tag() const noexcept;
 
 private:
@@ -59,7 +65,7 @@ private:
      * @note This quantity should be immutable in the model determined by the IStorageController, assigned only upon its
      *  initial creation.
      */
-    const TimeT created_time;
+    TimeT created_time;
 
     /**
      * @brief Time of most recent mutation

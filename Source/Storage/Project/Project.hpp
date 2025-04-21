@@ -20,7 +20,7 @@ namespace optifol
 {
 /**
  * @class Project
- * @brief The Project storage forms the top level of the OptiFOL object hierarchy; it contains many subsystems.
+ * @brief The Project storage forms the top level of the Optifol object hierarchy; it contains many subsystems.
  */
 class Project :
         public IStorageObject
@@ -48,13 +48,17 @@ public:
 
     void set_identifier(const std::string& name_candidate) override;
 
+    void set_creation_time(const TimeT& time_candidate) override;
+
+    void set_modified_time(const TimeT& time_candidate) override;
+
 private:
     /**
      * @brief Time of initial creation
      * @note This quantity should be immutable in the model determined by the IStorageController, assigned only upon its
      *  initial creation.
      */
-    const TimeT created_time;
+    TimeT created_time;
 
     /**
      * @brief Time of most recent mutation

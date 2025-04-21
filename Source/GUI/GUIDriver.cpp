@@ -5,7 +5,7 @@
 
 /**
  * @file
- * @brief OptiFOL GUI entry point definition
+ * @brief Optifol GUI entry point definition
  * @author Oliver Dixon
  * @date 2025-02-02
  * @version Development

@@ -15,6 +15,7 @@
 
 #include "PGProjectModel.hpp"
 #include "../PGChronoType.hpp"
+#include "../../Logging.hpp"
 
 namespace optifol
 {
@@ -63,11 +64,16 @@ Glib::RefPtr<Project> PGProjectModel::get_object(const std::size_t project_id)
     return *it;
 }
 
-void PGProjectModel::remove_object(const std::size_t project_id)
+bool PGProjectModel::remove_object(const std::size_t project_id)
 {
     const auto it = model_contents.find(project_id);
-    if (it != model_contents.cend())
+
+    if (it != model_contents.cend()) {
         model_contents.erase(it);
+        return true;
+    }
+
+    return false;
 }
 
 pqxx::result PGProjectModel::filter_objects(const std::ostringstream& sql_parameter,
@@ -105,19 +111,37 @@ void PGProjectModel::update_inbound_object(const pqxx::row &row)
     if (project_it == model_contents.end())
         emplace_inbound_object(row);
     else {
-        const auto project = *project_it;
+        const auto& project = *project_it;
+        bool changed = false;
 
-        const std::string_view name = row[DBFieldIdx::Name].as<std::string_view>();
-        if (project->get_identifier() != name) project->set_identifier(std::string(name));
+        const auto name = row[DBFieldIdx::Name].as<std::string_view>();
+        const auto creation_time = row[DBFieldIdx::CreatedAt].as<std::chrono::system_clock::time_point>();
+        const auto modified_time = row[DBFieldIdx::LastModified].as<std::chrono::system_clock::time_point>();
 
-        // TODO: all other fields.
+        if (project->get_identifier() != name) {
+            project->set_identifier(std::string(name));
+            changed = true;
+        }
+
+        if (project->get_creation_time() != creation_time) {
+            project->set_creation_time(creation_time);
+            changed = true;
+        }
+
+        if (project->get_modified_time() != modified_time) {
+            project->set_modified_time(modified_time);
+            changed = true;
+        }
+
+        if (changed)
+            inform_update(project);
     }
 }
 
 void PGProjectModel::deplace_inbound_object(const std::size_t id)
 {
-    remove_object(id);
-    inform_deletion(id);
+    if (remove_object(id) == true)
+        inform_deletion(id);
 }
 
 void PGProjectModel::emplace_outbound_object(const Glib::RefPtr<Project> &item, pqxx::work& tx) const

@@ -52,11 +52,16 @@ Glib::RefPtr<Subsystem> PGSubsystemModel::get_object(const std::size_t subsystem
     return *it;
 }
 
-void PGSubsystemModel::remove_object(const std::size_t subsystem_id)
+bool PGSubsystemModel::remove_object(const std::size_t subsystem_id)
 {
     const auto it = model_contents.find(subsystem_id);
-    if (it != model_contents.cend())
+
+    if (it != model_contents.cend()) {
         model_contents.erase(it);
+        return true;
+    }
+
+    return false;
 }
 
 void PGSubsystemModel::load_for_project(Glib::RefPtr<Project>&& project)
@@ -107,13 +112,49 @@ void PGSubsystemModel::emplace_inbound_object(const pqxx::row &row)
 
 void PGSubsystemModel::update_inbound_object(const pqxx::row &row)
 {
-    // TODO
+    const auto subsystem_idx = row[DBFieldIdx::ID].as<std::size_t>();
+    const auto subsystem_it = model_contents.find(subsystem_idx);
+
+    if (subsystem_it == model_contents.end())
+        emplace_inbound_object(row);
+    else {
+        const auto& subsystem = *subsystem_it;
+        bool changed = false;
+
+        const auto name = row[DBFieldIdx::Name].as<std::string_view>();
+        const auto project_tag = row[DBFieldIdx::ProjectID].as<std::size_t>();
+        const auto creation_time = row[DBFieldIdx::CreatedAt].as<std::chrono::system_clock::time_point>();
+        const auto modified_time = row[DBFieldIdx::LastModified].as<std::chrono::system_clock::time_point>();
+
+        if (subsystem->get_identifier() != name) {
+            subsystem->set_identifier(std::string(name));
+            changed = true;
+        }
+
+        if (subsystem->get_relevant_project_tag() != project_tag) {
+            subsystem->set_project_tag(project_tag);
+            changed = true;
+        }
+
+        if (subsystem->get_creation_time() != creation_time) {
+            subsystem->set_creation_time(creation_time);
+            changed = true;
+        }
+
+        if (subsystem->get_modified_time() != modified_time) {
+            subsystem->set_modified_time(modified_time);
+            changed = true;
+        }
+
+        if (changed)
+            inform_update(subsystem);
+    }
 }
 
 void PGSubsystemModel::deplace_inbound_object(const std::size_t id)
 {
-    remove_object(id);
-    inform_deletion(id);
+    if (remove_object(id))
+        inform_deletion(id);
 }
 
 void PGSubsystemModel::emplace_outbound_object(const Glib::RefPtr<Subsystem> &item, pqxx::work &tx) const

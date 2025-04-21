@@ -88,8 +88,9 @@ public:
     /**
      * @brief Remove an existing object, identified by the numerical ID of the target object, from the model
      * @param object_id The numerical ID of the object to remove
+     * @return Was the entity removed?
      */
-    virtual void remove_object(std::size_t object_id) = 0;
+    virtual bool remove_object(std::size_t object_id) = 0;
 };
 
 }

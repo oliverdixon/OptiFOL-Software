@@ -22,7 +22,7 @@ namespace optifol
 
 Logging::LifecycleManager Logging::manager;
 
-const char * const Logging::LifecycleManager::properties_file = "optifol.log4cxx.properties";
+const char * const Logging::LifecycleManager::properties_file = "Resources/optifol.log4cxx.properties";
 
 log4cxx::LoggerPtr Logging::get_logger()
 {
@@ -31,7 +31,7 @@ log4cxx::LoggerPtr Logging::get_logger()
 
 log4cxx::LoggerPtr Logging::get_logger(const std::string &name)
 {
-    return log4cxx::LogManager::getLogger(name);
+    return log4cxx::Logger::getLogger(name);
 }
 
 Logging::LifecycleManager::LifecycleManager()

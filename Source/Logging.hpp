@@ -19,7 +19,6 @@
 namespace optifol
 {
 
-// TODO: why are messages being logged twice?
 class Logging
 {
 public:

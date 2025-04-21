@@ -5,7 +5,7 @@
 
 /**
  * @file
- * @brief String names for OptiFOL exception prefixes
+ * @brief String names for Optifol exception prefixes
  * @note These are required to exist in a distinct translation unit to avoid linker errors
  * @todo There must be a better way to implement a custom chain of exceptions, rather than having to manually specify
  *  exception classes as final!
@@ -22,7 +22,7 @@ namespace optifol
 {
 
 const char * StorageExceptionBase::prefix = "Storage Error / ";
-const char * ExceptionBase::prefix = "OptiFOL Error / ";
+const char * ExceptionBase::prefix = "Optifol Error / ";
 
 const char * SemanticException::prefix = "Semantic Exception: ";
 const char * StorageConnectionException::prefix = "Connection Error: ";

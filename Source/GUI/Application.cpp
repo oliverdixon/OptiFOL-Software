@@ -5,7 +5,7 @@
 
 /**
  * @file
- * @brief Class implementation for the OptiFOL GTK Application
+ * @brief Class implementation for the Optifol GTK Application
  * @author Oliver Dixon
  * @date 2025-02-02
  * @version Development
@@ -28,7 +28,7 @@ Glib::RefPtr<Application> Application::create()
 Application::Application() :
         Gtk::Application("uk.ac.york.www_users.od641.optifol")
 {
-    Glib::set_application_name("OptiFOL");
+    Glib::set_application_name("Optifol");
 }
 
 void Application::on_startup()

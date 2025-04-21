@@ -5,7 +5,7 @@
 
 /**
  * @file
- * @brief Class implementation for the OptiFOL GTK main window
+ * @brief Class implementation for the Optifol GTK main window
  * @author Oliver Dixon
  * @date 2025-02-02
  * @version Development
@@ -29,7 +29,7 @@ MainWindow::MainWindow():
     root_grid(GTKHelpers::get_widget<Gtk::Box>("area_name", *builder, "root_grid")),
     database_alert(GTKHelpers::get_object<Gtk::AlertDialog>("area_name", *builder, "database_alert"))
 {
-    set_title("OptiFOL");
+    set_title("Optifol");
     set_default_size(600, 400);
     set_child(*root_grid);
 

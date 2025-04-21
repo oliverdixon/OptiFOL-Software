@@ -5,7 +5,7 @@
 
 /**
  * @file
- * @brief Class implementation for the Project Hierarchical view in the OptiFOL Main Window
+ * @brief Class implementation for the Project Hierarchical view in the Optifol Main Window
  * @author Oliver Dixon
  * @date 2025-03-27
  * @version Development
@@ -22,7 +22,7 @@
 namespace optifol
 {
 
-std::shared_ptr<log4cxx::Logger> ProjectHierarchyPane::logger(log4cxx::Logger::getLogger("OptiFOL"));
+std::shared_ptr<log4cxx::Logger> ProjectHierarchyPane::logger(log4cxx::Logger::getLogger("Optifol"));
 
 const char * const ProjectHierarchyPane::area_name = "Project Pane Area";
 

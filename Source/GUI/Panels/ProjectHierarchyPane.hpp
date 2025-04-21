@@ -5,7 +5,7 @@
 
 /**
  * @file
- * @brief Class specification for the Project Hierarchical view in the OptiFOL Main Window
+ * @brief Class specification for the Project Hierarchical view in the Optifol Main Window
  * @author Oliver Dixon
  * @date 2025-03-27
  * @version Development

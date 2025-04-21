@@ -30,7 +30,7 @@ namespace optifol
 {
 /**
  * @class PGDatabaseController
- * @brief The PGDatabaseController provides a PostgreSQL-based backend storage engine for OptiFOL
+ * @brief The PGDatabaseController provides a PostgreSQL-based backend storage engine for Optifol
  */
 class PGDatabaseController :
         public IStorageController

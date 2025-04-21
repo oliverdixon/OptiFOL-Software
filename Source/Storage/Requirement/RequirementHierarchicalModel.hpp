@@ -38,7 +38,9 @@ public:
 
     [[nodiscard]] Glib::RefPtr<Requirement> get_object(std::size_t requirement_id) override;
 
-    void remove_object(std::size_t requirement_id) override;
+    bool remove_object(std::size_t requirement_id) override;
+
+    std::size_t get_subsystem_tag() const;
 
 private:
     std::optional<guint> find_object_position(const Requirement& requirement) const override;

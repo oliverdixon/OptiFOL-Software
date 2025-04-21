@@ -109,66 +109,31 @@ public:
         inbound_unload_queue.emplace(row);
     }
 
-    void enqueue_inbound_load(std::size_t id) override
+    void enqueue_inbound_load(const std::size_t id) override
     {
         inbound_load_queue.emplace(id);
     }
 
-    void enqueue_inbound_reload(std::size_t id) override
+    void enqueue_inbound_reload(const std::size_t id) override
     {
         inbound_reload_queue.emplace(id);
     }
 
-    void enqueue_inbound_unload(std::size_t id) override
+    void enqueue_inbound_unload(const std::size_t id) override
     {
         inbound_unload_queue.emplace(id);
     }
 
     void flush_inbound_insert() override
     {
-        if (inbound_load_queue.empty())
-            return;
-
-        // Build the queued IDs into a stream for substitution into the SQL query
-        std::ostringstream sql_parameter;
-        std::size_t sql_parameter_count = 0;
-
-        sql_parameter << '{';
-
-        while (!inbound_load_queue.empty()) {
-            /*
-             * If we have a raw ID, build it into the stream to be fetched from the DB. If we have a prefetched row,
-             * emplace it immediately.
-             */
-
-            std::visit([this, &sql_parameter, &sql_parameter_count]<typename DeducedType>(DeducedType &&arg)
-            {
-                using DecayedType = std::decay_t<DeducedType>;
-                if constexpr (std::is_same_v<DecayedType, std::size_t>) {
-                    sql_parameter << arg << ',';
-                    ++sql_parameter_count;
-                } else if constexpr (std::is_same_v<DecayedType, pqxx::row>)
-                    emplace_inbound_object(arg);
-            }, inbound_load_queue.front());
-
-            inbound_load_queue.pop();
-        }
-
-        if (sql_parameter_count > 0) {
-            // Remove the trailing delimiter from the stream
-            sql_parameter.seekp(-1, std::ios_base::end);
-            sql_parameter << '}';
-
-            // Run the query to filter the queued IDs from the DB object table, and load into the cache
-            const auto db_result = filter_objects(sql_parameter, 128);
-            for (const auto &row: db_result)
-                emplace_inbound_object(row);
-        }
+        handle_additive_queue(inbound_load_queue, sigc::mem_fun(*this,
+            &PGStorableObjectModelBase::emplace_inbound_object));
     }
 
     void flush_inbound_update() override
     {
-        // TODO
+        handle_additive_queue(inbound_reload_queue, sigc::mem_fun(*this,
+            &PGStorableObjectModelBase::update_inbound_object));
     }
 
     void flush_inbound_delete() override
@@ -309,6 +274,49 @@ protected:
     std::unordered_set<Glib::RefPtr<Type>, StorageHashFunctor<Type>, StorageEqualityFunctor<Type>> model_contents;
 
 private:
+    void handle_additive_queue(std::queue<std::variant<std::size_t, pqxx::row>>& queue,
+        sigc::slot<void(const pqxx::row&)>&& handler)
+    {
+        if (queue.empty())
+            return;
+
+        // Build the queued IDs into a stream for substitution into the SQL query
+        std::ostringstream sql_parameter;
+        std::size_t sql_parameter_count = 0;
+
+        sql_parameter << '{';
+
+        while (!queue.empty()) {
+            /*
+             * If we have a raw ID, build it into the stream to be fetched from the DB. If we have a prefetched row,
+             * emplace it immediately.
+             */
+
+            std::visit([&sql_parameter, &sql_parameter_count, &handler]<typename DeducedType>(DeducedType &&arg)
+            {
+                using DecayedType = std::decay_t<DeducedType>;
+                if constexpr (std::is_same_v<DecayedType, std::size_t>) {
+                    sql_parameter << arg << ',';
+                    ++sql_parameter_count;
+                } else if constexpr (std::is_same_v<DecayedType, pqxx::row>)
+                    handler(arg);
+            }, queue.front());
+
+            queue.pop();
+        }
+
+        if (sql_parameter_count > 0) {
+            // Remove the trailing delimiter from the stream
+            sql_parameter.seekp(-1, std::ios_base::end);
+            sql_parameter << '}';
+
+            // Run the query to filter the queued IDs from the DB object table, and load into the cache
+            const auto db_result = filter_objects(sql_parameter, 128);
+            for (const auto &row: db_result)
+                handler(row);
+        }
+    }
+
     std::queue<std::variant<std::size_t, pqxx::row>> inbound_load_queue;
     std::queue<std::variant<std::size_t, pqxx::row>> inbound_reload_queue;
     std::queue<std::variant<std::size_t, pqxx::row>> inbound_unload_queue;

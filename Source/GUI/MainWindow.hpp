@@ -5,7 +5,7 @@
 
 /**
  * @file
- * @brief Class specification for the OptiFOL GTK main window
+ * @brief Class specification for the Optifol GTK main window
  * @author Oliver Dixon
  * @date 2025-02-02
  * @version Development

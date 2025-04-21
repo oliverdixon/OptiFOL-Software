@@ -59,6 +59,8 @@ private:
 
     static const char * const area_name;
 
+    void on_create_requirement();
+
     /**
      * @brief Set up an editable GTK label within the given container
      * @tparam SetterFunc The function signature of the on-edit callback

@@ -57,17 +57,25 @@ public:
 
     void set_identifier(const std::string &name_candidate) override;
 
+    void set_creation_time(const TimeT& time_candidate) override;
+
+    void set_modified_time(const TimeT& time_candidate) override;
+
     void set_description(const std::string &description_candidate);
 
-    void attempt_set_statement(const std::string &statement_candidate);
+    void set_priority(std::size_t new_priority);
+
+    void set_statement(const std::string &statement_candidate);
 
     void attempt_set_priority(const std::string &priority_candidate);
 
-    void attempt_set_test(const std::string &test_candidate);
+    void set_test(const std::string &test_candidate);
 
-    void attempt_set_stakeholder(const std::string &stakeholder_candidate);
+    void set_stakeholder(const std::string &stakeholder_candidate);
 
     std::size_t get_relevant_subsystem_tag() const noexcept;
+
+    void set_subsystem_tag(std::size_t subsystem_tag);
 
 private:
     /**
@@ -75,7 +83,7 @@ private:
      * @note This quantity should be immutable in the model determined by the IStorageController, assigned only upon its
      *  initial creation.
      */
-    const TimeT created_time;
+    TimeT created_time;
 
     /**
      * @brief Time of most recent mutation

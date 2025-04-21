@@ -58,18 +58,12 @@ To view an Index, select a Subsystem from the left-hand <i>Project Explorer</i> 
                                                 </object>
                                             </child>
                                             <child>
-                                                <object class="GtkButton">
-                                                    <property name="icon-name">view-refresh-symbolic</property>
-                                                    <property name="tooltip-text">Refresh Requirements</property>
-                                                </object>
-                                            </child>
-                                            <child>
                                                 <object class="GtkSeparator">
                                                     <property name="orientation">vertical</property>
                                                 </object>
                                             </child>
                                             <child>
-                                                <object class="GtkButton">
+                                                <object class="GtkButton" id="add_requirement">
                                                     <property name="icon-name">tab-new-symbolic</property>
                                                     <property name="tooltip-text">Add Requirement</property>
                                                 </object>

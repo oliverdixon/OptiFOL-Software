@@ -5,7 +5,7 @@
 
 /**
  * @file
- * @brief Class specification for the base OptiFOL C++ exception
+ * @brief Class specification for the base Optifol C++ exception
  * @author Oliver Dixon
  * @date 2025-02-09
  * @version Development
@@ -21,14 +21,14 @@ namespace optifol
 
 /**
  * @class ExceptionBase
- * @brief The ExceptionBase is used by all OptiFOL C++ exception classes as a base
+ * @brief The ExceptionBase is used by all Optifol C++ exception classes as a base
  */
 class ExceptionBase:
     public std::runtime_error
 {
 public:
     /**
-     * @brief Construct a new OptiFOL exception from a C++ string message.
+     * @brief Construct a new Optifol exception from a C++ string message.
      * @param message Message describing the cause of the exception
      */
     explicit ExceptionBase(const std::string& message):
@@ -45,7 +45,7 @@ public:
 
 private:
     /**
-     * @brief The prefix string to prepend to all OptiFOL exception messages
+     * @brief The prefix string to prepend to all Optifol exception messages
      */
     static const char * prefix;
 };

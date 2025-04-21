@@ -39,14 +39,14 @@
     </menu>
 
     <object class="GtkAboutDialog" id="about_dialog">
-        <property name="title">About OptiFOL</property>
-        <property name="program-name">OptiFOL</property>
+        <property name="title">About Optifol</property>
+        <property name="program-name">Optifol</property>
         <property name="version">In-Development Version</property>
         <property name="comments">A formal requirements-engineering framework</property>
         <property name="logo">resource:///uk/ac/york/www_users/od641/optifol/Images/wide_logo.png</property>
 
-        <property name="website-label">OptiFOL Software Source Repository</property>
-        <property name="website">https://github.com/oliverdixon/OptiFOL-Software</property>
+        <property name="website-label">Optifol Software Source Repository</property>
+        <property name="website">https://github.com/oliverdixon/Optifol-Software</property>
         <property name="copyright">Copyright © 2025 Oliver Dixon. All rights reserved.</property>
 
         <property name="authors">Oliver Dixon &lt;od641@york.ac.uk&gt;</property>

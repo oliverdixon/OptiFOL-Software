@@ -13,6 +13,8 @@
 
 #include "Requirement.hpp"
 
+#include "../../Logging.hpp"
+
 namespace optifol
 {
 
@@ -93,13 +95,31 @@ void Requirement::set_identifier(const std::string &name_candidate)
     last_modified_time = std::chrono::system_clock::now();
 }
 
-void Requirement::set_description(const std::string &description_candidate)
+void Requirement::set_creation_time(const TimeT &time_candidate)
 {
-    this->description = description_candidate;
+    LOG4CXX_WARN(Logging::get_logger(), "Updating the creation time of requirement " << get_identifier());
+    created_time = time_candidate;
     last_modified_time = std::chrono::system_clock::now();
 }
 
-void Requirement::attempt_set_statement(const std::string &statement_candidate)
+void Requirement::set_modified_time(const TimeT &time_candidate)
+{
+    last_modified_time = time_candidate;
+}
+
+void Requirement::set_description(const std::string &description_candidate)
+{
+    description = description_candidate;
+    last_modified_time = std::chrono::system_clock::now();
+}
+
+void Requirement::set_priority(const std::size_t new_priority)
+{
+    priority = new_priority;
+    last_modified_time = std::chrono::system_clock::now();
+}
+
+void Requirement::set_statement(const std::string &statement_candidate)
 {
     this->statement = statement_candidate;
     last_modified_time = std::chrono::system_clock::now();
@@ -111,13 +131,13 @@ void Requirement::attempt_set_priority(const std::string &priority_candidate)
     last_modified_time = std::chrono::system_clock::now();
 }
 
-void Requirement::attempt_set_test(const std::string &test_candidate)
+void Requirement::set_test(const std::string &test_candidate)
 {
     test_id = std::stoul(test_candidate);
     last_modified_time = std::chrono::system_clock::now();
 }
 
-void Requirement::attempt_set_stakeholder(const std::string &stakeholder_candidate)
+void Requirement::set_stakeholder(const std::string &stakeholder_candidate)
 {
     stakeholder = std::stoul(stakeholder_candidate);
     last_modified_time = std::chrono::system_clock::now();
@@ -126,6 +146,12 @@ void Requirement::attempt_set_stakeholder(const std::string &stakeholder_candida
 std::size_t Requirement::get_relevant_subsystem_tag() const noexcept
 {
     return relevant_subsystem_tag;
+}
+
+void Requirement::set_subsystem_tag(const std::size_t subsystem_tag)
+{
+    this->relevant_subsystem_tag = subsystem_tag;
+    last_modified_time = std::chrono::system_clock::now();
 }
 
 }

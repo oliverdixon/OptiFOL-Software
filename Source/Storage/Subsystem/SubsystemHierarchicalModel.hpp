@@ -41,7 +41,7 @@ public:
 
     [[nodiscard]] Glib::RefPtr<Subsystem> get_object(std::size_t subsystem_id) override;
 
-    void remove_object(std::size_t subsystem_id) override;
+    bool remove_object(std::size_t subsystem_id) override;
 
     /**
      * @brief Query the model for a particular subsystem, and get the associated requirements model

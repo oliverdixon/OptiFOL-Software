@@ -2,7 +2,7 @@
 # 2025 Oliver Dixon <od641@york.ac.uk>
 
 # File: CMakeLists.txt
-# Brief: Build the OptiFOL system with CMake
+# Brief: Build the Optifol system with CMake
 # Author: Oliver Dixon
 # Date: 2024-11-15
 # Version: Development
@@ -11,7 +11,7 @@
 
 cmake_minimum_required(VERSION 3.7 FATAL_ERROR)
 include(FetchContent)
-project(OptiFOL)
+project(Optifol)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -28,14 +28,14 @@ function(utils_strip TARGET)
 endfunction()
 
 ######################################
-## OptiFOL Generated Object Library ##
+## Optifol Generated Object Library ##
 ##                                  ##
 ## Requires:                        ##
 ##  - flex                          ##
 ##  - bison                         ##
 ######################################
 
-# The "generated" object library controls the invocation of all non-GTK code-generators required for OptiFOL. Namely:
+# The "generated" object library controls the invocation of all non-GTK code-generators required for Optifol. Namely:
 # Flex (lexer, generates C++) and Bison (parser, generates C++). All generated source translation units are placed in
 # ${GENERATED_SRC_DIR}, and headers are placed in ${GENERATED_INCLUDE_DIR}.
 
@@ -59,15 +59,15 @@ flex_target(FOLLexer
 
 add_flex_bison_dependency(FOLLexer FOLParser)
 
-add_library(OptiFOLGenerated OBJECT
+add_library(OptifolGenerated OBJECT
         ${BISON_FOLParser_OUTPUTS}
         ${FLEX_FOLLexer_OUTPUTS}
 )
 
 # Flex and Bison generate all sorts of suspect melting pots of C and C++. It is assumed safe and correct to suppress all
 # compiler warnings produced by these programs, hence the grouping of all generated code into a distinct CMake target.
-target_compile_options(OptiFOLGenerated PRIVATE -Wno-everything)
-target_include_directories(OptiFOLGenerated PRIVATE Source/Interpreter ${GENERATED_INCLUDE_DIR})
+target_compile_options(OptifolGenerated PRIVATE -Wno-everything)
+target_include_directories(OptifolGenerated PRIVATE Source/Interpreter ${GENERATED_INCLUDE_DIR})
 
 set_source_files_properties(
         ${BISON_FOLParser_OUTPUTS}
@@ -76,7 +76,7 @@ set_source_files_properties(
 )
 
 ###################################
-## OptiFOL Common Object Library ##
+## Optifol Common Object Library ##
 ##                               ##
 ## Requires:                     ##
 ##  - nlohmann::json >= 3.11.3   ##
@@ -98,7 +98,7 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(simdjson)
 get_target_property(SIMDJSON_INCLUDE_DIR simdjson INTERFACE_INCLUDE_DIRECTORIES)
 
-add_library(OptiFOLCommon OBJECT
+add_library(OptifolCommon OBJECT
         Source/Interpreter/FOLLexer.hpp
         Source/IR/Terms/ITermNode.hpp
         Source/IR/Sentences/ISentenceNode.hpp
@@ -151,16 +151,16 @@ add_library(OptiFOLCommon OBJECT
         Source/Exceptions/ExceptionPrefixes.cpp
         Source/LegacyWrappers.cpp
         Source/LegacyWrappers.hpp
-        Source/OptiFOL.hpp
+        Source/Optifol.hpp
         Source/Logging.hpp
         Source/Logging.cpp
 )
 
-target_link_libraries(OptiFOLCommon PRIVATE nlohmann_json::nlohmann_json pqxx pq simdjson)
-target_include_directories(OptiFOLCommon SYSTEM PRIVATE ${SIMDJSON_INCLUDE_DIR})
+target_link_libraries(OptifolCommon PRIVATE nlohmann_json::nlohmann_json pqxx pq simdjson)
+target_include_directories(OptifolCommon SYSTEM PRIVATE ${SIMDJSON_INCLUDE_DIR})
 
 ########################################
-## OptiFOL GUI Application Executable ##
+## Optifol GUI Application Executable ##
 ##                                    ##
 ## Requires:                          ##
 ##  - glib-compile-resources          ##
@@ -237,7 +237,7 @@ set_source_files_properties(
         "-Wno-overlength-strings;-Wno-reserved-macro-identifier;-Wno-unused-macros"
 )
 
-add_executable(OptiFOLGUI
+add_executable(OptifolGUI
         ${RESOURCE_OUT}
         Source/Driver.cpp
         Source/GUI/GUIDriver.cpp
@@ -298,33 +298,33 @@ set(COMMON_COMPILER_OPTIONS
 
 if (FALSE)
     # Disable the GUI? This is for testing the application logic that is unrelated to the GUI e.g. FOL resolution.
-    target_compile_definitions(OptiFOLGUI PRIVATE OPTIFOL_DISABLE_GUI)
+    target_compile_definitions(OptifolGUI PRIVATE OPTIFOL_DISABLE_GUI)
 endif ()
 
-target_compile_options(OptiFOLGUI PRIVATE ${COMMON_COMPILER_OPTIONS})
+target_compile_options(OptifolGUI PRIVATE ${COMMON_COMPILER_OPTIONS})
 
-target_link_libraries(OptiFOLGUI PRIVATE
-        OptiFOLCommon
-        OptiFOLGenerated
+target_link_libraries(OptifolGUI PRIVATE
+        OptifolCommon
+        OptifolGenerated
         log4cxx
         ${GTKMM_LIBRARIES}
         ${LOG4CXX_LIBRARIES}
 )
 
-target_include_directories(OptiFOLGUI PRIVATE
+target_include_directories(OptifolGUI PRIVATE
         Source/Interpreter/
         ${GENERATED_INCLUDE_DIR}
 )
 
-target_include_directories(OptiFOLGUI SYSTEM PRIVATE
+target_include_directories(OptifolGUI SYSTEM PRIVATE
         ${GTKMM_INCLUDE_DIRS}
         ${SIMDJSON_INCLUDE_DIR}
 )
 
-utils_strip(OptiFOLGUI)
+utils_strip(OptifolGUI)
 
 ##########################################
-## OptiFOL Google Test Suite Executable ##
+## Optifol Google Test Suite Executable ##
 ##                                      ##
 ## Requires:                            ##
 ##  - Google Test (acquired)            ##
@@ -343,18 +343,18 @@ FetchContent_MakeAvailable(googletest)
 
 enable_testing()
 
-add_executable(OptiFOLTesting
+add_executable(OptifolTesting
         Source/Tests/FOLParserTest.cpp
 )
 
-target_include_directories(OptiFOLTesting PRIVATE Source/Interpreter/)
-target_include_directories(OptiFOLTesting SYSTEM PRIVATE ${GENERATED_INCLUDE_DIR})
-target_link_libraries(OptiFOLTesting PRIVATE OptiFOLCommon OptiFOLGenerated log4cxx GTest::gtest_main)
-target_compile_options(OptiFOLTesting PRIVATE
+target_include_directories(OptifolTesting PRIVATE Source/Interpreter/)
+target_include_directories(OptifolTesting SYSTEM PRIVATE ${GENERATED_INCLUDE_DIR})
+target_link_libraries(OptifolTesting PRIVATE OptifolCommon OptifolGenerated log4cxx GTest::gtest_main)
+target_compile_options(OptifolTesting PRIVATE
         ${COMMON_COMPILER_OPTIONS}
         -Wno-global-constructors # GTest is known to generate declarations which require global constructors
 )
 
-gtest_discover_tests(OptiFOLTesting)
+gtest_discover_tests(OptifolTesting)
 
 # TODO: add a Doxygen target like https://github.com/halide/Halide/blob/main/doc/CMakeLists.txt

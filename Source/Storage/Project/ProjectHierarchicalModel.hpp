@@ -39,7 +39,7 @@ public:
 
     [[nodiscard]] Glib::RefPtr<Project> get_object(std::size_t project_id) override;
 
-    void remove_object(std::size_t project_id) override;
+    bool remove_object(std::size_t project_id) override;
 
     /**
      * @brief Query the model for a particular project, and get the associated subsystems model
