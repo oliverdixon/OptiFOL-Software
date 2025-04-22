@@ -5,6 +5,26 @@
   -->
 
 <interface>
+    <menu id="structure_context_menu">
+        <section>
+            <item>
+                <attribute name="label">New Project</attribute>
+                <attribute name="action">hierarchy.new_project</attribute>
+            </item>
+            <item>
+                <attribute name="label">New Subsystem</attribute>
+                <attribute name="action">hierarchy.new_subsystem</attribute>
+            </item>
+            <item>
+                <attribute name="label">Edit Details</attribute>
+                <attribute name="action">hierarchy.edit_structure</attribute>
+            </item>
+            <item>
+                <attribute name="label">Delete Structure</attribute>
+                <attribute name="action">hierarchy.delete_structure</attribute>
+            </item>
+        </section>
+    </menu>
     <object class="GtkBox" id="root_grid">
         <property name="orientation">vertical</property>
         <child>

@@ -14,7 +14,11 @@
 #ifndef SUBSYSTEM_HPP
 #define SUBSYSTEM_HPP
 
+#include <giomm/liststore.h>
+
 #include "IStorageObject.hpp"
+#include "Requirement.hpp"
+#include "TreeNode.hpp"
 
 namespace optifol
 {
@@ -25,11 +29,13 @@ namespace optifol
  *  and consists of many individual requirements.
  */
 class Subsystem :
-    public IStorageObject
+        public IStorageObject,
+        public TreeNode
 {
 public:
     explicit Subsystem(std::string&& name, const TimeT& created_time = std::chrono::system_clock::now(),
-        const TimeT& last_modified_time = std::chrono::system_clock::now());
+        const TimeT& last_modified_time = std::chrono::system_clock::now(),
+        Gio::ListStore<Subsystem> * model = nullptr);
 
     [[nodiscard]] std::string get_identifier() const override;
 
@@ -50,6 +56,8 @@ public:
     void set_creation_time(const TimeT& time_candidate) override;
 
     void set_modified_time(const TimeT& time_candidate) override;
+
+    Glib::RefPtr<Gio::ListStore<Requirement>> requirements = Gio::ListStore<Requirement>::create();
 
 private:
     /**

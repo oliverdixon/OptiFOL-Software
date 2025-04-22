@@ -17,7 +17,7 @@
 #include <giomm/liststore.h>
 
 #include "IStorageObject.hpp"
-#include "Subsystem.hpp"
+#include "TreeNode.hpp"
 
 namespace optifol
 {
@@ -26,11 +26,13 @@ namespace optifol
  * @brief The Project storage forms the top level of the Optifol object hierarchy; it contains many subsystems.
  */
 class Project :
-        public IStorageObject
+        public IStorageObject,
+        public TreeNode
 {
 public:
     explicit Project(std::string&& name, const TimeT& created_time = std::chrono::system_clock::now(),
-        const TimeT& last_modified_time = std::chrono::system_clock::now());
+        const TimeT& last_modified_time = std::chrono::system_clock::now(),
+        Gio::ListStore<Subsystem> * model = nullptr);
 
     [[nodiscard]] std::string get_identifier() const override;
 
@@ -51,9 +53,6 @@ public:
     void set_creation_time(const TimeT& time_candidate) override;
 
     void set_modified_time(const TimeT& time_candidate) override;
-
-    // TODO should be private and controlled through the Project API
-    Glib::RefPtr<Gio::ListStore<Subsystem>> subsystems = Gio::ListStore<Subsystem>::create();
 
 private:
     /**

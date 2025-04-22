@@ -17,12 +17,12 @@
 #include <gtkmm.h>
 #include <log4cxx/logger.h>
 
+#include "ProjectHierarchyContextMenu.hpp"
 #include "../../Storage/Project.hpp"
 #include "../../Storage/Requirement.hpp"
 
 namespace optifol
 {
-class Subsystem;
 
 /**
  * @class ProjectHierarchyPane
@@ -70,38 +70,59 @@ private:
     };
 
     /**
-     * @brief GTK callback for a new Gtk::ListItem
+     * @brief GTK callback for a new Gtk::ListItem. This member function handles the configuration of a new entry in the
+     *  Project Hierarchy view as an editable label.
      * @param item The new list item to configure for placement within the tree view
      */
-    static void on_setup(const Glib::RefPtr<Gtk::ListItem> &item);
+    static void tree_node_setup(const Glib::RefPtr<Gtk::ListItem> &item);
 
     /**
      * @brief GTK callback for a Gtk::ListItem being bound or re-bound to the view; typically handles data content
-     *  updates
+     *  updates.
      * @param item The list item to reconfigure following a bind
      */
-    void on_bind(const Glib::RefPtr<Gtk::ListItem>& item) const;
+    void tree_node_bind(const Glib::RefPtr<Gtk::ListItem>& item) const;
 
-    void on_dropdown_changed() const;
+    /**
+     * @brief GTK callback for a change of selection on the stack-switcher dropdown. The current state is checked, and
+     *  the corresponding stack page is made visible.
+     */
+    void switch_visible_stack() const;
 
     /**
      * @brief Retrieves sub-models for tree items being expanded
      * @param item The item being expanded
      * @return The model representing the children of the expanded object
      */
-    Glib::RefPtr<Gio::ListModel> on_expand(const Glib::RefPtr<Glib::ObjectBase> &item) const;
+    static Glib::RefPtr<Gio::ListModel> tree_node_expand(const Glib::RefPtr<Glib::ObjectBase> &item);
+
+    static void tree_node_name_change(const Glib::RefPtr<Gtk::ListItem> &list_item);
+
+    void new_project() const;
+
+    void new_subsystem() const;
+
+    void edit_structure();
+
+    void delete_structure() const;
+
+    void switch_subsystem(guint) const;
 
     static const char * const area_name;
+    static std::shared_ptr<log4cxx::Logger> logger;
 
     sigc::signal<SelectedCallbackSignature> signal_select_subsystem;
     sigc::signal<DeselectedCallbackSignature> signal_deselect_subsystem;
 
-    static std::shared_ptr<log4cxx::Logger> logger;
     Glib::RefPtr<Gtk::TreeListModel> tree_model;
     Gtk::DropDown * const stack_switcher;
     Gtk::Stack * const stack;
+    Gtk::ListView * const view;
 
-    Glib::RefPtr<Gio::ListStore<Project>> model;
+    Glib::RefPtr<Gio::ListStore<Project>> root_model;
+    Glib::RefPtr<Gtk::SingleSelection> selection_model;
+
+    ProjectHierarchyContextMenu context_menu;
 };
 
 }

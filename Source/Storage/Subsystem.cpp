@@ -19,7 +19,9 @@
 namespace optifol
 {
 
-Subsystem::Subsystem(std::string &&name, const TimeT &created_time, const TimeT &last_modified_time):
+Subsystem::Subsystem(std::string &&name, const TimeT &created_time, const TimeT &last_modified_time,
+        Gio::ListStore<Subsystem> * model):
+    TreeNode(model),
     created_time(created_time),
     last_modified_time(last_modified_time),
     name(std::move(name))

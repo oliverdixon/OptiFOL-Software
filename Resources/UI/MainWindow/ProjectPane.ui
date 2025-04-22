@@ -18,50 +18,11 @@
                 <object class="GtkStackPage">
                     <property name="name">project_explorer</property>
                     <property name="child">
-                        <object class="GtkBox">
-                            <property name="orientation">vertical</property>
+                        <object class="GtkScrolledWindow">
+                            <property name="vexpand">TRUE</property>
                             <child>
-                                <object class="GtkBox">
-                                    <property name="halign">GTK_ALIGN_FILL</property>
-                                    <style>
-                                        <class name="toolbar"/>
-                                        <class name="optifol_boxed"/>
-                                    </style>
-                                    <child>
-                                        <object class="GtkButton" id="new_project_button">
-                                            <property name="icon-name">document-new-symbolic</property>
-                                            <property name="tooltip-text">New Project</property>
-                                        </object>
-                                    </child>
-                                    <child>
-                                        <object class="GtkButton" id="new_subsystem_button">
-                                            <property name="icon-name">folder-new-symbolic</property>
-                                            <property name="tooltip-text">New Subsystem</property>
-                                        </object>
-                                    </child>
-                                    <child>
-                                        <object class="GtkButton" id="save_all_button">
-                                            <property name="icon-name">document-save-symbolic</property>
-                                            <property name="tooltip-text">Save All</property>
-                                            <property name="sensitive">FALSE</property>
-                                        </object>
-                                    </child>
-                                    <child>
-                                        <object class="GtkButton" id="update_storage_button">
-                                            <property name="icon-name">view-refresh-symbolic</property>
-                                            <property name="tooltip-text">Refresh All</property>
-                                        </object>
-                                    </child>
-                                </object>
-                            </child>
-                            <child>
-                                <object class="GtkScrolledWindow">
-                                    <property name="vexpand">TRUE</property>
-                                    <child>
-                                        <object class="GtkListView" id="project_view">
-                                            <property name="single-click-activate">FALSE</property>
-                                        </object>
-                                    </child>
+                                <object class="GtkListView" id="project_view">
+                                    <property name="single-click-activate">FALSE</property>
                                 </object>
                             </child>
                         </object>

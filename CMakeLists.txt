@@ -21,7 +21,6 @@ find_package(PkgConfig REQUIRED)
 function(utils_strip TARGET)
     add_custom_command(
             TARGET "${TARGET}" POST_BUILD
-            DEPENDS "${TARGET}"
             COMMAND $<$<OR:$<CONFIG:release>,$<CONFIG:minsizerel>>:${CMAKE_STRIP}>
             ARGS --strip-all $<TARGET_FILE:${TARGET}>
     )
@@ -254,6 +253,10 @@ add_executable(OptifolGUI
         Source/GUI/Panels/ProjectHierarchyPane.hpp
         Source/GUI/Panels/RequirementsIndexArea.cpp
         Source/GUI/Panels/RequirementsIndexArea.hpp
+        Source/Storage/TreeNode.hpp
+        Source/Storage/TreeNode.cpp
+        Source/GUI/Panels/ProjectHierarchyContextMenu.cpp
+        Source/GUI/Panels/ProjectHierarchyContextMenu.hpp
 )
 
 set(COMMON_COMPILER_OPTIONS
