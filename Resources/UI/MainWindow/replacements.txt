@@ -7,3 +7,4 @@ NEW_REQUIREMENT_POPOVER=./NewRequirementPopover.ui
 DELETE_STRUCTURE_POPOVER=./DeleteStructurePopover.ui
 DELETE_REQUIREMENT_POPOVER=./DeleteRequirementPopover.ui
 EDIT_REQUIREMENT_POPOVER=./EditRequirementPopover.ui
+DUPLICATE_REQUIREMENT_POPOVER=./DuplicateRequirementPopover.ui

@@ -13,8 +13,6 @@
 
 #include "ProjectHierarchyPane.hpp"
 
-#include <iostream>
-
 #include "../GTKHelpers.hpp"
 #include "../Logging.hpp"
 #include "../Storage/StorageObjectBase.hpp"

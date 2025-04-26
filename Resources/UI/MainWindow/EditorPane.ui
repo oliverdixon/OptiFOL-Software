@@ -59,7 +59,8 @@ To view an Index, select a Subsystem from the left-hand <i>Project Explorer</i> 
                                             <child>
                                                 <object class="GtkMenuButton" id="edit_requirement">
                                                     <property name="icon-name">document-edit-symbolic</property>
-                                                    <property name="tooltip-text">Edit Requirement</property>
+                                                    <property name="tooltip-text">Edit Selected Requirement</property>
+                                                    <property name="sensitive">FALSE</property>
                                                 </object>
                                             </child>
                                             <child>
@@ -112,9 +113,6 @@ To view an Index, select a Subsystem from the left-hand <i>Project Explorer</i> 
                                                     <property name="vexpand">TRUE</property>
                                                     <child>
                                                         <object class="GtkColumnView" id="requirements_view">
-                                                            <style>
-                                                                <class name="data-table" />
-                                                            </style>
                                                             <child>
                                                                 <object class="GtkColumnViewColumn">
                                                                     <property name="id">requirement_name</property>
@@ -154,6 +152,20 @@ To view an Index, select a Subsystem from the left-hand <i>Project Explorer</i> 
                                                                 <object class="GtkColumnViewColumn">
                                                                     <property name="id">requirement_stakeholder</property>
                                                                     <property name="title">Stakeholder</property>
+                                                                    <property name="resizable">TRUE</property>
+                                                                </object>
+                                                            </child>
+                                                            <child>
+                                                                <object class="GtkColumnViewColumn">
+                                                                    <property name="id">requirement_created</property>
+                                                                    <property name="title">Created</property>
+                                                                    <property name="resizable">TRUE</property>
+                                                                </object>
+                                                            </child>
+                                                            <child>
+                                                                <object class="GtkColumnViewColumn">
+                                                                    <property name="id">requirement_modified</property>
+                                                                    <property name="title">Modified</property>
                                                                     <property name="resizable">TRUE</property>
                                                                 </object>
                                                             </child>

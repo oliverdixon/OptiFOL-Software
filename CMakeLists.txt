@@ -187,6 +187,7 @@ set(MAINWINDOW_RESOURCE_COMPONENTS
         ${RESOURCE_DIR}/UI/MainWindow/DeleteStructurePopover.ui
         ${RESOURCE_DIR}/UI/MainWindow/DeleteRequirementPopover.ui
         ${RESOURCE_DIR}/UI/MainWindow/EditRequirementPopover.ui
+        ${RESOURCE_DIR}/UI/MainWindow/DuplicateRequirementPopover.ui
         ${RESOURCE_DIR}/UI/MainWindow/replacements.txt
 )
 

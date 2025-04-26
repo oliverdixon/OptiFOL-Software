@@ -70,56 +70,58 @@ private:
 
     void configure_delete_requirement_popup(Gtk::Builder& builder) const;
 
+    void configure_duplicate_requirement_popup(Gtk::Builder& builder) const;
+
     /**
-     * @brief Set up an editable GTK label within the given container
-     * @tparam SetterFunc The function signature of the on-edit callback
+     * @brief Set up a GTK label within the given container
      * @param list_item The container into which the label should be emplaced
-     * @param setter_function The on-edit callback function r-value
      * @param mono_styling Should the label be styled according to the standard monospace style?
      */
-    template<typename SetterFunc>
-    void on_setup_label(const Glib::RefPtr<Gtk::ListItem> &list_item, SetterFunc&& setter_function,
-        bool mono_styling = false);
+    static void on_setup_label(const Glib::RefPtr<Gtk::ListItem> &list_item, bool mono_styling = false);
 
     /**
-     * @brief Helper function to retrieve and cast the labels for binding, independent of the getter function semantics
-     * @param list_item The list item containing the label to be bound
-     * @return An owning reference to the represented requirement, and a raw pointer to the GTK label widget
+     * @brief Extract the graphical label and referenced item stored in a Gtk::ListItem for a requirements table entry
+     * @param list_item The representative Gtk::ListItem
+     * @return The potentially NULL label and potentially empty Requirement item reference
      */
-    std::pair<Glib::RefPtr<Requirement>, Gtk::EditableLabel*> on_bind_setup(
-        const Glib::RefPtr<Gtk::ListItem>& list_item) const;
+    static std::pair<Gtk::Label *, Glib::RefPtr<const Requirement>> on_bind_helper(
+        const Glib::RefPtr<Gtk::ListItem>& list_item);
 
     /**
-     * @brief Bind a non-optional Requirement attribute to a label
-     * @tparam GetterFunc The function signature of the Requirement-detail getter
+     * @brief Bind a Requirement name attribute to a label
      * @param list_item The container in which the destination label exists
-     * @param getter_function The function to retrieve the detailed information from the Requirement represented by the
-     *  given list item
      */
-    template<typename GetterFunc>
-    void on_bind_label(const Glib::RefPtr<Gtk::ListItem>& list_item, GetterFunc&& getter_function) const;
+    static void on_bind_property_name(const Glib::RefPtr<Gtk::ListItem> &list_item);
 
     /**
-     * @brief Bind an optional Requirement attribute to a label; absent values are handled correctly
-     * @tparam GetterFunc The function signature of the Requirement-detail getter
+     * @brief Bind a Requirement description attribute to a label
      * @param list_item The container in which the destination label exists
-     * @param getter_function The function to retrieve the detailed (optional) information from the Requirement
-     *  represented by the given list item
      */
-    template<mp_helpers::OptionalReturner GetterFunc>
-    void on_bind_label(const Glib::RefPtr<Gtk::ListItem>& list_item, GetterFunc&& getter_function) const;
+    static void on_bind_property_description(const Glib::RefPtr<Gtk::ListItem> &list_item);
 
     /**
-     * @brief Handle a label being updated by re-setting attributes on the corresponding Requirement object
-     * @tparam SetterFunc The function signature of the Requirement-detail setter
-     * @param list_item The container in which the source label exists
-     * @param setter_function The function to set the detailed information in the Requirement represented by the given
-     *  list item
-     * @warning There are no requirements imposed upon the setter function at compile-time. It may throw exceptions in
-     *  the event of an unacceptable incoming value. This is an intentional design decision.
+     * @brief Bind a Requirement statement attribute to a label
+     * @param list_item The container in which the destination label exists
      */
-    template<typename SetterFunc>
-    void on_edit_label(const Glib::RefPtr<Gtk::ListItem>& list_item, SetterFunc&& setter_function);
+    static void on_bind_property_statement(const Glib::RefPtr<Gtk::ListItem> &list_item);
+
+    /**
+     * @brief Bind a Requirement priority attribute to a label
+     * @param list_item The container in which the destination label exists
+     */
+    static void on_bind_property_priority(const Glib::RefPtr<Gtk::ListItem> &list_item);
+
+    /**
+     * @brief Bind a Requirement creation time attribute to a label
+     * @param list_item The container in which the destination label exists
+     */
+    static void on_bind_property_created(const Glib::RefPtr<Gtk::ListItem> &list_item);
+
+    /**
+     * @brief Bind a Requirement last-modified time attribute to a label
+     * @param list_item The container in which the destination label exists
+     */
+    static void on_bind_property_modified(const Glib::RefPtr<Gtk::ListItem> &list_item);
 };
 
 }

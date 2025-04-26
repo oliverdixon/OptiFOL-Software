@@ -70,25 +70,6 @@ public:
     Glib::RefPtr<Gio::ListStore<Requirement>> requirements = Gio::ListStore<Requirement>::create();
 
 private:
-    /**
-     * @brief Time of initial creation
-     * @note This quantity should be immutable in the model determined by the IStorageController, assigned only upon its
-     *  initial creation.
-     */
-    TimeT created_time;
-
-    /**
-     * @brief Time of most recent mutation
-     * @note This quantity should be updated upon the changing of Subsystem metadata, or the changing of any data held
-     *  by the Subsystem, such as any of its constituent requirements.
-     */
-    TimeT last_modified_time;
-
-    /**
-     * @brief The human-readable name of the Project
-     */
-    std::string name;
-
     mutable std::pair<std::size_t, std::string> fully_qualified_path_cache;
 };
 

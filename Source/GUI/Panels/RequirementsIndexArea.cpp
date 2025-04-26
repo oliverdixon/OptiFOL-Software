@@ -13,8 +13,6 @@
 
 #include "RequirementsIndexArea.hpp"
 
-#include <iostream>
-
 namespace optifol
 {
 
@@ -47,6 +45,12 @@ RequirementsIndexArea::RequirementsIndexArea(Gtk::Builder& builder) :
                 "delete_requirement",
                 GTKHelpers::get_widget<Gtk::MenuButton>(area_name, builder, "delete_requirement"),
                 GTKHelpers::get_widget<Gtk::Popover>(area_name, builder, "delete_requirement_popover"),
+                false
+            },
+            {
+                "duplicate_requirement",
+                GTKHelpers::get_widget<Gtk::MenuButton>(area_name, builder, "duplicate_requirement"),
+                GTKHelpers::get_widget<Gtk::Popover>(area_name, builder, "duplicate_requirement_popover"),
                 false
             }
         }
@@ -96,22 +100,23 @@ RequirementsIndexArea::RequirementsIndexArea(Gtk::Builder& builder) :
             const auto factory = Gtk::SignalListItemFactory::create();
 
             if (gtk_id == "requirement_name") {
-                factory->signal_bind().connect([this](const Glib::RefPtr<Gtk::ListItem> &list_item)
-                {
-                    const auto label = Gtk::make_managed<Gtk::Label>();
-                    label->set_halign(Gtk::Align::START);
-                    list_item->set_child(*label);
-                });
-
-                factory->signal_bind().connect([this](const Glib::RefPtr<Gtk::ListItem> &list_item)
-                {
-                    const auto label = dynamic_cast<Gtk::Label *>(list_item->get_child());
-                    const auto item = std::dynamic_pointer_cast<Requirement>(list_item->get_item());
-
-                    if (label != nullptr && item != nullptr)
-                        Glib::Binding::bind_property(item->property_name(), label->property_label(),
-                            Glib::Binding::Flags::SYNC_CREATE);
-                });
+                factory->signal_setup().connect(sigc::bind(&RequirementsIndexArea::on_setup_label, true));
+                factory->signal_bind().connect(sigc::ptr_fun(&RequirementsIndexArea::on_bind_property_name));
+            } else if (gtk_id == "requirement_statement") {
+                factory->signal_setup().connect(sigc::bind(&RequirementsIndexArea::on_setup_label, true));
+                factory->signal_bind().connect(sigc::ptr_fun(&RequirementsIndexArea::on_bind_property_statement));
+            } else if (gtk_id == "requirement_description") {
+                factory->signal_setup().connect(sigc::bind(&RequirementsIndexArea::on_setup_label, false));
+                factory->signal_bind().connect(sigc::ptr_fun(&RequirementsIndexArea::on_bind_property_description));
+            } else if (gtk_id == "requirement_priority") {
+                factory->signal_setup().connect(sigc::bind(&RequirementsIndexArea::on_setup_label, false));
+                factory->signal_bind().connect(sigc::ptr_fun(&RequirementsIndexArea::on_bind_property_priority));
+            } else if (gtk_id == "requirement_created") {
+                factory->signal_setup().connect(sigc::bind(&RequirementsIndexArea::on_setup_label, false));
+                factory->signal_bind().connect(sigc::ptr_fun(&RequirementsIndexArea::on_bind_property_created));
+            } else if (gtk_id == "requirement_modified") {
+                factory->signal_setup().connect(sigc::bind(&RequirementsIndexArea::on_setup_label, false));
+                factory->signal_bind().connect(sigc::ptr_fun(&RequirementsIndexArea::on_bind_property_modified));
             } else
                 // Jump out here if unrecognised, so all further code can assume a factory was configured.
                 continue;
@@ -121,14 +126,15 @@ RequirementsIndexArea::RequirementsIndexArea(Gtk::Builder& builder) :
         }
     }
 
-#if 0
+#if 0 // TODO remaining fields
     if (processed_columns < column_count)
-        assert(0); // TODO exception / log4cxx
+        assert(0);
 #endif
 
     configure_new_requirement_popup(builder);
     configure_delete_requirement_popup(builder);
     configure_edit_requirement_popup(builder);
+    configure_duplicate_requirement_popup(builder);
 }
 
 void RequirementsIndexArea::select_model(const Glib::RefPtr<Gio::ListStore<Requirement>> &new_model)
@@ -150,32 +156,23 @@ void RequirementsIndexArea::deselect_model() const
     selection_model->set_model(nullptr);
 }
 
-template<typename SetterFunc>
-void RequirementsIndexArea::on_setup_label(const Glib::RefPtr<Gtk::ListItem> &list_item, SetterFunc&& setter_function,
-        const bool mono_styling)
+void RequirementsIndexArea::on_setup_label(const Glib::RefPtr<Gtk::ListItem> &list_item, const bool mono_styling)
 {
-    const auto label = Gtk::make_managed<Gtk::EditableLabel>();
-
-    /*
-     * Subtlety note: this setup function is called when a particular Gtk::ListItem is being constructed for usage in
-     * the Gtk::ColumnView. Between being constructed and later edited, the list item shared pointer may go out of
-     * scope. To avoid this, and express correct ownership semantics, the list item is captured by value by this lambda.
-     * It is then passed to the label-edit callback by reference for short-term observation within the lifetime scope of
-     * the lambda. Thus, the below lambda function itself holds ownership of the ListItem.
-     *
-     * Once the Gtk::EditableLabel to which the signal is attached is destructed, this lambda will go out of scope and
-     * release ownership, allowing the list item reference to be destructed appropriately.
-     */
-    label->property_editing().signal_changed().connect([this, list_item, setter_function]
-    {
-        on_edit_label(list_item, setter_function);
-    });
+    const auto label = Gtk::make_managed<Gtk::Label>();
 
     label->set_halign(Gtk::Align::START);
     if (mono_styling)
         label->add_css_class("optifol_monospace");
 
     list_item->set_child(*label);
+}
+
+// ReSharper disable once CppDFAUnreachableFunctionCall
+std::pair<Gtk::Label *, Glib::RefPtr<const Requirement>> RequirementsIndexArea::on_bind_helper(
+    const Glib::RefPtr<Gtk::ListItem> &list_item)
+{
+    return {dynamic_cast<Gtk::Label *>(list_item->get_child()),
+        std::dynamic_pointer_cast<Requirement>(list_item->get_item())};
 }
 
 void RequirementsIndexArea::configure_new_requirement_popup(Gtk::Builder &builder) const
@@ -248,8 +245,12 @@ void RequirementsIndexArea::configure_edit_requirement_popup(Gtk::Builder &build
         const auto candidate = std::dynamic_pointer_cast<Requirement>(
             selection_model->get_selected_item());
 
-        if (candidate != nullptr)
+        if (candidate != nullptr) {
             property_name->set_text(candidate->property_name().get_value());
+            property_description->get_buffer()->set_text(candidate->property_description().get_value());
+            property_sentence->set_text(candidate->property_statement().get_value());
+            property_priority->set_selected(candidate->property_priority().get_value());
+        }
     });
 
     confirm_button->signal_clicked().connect([this, popover, property_name, property_description, property_sentence,
@@ -257,7 +258,7 @@ void RequirementsIndexArea::configure_edit_requirement_popup(Gtk::Builder &build
     {
         popover->popdown();
 
-        std::optional<std::size_t> test_id;
+        std::optional<std::size_t> test_id; // TODO
         if (property_test->get_text_length() > 0) {
             std::stringstream stream(property_test->get_text());
             std::size_t candidate;
@@ -267,8 +268,13 @@ void RequirementsIndexArea::configure_edit_requirement_popup(Gtk::Builder &build
 
         const auto candidate = std::dynamic_pointer_cast<Requirement>(
             selection_model->get_selected_item());
-        if (candidate != nullptr)
+
+        if (candidate != nullptr) {
             candidate->property_name().set_value(property_name->get_text());
+            candidate->property_description().set_value(property_description->get_buffer()->get_text());
+            candidate->property_statement().set_value(property_sentence->get_text());
+            candidate->property_priority().set_value(property_priority->get_selected());
+        }
     });
 }
 
@@ -289,12 +295,10 @@ void RequirementsIndexArea::configure_delete_requirement_popup(Gtk::Builder &bui
 
     popover->signal_show().connect([this, property_name]
     {
-#if 0
         const auto candidate = std::dynamic_pointer_cast<const Requirement>(
             selection_model->get_selected_item());
         if (candidate != nullptr)
-            property_name->set_text(candidate->get_identifier());
-#endif
+            property_name->set_text(candidate->property_name().get_value());
     });
 
     confirm_button->signal_clicked().connect([this, popover]
@@ -304,115 +308,99 @@ void RequirementsIndexArea::configure_delete_requirement_popup(Gtk::Builder &bui
     });
 }
 
-std::pair<Glib::RefPtr<Requirement>, Gtk::EditableLabel*> RequirementsIndexArea::on_bind_setup(
-        const Glib::RefPtr<Gtk::ListItem> &list_item) const
+void RequirementsIndexArea::configure_duplicate_requirement_popup(Gtk::Builder &builder) const
 {
-#if 0
-    const auto position = list_item->get_position();
+    const auto popover = GTKHelpers::get_widget<Gtk::Popover>(area_name, builder, "duplicate_requirement_popover");
+    const auto confirm_button = GTKHelpers::get_widget<Gtk::Button>(area_name, builder,
+        "duplicate_requirement_confirm");
+    const auto cancel_button = GTKHelpers::get_widget<Gtk::Button>(area_name, builder,
+        "duplicate_requirement_cancel");
+    const auto property_old_name = GTKHelpers::get_widget<Gtk::Entry>(area_name, builder,
+        "duplicate_requirement_property_old_name");
+    const auto property_new_name = GTKHelpers::get_widget<Gtk::Entry>(area_name, builder,
+        "duplicate_requirement_property_new_name");
 
-    if (position == GTK_INVALID_LIST_POSITION)
-        return {nullptr, nullptr}; // TODO log
+    cancel_button->signal_clicked().connect([popover]
+    {
+        popover->popdown();
+    });
 
-    const auto model_item = data_model->get_typed_object<Requirement>(position);
-    if (!model_item)
-        return {nullptr, nullptr}; // TODO log
+    popover->signal_show().connect([this, property_old_name]
+    {
+        const auto candidate = std::dynamic_pointer_cast<const Requirement>(
+            selection_model->get_selected_item());
+        if (candidate != nullptr)
+            property_old_name->set_text(candidate->property_name().get_value());
+    });
 
-    const auto label = dynamic_cast<Gtk::EditableLabel*>(list_item->get_child());
-    if (!label)
-        return {model_item, nullptr}; // TODO log
+    confirm_button->signal_clicked().connect([this, popover, property_new_name]
+    {
+        popover->popdown();
 
-    return {model_item, label};
-#endif
+        const auto candidate = std::dynamic_pointer_cast<const Requirement>(
+            selection_model->get_selected_item());
 
-    return {};
+        if (candidate != nullptr)
+            data_model->append(Glib::make_refptr_for_instance(new Requirement(
+                property_new_name->get_text(),
+                candidate->property_statement().get_value(),
+                candidate->property_description().get_value(),
+                candidate->property_priority().get_value()
+            )));
+    });
 }
 
-template<typename GetterFunc>
-void RequirementsIndexArea::on_bind_label(const Glib::RefPtr<Gtk::ListItem> &list_item,
-        GetterFunc &&getter_function) const
+void RequirementsIndexArea::on_bind_property_name(const Glib::RefPtr<Gtk::ListItem> &list_item)
 {
-    const auto [model_item, label] = on_bind_setup(list_item);
-    if (model_item == nullptr || label == nullptr)
-        return;
-
-    const auto& value = std::invoke(std::forward<GetterFunc>(getter_function), model_item);
-
-    if constexpr (std::is_convertible_v<Glib::ustring, decltype(value)>)
-        // If the information function will give us something convertible to a GTK string, just pass it through.
-        label->set_text(value);
-    else
-        /*
-         * Otherwise, we're in the dark. Rely on ADR to see if std::to_string has an overload. This is typically useful
-         * for standard-typed numbers.
-         */
-        label->set_text(std::to_string(value));
+    const auto [label, item] = on_bind_helper(list_item);
+    if (label != nullptr && item != nullptr)
+        Glib::Binding::bind_property(item->property_name(), label->property_label(), Glib::Binding::Flags::SYNC_CREATE);
 }
 
-template<mp_helpers::OptionalReturner GetterFunc>
-void RequirementsIndexArea::on_bind_label(const Glib::RefPtr<Gtk::ListItem> &list_item,
-        GetterFunc &&getter_function) const
+void RequirementsIndexArea::on_bind_property_description(const Glib::RefPtr<Gtk::ListItem> &list_item)
 {
-    const auto [model_item, label] = on_bind_setup(list_item);
-    if (model_item == nullptr || label == nullptr)
-        return;
-
-    /*
-     * Performance note: GtkWidget::has_css_class is often computable in constant time. Worst-case linear in the number
-     * of CSS classes applied to the node, which is typically small. GtkWidget::remove_css_class is not defined at an
-     * API level to handle invalid requests gracefully (i.e., if a caller requested to remove a CSS class that was not
-     * associated to the node). These performance-critical label-binding functions can't afford to be exception-aware.
-     */
-    static const auto unknown_css_class_name = "optifol_unknown";
-    const bool is_already_unknown = label->has_css_class(unknown_css_class_name);
-    bool unknown_value = false;
-
-    const auto& optional_value = std::invoke(std::forward<GetterFunc>(getter_function), model_item);
-    if (optional_value.has_value()) {
-        if constexpr (std::is_convertible_v<Glib::ustring, decltype(*optional_value)>)
-            // If we have plain string value, just pass it through.
-            label->set_text(*optional_value);
-        else
-            // Otherwise, rely on the standard conversion functions with ADR.
-            label->set_text(std::to_string(*optional_value));
-    } else {
-        label->set_text("Unassociated");
-        unknown_value = true;
-    }
-
-    if (is_already_unknown && !unknown_value)
-        label->remove_css_class(unknown_css_class_name);
-    else if (!is_already_unknown && unknown_value)
-        label->add_css_class(unknown_css_class_name);
-
+    const auto [label, item] = on_bind_helper(list_item);
+    if (label != nullptr && item != nullptr)
+        Glib::Binding::bind_property(item->property_description(), label->property_label(),
+            Glib::Binding::Flags::SYNC_CREATE);
 }
 
-template<typename SetterFunc>
-void RequirementsIndexArea::on_edit_label(const Glib::RefPtr<Gtk::ListItem> &list_item, SetterFunc&& setter_function)
+void RequirementsIndexArea::on_bind_property_statement(const Glib::RefPtr<Gtk::ListItem> &list_item)
 {
-    const auto position = list_item->get_position();
+    const auto [label, item] = on_bind_helper(list_item);
+    if (label != nullptr && item != nullptr)
+        Glib::Binding::bind_property(item->property_statement(), label->property_label(),
+            Glib::Binding::Flags::SYNC_CREATE);
+}
 
-    if (position == GTK_INVALID_LIST_POSITION)
-        return; // TODO log
+void RequirementsIndexArea::on_bind_property_priority(const Glib::RefPtr<Gtk::ListItem> &list_item)
+{
+    const auto [label, item] = on_bind_helper(list_item);
+    if (label != nullptr && item != nullptr)
+        Glib::Binding::bind_property(item->property_priority(), label->property_label(),
+            Glib::Binding::Flags::SYNC_CREATE);
+}
 
-    const auto label = dynamic_cast<Gtk::EditableLabel*>(list_item->get_child());
-    if (!label)
-        return; // TODO log
+void RequirementsIndexArea::on_bind_property_created(const Glib::RefPtr<Gtk::ListItem> &list_item)
+{
+    const auto [label, item] = on_bind_helper(list_item);
+    if (label != nullptr && item != nullptr)
+        Glib::Binding::bind_property(item->property_creation_time(), label->property_label(),
+            Glib::Binding::Flags::SYNC_CREATE, [](const std::chrono::system_clock::time_point& time)
+            {
+                return std::format("{:%c}", time);
+            });
+}
 
-    if (label->get_editing())
-        /*
-         * The Gtk::EditableLabel signal is very trigger-happy, and often fires before changes have been fully committed
-         * (e.g. while the user is still typing). Ensure that we only process changes that have been committed to the
-         * entry field.
-         */
-        return;
-
-#if 0
-    const auto model_item = data_model->get_typed_object<Requirement>(position);
-    if (!model_item)
-        return; // TODO log
-
-    std::invoke(std::forward<SetterFunc>(setter_function), model_item, label->get_text());
-#endif
+void RequirementsIndexArea::on_bind_property_modified(const Glib::RefPtr<Gtk::ListItem> &list_item)
+{
+    const auto [label, item] = on_bind_helper(list_item);
+    if (label != nullptr && item != nullptr)
+        Glib::Binding::bind_property(item->property_modified_time(), label->property_label(),
+            Glib::Binding::Flags::SYNC_CREATE, [](const std::chrono::system_clock::time_point& time)
+            {
+                return std::format("{:%c}", time);
+            });
 }
 
 }
