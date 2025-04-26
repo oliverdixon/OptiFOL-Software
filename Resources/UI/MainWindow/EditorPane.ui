@@ -63,9 +63,16 @@ To view an Index, select a Subsystem from the left-hand <i>Project Explorer</i> 
                                                 </object>
                                             </child>
                                             <child>
-                                                <object class="GtkButton">
+                                                <object class="GtkMenuButton" id="delete_requirement">
                                                     <property name="icon-name">edit-delete-symbolic</property>
                                                     <property name="tooltip-text">Delete Selected Requirements</property>
+                                                    <property name="sensitive">FALSE</property>
+                                                </object>
+                                            </child>
+                                            <child>
+                                                <object class="GtkMenuButton" id="duplicate_requirement">
+                                                    <property name="icon-name">edit-copy-symbolic</property>
+                                                    <property name="tooltip-text">Duplicate Selected Requirement</property>
                                                     <property name="sensitive">FALSE</property>
                                                 </object>
                                             </child>

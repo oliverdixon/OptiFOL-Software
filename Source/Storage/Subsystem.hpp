@@ -17,8 +17,8 @@
 #include <giomm/liststore.h>
 
 #include "IStorageObject.hpp"
-#include "Requirement.hpp"
 #include "TreeNode.hpp"
+#include "GObjects/GRequirement.hpp"
 
 namespace optifol
 {
@@ -59,7 +59,7 @@ public:
 
     [[nodiscard]] std::string get_path() const override;
 
-    Glib::RefPtr<Gio::ListStore<Requirement>> requirements = Gio::ListStore<Requirement>::create();
+    Glib::RefPtr<Gio::ListStore<GRequirement>> requirements = Gio::ListStore<GRequirement>::create();
 
 private:
     /**

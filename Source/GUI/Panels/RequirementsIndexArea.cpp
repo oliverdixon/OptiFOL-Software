@@ -13,6 +13,8 @@
 
 #include "RequirementsIndexArea.hpp"
 
+#include <iostream>
+
 namespace optifol
 {
 
@@ -34,6 +36,18 @@ RequirementsIndexArea::RequirementsIndexArea(Gtk::Builder& builder) :
                 GTKHelpers::get_widget<Gtk::MenuButton>(area_name, builder, "new_requirement"),
                 GTKHelpers::get_widget<Gtk::Popover>(area_name, builder, "new_requirement_popover"),
                 true
+            },
+            {
+                "edit_requirement",
+                GTKHelpers::get_widget<Gtk::MenuButton>(area_name, builder, "edit_requirement"),
+                GTKHelpers::get_widget<Gtk::Popover>(area_name, builder, "edit_requirement_popover"),
+                false
+            },
+            {
+                "delete_requirement",
+                GTKHelpers::get_widget<Gtk::MenuButton>(area_name, builder, "delete_requirement"),
+                GTKHelpers::get_widget<Gtk::Popover>(area_name, builder, "delete_requirement_popover"),
+                false
             }
         }
     )
@@ -43,6 +57,29 @@ RequirementsIndexArea::RequirementsIndexArea(Gtk::Builder& builder) :
     selection_model->property_n_items().signal_changed().connect([this]
     {
         empty_widget->set_visible(selection_model->get_n_items() == 0);
+    });
+
+    selection_model->signal_selection_changed().connect([this](guint, const guint n_items)
+    {
+        if (n_items == 0) {
+            context_menu.disable_action("edit_requirement");
+            context_menu.disable_action("delete_requirement");
+            context_menu.disable_action("duplicate_requirement");
+        } else {
+            context_menu.enable_action("edit_requirement");
+            context_menu.enable_action("delete_requirement");
+            context_menu.enable_action("duplicate_requirement");
+        }
+    });
+
+    selection_model->signal_items_changed().connect([this](guint, const guint removed, guint)
+    {
+        if (removed > 0) {
+            // If anything was removed from the model, just deselect everything out of an abundance of caution.
+            context_menu.disable_action("edit_requirement");
+            context_menu.disable_action("delete_requirement");
+            context_menu.disable_action("duplicate_requirement");
+        }
     });
 
     view->set_model(selection_model);
@@ -59,35 +96,20 @@ RequirementsIndexArea::RequirementsIndexArea(Gtk::Builder& builder) :
             const auto factory = Gtk::SignalListItemFactory::create();
 
             if (gtk_id == "requirement_name") {
-                factory->signal_setup().connect([this](const Glib::RefPtr<Gtk::ListItem> &list_item)
-                    { on_setup_label(list_item, &Requirement::set_identifier, true); });
                 factory->signal_bind().connect([this](const Glib::RefPtr<Gtk::ListItem> &list_item)
-                    { return on_bind_label(list_item, &Requirement::get_identifier); });
-            } else if (gtk_id == "requirement_statement") {
-                factory->signal_setup().connect([this](const Glib::RefPtr<Gtk::ListItem> &list_item)
-                    { on_setup_label(list_item, &Requirement::set_statement, true); });
+                {
+                    list_item->set_child(*Gtk::make_managed<Gtk::Label>());
+                });
+
                 factory->signal_bind().connect([this](const Glib::RefPtr<Gtk::ListItem> &list_item)
-                    { return on_bind_label(list_item, &Requirement::get_statement); });
-            } else if (gtk_id == "requirement_description") {
-                factory->signal_setup().connect([this](const Glib::RefPtr<Gtk::ListItem> &list_item)
-                    { on_setup_label(list_item, &Requirement::set_description); });
-                factory->signal_bind().connect([this](const Glib::RefPtr<Gtk::ListItem> &list_item)
-                    { return on_bind_label(list_item, &Requirement::get_description); });
-            } else if (gtk_id == "requirement_priority") {
-                factory->signal_setup().connect([this](const Glib::RefPtr<Gtk::ListItem> &list_item)
-                    { on_setup_label(list_item, &Requirement::attempt_set_priority); });
-                factory->signal_bind().connect([this](const Glib::RefPtr<Gtk::ListItem> &list_item)
-                    { return on_bind_label(list_item, &Requirement::get_priority); });
-            } else if (gtk_id == "requirement_test") {
-                factory->signal_setup().connect([this](const Glib::RefPtr<Gtk::ListItem> &list_item)
-                    { on_setup_label(list_item, &Requirement::set_test); });
-                factory->signal_bind().connect([this](const Glib::RefPtr<Gtk::ListItem> &list_item)
-                    { return on_bind_label(list_item, &Requirement::get_test); });
-            } else if (gtk_id == "requirement_stakeholder") {
-                factory->signal_setup().connect([this](const Glib::RefPtr<Gtk::ListItem> &list_item)
-                    { on_setup_label(list_item, &Requirement::set_stakeholder); });
-                factory->signal_bind().connect([this](const Glib::RefPtr<Gtk::ListItem> &list_item)
-                    { return on_bind_label(list_item, &Requirement::get_stakeholder); });
+                {
+                    const auto label = dynamic_cast<Gtk::Label *>(list_item->get_child());
+                    const auto item = std::dynamic_pointer_cast<GRequirement>(list_item->get_item());
+
+                    if (label != nullptr && item != nullptr)
+                        Glib::Binding::bind_property(item->property_name(), label->property_label(),
+                            Glib::Binding::Flags::SYNC_CREATE);
+                });
             } else
                 // Jump out here if unrecognised, so all further code can assume a factory was configured.
                 continue;
@@ -103,9 +125,11 @@ RequirementsIndexArea::RequirementsIndexArea(Gtk::Builder& builder) :
 #endif
 
     configure_new_requirement_popup(builder);
+    configure_delete_requirement_popup(builder);
+    configure_edit_requirement_popup(builder);
 }
 
-void RequirementsIndexArea::select_model(const Glib::RefPtr<Gio::ListStore<Requirement>> &new_model)
+void RequirementsIndexArea::select_model(const Glib::RefPtr<Gio::ListStore<GRequirement>> &new_model)
 {
     on_off_widgets.first->set_visible(false);
     on_off_widgets.second->set_visible(true);
@@ -157,24 +181,128 @@ void RequirementsIndexArea::configure_new_requirement_popup(Gtk::Builder &builde
     const auto popover = GTKHelpers::get_widget<Gtk::Popover>(area_name, builder, "new_requirement_popover");
     const auto confirm_button = GTKHelpers::get_widget<Gtk::Button>(area_name, builder, "new_requirement_confirm");
     const auto cancel_button = GTKHelpers::get_widget<Gtk::Button>(area_name, builder, "new_requirement_cancel");
+    const auto property_name = GTKHelpers::get_widget<Gtk::Entry>(area_name, builder,
+        "new_requirement_property_name");
+    const auto property_description = GTKHelpers::get_widget<Gtk::TextView>(area_name,
+        builder, "new_requirement_property_description");
+    const auto property_sentence = GTKHelpers::get_widget<Gtk::Entry>(area_name, builder,
+        "new_requirement_property_sentence");
+    const auto property_test = GTKHelpers::get_widget<Gtk::Entry>(area_name, builder,
+        "new_requirement_property_test");
+    const auto property_priority = GTKHelpers::get_widget<Gtk::DropDown>(area_name, builder,
+        "new_requirement_property_priority");
 
     cancel_button->signal_clicked().connect([popover]
     {
         popover->popdown();
     });
 
-    confirm_button->signal_clicked().connect([this, popover]
+    confirm_button->signal_clicked().connect([this, popover, property_name, property_description, property_sentence,
+        property_test, property_priority]
     {
         popover->popdown();
 
-        data_model->append(Glib::make_refptr_for_instance(new Requirement("New requirement",
-            std::chrono::system_clock::now(), std::chrono::system_clock::now(), "Statement", 1, "Description", {}, 0)));
+        std::optional<std::size_t> test_id;
+        if (property_test->get_text_length() > 0) {
+            std::stringstream stream(property_test->get_text());
+            std::size_t candidate;
+            stream >> candidate;
+            test_id.emplace(candidate);
+        }
+
+        const auto requirement = Glib::make_refptr_for_instance(new GRequirement());
+        requirement->property_name().set_value(property_name->get_text());
+        data_model->append(requirement);
     });
 }
 
-std::pair<Glib::RefPtr<Requirement>, Gtk::EditableLabel*> RequirementsIndexArea::on_bind_setup(
+void RequirementsIndexArea::configure_edit_requirement_popup(Gtk::Builder &builder) const
+{
+    const auto popover = GTKHelpers::get_widget<Gtk::Popover>(area_name, builder, "edit_requirement_popover");
+    const auto confirm_button = GTKHelpers::get_widget<Gtk::Button>(area_name, builder, "edit_requirement_confirm");
+    const auto cancel_button = GTKHelpers::get_widget<Gtk::Button>(area_name, builder, "edit_requirement_cancel");
+    const auto property_name = GTKHelpers::get_widget<Gtk::Entry>(area_name, builder,
+        "edit_requirement_property_name");
+    const auto property_description = GTKHelpers::get_widget<Gtk::TextView>(area_name,
+        builder, "edit_requirement_property_description");
+    const auto property_sentence = GTKHelpers::get_widget<Gtk::Entry>(area_name, builder,
+        "edit_requirement_property_sentence");
+    const auto property_test = GTKHelpers::get_widget<Gtk::Entry>(area_name, builder,
+        "edit_requirement_property_test");
+    const auto property_priority = GTKHelpers::get_widget<Gtk::DropDown>(area_name, builder,
+        "edit_requirement_property_priority");
+
+    cancel_button->signal_clicked().connect([popover]
+    {
+        popover->popdown();
+    });
+
+    popover->signal_show().connect([this, property_name, property_description, property_sentence, property_test,
+        property_priority]
+    {
+        const auto candidate = std::dynamic_pointer_cast<GRequirement>(
+            selection_model->get_selected_item());
+
+        if (candidate != nullptr)
+            property_name->set_text(candidate->property_name().get_value());
+    });
+
+    confirm_button->signal_clicked().connect([this, popover, property_name, property_description, property_sentence,
+        property_test, property_priority]
+    {
+        popover->popdown();
+
+        std::optional<std::size_t> test_id;
+        if (property_test->get_text_length() > 0) {
+            std::stringstream stream(property_test->get_text());
+            std::size_t candidate;
+            stream >> candidate;
+            test_id.emplace(candidate);
+        }
+
+        const auto candidate = std::dynamic_pointer_cast<GRequirement>(
+            selection_model->get_selected_item());
+        if (candidate != nullptr)
+            candidate->property_name().set_value(property_name->get_text());
+    });
+}
+
+void RequirementsIndexArea::configure_delete_requirement_popup(Gtk::Builder &builder) const
+{
+    const auto popover = GTKHelpers::get_widget<Gtk::Popover>(area_name, builder, "delete_requirement_popover");
+    const auto confirm_button = GTKHelpers::get_widget<Gtk::Button>(area_name, builder,
+        "delete_requirement_confirm");
+    const auto cancel_button = GTKHelpers::get_widget<Gtk::Button>(area_name, builder,
+        "delete_requirement_cancel");
+    const auto property_name = GTKHelpers::get_widget<Gtk::Entry>(area_name, builder,
+        "delete_requirement_property_name");
+
+    cancel_button->signal_clicked().connect([popover]
+    {
+        popover->popdown();
+    });
+
+    popover->signal_show().connect([this, property_name]
+    {
+#if 0
+        const auto candidate = std::dynamic_pointer_cast<const Requirement>(
+            selection_model->get_selected_item());
+        if (candidate != nullptr)
+            property_name->set_text(candidate->get_identifier());
+#endif
+    });
+
+    confirm_button->signal_clicked().connect([this, popover]
+    {
+        popover->popdown();
+        data_model->remove(selection_model->get_selected());
+    });
+}
+
+std::pair<Glib::RefPtr<GRequirement>, Gtk::EditableLabel*> RequirementsIndexArea::on_bind_setup(
         const Glib::RefPtr<Gtk::ListItem> &list_item) const
 {
+#if 0
     const auto position = list_item->get_position();
 
     if (position == GTK_INVALID_LIST_POSITION)
@@ -189,6 +317,9 @@ std::pair<Glib::RefPtr<Requirement>, Gtk::EditableLabel*> RequirementsIndexArea:
         return {model_item, nullptr}; // TODO log
 
     return {model_item, label};
+#endif
+
+    return {};
 }
 
 template<typename GetterFunc>
@@ -270,11 +401,13 @@ void RequirementsIndexArea::on_edit_label(const Glib::RefPtr<Gtk::ListItem> &lis
          */
         return;
 
+#if 0
     const auto model_item = data_model->get_typed_object<Requirement>(position);
     if (!model_item)
         return; // TODO log
 
     std::invoke(std::forward<SetterFunc>(setter_function), model_item, label->get_text());
+#endif
 }
 
 }

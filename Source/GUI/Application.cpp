@@ -16,6 +16,7 @@
 #include "Application.hpp"
 #include "GTKHelpers.hpp"
 #include "MainWindow.hpp"
+#include "../Storage/GObjects/GRequirement.hpp"
 
 namespace optifol
 {
@@ -49,6 +50,9 @@ void Application::on_startup()
 
 void Application::on_activate()
 {
+    // Create dummy instances of derived GObjects to register with the GType system.
+    static_cast<void>(GRequirement());
+
     const auto main_window = create_main_window();
     main_window->present();
     about_dialog->set_transient_for(*main_window);

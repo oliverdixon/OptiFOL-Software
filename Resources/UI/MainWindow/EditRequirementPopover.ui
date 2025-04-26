@@ -3,7 +3,7 @@
   - 2025 Oliver Dixon <od641@york.ac.uk>
   -->
 
-<object class="GtkPopover" id="new_requirement_popover">
+<object class="GtkPopover" id="edit_requirement_popover">
     <property name="child">
         <object class="GtkBox">
             <style>
@@ -27,7 +27,7 @@
                         </object>
                     </child>
                     <child>
-                        <object class="GtkEntry" id="new_requirement_property_name">
+                        <object class="GtkEntry" id="edit_requirement_property_name">
                             <layout>
                                 <property name="column">1</property>
                                 <property name="row">0</property>
@@ -49,7 +49,7 @@
                         </object>
                     </child>
                     <child>
-                        <object class="GtkTextView" id="new_requirement_property_description">
+                        <object class="GtkTextView" id="edit_requirement_property_description">
                             <style>
                                 <class name="optifol_boxed" />
                                 <class name="optifol_text_view" />
@@ -72,7 +72,7 @@
                         </object>
                     </child>
                     <child>
-                        <object class="GtkEntry" id="new_requirement_property_sentence">
+                        <object class="GtkEntry" id="edit_requirement_property_sentence">
                             <style>
                                 <class name="optifol_monospace" />
                             </style>
@@ -97,7 +97,7 @@
                         </object>
                     </child>
                     <child>
-                        <object class="GtkEntry" id="new_requirement_property_test">
+                        <object class="GtkEntry" id="edit_requirement_property_test">
                             <property name="placeholder-text">None</property>
                             <layout>
                                 <property name="column">1</property>
@@ -117,7 +117,7 @@
                         </object>
                     </child>
                     <child>
-                        <object class="GtkDropDown" id="new_requirement_property_priority">
+                        <object class="GtkDropDown" id="edit_requirement_property_priority">
                             <style>
                                 <class name="optifol_boxed" />
                                 <class name="optifol_combo_box" />
@@ -164,13 +164,13 @@
                                 <class name="optifol_grid_dialog" />
                             </style>
                             <child>
-                                <object class="GtkButton" id="new_requirement_cancel">
+                                <object class="GtkButton" id="edit_requirement_cancel">
                                     <property name="icon-name">window-close-symbolic</property>
                                     <property name="tooltip-text">Cancel Requirement Changes</property>
                                 </object>
                             </child>
                             <child>
-                                <object class="GtkButton" id="new_requirement_confirm">
+                                <object class="GtkButton" id="edit_requirement_confirm">
                                     <property name="icon-name">object-select-symbolic</property>
                                     <property name="tooltip-text">Confirm Requirement Details</property>
                                 </object>

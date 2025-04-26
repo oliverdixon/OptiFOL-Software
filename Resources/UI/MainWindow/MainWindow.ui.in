@@ -32,6 +32,14 @@
                 <attribute name="label">New Requirement</attribute>
                 <attribute name="action">win.new_requirement</attribute>
             </item>
+            <item>
+                <attribute name="label">Edit Requirement</attribute>
+                <attribute name="action">win.edit_requirement</attribute>
+            </item>
+            <item>
+                <attribute name="label">Delete Requirement</attribute>
+                <attribute name="action">win.delete_requirement</attribute>
+            </item>
         </section>
     </menu>
 
@@ -40,6 +48,8 @@
     ${EDIT_STRUCTURE_POPOVER}
     ${NEW_REQUIREMENT_POPOVER}
     ${DELETE_STRUCTURE_POPOVER}
+    ${DELETE_REQUIREMENT_POPOVER}
+    ${EDIT_REQUIREMENT_POPOVER}
 
     <object class="GtkBox" id="root_grid">
         <property name="orientation">vertical</property>

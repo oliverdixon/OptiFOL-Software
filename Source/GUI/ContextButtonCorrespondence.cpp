@@ -7,8 +7,6 @@
 
 #include "ContextButtonCorrespondence.hpp"
 
-#include <iostream>
-
 namespace optifol
 {
 
@@ -81,4 +79,5 @@ void ContextButtonCorrespondence::disable_action(const Glib::ustring &action_nam
     if (action != nullptr)
         action->set_enabled(false);
 }
+
 }

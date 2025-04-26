@@ -185,6 +185,8 @@ set(MAINWINDOW_RESOURCE_COMPONENTS
         ${RESOURCE_DIR}/UI/MainWindow/NewSubsystemPopover.ui
         ${RESOURCE_DIR}/UI/MainWindow/EditStructurePopover.ui
         ${RESOURCE_DIR}/UI/MainWindow/DeleteStructurePopover.ui
+        ${RESOURCE_DIR}/UI/MainWindow/DeleteRequirementPopover.ui
+        ${RESOURCE_DIR}/UI/MainWindow/EditRequirementPopover.ui
         ${RESOURCE_DIR}/UI/MainWindow/replacements.txt
 )
 
@@ -254,14 +256,14 @@ add_executable(OptifolGUI
         Source/Storage/Subsystem.hpp
         Source/Storage/IStorageObject.hpp
         Source/Storage/StorageHashFunctor.hpp
-        Source/Storage/Requirement.cpp
-        Source/Storage/Requirement.hpp
         Source/GUI/Panels/ProjectHierarchyPane.cpp
         Source/GUI/Panels/ProjectHierarchyPane.hpp
         Source/GUI/Panels/RequirementsIndexArea.cpp
         Source/GUI/Panels/RequirementsIndexArea.hpp
         Source/GUI/ContextButtonCorrespondence.cpp
         Source/GUI/ContextButtonCorrespondence.hpp
+        Source/Storage/GObjects/GRequirement.cpp
+        Source/Storage/GObjects/GRequirement.hpp
 )
 
 set(COMMON_COMPILER_OPTIONS
