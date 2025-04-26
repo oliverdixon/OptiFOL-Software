@@ -14,7 +14,7 @@
 namespace optifol
 {
 
-TreeNode::TreeNode(Gio::ListStore<Subsystem> * parent) :
+TreeNode::TreeNode(TreeNode * const parent) :
     children(Gio::ListStore<Subsystem>::create()),
     parent(parent)
 {
@@ -31,13 +31,18 @@ Glib::RefPtr<const Gio::ListStore<Subsystem>> TreeNode::get_children() const
 }
 
 void TreeNode::add(std::string &&name, const std::chrono::system_clock::time_point &created_time,
-    const std::chrono::system_clock::time_point &last_modified_time) const
+    const std::chrono::system_clock::time_point &last_modified_time)
 {
     children->append(Glib::make_refptr_for_instance(new Subsystem(std::move(name), created_time, last_modified_time,
-        children.get())));
+        this)));
 }
 
-Gio::ListStore<Subsystem> * TreeNode::get_parent() const
+const TreeNode * TreeNode::get_parent() const
+{
+    return parent;
+}
+
+TreeNode * TreeNode::get_parent()
 {
     return parent;
 }

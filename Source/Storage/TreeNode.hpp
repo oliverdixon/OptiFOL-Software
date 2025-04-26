@@ -17,7 +17,9 @@ class Subsystem;
 class TreeNode
 {
 public:
-    explicit TreeNode(Gio::ListStore<Subsystem> * parent);
+    virtual ~TreeNode() = default;
+
+    explicit TreeNode(TreeNode * parent);
 
     [[nodiscard]] Glib::RefPtr<Gio::ListStore<Subsystem>> get_children();
 
@@ -25,13 +27,17 @@ public:
 
     void add(std::string&& name, const std::chrono::system_clock::time_point& created_time =
         std::chrono::system_clock::now(), const std::chrono::system_clock::time_point& last_modified_time =
-        std::chrono::system_clock::now()) const;
+        std::chrono::system_clock::now());
 
-    [[nodiscard]] Gio::ListStore<Subsystem> * get_parent() const;
+    [[nodiscard]] const TreeNode * get_parent() const;
+
+    [[nodiscard]] TreeNode * get_parent();
+
+    [[nodiscard]] virtual std::string get_path() const = 0;
 
 private:
     Glib::RefPtr<Gio::ListStore<Subsystem>> children;
-    Gio::ListStore<Subsystem> * parent;
+    TreeNode * const parent;
 };
 
 }

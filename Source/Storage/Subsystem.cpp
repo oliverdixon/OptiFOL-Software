@@ -20,8 +20,8 @@ namespace optifol
 {
 
 Subsystem::Subsystem(std::string &&name, const TimeT &created_time, const TimeT &last_modified_time,
-        Gio::ListStore<Subsystem> * model):
-    TreeNode(model),
+        TreeNode * const parent):
+    TreeNode(parent),
     created_time(created_time),
     last_modified_time(last_modified_time),
     name(std::move(name))
@@ -64,6 +64,17 @@ void Subsystem::set_creation_time(const TimeT &time_candidate)
 void Subsystem::set_modified_time(const TimeT &time_candidate)
 {
     this->last_modified_time = time_candidate;
+}
+
+std::string Subsystem::get_path() const
+{
+    const auto hash = std::hash<Subsystem>{}(*this);
+    if (hash != fully_qualified_path_cache.first) {
+        fully_qualified_path_cache.first = hash;
+        fully_qualified_path_cache.second = get_parent()->get_path() + '/' + get_identifier();
+    }
+
+    return fully_qualified_path_cache.second;
 }
 
 }

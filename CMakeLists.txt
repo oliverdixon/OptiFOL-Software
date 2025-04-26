@@ -180,6 +180,11 @@ set(MAINWINDOW_RESOURCE_OUTPUT ${GENERATED_SRC_DIR}/MainWindow.ui)
 set(MAINWINDOW_RESOURCE_COMPONENTS
         ${RESOURCE_DIR}/UI/MainWindow/EditorPane.ui
         ${RESOURCE_DIR}/UI/MainWindow/ProjectPane.ui
+        ${RESOURCE_DIR}/UI/MainWindow/NewRequirementPopover.ui
+        ${RESOURCE_DIR}/UI/MainWindow/NewProjectPopover.ui
+        ${RESOURCE_DIR}/UI/MainWindow/NewSubsystemPopover.ui
+        ${RESOURCE_DIR}/UI/MainWindow/EditStructurePopover.ui
+        ${RESOURCE_DIR}/UI/MainWindow/DeleteStructurePopover.ui
         ${RESOURCE_DIR}/UI/MainWindow/replacements.txt
 )
 
@@ -241,6 +246,8 @@ add_executable(OptifolGUI
         Source/GUI/Application.cpp
         Source/GUI/Application.hpp
         Source/GUI/GTKHelpers.hpp
+        Source/Storage/TreeNode.cpp
+        Source/Storage/TreeNode.hpp
         Source/Storage/Project.cpp
         Source/Storage/Project.hpp
         Source/Storage/Subsystem.cpp
@@ -253,10 +260,8 @@ add_executable(OptifolGUI
         Source/GUI/Panels/ProjectHierarchyPane.hpp
         Source/GUI/Panels/RequirementsIndexArea.cpp
         Source/GUI/Panels/RequirementsIndexArea.hpp
-        Source/Storage/TreeNode.hpp
-        Source/Storage/TreeNode.cpp
-        Source/GUI/Panels/ProjectHierarchyContextMenu.cpp
-        Source/GUI/Panels/ProjectHierarchyContextMenu.hpp
+        Source/GUI/ContextButtonCorrespondence.cpp
+        Source/GUI/ContextButtonCorrespondence.hpp
 )
 
 set(COMMON_COMPILER_OPTIONS

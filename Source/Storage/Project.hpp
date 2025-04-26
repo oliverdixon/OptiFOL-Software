@@ -31,8 +31,7 @@ class Project :
 {
 public:
     explicit Project(std::string&& name, const TimeT& created_time = std::chrono::system_clock::now(),
-        const TimeT& last_modified_time = std::chrono::system_clock::now(),
-        Gio::ListStore<Subsystem> * model = nullptr);
+        const TimeT& last_modified_time = std::chrono::system_clock::now());
 
     [[nodiscard]] std::string get_identifier() const override;
 
@@ -53,6 +52,8 @@ public:
     void set_creation_time(const TimeT& time_candidate) override;
 
     void set_modified_time(const TimeT& time_candidate) override;
+
+    [[nodiscard]] std::string get_path() const override;
 
 private:
     /**

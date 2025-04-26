@@ -1,0 +1,85 @@
+<!--
+  - Copyright (c) All Rights Reserved
+  - 2025 Oliver Dixon <od641@york.ac.uk>
+  -->
+
+<object class="GtkPopover" id="new_subsystem_popover">
+    <property name="child">
+        <object class="GtkBox">
+            <style>
+                <class name="optifol_grid_dialog" />
+            </style>
+            <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
+            <child>
+                <object class="GtkGrid">
+                    <style>
+                        <class name="optifol_grid_dialog" />
+                    </style>
+
+                    <child>
+                        <object class="GtkLabel">
+                            <property name="label">Path</property>
+                            <property name="halign">GTK_ALIGN_END</property>
+                            <layout>
+                                <property name="column">0</property>
+                                <property name="row">0</property>
+                            </layout>
+                        </object>
+                    </child>
+                    <child>
+                        <object class="GtkEntry" id="new_subsystem_property_path">
+                            <property name="sensitive">FALSE</property>
+                            <layout>
+                                <property name="column">1</property>
+                                <property name="row">0</property>
+                            </layout>
+                        </object>
+                    </child>
+
+                    <child>
+                        <object class="GtkLabel">
+                            <property name="label">Subsystem Name</property>
+                            <property name="halign">GTK_ALIGN_END</property>
+                            <layout>
+                                <property name="column">0</property>
+                                <property name="row">1</property>
+                            </layout>
+                        </object>
+                    </child>
+                    <child>
+                        <object class="GtkEntry" id="new_subsystem_property_name">
+                            <layout>
+                                <property name="column">1</property>
+                                <property name="row">1</property>
+                            </layout>
+                        </object>
+                    </child>
+
+                </object>
+            </child>
+            <child>
+                <object class="GtkSeparator" />
+            </child>
+            <child>
+                <object class="GtkBox">
+                    <property name="halign">GTK_ALIGN_END</property>
+                    <style>
+                        <class name="optifol_grid_dialog" />
+                    </style>
+                    <child>
+                        <object class="GtkButton" id="new_subsystem_cancel">
+                            <property name="icon-name">window-close-symbolic</property>
+                            <property name="tooltip-text">Cancel Subsystem Changes</property>
+                        </object>
+                    </child>
+                    <child>
+                        <object class="GtkButton" id="new_subsystem_confirm">
+                            <property name="icon-name">object-select-symbolic</property>
+                            <property name="tooltip-text">Confirm Subsystem Details</property>
+                        </object>
+                    </child>
+                </object>
+            </child>
+        </object>
+    </property>
+</object>

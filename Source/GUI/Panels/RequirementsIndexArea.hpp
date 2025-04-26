@@ -16,6 +16,7 @@
 
 #include <gtkmm.h>
 
+#include "../ContextButtonCorrespondence.hpp"
 #include "../GTKHelpers.hpp"
 #include "../../Storage/Requirement.hpp"
 
@@ -58,6 +59,12 @@ private:
     Gtk::Widget * empty_widget;
 
     static const char * const area_name;
+
+    Gtk::ColumnView * view;
+
+    ContextButtonCorrespondence context_menu;
+
+    void configure_new_requirement_popup(Gtk::Builder& builder) const;
 
     /**
      * @brief Set up an editable GTK label within the given container

@@ -1,0 +1,184 @@
+<!--
+  - Copyright (c) All Rights Reserved
+  - 2025 Oliver Dixon <od641@york.ac.uk>
+  -->
+
+<object class="GtkPopover" id="new_requirement_popover">
+    <property name="child">
+        <object class="GtkBox">
+            <style>
+                <class name="optifol_grid_dialog" />
+            </style>
+            <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
+            <child>
+                <object class="GtkGrid">
+                    <style>
+                        <class name="optifol_grid_dialog" />
+                    </style>
+
+                    <child>
+                        <object class="GtkLabel">
+                            <property name="label">Requirement Name</property>
+                            <property name="halign">GTK_ALIGN_END</property>
+                            <layout>
+                                <property name="column">0</property>
+                                <property name="row">0</property>
+                            </layout>
+                        </object>
+                    </child>
+                    <child>
+                        <object class="GtkEntry">
+                            <layout>
+                                <property name="column">1</property>
+                                <property name="row">0</property>
+                            </layout>
+                        </object>
+                    </child>
+
+                    <child>
+                        <object class="GtkLabel">
+                            <property name="label">Description</property>
+                            <property name="halign">GTK_ALIGN_END</property>
+                            <style>
+                                <class name="optifol_optional" />
+                            </style>
+                            <layout>
+                                <property name="column">0</property>
+                                <property name="row">1</property>
+                            </layout>
+                        </object>
+                    </child>
+                    <child>
+                        <object class="GtkTextView">
+                            <style>
+                                <class name="optifol_boxed" />
+                                <class name="optifol_text_view" />
+                            </style>
+                            <layout>
+                                <property name="column">1</property>
+                                <property name="row">1</property>
+                            </layout>
+                        </object>
+                    </child>
+
+                    <child>
+                        <object class="GtkLabel">
+                            <property name="label">FOL Sentence</property>
+                            <property name="halign">GTK_ALIGN_END</property>
+                            <layout>
+                                <property name="column">0</property>
+                                <property name="row">2</property>
+                            </layout>
+                        </object>
+                    </child>
+                    <child>
+                        <object class="GtkEntry">
+                            <style>
+                                <class name="optifol_monospace" />
+                            </style>
+                            <layout>
+                                <property name="column">1</property>
+                                <property name="row">2</property>
+                            </layout>
+                        </object>
+                    </child>
+
+                    <child>
+                        <object class="GtkLabel">
+                            <property name="label">Associated Test</property>
+                            <property name="halign">GTK_ALIGN_END</property>
+                            <style>
+                                <class name="optifol_optional" />
+                            </style>
+                            <layout>
+                                <property name="column">0</property>
+                                <property name="row">3</property>
+                            </layout>
+                        </object>
+                    </child>
+                    <child>
+                        <object class="GtkEntry">
+                            <property name="placeholder-text">None</property>
+                            <layout>
+                                <property name="column">1</property>
+                                <property name="row">3</property>
+                            </layout>
+                        </object>
+                    </child>
+
+                    <child>
+                        <object class="GtkLabel">
+                            <property name="label">Priority</property>
+                            <property name="halign">GTK_ALIGN_END</property>
+                            <layout>
+                                <property name="column">0</property>
+                                <property name="row">4</property>
+                            </layout>
+                        </object>
+                    </child>
+                    <child>
+                        <object class="GtkDropDown">
+                            <style>
+                                <class name="optifol_boxed" />
+                                <class name="optifol_combo_box" />
+                            </style>
+                            <property name="model">
+                                <object class="GtkStringList">
+                                    <items>
+                                        <item>Optional</item>
+                                        <item>Low</item>
+                                        <item>Normal</item>
+                                        <item>High</item>
+                                        <item>Critical</item>
+                                    </items>
+                                </object>
+                            </property>
+                            <layout>
+                                <property name="column">1</property>
+                                <property name="row">4</property>
+                            </layout>
+                        </object>
+                    </child>
+
+                </object>
+            </child>
+            <child>
+                <object class="GtkSeparator" />
+            </child>
+            <child>
+                <object class="GtkBox">
+                    <property name="hexpand">TRUE</property>
+                    <child>
+                        <object class="GtkLabel">
+                            <style>
+                                <class name="optifol_optional" />
+                            </style>
+                            <property name="label">Oblique fields are optional</property>
+                        </object>
+                    </child>
+                    <child>
+                        <object class="GtkBox">
+                            <property name="hexpand">TRUE</property>
+                            <property name="halign">GTK_ALIGN_END</property>
+                            <style>
+                                <class name="optifol_grid_dialog" />
+                            </style>
+                            <child>
+                                <object class="GtkButton" id="new_requirement_cancel">
+                                    <property name="icon-name">window-close-symbolic</property>
+                                    <property name="tooltip-text">Cancel Requirement Changes</property>
+                                </object>
+                            </child>
+                            <child>
+                                <object class="GtkButton" id="new_requirement_confirm">
+                                    <property name="icon-name">object-select-symbolic</property>
+                                    <property name="tooltip-text">Confirm Requirement Details</property>
+                                </object>
+                            </child>
+                        </object>
+                    </child>
+                </object>
+            </child>
+        </object>
+    </property>
+</object>

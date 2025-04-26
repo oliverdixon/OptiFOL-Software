@@ -9,11 +9,16 @@
 
 .optifol_boxed {
     padding: 0.5ex;
-    border: 1px solid lightgray; /* TODO: can we inherit the colours from the GTK application context? */
+    border: 1px solid lightgray;
+    border-radius: 5px;
 }
 
 .optifol_monospace {
     font-family: monospace;
+}
+
+.optifol_text_view {
+    padding: 1.3ex;
 }
 
 .optifol_unknown {
@@ -21,9 +26,21 @@
     color: gray;
 }
 
+.optifol_optional {
+    font-style: italic;
+}
+
 .optifol_advisory {
     padding: 1ex;
     font-size: large;
     color: gray;
     margin: 1ex;
+}
+
+.optifol_grid_dialog > * {
+    margin: 1ex;
+}
+
+.optifol_combo_box {
+    padding: 0;
 }

@@ -35,11 +35,37 @@ ProjectHierarchyPane::ProjectHierarchyPane(Gtk::Builder &builder,
     stack(GTKHelpers::get_widget<Gtk::Stack>(area_name, builder, "project_pane_stack")),
     view(GTKHelpers::get_widget<Gtk::ListView>(area_name, builder, "project_view")),
     root_model(initial_model),
-    context_menu(view, GTKHelpers::get_object<Gio::Menu>(area_name, builder, "structure_context_menu"),
-                 sigc::mem_fun(*this, &ProjectHierarchyPane::new_project),
-                 sigc::mem_fun(*this, &ProjectHierarchyPane::new_subsystem),
-                 sigc::mem_fun(*this, &ProjectHierarchyPane::edit_structure),
-                 sigc::mem_fun(*this, &ProjectHierarchyPane::delete_structure))
+
+    context_menu(
+        view,
+        GTKHelpers::get_object<Gio::Menu>(area_name, builder, "structure_context_menu"),
+        {
+            {
+                "new_project",
+                GTKHelpers::get_widget<Gtk::MenuButton>(area_name, builder, "new_project"),
+                GTKHelpers::get_widget<Gtk::Popover>(area_name, builder, "new_project_popover"),
+                true
+            },
+            {
+                "new_subsystem",
+                GTKHelpers::get_widget<Gtk::MenuButton>(area_name, builder, "new_subsystem"),
+                GTKHelpers::get_widget<Gtk::Popover>(area_name, builder, "new_subsystem_popover"),
+                false
+            },
+            {
+                "edit_structure",
+                GTKHelpers::get_widget<Gtk::MenuButton>(area_name, builder, "edit_structure"),
+                GTKHelpers::get_widget<Gtk::Popover>(area_name, builder, "edit_structure_popover"),
+                false
+            },
+            {
+                "delete_structure",
+                GTKHelpers::get_widget<Gtk::MenuButton>(area_name, builder, "delete_structure"),
+                GTKHelpers::get_widget<Gtk::Popover>(area_name, builder, "delete_structure_popover"),
+                false
+            }
+        }
+    )
 {
     view->signal_activate().connect(sigc::mem_fun(*this, &ProjectHierarchyPane::switch_subsystem));
 
@@ -60,9 +86,14 @@ ProjectHierarchyPane::ProjectHierarchyPane(Gtk::Builder &builder,
     {
         if (n_items == 0) {
             signal_deselect_subsystem();
-            context_menu.disable_optional();
-        } else
-            context_menu.enable_optional();
+            context_menu.disable_action("new_subsystem");
+            context_menu.disable_action("edit_structure");
+            context_menu.disable_action("delete_structure");
+        } else {
+            context_menu.enable_action("new_subsystem");
+            context_menu.enable_action("edit_structure");
+            context_menu.enable_action("delete_structure");
+        }
     });
 
     selection_model->signal_items_changed().connect([this](guint, const guint removed, guint)
@@ -70,7 +101,9 @@ ProjectHierarchyPane::ProjectHierarchyPane(Gtk::Builder &builder,
         if (removed > 0) {
             // If anything was removed from the model, just deselect everything out of an abundance of caution.
             signal_deselect_subsystem();
-            context_menu.disable_optional();
+            context_menu.disable_action("new_subsystem");
+            context_menu.disable_action("edit_structure");
+            context_menu.disable_action("delete_structure");
         }
     });
 
@@ -78,17 +111,164 @@ ProjectHierarchyPane::ProjectHierarchyPane(Gtk::Builder &builder,
     factory->signal_setup().connect(sigc::ptr_fun(ProjectHierarchyPane::tree_node_setup));
     factory->signal_bind().connect(sigc::mem_fun(*this, &ProjectHierarchyPane::tree_node_bind));
     view->set_factory(factory);
+
+    configure_new_project_popup(builder);
+    configure_new_subsystem_popup(builder);
+    configure_edit_structure_popup(builder);
+    configure_delete_structure_popup(builder);
+}
+
+void ProjectHierarchyPane::configure_new_project_popup(Gtk::Builder &builder) const
+{
+    const auto popover = GTKHelpers::get_widget<Gtk::Popover>(area_name, builder, "new_project_popover");
+    const auto confirm_button = GTKHelpers::get_widget<Gtk::Button>(area_name, builder, "new_project_confirm");
+    const auto cancel_button = GTKHelpers::get_widget<Gtk::Button>(area_name, builder, "new_project_cancel");
+    const auto property_name = GTKHelpers::get_widget<Gtk::Entry>(area_name, builder,
+        "new_project_property_name");
+
+    cancel_button->signal_clicked().connect([popover, property_name]
+    {
+        popover->popdown();
+        property_name->set_text("");
+    });
+
+    confirm_button->signal_clicked().connect([this, popover, property_name]
+    {
+        popover->popdown();
+        root_model->append(Glib::make_refptr_for_instance(new Project(property_name->get_text())));
+        property_name->set_text("");
+    });
+}
+
+void ProjectHierarchyPane::configure_new_subsystem_popup(Gtk::Builder &builder) const
+{
+    const auto popover = GTKHelpers::get_widget<Gtk::Popover>(area_name, builder, "new_subsystem_popover");
+    const auto confirm_button = GTKHelpers::get_widget<Gtk::Button>(area_name, builder, "new_subsystem_confirm");
+    const auto cancel_button = GTKHelpers::get_widget<Gtk::Button>(area_name, builder, "new_subsystem_cancel");
+    const auto property_path = GTKHelpers::get_widget<Gtk::Entry>(area_name, builder,
+        "new_subsystem_property_path");
+    const auto property_name = GTKHelpers::get_widget<Gtk::Entry>(area_name, builder,
+        "new_subsystem_property_name");
+
+    popover->signal_show().connect([this, property_path]
+    {
+        const auto candidate = std::dynamic_pointer_cast<const TreeNode>(
+            selection_model->get_selected_item());
+
+        if (candidate != nullptr)
+            property_path->set_text(candidate->get_path());
+    });
+
+    cancel_button->signal_clicked().connect([popover, property_name]
+    {
+        popover->popdown();
+        property_name->set_text("");
+    });
+
+    confirm_button->signal_clicked().connect([this, popover, property_name]
+    {
+        popover->popdown();
+
+        const auto candidate = std::dynamic_pointer_cast<TreeNode>(
+            selection_model->get_selected_item());
+        if (candidate != nullptr)
+            candidate->add(property_name->get_text());
+
+        property_name->set_text("");
+    });
+}
+
+void ProjectHierarchyPane::configure_edit_structure_popup(Gtk::Builder &builder) const
+{
+    const auto popover = GTKHelpers::get_widget<Gtk::Popover>(area_name, builder, "edit_structure_popover");
+    const auto confirm_button = GTKHelpers::get_widget<Gtk::Button>(area_name, builder, "edit_structure_confirm");
+    const auto cancel_button = GTKHelpers::get_widget<Gtk::Button>(area_name, builder, "edit_structure_cancel");
+    const auto property_old_path = GTKHelpers::get_widget<Gtk::Entry>(area_name, builder,
+        "edit_structure_property_old_path");
+    const auto property_new_path = GTKHelpers::get_widget<Gtk::Entry>(area_name, builder,
+        "edit_structure_property_new_path");
+
+    popover->signal_show().connect([this, property_old_path, property_new_path]
+    {
+        const auto candidate = std::dynamic_pointer_cast<const TreeNode>(
+            selection_model->get_selected_item());
+
+        if (candidate != nullptr) {
+            const auto current_path = candidate->get_path();
+            property_old_path->set_text(current_path);
+
+            const auto name_delim_position = current_path.rfind('/');
+            property_new_path->set_text(name_delim_position == std::string::npos ?  current_path :
+                current_path.substr(0, name_delim_position + 1));
+        }
+    });
+
+    cancel_button->signal_clicked().connect([popover]
+    {
+        popover->popdown();
+    });
+
+    confirm_button->signal_clicked().connect([this, popover]
+    {
+        popover->popdown();
+        // TODO
+    });
+}
+
+void ProjectHierarchyPane::configure_delete_structure_popup(Gtk::Builder &builder) const
+{
+    const auto popover = GTKHelpers::get_widget<Gtk::Popover>(area_name, builder, "delete_structure_popover");
+    const auto confirm_button = GTKHelpers::get_widget<Gtk::Button>(area_name, builder, "delete_structure_confirm");
+    const auto cancel_button = GTKHelpers::get_widget<Gtk::Button>(area_name, builder, "delete_structure_cancel");
+    const auto property_path = GTKHelpers::get_widget<Gtk::Entry>(area_name, builder,
+        "delete_structure_property_path");
+
+    popover->signal_show().connect([this, property_path]
+    {
+        const auto candidate = std::dynamic_pointer_cast<const TreeNode>(
+            selection_model->get_selected_item());
+        if (candidate != nullptr)
+            property_path->set_text(candidate->get_path() + "/*");
+    });
+
+    cancel_button->signal_clicked().connect([popover]
+    {
+        popover->popdown();
+    });
+
+    confirm_button->signal_clicked().connect([this, popover]
+    {
+        popover->popdown();
+
+        const auto candidate = std::dynamic_pointer_cast<TreeNode>(
+            selection_model->get_selected_item());
+
+        if (candidate != nullptr) {
+            const auto parent = candidate->get_parent();
+            if (parent != nullptr) {
+                // If an owning model is explicitly declared, use that.
+                const auto owning_model = parent->get_children();
+                const auto owning_model_count = owning_model->get_n_items();
+                for (guint idx = 0; idx < owning_model_count; ++idx)
+                    if (owning_model->get_item(idx) == candidate)
+                        owning_model->remove(idx);
+            } else {
+                // Otherwise, use the root model.
+                const auto root_model_count = root_model->get_n_items();
+                for (guint idx = 0; idx < root_model_count; ++idx)
+                    if (root_model->get_item(idx) == candidate)
+                        root_model->remove(idx);
+            }
+        }
+
+        signal_deselect_subsystem();
+    });
 }
 
 void ProjectHierarchyPane::tree_node_setup(const Glib::RefPtr<Gtk::ListItem> &item)
 {
     const auto expander = Gtk::make_managed<Gtk::TreeExpander>();
-    const auto label = Gtk::make_managed<Gtk::EditableLabel>();
-
-    label->property_editing().signal_changed().connect([item]
-    {
-        tree_node_name_change(item);
-    });
+    const auto label = Gtk::make_managed<Gtk::Label>();
 
     label->set_halign(Gtk::Align::START);
     expander->set_child(*label);
@@ -115,7 +295,7 @@ void ProjectHierarchyPane::tree_node_bind(const Glib::RefPtr<Gtk::ListItem> &ite
 
     expander->set_list_row(gui_row);
 
-    const auto label = dynamic_cast<Gtk::EditableLabel*>(expander->get_child());
+    const auto label = dynamic_cast<Gtk::Label*>(expander->get_child());
     if (!label) {
         LOG4CXX_WARN(logger, "Unexpected type of label in the expander for the row at " << std::to_string(position) <<
             " in the project view.");
@@ -148,62 +328,6 @@ Glib::RefPtr<Gio::ListModel> ProjectHierarchyPane::tree_node_expand(
         return candidate->get_children();
 
     return nullptr;
-}
-
-void ProjectHierarchyPane::tree_node_name_change(const Glib::RefPtr<Gtk::ListItem> &list_item)
-{
-    const auto item = std::dynamic_pointer_cast<IStorageObject>(list_item->get_item());
-    const auto expander = dynamic_cast<Gtk::TreeExpander*>(list_item->get_child());
-
-    if (item != nullptr && expander != nullptr) {
-        const auto label = dynamic_cast<Gtk::EditableLabel*>(expander->get_child());
-        if (label != nullptr)
-            item->set_identifier(label->get_text());
-    }
-}
-
-void ProjectHierarchyPane::new_project() const
-{
-    root_model->append(Glib::make_refptr_for_instance(new Project("New Project")));
-}
-
-void ProjectHierarchyPane::new_subsystem() const
-{
-    const auto candidate = std::dynamic_pointer_cast<const TreeNode>(
-        selection_model->get_selected_item());
-
-    if (candidate != nullptr)
-        candidate->add("New Subsystem");
-}
-
-void ProjectHierarchyPane::edit_structure()
-{
-
-}
-
-void ProjectHierarchyPane::delete_structure() const
-{
-    const auto candidate = std::dynamic_pointer_cast<TreeNode>(
-        selection_model->get_selected_item());
-
-    if (candidate != nullptr) {
-        const auto owning_model = candidate->get_parent();
-        if (owning_model != nullptr) {
-            // If an owning model is explicitly declared, use that.
-            const auto owning_model_count = owning_model->get_n_items();
-            for (guint idx = 0; idx < owning_model_count; ++idx)
-                if (owning_model->get_item(idx) == candidate)
-                    owning_model->remove(idx);
-        } else {
-            // Otherwise, use the root model.
-            const auto root_model_count = root_model->get_n_items();
-            for (guint idx = 0; idx < root_model_count; ++idx)
-                if (root_model->get_item(idx) == candidate)
-                    root_model->remove(idx);
-        }
-    }
-
-    signal_deselect_subsystem();
 }
 
 void ProjectHierarchyPane::switch_subsystem(guint) const

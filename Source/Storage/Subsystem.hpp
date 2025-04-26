@@ -35,7 +35,7 @@ class Subsystem :
 public:
     explicit Subsystem(std::string&& name, const TimeT& created_time = std::chrono::system_clock::now(),
         const TimeT& last_modified_time = std::chrono::system_clock::now(),
-        Gio::ListStore<Subsystem> * model = nullptr);
+        TreeNode * parent = nullptr);
 
     [[nodiscard]] std::string get_identifier() const override;
 
@@ -56,6 +56,8 @@ public:
     void set_creation_time(const TimeT& time_candidate) override;
 
     void set_modified_time(const TimeT& time_candidate) override;
+
+    [[nodiscard]] std::string get_path() const override;
 
     Glib::RefPtr<Gio::ListStore<Requirement>> requirements = Gio::ListStore<Requirement>::create();
 
@@ -78,6 +80,8 @@ private:
      * @brief The human-readable name of the Project
      */
     std::string name;
+
+    mutable std::pair<std::size_t, std::string> fully_qualified_path_cache;
 };
 
 }

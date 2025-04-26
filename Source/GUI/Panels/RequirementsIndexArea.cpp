@@ -23,10 +23,21 @@ RequirementsIndexArea::RequirementsIndexArea(Gtk::Builder& builder) :
         GTKHelpers::get_widget<Gtk::Widget>(area_name, builder, "requirements_index_advice_unselected"),
         GTKHelpers::get_widget<Gtk::Widget>(area_name, builder, "requirements_index_content")
     ),
-    empty_widget(GTKHelpers::get_widget<Gtk::Widget>(area_name, builder, "requirements_index_advice_empty"))
+    empty_widget(GTKHelpers::get_widget<Gtk::Widget>(area_name, builder, "requirements_index_advice_empty")),
+    view(GTKHelpers::get_widget<Gtk::ColumnView>(area_name, builder, "requirements_view")),
+    context_menu(
+        view,
+        GTKHelpers::get_object<Gio::Menu>(area_name, builder, "requirement_context_menu"),
+        {
+            {
+                "new_requirement",
+                GTKHelpers::get_widget<Gtk::MenuButton>(area_name, builder, "new_requirement"),
+                GTKHelpers::get_widget<Gtk::Popover>(area_name, builder, "new_requirement_popover"),
+                true
+            }
+        }
+    )
 {
-    const auto view = GTKHelpers::get_widget<Gtk::ColumnView>(area_name, builder, "requirements_view");
-
     selection_model->set_autoselect(false);
     selection_model->set_can_unselect(true);
     selection_model->property_n_items().signal_changed().connect([this]
@@ -90,6 +101,8 @@ RequirementsIndexArea::RequirementsIndexArea(Gtk::Builder& builder) :
     if (processed_columns < column_count)
         assert(0); // TODO exception / log4cxx
 #endif
+
+    configure_new_requirement_popup(builder);
 }
 
 void RequirementsIndexArea::select_model(const Glib::RefPtr<Gio::ListStore<Requirement>> &new_model)
@@ -137,6 +150,26 @@ void RequirementsIndexArea::on_setup_label(const Glib::RefPtr<Gtk::ListItem> &li
         label->add_css_class("optifol_monospace");
 
     list_item->set_child(*label);
+}
+
+void RequirementsIndexArea::configure_new_requirement_popup(Gtk::Builder &builder) const
+{
+    const auto popover = GTKHelpers::get_widget<Gtk::Popover>(area_name, builder, "new_requirement_popover");
+    const auto confirm_button = GTKHelpers::get_widget<Gtk::Button>(area_name, builder, "new_requirement_confirm");
+    const auto cancel_button = GTKHelpers::get_widget<Gtk::Button>(area_name, builder, "new_requirement_cancel");
+
+    cancel_button->signal_clicked().connect([popover]
+    {
+        popover->popdown();
+    });
+
+    confirm_button->signal_clicked().connect([this, popover]
+    {
+        popover->popdown();
+
+        data_model->append(Glib::make_refptr_for_instance(new Requirement("New requirement",
+            std::chrono::system_clock::now(), std::chrono::system_clock::now(), "Statement", 1, "Description", {}, 0)));
+    });
 }
 
 std::pair<Glib::RefPtr<Requirement>, Gtk::EditableLabel*> RequirementsIndexArea::on_bind_setup(

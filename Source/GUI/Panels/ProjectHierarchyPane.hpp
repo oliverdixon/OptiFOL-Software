@@ -17,7 +17,7 @@
 #include <gtkmm.h>
 #include <log4cxx/logger.h>
 
-#include "ProjectHierarchyContextMenu.hpp"
+#include "../ContextButtonCorrespondence.hpp"
 #include "../../Storage/Project.hpp"
 #include "../../Storage/Requirement.hpp"
 
@@ -69,6 +69,14 @@ private:
         Metadata = 1
     };
 
+    void configure_new_project_popup(Gtk::Builder &builder) const;
+
+    void configure_new_subsystem_popup(Gtk::Builder &builder) const;
+
+    void configure_edit_structure_popup(Gtk::Builder &builder) const;
+
+    void configure_delete_structure_popup(Gtk::Builder &builder) const;
+
     /**
      * @brief GTK callback for a new Gtk::ListItem. This member function handles the configuration of a new entry in the
      *  Project Hierarchy view as an editable label.
@@ -96,16 +104,6 @@ private:
      */
     static Glib::RefPtr<Gio::ListModel> tree_node_expand(const Glib::RefPtr<Glib::ObjectBase> &item);
 
-    static void tree_node_name_change(const Glib::RefPtr<Gtk::ListItem> &list_item);
-
-    void new_project() const;
-
-    void new_subsystem() const;
-
-    void edit_structure();
-
-    void delete_structure() const;
-
     void switch_subsystem(guint) const;
 
     static const char * const area_name;
@@ -122,7 +120,7 @@ private:
     Glib::RefPtr<Gio::ListStore<Project>> root_model;
     Glib::RefPtr<Gtk::SingleSelection> selection_model;
 
-    ProjectHierarchyContextMenu context_menu;
+    ContextButtonCorrespondence context_menu;
 };
 
 }

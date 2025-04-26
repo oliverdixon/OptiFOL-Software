@@ -19,9 +19,8 @@
 namespace optifol
 {
 
-Project::Project(std::string &&name, const TimeT &created_time, const TimeT &last_modified_time,
-        Gio::ListStore<Subsystem> * model):
-    TreeNode(model),
+Project::Project(std::string &&name, const TimeT &created_time, const TimeT &last_modified_time) :
+    TreeNode(nullptr),
     created_time(created_time),
     last_modified_time(last_modified_time),
     name(std::move(name))
@@ -64,6 +63,11 @@ void Project::set_creation_time(const TimeT &time_candidate)
 void Project::set_modified_time(const TimeT &time_candidate)
 {
     this->last_modified_time = time_candidate;
+}
+
+std::string Project::get_path() const
+{
+    return '/' + get_identifier();
 }
 
 }

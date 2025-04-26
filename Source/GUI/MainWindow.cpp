@@ -25,8 +25,8 @@ const char * const MainWindow::area_name = "Main Window";
 
 MainWindow::MainWindow():
     builder(Gtk::Builder::create_from_resource("/uk/ac/york/www_users/od641/optifol/UI/MainWindow.ui")),
-    root_grid(GTKHelpers::get_widget<Gtk::Box>("area_name", *builder, "root_grid")),
-    database_alert(GTKHelpers::get_object<Gtk::AlertDialog>("area_name", *builder, "database_alert"))
+    root_grid(GTKHelpers::get_widget<Gtk::Box>(area_name, *builder, "root_grid")),
+    database_alert(GTKHelpers::get_object<Gtk::AlertDialog>(area_name, *builder, "database_alert"))
 {
     set_title("Optifol");
     set_default_size(600, 400);

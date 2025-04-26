@@ -18,11 +18,49 @@
                 <object class="GtkStackPage">
                     <property name="name">project_explorer</property>
                     <property name="child">
-                        <object class="GtkScrolledWindow">
-                            <property name="vexpand">TRUE</property>
+                        <object class="GtkBox">
+                            <property name="orientation">vertical</property>
                             <child>
-                                <object class="GtkListView" id="project_view">
-                                    <property name="single-click-activate">FALSE</property>
+                                <object class="GtkBox">
+                                    <property name="halign">GTK_ALIGN_FILL</property>
+                                    <style>
+                                        <class name="toolbar"/>
+                                        <class name="optifol_boxed"/>
+                                    </style>
+                                    <child>
+                                        <object class="GtkMenuButton" id="new_project">
+                                            <property name="icon-name">document-new-symbolic</property>
+                                            <property name="tooltip-text">New Project</property>
+                                        </object>
+                                    </child>
+                                    <child>
+                                        <object class="GtkMenuButton" id="new_subsystem">
+                                            <property name="icon-name">folder-new-symbolic</property>
+                                            <property name="tooltip-text">New Subsystem</property>
+                                        </object>
+                                    </child>
+                                    <child>
+                                        <object class="GtkMenuButton" id="edit_structure">
+                                            <property name="icon-name">accessories-text-editor-symbolic</property>
+                                            <property name="tooltip-text">Edit Structure</property>
+                                        </object>
+                                    </child>
+                                    <child>
+                                        <object class="GtkMenuButton" id="delete_structure">
+                                            <property name="icon-name">edit-delete-symbolic</property>
+                                            <property name="tooltip-text">Delete Structure from Here</property>
+                                        </object>
+                                    </child>
+                                </object>
+                            </child>
+                            <child>
+                                <object class="GtkScrolledWindow">
+                                    <property name="vexpand">TRUE</property>
+                                    <child>
+                                        <object class="GtkListView" id="project_view">
+                                            <property name="single-click-activate">FALSE</property>
+                                        </object>
+                                    </child>
                                 </object>
                             </child>
                         </object>

@@ -9,22 +9,38 @@
         <section>
             <item>
                 <attribute name="label">New Project</attribute>
-                <attribute name="action">hierarchy.new_project</attribute>
+                <attribute name="action">win.new_project</attribute>
             </item>
             <item>
                 <attribute name="label">New Subsystem</attribute>
-                <attribute name="action">hierarchy.new_subsystem</attribute>
+                <attribute name="action">win.new_subsystem</attribute>
             </item>
             <item>
                 <attribute name="label">Edit Details</attribute>
-                <attribute name="action">hierarchy.edit_structure</attribute>
+                <attribute name="action">win.edit_structure</attribute>
             </item>
             <item>
                 <attribute name="label">Delete Structure</attribute>
-                <attribute name="action">hierarchy.delete_structure</attribute>
+                <attribute name="action">win.delete_structure</attribute>
             </item>
         </section>
     </menu>
+
+    <menu id="requirement_context_menu">
+        <section>
+            <item>
+                <attribute name="label">New Requirement</attribute>
+                <attribute name="action">win.new_requirement</attribute>
+            </item>
+        </section>
+    </menu>
+
+    ${NEW_PROJECT_POPOVER}
+    ${NEW_SUBSYSTEM_POPOVER}
+    ${EDIT_STRUCTURE_POPOVER}
+    ${NEW_REQUIREMENT_POPOVER}
+    ${DELETE_STRUCTURE_POPOVER}
+
     <object class="GtkBox" id="root_grid">
         <property name="orientation">vertical</property>
         <child>
