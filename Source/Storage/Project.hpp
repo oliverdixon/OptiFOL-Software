@@ -14,9 +14,7 @@
 #ifndef PROJECT_HPP
 #define PROJECT_HPP
 
-#include <giomm/liststore.h>
-
-#include "IStorageObject.hpp"
+#include "StorageObjectBase.hpp"
 #include "TreeNode.hpp"
 
 namespace optifol
@@ -26,18 +24,23 @@ namespace optifol
  * @brief The Project storage forms the top level of the Optifol object hierarchy; it contains many subsystems.
  */
 class Project :
-        public IStorageObject,
+        public StorageObjectBase,
         public TreeNode
 {
 public:
-    explicit Project(std::string&& name, const TimeT& created_time = std::chrono::system_clock::now(),
-        const TimeT& last_modified_time = std::chrono::system_clock::now());
+    /**
+     * @brief Create a new Project with the given name and register in the Glib GType system
+     * @param name The initial name of the Project
+     */
+    explicit Project(std::string&& name);
 
-    [[nodiscard]] std::string get_identifier() const override;
-
-    [[nodiscard]] TimeT get_creation_time() const override;
-
-    [[nodiscard]] TimeT get_modified_time() const override;
+    /**
+     * @brief Create a new Project with the given name and register in the Glib GType system
+     * @param name The initial name of the Project
+     * @param cobject The C cast-item used by Glib::Object
+     * @param builder Currently unused builder parameter to provide to the Glib::Object instance
+     */
+    Project(std::string&& name, BaseObjectType* cobject, const Glib::RefPtr<Gtk::Builder>& builder);
 
     /**
      * @brief Tests a couple of projects for equality
@@ -47,33 +50,11 @@ public:
      */
     bool operator==(const Project& other) const noexcept;
 
-    void set_identifier(const std::string& name_candidate) override;
-
-    void set_creation_time(const TimeT& time_candidate) override;
-
-    void set_modified_time(const TimeT& time_candidate) override;
-
+    /**
+     * @brief Generate a path for a root-level Project, prepended with an oblique
+     * @return The project path prefix
+     */
     [[nodiscard]] std::string get_path() const override;
-
-private:
-    /**
-     * @brief Time of initial creation
-     * @note This quantity should be immutable in the model determined by the IStorageController, assigned only upon its
-     *  initial creation.
-     */
-    TimeT created_time;
-
-    /**
-     * @brief Time of most recent mutation
-     * @note This quantity should be updated upon the changing of Project metadata, or the changing of any data held by
-     *  the Project, such as any of its constituent Subsystems or their requirements.
-     */
-    TimeT last_modified_time;
-
-    /**
-     * @brief The human-readable name of the Project
-     */
-    std::string name;
 };
 
 }

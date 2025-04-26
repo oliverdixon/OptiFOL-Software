@@ -3,6 +3,14 @@
  * 2025 Oliver Dixon <od641@york.ac.uk>
  */
 
+/**
+ * @file
+ * @brief Class specification for the tree node abstract storage object
+ * @author Oliver Dixon
+ * @date 2025-04-26
+ * @version Development
+ */
+
 #ifndef TREENODE_HPP
 #define TREENODE_HPP
 
@@ -14,20 +22,23 @@ namespace optifol
 
 class Subsystem;
 
+/**
+ * @class TreeNode
+ * @brief The TreeNode is an abstract storage object to aid in the nesting of subsystems to arbitrary depths.
+ */
 class TreeNode
 {
 public:
+    /**
+     * @brief Destruct the TreeNode
+     */
     virtual ~TreeNode() = default;
-
-    explicit TreeNode(TreeNode * parent);
 
     [[nodiscard]] Glib::RefPtr<Gio::ListStore<Subsystem>> get_children();
 
     [[nodiscard]] Glib::RefPtr<const Gio::ListStore<Subsystem>> get_children() const;
 
-    void add(std::string&& name, const std::chrono::system_clock::time_point& created_time =
-        std::chrono::system_clock::now(), const std::chrono::system_clock::time_point& last_modified_time =
-        std::chrono::system_clock::now());
+    void add(std::string&& name);
 
     [[nodiscard]] const TreeNode * get_parent() const;
 
@@ -35,9 +46,22 @@ public:
 
     [[nodiscard]] virtual std::string get_path() const = 0;
 
+protected:
+    /**
+     * @brief Create a new TreeNode without a parent
+     */
+    TreeNode();
+
+    /**
+     * @brief Create a new TreeNode with a parent
+     * @param parent A weak pointer to the parent
+     */
+    explicit TreeNode(TreeNode * parent);
+
 private:
     Glib::RefPtr<Gio::ListStore<Subsystem>> children;
-    TreeNode * const parent;
+
+    TreeNode * const parent = nullptr;
 };
 
 }

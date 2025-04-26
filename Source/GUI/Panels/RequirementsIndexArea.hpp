@@ -18,7 +18,7 @@
 
 #include "../ContextButtonCorrespondence.hpp"
 #include "../GTKHelpers.hpp"
-#include "../Storage/GObjects/GRequirement.hpp"
+#include "../../Storage/Requirement.hpp"
 
 namespace optifol
 {
@@ -43,7 +43,7 @@ public:
      * @param new_model The new requirements model to display in the view
      * @post The off-widget is hidden, and the on-widget is displayed
      */
-    void select_model(const Glib::RefPtr<Gio::ListStore<GRequirement>>& new_model);
+    void select_model(const Glib::RefPtr<Gio::ListStore<Requirement>>& new_model);
 
     /**
      * @brief Disconnect the view from its currently displayed model
@@ -52,7 +52,7 @@ public:
     void deselect_model() const;
 
 private:
-    Glib::RefPtr<Gio::ListStore<GRequirement>> data_model;
+    Glib::RefPtr<Gio::ListStore<Requirement>> data_model;
     Glib::RefPtr<Gtk::SingleSelection> selection_model = Gtk::SingleSelection::create();
 
     std::pair<Gtk::Widget*, Gtk::Widget*> on_off_widgets;
@@ -86,7 +86,7 @@ private:
      * @param list_item The list item containing the label to be bound
      * @return An owning reference to the represented requirement, and a raw pointer to the GTK label widget
      */
-    std::pair<Glib::RefPtr<GRequirement>, Gtk::EditableLabel*> on_bind_setup(
+    std::pair<Glib::RefPtr<Requirement>, Gtk::EditableLabel*> on_bind_setup(
         const Glib::RefPtr<Gtk::ListItem>& list_item) const;
 
     /**

@@ -19,27 +19,17 @@
 namespace optifol
 {
 
-Project::Project(std::string &&name, const TimeT &created_time, const TimeT &last_modified_time) :
-    TreeNode(nullptr),
-    created_time(created_time),
-    last_modified_time(last_modified_time),
-    name(std::move(name))
+Project::Project(std::string &&name) :
+    Glib::ObjectBase("Project")
 {
+    property_name().set_value(std::move(name));
 }
 
-std::string Project::get_identifier() const
+Project::Project(std::string &&name, BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &builder) :
+    Glib::ObjectBase("Project"),
+    StorageObjectBase(cobject, builder)
 {
-    return name;
-}
-
-IStorageObject::TimeT Project::get_creation_time() const
-{
-    return created_time;
-}
-
-IStorageObject::TimeT Project::get_modified_time() const
-{
-    return last_modified_time;
+    property_name().set_value(std::move(name));
 }
 
 bool Project::operator==(const Project &other) const noexcept
@@ -47,27 +37,9 @@ bool Project::operator==(const Project &other) const noexcept
     return std::hash<Project>{}(*this) == std::hash<Project>{}(other);
 }
 
-void Project::set_identifier(const std::string &name_candidate)
-{
-    this->name = name_candidate;
-    last_modified_time = std::chrono::system_clock::now();
-}
-
-void Project::set_creation_time(const TimeT &time_candidate)
-{
-    this->created_time = time_candidate;
-    last_modified_time = std::chrono::system_clock::now();
-    LOG4CXX_WARN(Logging::get_logger(), "Updating the creation time of project " << get_identifier());
-}
-
-void Project::set_modified_time(const TimeT &time_candidate)
-{
-    this->last_modified_time = time_candidate;
-}
-
 std::string Project::get_path() const
 {
-    return '/' + get_identifier();
+    return '/' + property_name().get_value();
 }
 
 }

@@ -19,7 +19,7 @@
 
 #include "../ContextButtonCorrespondence.hpp"
 #include "../../Storage/Project.hpp"
-#include "../../Storage/GObjects/GRequirement.hpp"
+#include "../../Storage/Requirement.hpp"
 
 namespace optifol
 {
@@ -36,7 +36,7 @@ public:
      * @typedef SelectedCallbackSignature
      * @brief The function signature of the callback to handle updates in subsystem selection
      */
-    using SelectedCallbackSignature = void(const Glib::RefPtr<Gio::ListStore<GRequirement>>&);
+    using SelectedCallbackSignature = void(const Glib::RefPtr<Gio::ListStore<Requirement>>&);
 
     /**
      * @typedef DeselectedCallbackSignature

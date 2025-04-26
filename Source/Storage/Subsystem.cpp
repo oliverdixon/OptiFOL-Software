@@ -19,28 +19,20 @@
 namespace optifol
 {
 
-Subsystem::Subsystem(std::string &&name, const TimeT &created_time, const TimeT &last_modified_time,
-        TreeNode * const parent):
-    TreeNode(parent),
-    created_time(created_time),
-    last_modified_time(last_modified_time),
-    name(std::move(name))
+Subsystem::Subsystem(std::string &&name, TreeNode *parent) :
+    Glib::ObjectBase("Subsystem"),
+    TreeNode(parent)
 {
+    property_name().set_value(std::move(name));
 }
 
-std::string Subsystem::get_identifier() const
+Subsystem::Subsystem(std::string &&name, BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &builder,
+        TreeNode *parent) :
+    Glib::ObjectBase("Subsystem"),
+    StorageObjectBase(cobject, builder),
+    TreeNode(parent)
 {
-    return name;
-}
-
-IStorageObject::TimeT Subsystem::get_creation_time() const
-{
-    return created_time;
-}
-
-IStorageObject::TimeT Subsystem::get_modified_time() const
-{
-    return last_modified_time;
+    property_name().set_value(std::move(name));
 }
 
 bool Subsystem::operator==(const Subsystem &other) const noexcept
@@ -48,30 +40,12 @@ bool Subsystem::operator==(const Subsystem &other) const noexcept
     return std::hash<Subsystem>{}(*this) == std::hash<Subsystem>{}(other);
 }
 
-void Subsystem::set_identifier(const std::string &name_candidate)
-{
-    this->name = name_candidate;
-    last_modified_time = std::chrono::system_clock::now();
-}
-
-void Subsystem::set_creation_time(const TimeT &time_candidate)
-{
-    this->created_time = time_candidate;
-    last_modified_time = std::chrono::system_clock::now();
-    LOG4CXX_WARN(Logging::get_logger(), "Updating the creation time of subsystem " << get_identifier());
-}
-
-void Subsystem::set_modified_time(const TimeT &time_candidate)
-{
-    this->last_modified_time = time_candidate;
-}
-
 std::string Subsystem::get_path() const
 {
     const auto hash = std::hash<Subsystem>{}(*this);
     if (hash != fully_qualified_path_cache.first) {
         fully_qualified_path_cache.first = hash;
-        fully_qualified_path_cache.second = get_parent()->get_path() + '/' + get_identifier();
+        fully_qualified_path_cache.second = get_parent()->get_path() + '/' + property_name().get_value();
     }
 
     return fully_qualified_path_cache.second;

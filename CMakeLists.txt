@@ -254,7 +254,7 @@ add_executable(OptifolGUI
         Source/Storage/Project.hpp
         Source/Storage/Subsystem.cpp
         Source/Storage/Subsystem.hpp
-        Source/Storage/IStorageObject.hpp
+        Source/Storage/StorageObjectBase.hpp
         Source/Storage/StorageHashFunctor.hpp
         Source/GUI/Panels/ProjectHierarchyPane.cpp
         Source/GUI/Panels/ProjectHierarchyPane.hpp
@@ -262,8 +262,9 @@ add_executable(OptifolGUI
         Source/GUI/Panels/RequirementsIndexArea.hpp
         Source/GUI/ContextButtonCorrespondence.cpp
         Source/GUI/ContextButtonCorrespondence.hpp
-        Source/Storage/GObjects/GRequirement.cpp
-        Source/Storage/GObjects/GRequirement.hpp
+        Source/Storage/Requirement.cpp
+        Source/Storage/Requirement.hpp
+        Source/Storage/StorageObjectBase.cpp
 )
 
 set(COMMON_COMPILER_OPTIONS

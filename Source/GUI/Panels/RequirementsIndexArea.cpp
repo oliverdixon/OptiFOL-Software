@@ -98,13 +98,15 @@ RequirementsIndexArea::RequirementsIndexArea(Gtk::Builder& builder) :
             if (gtk_id == "requirement_name") {
                 factory->signal_bind().connect([this](const Glib::RefPtr<Gtk::ListItem> &list_item)
                 {
-                    list_item->set_child(*Gtk::make_managed<Gtk::Label>());
+                    const auto label = Gtk::make_managed<Gtk::Label>();
+                    label->set_halign(Gtk::Align::START);
+                    list_item->set_child(*label);
                 });
 
                 factory->signal_bind().connect([this](const Glib::RefPtr<Gtk::ListItem> &list_item)
                 {
                     const auto label = dynamic_cast<Gtk::Label *>(list_item->get_child());
-                    const auto item = std::dynamic_pointer_cast<GRequirement>(list_item->get_item());
+                    const auto item = std::dynamic_pointer_cast<Requirement>(list_item->get_item());
 
                     if (label != nullptr && item != nullptr)
                         Glib::Binding::bind_property(item->property_name(), label->property_label(),
@@ -129,7 +131,7 @@ RequirementsIndexArea::RequirementsIndexArea(Gtk::Builder& builder) :
     configure_edit_requirement_popup(builder);
 }
 
-void RequirementsIndexArea::select_model(const Glib::RefPtr<Gio::ListStore<GRequirement>> &new_model)
+void RequirementsIndexArea::select_model(const Glib::RefPtr<Gio::ListStore<Requirement>> &new_model)
 {
     on_off_widgets.first->set_visible(false);
     on_off_widgets.second->set_visible(true);
@@ -202,7 +204,7 @@ void RequirementsIndexArea::configure_new_requirement_popup(Gtk::Builder &builde
     {
         popover->popdown();
 
-        std::optional<std::size_t> test_id;
+        std::optional<std::size_t> test_id; // TODO
         if (property_test->get_text_length() > 0) {
             std::stringstream stream(property_test->get_text());
             std::size_t candidate;
@@ -210,9 +212,12 @@ void RequirementsIndexArea::configure_new_requirement_popup(Gtk::Builder &builde
             test_id.emplace(candidate);
         }
 
-        const auto requirement = Glib::make_refptr_for_instance(new GRequirement());
-        requirement->property_name().set_value(property_name->get_text());
-        data_model->append(requirement);
+        data_model->append(Glib::make_refptr_for_instance(new Requirement(
+            property_name->get_text(),
+            property_sentence->get_text(),
+            property_description->get_buffer()->get_text(),
+            property_priority->get_selected()
+        )));
     });
 }
 
@@ -240,7 +245,7 @@ void RequirementsIndexArea::configure_edit_requirement_popup(Gtk::Builder &build
     popover->signal_show().connect([this, property_name, property_description, property_sentence, property_test,
         property_priority]
     {
-        const auto candidate = std::dynamic_pointer_cast<GRequirement>(
+        const auto candidate = std::dynamic_pointer_cast<Requirement>(
             selection_model->get_selected_item());
 
         if (candidate != nullptr)
@@ -260,7 +265,7 @@ void RequirementsIndexArea::configure_edit_requirement_popup(Gtk::Builder &build
             test_id.emplace(candidate);
         }
 
-        const auto candidate = std::dynamic_pointer_cast<GRequirement>(
+        const auto candidate = std::dynamic_pointer_cast<Requirement>(
             selection_model->get_selected_item());
         if (candidate != nullptr)
             candidate->property_name().set_value(property_name->get_text());
@@ -299,7 +304,7 @@ void RequirementsIndexArea::configure_delete_requirement_popup(Gtk::Builder &bui
     });
 }
 
-std::pair<Glib::RefPtr<GRequirement>, Gtk::EditableLabel*> RequirementsIndexArea::on_bind_setup(
+std::pair<Glib::RefPtr<Requirement>, Gtk::EditableLabel*> RequirementsIndexArea::on_bind_setup(
         const Glib::RefPtr<Gtk::ListItem> &list_item) const
 {
 #if 0

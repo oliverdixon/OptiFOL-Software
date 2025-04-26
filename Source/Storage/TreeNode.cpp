@@ -3,9 +3,13 @@
  * 2025 Oliver Dixon <od641@york.ac.uk>
  */
 
-//
-// Created by owd on 4/22/25.
-//
+/**
+ * @file
+ * @brief Class implementation for the tree node abstract storage object
+ * @author Oliver Dixon
+ * @date 2025-04-26
+ * @version Development
+ */
 
 #include "TreeNode.hpp"
 
@@ -13,6 +17,11 @@
 
 namespace optifol
 {
+
+TreeNode::TreeNode() :
+    children(Gio::ListStore<Subsystem>::create())
+{
+}
 
 TreeNode::TreeNode(TreeNode * const parent) :
     children(Gio::ListStore<Subsystem>::create()),
@@ -30,11 +39,9 @@ Glib::RefPtr<const Gio::ListStore<Subsystem>> TreeNode::get_children() const
     return children;
 }
 
-void TreeNode::add(std::string &&name, const std::chrono::system_clock::time_point &created_time,
-    const std::chrono::system_clock::time_point &last_modified_time)
+void TreeNode::add(std::string &&name)
 {
-    children->append(Glib::make_refptr_for_instance(new Subsystem(std::move(name), created_time, last_modified_time,
-        this)));
+    children->append(Glib::make_refptr_for_instance(new Subsystem(std::move(name), this)));
 }
 
 const TreeNode * TreeNode::get_parent() const

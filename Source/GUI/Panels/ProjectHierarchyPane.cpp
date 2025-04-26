@@ -17,7 +17,7 @@
 
 #include "../GTKHelpers.hpp"
 #include "../Logging.hpp"
-#include "../Storage/IStorageObject.hpp"
+#include "../Storage/StorageObjectBase.hpp"
 #include "../Storage/Subsystem.hpp"
 
 namespace optifol
@@ -278,7 +278,7 @@ void ProjectHierarchyPane::tree_node_setup(const Glib::RefPtr<Gtk::ListItem> &it
 void ProjectHierarchyPane::tree_node_bind(const Glib::RefPtr<Gtk::ListItem> &item) const
 {
     const auto position = item->get_position();
-    const auto model_item = std::dynamic_pointer_cast<IStorageObject>(item->get_item());
+    const auto model_item = std::dynamic_pointer_cast<StorageObjectBase>(item->get_item());
     const auto node_item = std::dynamic_pointer_cast<TreeNode>(item->get_item());
     const auto expander = dynamic_cast<Gtk::TreeExpander*>(item->get_child());
 
@@ -302,7 +302,8 @@ void ProjectHierarchyPane::tree_node_bind(const Glib::RefPtr<Gtk::ListItem> &ite
         return;
     }
 
-    label->set_text(model_item->get_identifier());
+    Glib::Binding::bind_property(model_item->property_name(), label->property_label(),
+        Glib::Binding::Flags::SYNC_CREATE);
 }
 
 void ProjectHierarchyPane::switch_visible_stack() const

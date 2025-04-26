@@ -14,7 +14,7 @@
 #ifndef STORAGEHASHFUNCTOR_HPP
 #define STORAGEHASHFUNCTOR_HPP
 
-#include "IStorageObject.hpp"
+#include "StorageObjectBase.hpp"
 
 #if __cpp_lib_chrono < 202306L
 
@@ -52,9 +52,9 @@ struct std::hash<Type> // NOLINT(*-dcl58-cpp): Specialising std::hash not result
      */
     std::size_t operator()(const Type& storable_object) const noexcept
     {
-        const auto& object = static_cast<const optifol::IStorageObject&>(storable_object);
-        return hash_combine(std::hash<std::string>{}(object.get_identifier()),
-            std::hash<std::chrono::system_clock::time_point>{}(object.get_creation_time()));
+        const auto& object = static_cast<const optifol::StorageObjectBase&>(storable_object);
+        return hash_combine(std::hash<std::string>{}(object.property_name().get_value()),
+            std::hash<std::chrono::system_clock::time_point>{}(object.property_creation_time().get_value()));
     }
 
 private:

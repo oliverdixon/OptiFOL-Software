@@ -16,9 +16,9 @@
 
 #include <giomm/liststore.h>
 
-#include "IStorageObject.hpp"
+#include "Requirement.hpp"
+#include "StorageObjectBase.hpp"
 #include "TreeNode.hpp"
-#include "GObjects/GRequirement.hpp"
 
 namespace optifol
 {
@@ -29,19 +29,28 @@ namespace optifol
  *  and consists of many individual requirements.
  */
 class Subsystem :
-        public IStorageObject,
+        public StorageObjectBase,
         public TreeNode
 {
 public:
-    explicit Subsystem(std::string&& name, const TimeT& created_time = std::chrono::system_clock::now(),
-        const TimeT& last_modified_time = std::chrono::system_clock::now(),
-        TreeNode * parent = nullptr);
+    /**
+     * @brief Create a new Subsystem with the given name and register in the Glib GType system
+     * @param name The initial name of the Subsystem
+     * @param parent The owning node: typically a Project (if root-level Subsystem) or Subsystem if a member of a nested
+     *  hierarchy.
+     */
+    explicit Subsystem(std::string&& name, TreeNode * parent);
 
-    [[nodiscard]] std::string get_identifier() const override;
-
-    [[nodiscard]] TimeT get_creation_time() const override;
-
-    [[nodiscard]] TimeT get_modified_time() const override;
+    /**
+     * @brief Create a new Subsystem with the given name and register in the Glib GType system
+     * @param name The initial name of the Subsystem
+     * @param cobject The C cast-item used by Glib::Object
+     * @param builder Currently unused builder parameter to provide to the Glib::Object instance
+     * @param parent The owning node: typically a Project (if root-level Subsystem) or Subsystem if a member of a nested
+     *  hierarchy.
+     */
+    Subsystem(std::string&& name, BaseObjectType* cobject, const Glib::RefPtr<Gtk::Builder>& builder,
+        TreeNode * parent);
 
     /**
      * @brief Tests a couple of subsystem for equality
@@ -51,15 +60,14 @@ public:
      */
     bool operator==(const Subsystem& other) const noexcept;
 
-    void set_identifier(const std::string &name_candidate) override;
-
-    void set_creation_time(const TimeT& time_candidate) override;
-
-    void set_modified_time(const TimeT& time_candidate) override;
-
+    /**
+     * @brief Recursively generate a human-readable path of the Subsystem hierarchy, delimited with oblique characters
+     * @return The human-readable path of the current subsystem with a leading oblique
+     */
     [[nodiscard]] std::string get_path() const override;
 
-    Glib::RefPtr<Gio::ListStore<GRequirement>> requirements = Gio::ListStore<GRequirement>::create();
+    // TODO: shouldn't be public.
+    Glib::RefPtr<Gio::ListStore<Requirement>> requirements = Gio::ListStore<Requirement>::create();
 
 private:
     /**
