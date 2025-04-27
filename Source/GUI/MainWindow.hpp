@@ -16,6 +16,7 @@
 
 #include <gtkmm.h>
 
+#include "Panels/AnalysisArea.hpp"
 #include "Panels/ProjectHierarchyPane.hpp"
 #include "Panels/RequirementsIndexArea.hpp"
 
@@ -38,6 +39,7 @@ private:
 
     std::unique_ptr<ProjectHierarchyPane> project_hierarchy_pane;
     std::unique_ptr<RequirementsIndexArea> requirements_index_area;
+    std::unique_ptr<AnalysisArea> analysis_area;
 };
 
 }

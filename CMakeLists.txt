@@ -178,16 +178,22 @@ set(AWK_SUBSTITUTION_SCRIPT ${RESOURCE_DIR}/substitute.awk)
 set(MAINWINDOW_RESOURCE_INPUT ${RESOURCE_DIR}/UI/MainWindow/MainWindow.ui.in)
 set(MAINWINDOW_RESOURCE_OUTPUT ${GENERATED_SRC_DIR}/MainWindow.ui)
 set(MAINWINDOW_RESOURCE_COMPONENTS
-        ${RESOURCE_DIR}/UI/MainWindow/EditorPane.ui
-        ${RESOURCE_DIR}/UI/MainWindow/ProjectPane.ui
-        ${RESOURCE_DIR}/UI/MainWindow/NewRequirementPopover.ui
-        ${RESOURCE_DIR}/UI/MainWindow/NewProjectPopover.ui
-        ${RESOURCE_DIR}/UI/MainWindow/NewSubsystemPopover.ui
-        ${RESOURCE_DIR}/UI/MainWindow/EditStructurePopover.ui
-        ${RESOURCE_DIR}/UI/MainWindow/DeleteStructurePopover.ui
-        ${RESOURCE_DIR}/UI/MainWindow/DeleteRequirementPopover.ui
-        ${RESOURCE_DIR}/UI/MainWindow/EditRequirementPopover.ui
-        ${RESOURCE_DIR}/UI/MainWindow/DuplicateRequirementPopover.ui
+        ${RESOURCE_DIR}/UI/MainWindow/ProjectPane/ProjectPane.ui
+        ${RESOURCE_DIR}/UI/MainWindow/ProjectPane/NewProjectPopover.ui
+        ${RESOURCE_DIR}/UI/MainWindow/ProjectPane/NewSubsystemPopover.ui
+        ${RESOURCE_DIR}/UI/MainWindow/ProjectPane/EditStructurePopover.ui
+        ${RESOURCE_DIR}/UI/MainWindow/ProjectPane/DeleteStructurePopover.ui
+
+        ${RESOURCE_DIR}/UI/MainWindow/RequirementsIndexArea/NewRequirementPopover.ui
+        ${RESOURCE_DIR}/UI/MainWindow/RequirementsIndexArea/DeleteRequirementPopover.ui
+        ${RESOURCE_DIR}/UI/MainWindow/RequirementsIndexArea/EditRequirementPopover.ui
+        ${RESOURCE_DIR}/UI/MainWindow/RequirementsIndexArea/DuplicateRequirementPopover.ui
+        ${RESOURCE_DIR}/UI/MainWindow/RequirementsIndexArea/RequirementsIndexView.ui
+
+        ${RESOURCE_DIR}/UI/MainWindow/AnalysisArea/AnalysisView.ui
+        ${RESOURCE_DIR}/UI/MainWindow/AnalysisArea/NewAnalysisGroupPopover.ui
+        ${RESOURCE_DIR}/UI/MainWindow/AnalysisArea/DeleteAnalysisGroupPopover.ui
+
         ${RESOURCE_DIR}/UI/MainWindow/replacements.txt
 )
 
@@ -266,6 +272,10 @@ add_executable(OptifolGUI
         Source/Storage/Requirement.cpp
         Source/Storage/Requirement.hpp
         Source/Storage/StorageObjectBase.cpp
+        Source/GUI/Panels/AnalysisArea.cpp
+        Source/GUI/Panels/AnalysisArea.hpp
+        Source/Storage/AnalysisGroup.cpp
+        Source/Storage/AnalysisGroup.hpp
 )
 
 set(COMMON_COMPILER_OPTIONS

@@ -47,14 +47,39 @@
         </section>
     </menu>
 
+    <menu id="analysis_groups_context_menu">
+        <section>
+            <item>
+                <attribute name="label">New Analysis Group</attribute>
+                <attribute name="action">win.new_analysis_group</attribute>
+            </item>
+            <item>
+                <attribute name="label">Edit Analysis Group</attribute>
+                <attribute name="action">win.edit_analysis_group</attribute>
+            </item>
+            <item>
+                <attribute name="label">Delete Analysis Group</attribute>
+                <attribute name="action">win.delete_analysis_group</attribute>
+            </item>
+        </section>
+    </menu>
+
+    <!-- Project pane popovers -->
     ${NEW_PROJECT_POPOVER}
     ${NEW_SUBSYSTEM_POPOVER}
     ${EDIT_STRUCTURE_POPOVER}
-    ${NEW_REQUIREMENT_POPOVER}
     ${DELETE_STRUCTURE_POPOVER}
-    ${DELETE_REQUIREMENT_POPOVER}
+
+    <!-- Requirements index area popovers -->
+    ${NEW_REQUIREMENT_POPOVER}
     ${EDIT_REQUIREMENT_POPOVER}
     ${DUPLICATE_REQUIREMENT_POPOVER}
+    ${DELETE_REQUIREMENT_POPOVER}
+
+    <!-- Analysis area popovers -->
+    ${NEW_ANALYSIS_GROUP_POPOVER}
+    ${EDIT_ANALYSIS_GROUP_POPOVER}
+    ${DELETE_ANALYSIS_GROUP_POPOVER}
 
     <object class="GtkBox" id="root_grid">
         <property name="orientation">vertical</property>
@@ -76,7 +101,55 @@
                   - user.
                   -->
                 <child>
-                    ${MAINWINDOW_EDITOR_PANE}
+                    <object class="GtkBox">
+                        <property name="hexpand">true</property>
+                        <property name="orientation">vertical</property>
+                        <child>
+                            <object class="GtkStackSwitcher">
+                                <property name="stack">central_stack</property>
+                            </object>
+                        </child>
+                        <child>
+                            <object class="GtkStack" id="central_stack">
+                                <child>
+                                    <object class="GtkStackPage">
+                                        <property name="title">Requirements Index</property>
+                                        <property name="child">
+                                            ${REQUIREMENTS_INDEX_VIEW}
+                                        </property>
+                                    </object>
+                                </child>
+                                <child>
+                                    <object class="GtkStackPage">
+                                        <property name="title">Analysis and Optimisation</property>
+                                        <property name="child">
+                                            ${ANALYSIS_VIEW}
+                                        </property>
+                                    </object>
+                                </child>
+                                <child>
+                                    <object class="GtkStackPage">
+                                        <property name="title">Testing and Releases</property>
+                                        <property name="child">
+                                            <object class="GtkLabel">
+                                                <property name="label">Testing and Releases Content</property>
+                                            </object>
+                                        </property>
+                                    </object>
+                                </child>
+                                <child>
+                                    <object class="GtkStackPage">
+                                        <property name="title">Reporting and Compliance</property>
+                                        <property name="child">
+                                            <object class="GtkLabel">
+                                                <property name="label">Reporting and Compliance Content</property>
+                                            </object>
+                                        </property>
+                                    </object>
+                                </child>
+                            </object>
+                        </child>
+                    </object>
                 </child>
             </object>
         </child>

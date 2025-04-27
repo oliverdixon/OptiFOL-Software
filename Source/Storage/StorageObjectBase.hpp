@@ -5,7 +5,7 @@
 
 /**
  * @file
- * @brief Class definition for the base class of a Storable Object
+ * @brief Class specification for the base class of a Storable Object
  * @author Oliver Dixon
  * @date 2025-02-22
  * @version Development

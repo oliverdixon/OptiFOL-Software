@@ -1,3 +1,8 @@
+<!--
+  - Copyright (c) All Rights Reserved
+  - 2025 Oliver Dixon <od641@york.ac.uk>
+  -->
+
 <object class="GtkBox">
     <property name="orientation">vertical</property>
     <child>
@@ -35,7 +40,7 @@
                                     </child>
                                     <child>
                                         <object class="GtkMenuButton" id="new_subsystem">
-                                            <property name="icon-name">folder-new-symbolic</property>
+                                            <property name="icon-name">window-new-symbolic</property>
                                             <property name="tooltip-text">New Subsystem</property>
                                         </object>
                                     </child>

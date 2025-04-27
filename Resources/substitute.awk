@@ -15,13 +15,10 @@
 
 BEGIN {
     while ((getline < "./replacements.txt") > 0) {
-        if (split($0, token, "=") != 2) {
-            printf ("%s: %d: incorrect number of fields extracted") > "/dev/stderr"
-            exit 1
+        if (split($0, token, "=") == 2) {
+            PATTERNS[token[1]] = "\\$\\{" token[1] "\\}"
+            VALUES[token[1]] = token[2]
         }
-
-        PATTERNS[token[1]] = "\\$\\{" token[1] "\\}"
-        VALUES[token[1]] = token[2]
     }
 
     close("./replacements.txt")

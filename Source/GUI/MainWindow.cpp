@@ -40,6 +40,7 @@ MainWindow::MainWindow():
             sigc::mem_fun(*requirements_index_area, &RequirementsIndexArea::select_model),
             sigc::mem_fun(*requirements_index_area, &RequirementsIndexArea::deselect_model)
         );
+        analysis_area = std::make_unique<AnalysisArea>(*builder);
     } catch (const StorageConnectionException& exception) {
         database_alert->set_detail(exception.what());
         database_alert->show(*this);

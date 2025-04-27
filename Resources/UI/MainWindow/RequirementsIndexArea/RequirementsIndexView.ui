@@ -1,0 +1,196 @@
+<!--
+  - Copyright (c) All Rights Reserved
+  - 2025 Oliver Dixon <od641@york.ac.uk>
+  -->
+
+<object class="GtkBox">
+    <property name="orientation">vertical</property>
+    <child>
+        <object class="GtkLabel" id="requirements_index_advice_unselected">
+            <style>
+                <class name="optifol_advisory"/>
+                <class name="optifol_boxed"/>
+            </style>
+            <property name="use-markup">TRUE</property>
+            <property name="justify">GTK_JUSTIFY_CENTER</property>
+            <property name="halign">GTK_ALIGN_CENTER</property>
+            <property name="valign">GTK_ALIGN_CENTER</property>
+            <property name="hexpand">TRUE</property>
+            <property name="vexpand">TRUE</property>
+            <property name="max-width-chars">80</property>
+            <property name="wrap">TRUE</property>
+            <property name="label">
+                <![CDATA[<b>The Requirements Index is not applicable to Project-level scopes.</b>
+
+The <i>Requirements Index</i> presents a tabular view of all Requirements within the active Subsystem.
+
+From the Index, you can review, modify, search, and filter Requirements in preparation for formal analysis, compliance verification, and report generation.
+
+To view an Index, select a Subsystem from the left-hand <i>Project Explorer</i> pane.]]>
+            </property>
+        </object>
+    </child>
+    <child>
+        <object class="GtkBox" id="requirements_index_content">
+            <property name="visible">FALSE</property>
+            <property name="orientation">vertical</property>
+            <child>
+                <object class="GtkBox">
+                    <property name="halign">GTK_ALIGN_FILL</property>
+                    <style>
+                        <class name="toolbar"/>
+                        <class name="optifol_boxed"/>
+                    </style>
+                    <child>
+                        <object class="GtkMenuButton" id="new_requirement">
+                            <property name="icon-name">tab-new-symbolic</property>
+                            <property name="tooltip-text">New Requirement</property>
+                        </object>
+                    </child>
+                    <child>
+                        <object class="GtkMenuButton" id="edit_requirement">
+                            <property name="icon-name">document-edit-symbolic</property>
+                            <property name="tooltip-text">Edit Selected Requirement</property>
+                            <property name="sensitive">FALSE</property>
+                        </object>
+                    </child>
+                    <child>
+                        <object class="GtkMenuButton" id="delete_requirement">
+                            <property name="icon-name">edit-delete-symbolic</property>
+                            <property name="tooltip-text">Delete Selected Requirements</property>
+                            <property name="sensitive">FALSE</property>
+                        </object>
+                    </child>
+                    <child>
+                        <object class="GtkMenuButton" id="duplicate_requirement">
+                            <property name="icon-name">edit-copy-symbolic</property>
+                            <property name="tooltip-text">Duplicate Selected Requirement</property>
+                            <property name="sensitive">FALSE</property>
+                        </object>
+                    </child>
+                    <child>
+                        <object class="GtkBox">
+                            <property name="hexpand">TRUE</property>
+                            <property name="halign">GTK_ALIGN_END</property>
+                            <child>
+                                <object class="GtkEntry">
+                                    <property name="sensitive">FALSE</property>
+                                    <property name="placeholder-text">Search by Name</property>
+                                </object>
+                            </child>
+                            <child>
+                                <object class="GtkButton">
+                                    <property name="sensitive">FALSE</property>
+                                    <property name="icon-name">edit-find-symbolic</property>
+                                    <property name="tooltip-text">Search Requirements</property>
+                                </object>
+                            </child>
+                            <child>
+                                <object class="GtkButton">
+                                    <property name="sensitive">FALSE</property>
+                                    <property name="icon-name">edit-clear-all-symbolic</property>
+                                    <property name="tooltip-text">Clear Search</property>
+                                </object>
+                            </child>
+                        </object>
+                    </child>
+                </object>
+            </child>
+            <child>
+                <object class="GtkBox">
+                    <property name="orientation">vertical</property>
+                    <child>
+                        <object class="GtkScrolledWindow">
+                            <property name="vexpand">TRUE</property>
+                            <child>
+                                <object class="GtkColumnView" id="requirements_view">
+                                    <child>
+                                        <object class="GtkColumnViewColumn">
+                                            <property name="id">requirement_name</property>
+                                            <property name="title">Name</property>
+                                            <property name="resizable">TRUE</property>
+                                        </object>
+                                    </child>
+                                    <child>
+                                        <object class="GtkColumnViewColumn">
+                                            <property name="id">requirement_description</property>
+                                            <property name="title">Description</property>
+                                            <property name="resizable">TRUE</property>
+                                        </object>
+                                    </child>
+                                    <child>
+                                        <object class="GtkColumnViewColumn">
+                                            <property name="id">requirement_statement</property>
+                                            <property name="title">Statement</property>
+                                            <property name="resizable">TRUE</property>
+                                        </object>
+                                    </child>
+                                    <child>
+                                        <object class="GtkColumnViewColumn">
+                                            <property name="id">requirement_priority</property>
+                                            <property name="title">Priority</property>
+                                            <property name="resizable">TRUE</property>
+                                        </object>
+                                    </child>
+                                    <child>
+                                        <object class="GtkColumnViewColumn">
+                                            <property name="id">requirement_test</property>
+                                            <property name="title">Test</property>
+                                            <property name="resizable">TRUE</property>
+                                        </object>
+                                    </child>
+                                    <child>
+                                        <object class="GtkColumnViewColumn">
+                                            <property name="id">requirement_stakeholder</property>
+                                            <property name="title">Stakeholder</property>
+                                            <property name="resizable">TRUE</property>
+                                        </object>
+                                    </child>
+                                    <child>
+                                        <object class="GtkColumnViewColumn">
+                                            <property name="id">requirement_created</property>
+                                            <property name="title">Created</property>
+                                            <property name="resizable">TRUE</property>
+                                        </object>
+                                    </child>
+                                    <child>
+                                        <object class="GtkColumnViewColumn">
+                                            <property name="id">requirement_modified</property>
+                                            <property name="title">Modified</property>
+                                            <property name="resizable">TRUE</property>
+                                        </object>
+                                    </child>
+                                </object>
+                            </child>
+                        </object>
+                    </child>
+                    <child>
+                        <object class="GtkLabel" id="requirements_index_advice_empty">
+                            <style>
+                                <class name="optifol_advisory"/>
+                                <class name="optifol_boxed"/>
+                            </style>
+                            <property name="use-markup">TRUE</property> <!-- TODO template -->
+                            <property name="justify">GTK_JUSTIFY_CENTER</property>
+                            <property name="halign">GTK_ALIGN_CENTER</property>
+                            <property name="valign">GTK_ALIGN_CENTER</property>
+                            <property name="hexpand">TRUE</property>
+                            <property name="vexpand">TRUE</property>
+                            <property name="max-width-chars">80</property>
+                            <property name="wrap">TRUE</property>
+                            <property name="label">
+                                <![CDATA[<b>The selected Subsystem does not have any defined Requirements.</b>
+
+The <i>Requirements Index</i> presents a tabular view of all Requirements within the active Subsystem.
+
+From the Index, you can review, modify, search, and filter Requirements in preparation for formal analysis, compliance verification, and report generation.
+
+To create a Requirement within the active Subsystem, select <i>New Requirement</i> in the Index toolbar. Requirements can be committed to storage with the <i>Save All Requirements</i> and <i>Refresh Requirements</i> toolbar options, respectively.]]>
+                            </property>
+                        </object>
+                    </child>
+                </object>
+            </child>
+        </object>
+    </child>
+</object>

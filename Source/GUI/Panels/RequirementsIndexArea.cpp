@@ -13,6 +13,8 @@
 
 #include "RequirementsIndexArea.hpp"
 
+#include "../GTKHelpers.hpp"
+
 namespace optifol
 {
 

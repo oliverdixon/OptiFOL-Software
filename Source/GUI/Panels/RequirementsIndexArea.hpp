@@ -14,10 +14,14 @@
 #ifndef REQUIREMENTSINDEXAREA_HPP
 #define REQUIREMENTSINDEXAREA_HPP
 
-#include <gtkmm.h>
+#include <giomm/liststore.h>
+#include <gtkmm/builder.h>
+#include <gtkmm/columnview.h>
+#include <gtkmm/label.h>
+#include <gtkmm/listitem.h>
+#include <gtkmm/singleselection.h>
 
 #include "../ContextButtonCorrespondence.hpp"
-#include "../GTKHelpers.hpp"
 #include "../../Storage/Requirement.hpp"
 
 namespace optifol
