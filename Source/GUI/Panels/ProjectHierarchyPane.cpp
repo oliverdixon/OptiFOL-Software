@@ -26,14 +26,13 @@ std::shared_ptr<log4cxx::Logger> ProjectHierarchyPane::logger(log4cxx::Logger::g
 const char * const ProjectHierarchyPane::area_name = "Project Pane Area";
 
 ProjectHierarchyPane::ProjectHierarchyPane(Gtk::Builder &builder,
-        const Glib::RefPtr<Gio::ListStore<Project>> &initial_model,
-        sigc::slot<SelectedCallbackSignature> &&selected_subsystem_callback,
-        sigc::slot<DeselectedCallbackSignature> &&deselected_subsystem_callback) :
+        const Glib::RefPtr<Gio::ListStore<Project>> &initial_model) :
     stack_switcher(GTKHelpers::get_widget<Gtk::DropDown>(area_name, builder, "project_pane_switcher")),
     stack(GTKHelpers::get_widget<Gtk::Stack>(area_name, builder, "project_pane_stack")),
     view(GTKHelpers::get_widget<Gtk::ListView>(area_name, builder, "project_view")),
-    root_model(initial_model),
-
+    data_model(initial_model),
+    tree_model(Gtk::TreeListModel::create(data_model, sigc::ptr_fun(&ProjectHierarchyPane::tree_node_expand), true,
+        true)),
     context_menu(
         view,
         GTKHelpers::get_object<Gio::Menu>(area_name, builder, "structure_context_menu"),
@@ -65,13 +64,8 @@ ProjectHierarchyPane::ProjectHierarchyPane(Gtk::Builder &builder,
         }
     )
 {
-    view->signal_activate().connect(sigc::mem_fun(*this, &ProjectHierarchyPane::switch_subsystem));
+    view->signal_activate().connect(sigc::mem_fun(*this, &ProjectHierarchyPane::switch_selection));
 
-    signal_select_subsystem.connect(selected_subsystem_callback);
-    signal_deselect_subsystem.connect(deselected_subsystem_callback);
-
-    tree_model = Gtk::TreeListModel::create(root_model, sigc::ptr_fun(&ProjectHierarchyPane::tree_node_expand), true,
-        true);
     stack_switcher->property_selected().signal_changed().connect(sigc::mem_fun(*this,
         &ProjectHierarchyPane::switch_visible_stack));
 
@@ -83,7 +77,7 @@ ProjectHierarchyPane::ProjectHierarchyPane(Gtk::Builder &builder,
     selection_model->signal_selection_changed().connect([this](guint, const guint n_items)
     {
         if (n_items == 0) {
-            signal_deselect_subsystem();
+            emit_deselected();
             context_menu.disable_action("new_subsystem");
             context_menu.disable_action("edit_structure");
             context_menu.disable_action("delete_structure");
@@ -98,7 +92,7 @@ ProjectHierarchyPane::ProjectHierarchyPane(Gtk::Builder &builder,
     {
         if (removed > 0) {
             // If anything was removed from the model, just deselect everything out of an abundance of caution.
-            signal_deselect_subsystem();
+            emit_deselected();
             context_menu.disable_action("new_subsystem");
             context_menu.disable_action("edit_structure");
             context_menu.disable_action("delete_structure");
@@ -106,17 +100,45 @@ ProjectHierarchyPane::ProjectHierarchyPane(Gtk::Builder &builder,
     });
 
     const auto factory = Gtk::SignalListItemFactory::create();
-    factory->signal_setup().connect(sigc::ptr_fun(ProjectHierarchyPane::tree_node_setup));
-    factory->signal_bind().connect(sigc::mem_fun(*this, &ProjectHierarchyPane::tree_node_bind));
+    factory->signal_setup().connect(sigc::bind(&GTKHelpers::on_setup_expandable_label, false));
+    factory->signal_bind().connect(sigc::bind(&GTKHelpers::on_bind_expandable_name<TreeNode>, tree_model));
     view->set_factory(factory);
 
-    configure_new_project_popup(builder);
-    configure_new_subsystem_popup(builder);
-    configure_edit_structure_popup(builder);
-    configure_delete_structure_popup(builder);
+    configure_new_project_popover(builder);
+    configure_new_subsystem_popover(builder);
+    configure_edit_structure_popover(builder);
+    configure_delete_structure_popover(builder);
 }
 
-void ProjectHierarchyPane::configure_new_project_popup(Gtk::Builder &builder) const
+void ProjectHierarchyPane::replace_requirement_listener(
+    sigc::slot<void(const Glib::RefPtr<Gio::ListStore<Requirement>> &)> &&selected, sigc::slot<void()> &&deselected,
+    const bool onboard)
+{
+    requirements_callbacks.first.connect(std::move(selected));
+    requirements_callbacks.second.connect(std::move(deselected));
+
+    if (onboard) {
+        const auto selected_idx = selection_model->get_selected();
+        if (selected_idx != GTK_INVALID_LIST_POSITION)
+            switch_selection(selected_idx);
+    }
+}
+
+void ProjectHierarchyPane::replace_analysis_listener(
+    sigc::slot<void(const Glib::RefPtr<Gio::ListStore<AnalysisGroup>> &)> &&selected, sigc::slot<void()> &&deselected,
+    const bool onboard)
+{
+    analysis_callbacks.first.connect(std::move(selected));
+    analysis_callbacks.second.connect(std::move(deselected));
+
+    if (onboard) {
+        const auto selected_idx = selection_model->get_selected();
+        if (selected_idx != GTK_INVALID_LIST_POSITION)
+            switch_selection(selected_idx);
+    }
+}
+
+void ProjectHierarchyPane::configure_new_project_popover(Gtk::Builder &builder) const
 {
     const auto popover = GTKHelpers::get_widget<Gtk::Popover>(area_name, builder, "new_project_popover");
     const auto confirm_button = GTKHelpers::get_widget<Gtk::Button>(area_name, builder, "new_project_confirm");
@@ -133,12 +155,12 @@ void ProjectHierarchyPane::configure_new_project_popup(Gtk::Builder &builder) co
     confirm_button->signal_clicked().connect([this, popover, property_name]
     {
         popover->popdown();
-        root_model->append(Glib::make_refptr_for_instance(new Project(property_name->get_text())));
+        data_model->append(Glib::make_refptr_for_instance(new Project(property_name->get_text())));
         property_name->set_text("");
     });
 }
 
-void ProjectHierarchyPane::configure_new_subsystem_popup(Gtk::Builder &builder) const
+void ProjectHierarchyPane::configure_new_subsystem_popover(Gtk::Builder &builder) const
 {
     const auto popover = GTKHelpers::get_widget<Gtk::Popover>(area_name, builder, "new_subsystem_popover");
     const auto confirm_button = GTKHelpers::get_widget<Gtk::Button>(area_name, builder, "new_subsystem_confirm");
@@ -176,7 +198,7 @@ void ProjectHierarchyPane::configure_new_subsystem_popup(Gtk::Builder &builder) 
     });
 }
 
-void ProjectHierarchyPane::configure_edit_structure_popup(Gtk::Builder &builder) const
+void ProjectHierarchyPane::configure_edit_structure_popover(Gtk::Builder &builder) const
 {
     const auto popover = GTKHelpers::get_widget<Gtk::Popover>(area_name, builder, "edit_structure_popover");
     const auto confirm_button = GTKHelpers::get_widget<Gtk::Button>(area_name, builder, "edit_structure_confirm");
@@ -213,7 +235,7 @@ void ProjectHierarchyPane::configure_edit_structure_popup(Gtk::Builder &builder)
     });
 }
 
-void ProjectHierarchyPane::configure_delete_structure_popup(Gtk::Builder &builder) const
+void ProjectHierarchyPane::configure_delete_structure_popover(Gtk::Builder &builder) const
 {
     const auto popover = GTKHelpers::get_widget<Gtk::Popover>(area_name, builder, "delete_structure_popover");
     const auto confirm_button = GTKHelpers::get_widget<Gtk::Button>(area_name, builder, "delete_structure_confirm");
@@ -252,14 +274,14 @@ void ProjectHierarchyPane::configure_delete_structure_popup(Gtk::Builder &builde
                         owning_model->remove(idx);
             } else {
                 // Otherwise, use the root model.
-                const auto root_model_count = root_model->get_n_items();
+                const auto root_model_count = data_model->get_n_items();
                 for (guint idx = 0; idx < root_model_count; ++idx)
-                    if (root_model->get_item(idx) == candidate)
-                        root_model->remove(idx);
+                    if (data_model->get_item(idx) == candidate)
+                        data_model->remove(idx);
             }
         }
 
-        signal_deselect_subsystem();
+        emit_deselected();
     });
 }
 
@@ -271,37 +293,6 @@ void ProjectHierarchyPane::tree_node_setup(const Glib::RefPtr<Gtk::ListItem> &it
     label->set_halign(Gtk::Align::START);
     expander->set_child(*label);
     item->set_child(*expander);
-}
-
-void ProjectHierarchyPane::tree_node_bind(const Glib::RefPtr<Gtk::ListItem> &item) const
-{
-    const auto position = item->get_position();
-    const auto model_item = std::dynamic_pointer_cast<StorageObjectBase>(item->get_item());
-    const auto node_item = std::dynamic_pointer_cast<TreeNode>(item->get_item());
-    const auto expander = dynamic_cast<Gtk::TreeExpander*>(item->get_child());
-
-    if (position == GTK_INVALID_LIST_POSITION || model_item == nullptr || expander == nullptr || node_item == nullptr) {
-        LOG4CXX_WARN(logger, "Invalid position " << std::to_string(position) << " selected in the project view.");
-        return;
-    }
-
-    const auto gui_row = tree_model->get_row(position);
-    if (!gui_row) {
-        LOG4CXX_WARN(logger, "No row at selected position " << std::to_string(position) << " in the project view.");
-        return;
-    }
-
-    expander->set_list_row(gui_row);
-
-    const auto label = dynamic_cast<Gtk::Label*>(expander->get_child());
-    if (!label) {
-        LOG4CXX_WARN(logger, "Unexpected type of label in the expander for the row at " << std::to_string(position) <<
-            " in the project view.");
-        return;
-    }
-
-    Glib::Binding::bind_property(model_item->property_name(), label->property_label(),
-        Glib::Binding::Flags::SYNC_CREATE);
 }
 
 void ProjectHierarchyPane::switch_visible_stack() const
@@ -329,19 +320,30 @@ Glib::RefPtr<Gio::ListModel> ProjectHierarchyPane::tree_node_expand(
     return nullptr;
 }
 
-void ProjectHierarchyPane::switch_subsystem(guint) const
+void ProjectHierarchyPane::emit_selected(const Glib::RefPtr<const Subsystem>& new_subsystem) const
 {
+    requirements_callbacks.first.emit(new_subsystem->requirements);
+    analysis_callbacks.first.emit(new_subsystem->analysis_groups);
+}
+
+void ProjectHierarchyPane::emit_deselected() const
+{
+    requirements_callbacks.second.emit();
+    analysis_callbacks.second.emit();
+}
+
+void ProjectHierarchyPane::switch_selection(guint) const
+{
+    // Rely on the selection model to inform on the selected item. The view can be unreliable.
     const auto& candidate = selection_model->get_selected_item();
 
     const auto subsystem = std::dynamic_pointer_cast<const Subsystem>(candidate);
     if (subsystem != nullptr) {
-        signal_select_subsystem(subsystem->requirements);
+        emit_selected(subsystem);
         return;
     }
 
-    const auto project = std::dynamic_pointer_cast<const Project>(candidate);
-    if (project != nullptr)
-        signal_deselect_subsystem();
+    emit_deselected();
 }
 
 }

@@ -13,6 +13,9 @@
 
 #include "StorageObjectBase.hpp"
 
+#include <glibmm/binding.h>
+#include <gtkmm/label.h>
+
 namespace optifol
 {
 

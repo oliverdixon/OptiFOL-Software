@@ -18,6 +18,7 @@
 #include <glibmm/object.h>
 #include <glibmm/property.h>
 #include <gtkmm/builder.h>
+#include <gtkmm/listitem.h>
 
 namespace optifol
 {

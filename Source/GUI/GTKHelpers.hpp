@@ -16,6 +16,8 @@
 
 #include <gtkmm.h>
 
+#include "../Storage/StorageObjectBase.hpp"
+
 namespace optifol
 {
 
@@ -138,6 +140,130 @@ public:
                 "was not found");
 
         return widget;
+    }
+
+    /**
+     * @brief Set up a non-expandable GTK label within the given container
+     * @param list_item The container into which the label should be emplaced
+     * @param mono_styling Should the label be styled according to the standard monospace style?
+     */
+    static void on_setup_flat_label(const Glib::RefPtr<Gtk::ListItem> &list_item, const bool mono_styling = false)
+    {
+        const auto label = Gtk::make_managed<Gtk::Label>();
+
+        label->set_halign(Gtk::Align::START);
+        if (mono_styling)
+            label->add_css_class("optifol_monospace");
+
+        list_item->set_child(*label);
+    }
+
+    /**
+     * @brief Set up an expandable GTK label within the given container
+     * @param list_item The container into which the label should be emplaced
+     * @param mono_styling Should the label be styled according to the standard monospace style?
+     */
+    static void on_setup_expandable_label(const Glib::RefPtr<Gtk::ListItem> &list_item, const bool mono_styling = false)
+    {
+        const auto expander = Gtk::make_managed<Gtk::TreeExpander>();
+        const auto label = Gtk::make_managed<Gtk::Label>();
+
+        label->set_halign(Gtk::Align::START);
+        if (mono_styling)
+            label->add_css_class("optifol_monospace");
+
+        expander->set_child(*label);
+        list_item->set_child(*expander);
+    }
+
+
+    /**
+     * @brief Establish a property-synched binding between the 'name' property of a StorableObjectBase-like object, and
+     *  a flat (non-expandable) label in a Gtk::ListView.
+     * @param list_item The list item provided by the GTK callback invocation
+     */
+    static void on_bind_flat_name(const Glib::RefPtr<Gtk::ListItem> &list_item)
+    {
+        const auto label = dynamic_cast<Gtk::Label *>(list_item->get_child());
+        const auto item = std::dynamic_pointer_cast<StorageObjectBase>(list_item->get_item());
+
+        if (label != nullptr && item != nullptr)
+            Glib::Binding::bind_property(item->property_name(), label->property_label(),
+                Glib::Binding::Flags::SYNC_CREATE);
+    }
+
+    /**
+     * @brief Establish a property-synched binding between the 'creation time' property of a StorableObjectBase-like
+     *  object, and a flat (non-expandable) label in a Gtk::ListView by means of a locale-dependent formatting routine.
+     * @param list_item The list item provided by the GTK callback invocation
+     */
+    static void on_bind_flat_creation_time(const Glib::RefPtr<Gtk::ListItem> &list_item)
+    {
+        const auto label = dynamic_cast<Gtk::Label *>(list_item->get_child());
+        const auto item = std::dynamic_pointer_cast<StorageObjectBase>(list_item->get_item());
+
+        if (label != nullptr && item != nullptr)
+            Glib::Binding::bind_property(item->property_creation_time(), label->property_label(),
+                Glib::Binding::Flags::SYNC_CREATE, [](const std::chrono::system_clock::time_point& time)
+                {
+                    return std::format("{:%c}", time);
+                });
+    }
+
+    /**
+     * @brief Establish a property-synched binding between the 'last-modified time' property of a StorableObjectBase-
+     *  like object, and a flat (non-expandable) label in a Gtk::ListView by means of a locale-dependent formatting
+     *  routine.
+     * @param list_item The list item provided by the GTK callback invocation
+     */
+    static void on_bind_flat_modified_time(const Glib::RefPtr<Gtk::ListItem> &list_item)
+    {
+        const auto label = dynamic_cast<Gtk::Label *>(list_item->get_child());
+        const auto item = std::dynamic_pointer_cast<StorageObjectBase>(list_item->get_item());
+
+        if (label != nullptr && item != nullptr)
+            Glib::Binding::bind_property(item->property_modified_time(), label->property_label(),
+                Glib::Binding::Flags::SYNC_CREATE, [](const std::chrono::system_clock::time_point& time)
+                {
+                    return std::format("{:%c}", time);
+                });
+    }
+
+    /**
+     * @brief Establish a property-synched binding between the 'name' property of a StorableObjectBase-like object, and
+     *  a tree-expandable label in a Gtk::ListView with nested expanders.
+     * @tparam ExpandableType The type of the node to expand. Typically, though not necessarily, satisfying the
+     *  StorableType concept.
+     * @param list_item The list item provided by the GTK callback invocation
+     * @param tree_model The tree model in which the list item exists, required to update expander responsibility
+     *  delegation
+     */
+    template<class ExpandableType>
+    static void on_bind_expandable_name(const Glib::RefPtr<Gtk::ListItem> &list_item,
+        const Glib::RefPtr<Gtk::TreeListModel>& tree_model)
+    {
+        const auto position = list_item->get_position();
+        const auto model_item = std::dynamic_pointer_cast<StorageObjectBase>(list_item->
+            get_item());
+        const auto node_item = std::dynamic_pointer_cast<ExpandableType>(list_item->get_item());
+        const auto expander = dynamic_cast<Gtk::TreeExpander*>(list_item->get_child());
+
+        if (position == GTK_INVALID_LIST_POSITION || model_item == nullptr || expander == nullptr ||
+                node_item == nullptr)
+            return;
+
+        const auto gui_row = tree_model->get_row(position);
+        if (!gui_row)
+            return;
+
+        expander->set_list_row(gui_row);
+
+        const auto label = dynamic_cast<Gtk::Label*>(expander->get_child());
+        if (!label)
+            return;
+
+        Glib::Binding::bind_property(model_item->property_name(), label->property_label(),
+            Glib::Binding::Flags::SYNC_CREATE);
     }
 };
 

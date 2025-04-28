@@ -32,8 +32,10 @@ public:
      */
     explicit AnalysisGroup(std::string&& name);
 
+    AnalysisGroup(std::string &&name, BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &builder);
+
     // TODO: shouldn't be public
-    Glib::RefPtr<Gio::ListStore<AnalysisGroup>> child_groups = Gio::ListStore<AnalysisGroup>::create();
+    Glib::RefPtr<Gio::ListStore<Requirement>> requirements = Gio::ListStore<Requirement>::create();
 };
 
 }

@@ -194,6 +194,8 @@ set(MAINWINDOW_RESOURCE_COMPONENTS
         ${RESOURCE_DIR}/UI/MainWindow/AnalysisArea/NewAnalysisGroupPopover.ui
         ${RESOURCE_DIR}/UI/MainWindow/AnalysisArea/DeleteAnalysisGroupPopover.ui
 
+        ${RESOURCE_DIR}/UI/MainWindow/TestingArea/TestingView.ui
+
         ${RESOURCE_DIR}/UI/MainWindow/replacements.txt
 )
 

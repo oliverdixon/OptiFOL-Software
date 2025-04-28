@@ -34,13 +34,16 @@ MainWindow::MainWindow():
 
     try {
         requirements_index_area = std::make_unique<RequirementsIndexArea>(*builder);
-        project_hierarchy_pane = std::make_unique<ProjectHierarchyPane>(
-            *builder,
-            Gio::ListStore<Project>::create(),
-            sigc::mem_fun(*requirements_index_area, &RequirementsIndexArea::select_model),
-            sigc::mem_fun(*requirements_index_area, &RequirementsIndexArea::deselect_model)
-        );
         analysis_area = std::make_unique<AnalysisArea>(*builder);
+
+        project_hierarchy_pane = std::make_unique<ProjectHierarchyPane>(*builder,
+            Gio::ListStore<Project>::create());
+        project_hierarchy_pane->replace_requirement_listener(
+            sigc::mem_fun(*requirements_index_area, &RequirementsIndexArea::select_model),
+            sigc::mem_fun(*requirements_index_area, &RequirementsIndexArea::deselect_model));
+        project_hierarchy_pane->replace_analysis_listener(
+            sigc::mem_fun(*analysis_area, &AnalysisArea::select_model),
+            sigc::mem_fun(*analysis_area, &AnalysisArea::deselect_model));
     } catch (const StorageConnectionException& exception) {
         database_alert->set_detail(exception.what());
         database_alert->show(*this);

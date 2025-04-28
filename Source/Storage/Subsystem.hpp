@@ -16,6 +16,7 @@
 
 #include <giomm/liststore.h>
 
+#include "AnalysisGroup.hpp"
 #include "Requirement.hpp"
 #include "StorageObjectBase.hpp"
 #include "TreeNode.hpp"
@@ -68,6 +69,9 @@ public:
 
     // TODO: shouldn't be public.
     Glib::RefPtr<Gio::ListStore<Requirement>> requirements = Gio::ListStore<Requirement>::create();
+
+    // TODO: shouldn't be public.
+    Glib::RefPtr<Gio::ListStore<AnalysisGroup>> analysis_groups = Gio::ListStore<AnalysisGroup>::create();
 
 private:
     mutable std::pair<std::size_t, std::string> fully_qualified_path_cache;

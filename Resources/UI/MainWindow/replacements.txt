@@ -14,3 +14,5 @@ ANALYSIS_VIEW=./AnalysisArea/AnalysisView.ui
 NEW_ANALYSIS_GROUP_POPOVER=./AnalysisArea/NewAnalysisGroupPopover.ui
 EDIT_ANALYSIS_GROUP_POPOVER=./AnalysisArea/EditAnalysisGroupPopover.ui
 DELETE_ANALYSIS_GROUP_POPOVER=./AnalysisArea/DeleteAnalysisGroupPopover.ui
+
+TESTING_VIEW=./TestingArea/TestingView.ui

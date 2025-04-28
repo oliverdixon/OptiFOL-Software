@@ -18,6 +18,7 @@
 #include <log4cxx/logger.h>
 
 #include "../ContextButtonCorrespondence.hpp"
+#include "../../Storage/AnalysisGroup.hpp"
 #include "../../Storage/Project.hpp"
 #include "../../Storage/Requirement.hpp"
 
@@ -33,34 +34,29 @@ class ProjectHierarchyPane
 {
 public:
     /**
-     * @typedef SelectedCallbackSignature
-     * @brief The function signature of the callback to handle updates in subsystem selection
-     */
-    using SelectedCallbackSignature = void(const Glib::RefPtr<Gio::ListStore<Requirement>>&);
-
-    /**
-     * @typedef DeselectedCallbackSignature
-     * @brief The function signature of the callback to handle a subsystem being deselected
-     */
-    using DeselectedCallbackSignature = void();
-
-    /**
-     * @typedef RefreshStorageCallbackSignature
-     * @brief The function signature of the callback to handle a request to read any changes reported by the storage
-     *  backend
-     */
-    using RefreshStorageCallbackSignature = void();
-
-    /**
      * @brief Construct a project pane manager given a managed Gtk::ListView resource and backend model
      * @param builder The GTK builder attached to the main window
      * @param initial_model The backend storage model used to populate the model and stream data updates
-     * @param selected_subsystem_callback The callback to execute when the subsystem selection changes
-     * @param deselected_subsystem_callback The callback to execute when the subsystem is deselected
      */
-    ProjectHierarchyPane(Gtk::Builder& builder, const Glib::RefPtr<Gio::ListStore<Project>> &initial_model,
-        sigc::slot<SelectedCallbackSignature>&& selected_subsystem_callback,
-        sigc::slot<DeselectedCallbackSignature>&& deselected_subsystem_callback);
+    ProjectHierarchyPane(Gtk::Builder& builder, const Glib::RefPtr<Gio::ListStore<Project>> &initial_model);
+
+    /**
+     * @brief Replace any current 'requirement listener' with a new pair of selected-deselected callbacks.
+     * @param selected The callback to execute when the requirements model is replaced in the current scope
+     * @param deselected The callback to execute when the requirements model is removed from the current scope
+     * @param onboard Should an emit signal be immediately issued to the new listener?
+     */
+    void replace_requirement_listener(sigc::slot<void(const Glib::RefPtr<Gio::ListStore<Requirement>>&)>&& selected,
+        sigc::slot<void()>&& deselected, bool onboard = true);
+
+    /**
+     * @brief Replace any current 'analysis listener' with a new pair of selected-deselected callbacks.
+     * @param selected The callback to execute when the analysis groups model is replaced in the current scope
+     * @param deselected The callback to execute when the analysis groups model is removed from the current scope
+     * @param onboard Should an emit signal be immediately issued to the new listener?
+     */
+    void replace_analysis_listener(sigc::slot<void(const Glib::RefPtr<Gio::ListStore<AnalysisGroup>>&)>&& selected,
+        sigc::slot<void()>&& deselected, bool onboard = true);
 
 private:
     enum class ProjectStackSwitcherIdx
@@ -69,13 +65,29 @@ private:
         Metadata = 1
     };
 
-    void configure_new_project_popup(Gtk::Builder &builder) const;
+    /**
+     * @brief Configure the sub-widgets of the 'New Project' popover
+     * @param builder The builder associated with the popover
+     */
+    void configure_new_project_popover(Gtk::Builder &builder) const;
 
-    void configure_new_subsystem_popup(Gtk::Builder &builder) const;
+    /**
+     * @brief Configure the sub-widgets of the 'New Subsystem' popover
+     * @param builder The builder associated with the popover
+     */
+    void configure_new_subsystem_popover(Gtk::Builder &builder) const;
 
-    void configure_edit_structure_popup(Gtk::Builder &builder) const;
+    /**
+     * @brief Configure the sub-widgets of the 'Edit Structure' popover
+     * @param builder The builder associated with the popover
+     */
+    void configure_edit_structure_popover(Gtk::Builder &builder) const;
 
-    void configure_delete_structure_popup(Gtk::Builder &builder) const;
+    /**
+     * @brief Configure the sub-widgets of the 'Delete Structure' popover
+     * @param builder The builder associated with the popover
+     */
+    void configure_delete_structure_popover(Gtk::Builder &builder) const;
 
     /**
      * @brief GTK callback for a new Gtk::ListItem. This member function handles the configuration of a new entry in the
@@ -83,13 +95,6 @@ private:
      * @param item The new list item to configure for placement within the tree view
      */
     static void tree_node_setup(const Glib::RefPtr<Gtk::ListItem> &item);
-
-    /**
-     * @brief GTK callback for a Gtk::ListItem being bound or re-bound to the view; typically handles data content
-     *  updates.
-     * @param item The list item to reconfigure following a bind
-     */
-    void tree_node_bind(const Glib::RefPtr<Gtk::ListItem>& item) const;
 
     /**
      * @brief GTK callback for a change of selection on the stack-switcher dropdown. The current state is checked, and
@@ -104,21 +109,38 @@ private:
      */
     static Glib::RefPtr<Gio::ListModel> tree_node_expand(const Glib::RefPtr<Glib::ObjectBase> &item);
 
-    void switch_subsystem(guint) const;
+    /**
+     * @brief Emits a notification to all listeners that a new subsystem has been selected
+     */
+    void emit_selected(const Glib::RefPtr<const Subsystem>& new_subsystem) const;
+
+    /**
+     * @brief Emits a notification to all listeners that the previously selected subsystem has been deselected.
+     */
+    void emit_deselected() const;
+
+    /**
+     * @brief Handle a selection change in the Project Hierarchy Pane by updating any internal state and informing
+     *  listeners
+     */
+    void switch_selection(guint) const;
 
     static const char * const area_name;
     static std::shared_ptr<log4cxx::Logger> logger;
 
-    sigc::signal<SelectedCallbackSignature> signal_select_subsystem;
-    sigc::signal<DeselectedCallbackSignature> signal_deselect_subsystem;
+    std::pair<sigc::signal<void(const Glib::RefPtr<Gio::ListStore<Requirement>>&)>, sigc::signal<void()>>
+        requirements_callbacks;
 
-    Glib::RefPtr<Gtk::TreeListModel> tree_model;
+    std::pair<sigc::signal<void(const Glib::RefPtr<Gio::ListStore<AnalysisGroup>>&)>, sigc::signal<void()>>
+        analysis_callbacks;
+
     Gtk::DropDown * const stack_switcher;
     Gtk::Stack * const stack;
     Gtk::ListView * const view;
 
-    Glib::RefPtr<Gio::ListStore<Project>> root_model;
+    Glib::RefPtr<Gio::ListStore<Project>> data_model;
     Glib::RefPtr<Gtk::SingleSelection> selection_model;
+    const Glib::RefPtr<Gtk::TreeListModel> tree_model;
 
     ContextButtonCorrespondence context_menu;
 };

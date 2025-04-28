@@ -97,96 +97,66 @@ To view an Index, select a Subsystem from the left-hand <i>Project Explorer</i> 
                 </object>
             </child>
             <child>
-                <object class="GtkBox">
-                    <property name="orientation">vertical</property>
+                <object class="GtkScrolledWindow">
+                    <property name="vexpand">TRUE</property>
                     <child>
-                        <object class="GtkScrolledWindow">
-                            <property name="vexpand">TRUE</property>
+                        <object class="GtkColumnView" id="requirements_view">
                             <child>
-                                <object class="GtkColumnView" id="requirements_view">
-                                    <child>
-                                        <object class="GtkColumnViewColumn">
-                                            <property name="id">requirement_name</property>
-                                            <property name="title">Name</property>
-                                            <property name="resizable">TRUE</property>
-                                        </object>
-                                    </child>
-                                    <child>
-                                        <object class="GtkColumnViewColumn">
-                                            <property name="id">requirement_description</property>
-                                            <property name="title">Description</property>
-                                            <property name="resizable">TRUE</property>
-                                        </object>
-                                    </child>
-                                    <child>
-                                        <object class="GtkColumnViewColumn">
-                                            <property name="id">requirement_statement</property>
-                                            <property name="title">Statement</property>
-                                            <property name="resizable">TRUE</property>
-                                        </object>
-                                    </child>
-                                    <child>
-                                        <object class="GtkColumnViewColumn">
-                                            <property name="id">requirement_priority</property>
-                                            <property name="title">Priority</property>
-                                            <property name="resizable">TRUE</property>
-                                        </object>
-                                    </child>
-                                    <child>
-                                        <object class="GtkColumnViewColumn">
-                                            <property name="id">requirement_test</property>
-                                            <property name="title">Test</property>
-                                            <property name="resizable">TRUE</property>
-                                        </object>
-                                    </child>
-                                    <child>
-                                        <object class="GtkColumnViewColumn">
-                                            <property name="id">requirement_stakeholder</property>
-                                            <property name="title">Stakeholder</property>
-                                            <property name="resizable">TRUE</property>
-                                        </object>
-                                    </child>
-                                    <child>
-                                        <object class="GtkColumnViewColumn">
-                                            <property name="id">requirement_created</property>
-                                            <property name="title">Created</property>
-                                            <property name="resizable">TRUE</property>
-                                        </object>
-                                    </child>
-                                    <child>
-                                        <object class="GtkColumnViewColumn">
-                                            <property name="id">requirement_modified</property>
-                                            <property name="title">Modified</property>
-                                            <property name="resizable">TRUE</property>
-                                        </object>
-                                    </child>
+                                <object class="GtkColumnViewColumn">
+                                    <property name="id">requirement_name</property>
+                                    <property name="title">Name</property>
+                                    <property name="resizable">TRUE</property>
                                 </object>
                             </child>
-                        </object>
-                    </child>
-                    <child>
-                        <object class="GtkLabel" id="requirements_index_advice_empty">
-                            <style>
-                                <class name="optifol_advisory"/>
-                                <class name="optifol_boxed"/>
-                            </style>
-                            <property name="use-markup">TRUE</property> <!-- TODO template -->
-                            <property name="justify">GTK_JUSTIFY_CENTER</property>
-                            <property name="halign">GTK_ALIGN_CENTER</property>
-                            <property name="valign">GTK_ALIGN_CENTER</property>
-                            <property name="hexpand">TRUE</property>
-                            <property name="vexpand">TRUE</property>
-                            <property name="max-width-chars">80</property>
-                            <property name="wrap">TRUE</property>
-                            <property name="label">
-                                <![CDATA[<b>The selected Subsystem does not have any defined Requirements.</b>
-
-The <i>Requirements Index</i> presents a tabular view of all Requirements within the active Subsystem.
-
-From the Index, you can review, modify, search, and filter Requirements in preparation for formal analysis, compliance verification, and report generation.
-
-To create a Requirement within the active Subsystem, select <i>New Requirement</i> in the Index toolbar. Requirements can be committed to storage with the <i>Save All Requirements</i> and <i>Refresh Requirements</i> toolbar options, respectively.]]>
-                            </property>
+                            <child>
+                                <object class="GtkColumnViewColumn">
+                                    <property name="id">requirement_description</property>
+                                    <property name="title">Description</property>
+                                    <property name="resizable">TRUE</property>
+                                </object>
+                            </child>
+                            <child>
+                                <object class="GtkColumnViewColumn">
+                                    <property name="id">requirement_statement</property>
+                                    <property name="title">Statement</property>
+                                    <property name="resizable">TRUE</property>
+                                </object>
+                            </child>
+                            <child>
+                                <object class="GtkColumnViewColumn">
+                                    <property name="id">requirement_priority</property>
+                                    <property name="title">Priority</property>
+                                    <property name="resizable">TRUE</property>
+                                </object>
+                            </child>
+                            <child>
+                                <object class="GtkColumnViewColumn">
+                                    <property name="id">requirement_test</property>
+                                    <property name="title">Test</property>
+                                    <property name="resizable">TRUE</property>
+                                </object>
+                            </child>
+                            <child>
+                                <object class="GtkColumnViewColumn">
+                                    <property name="id">requirement_stakeholder</property>
+                                    <property name="title">Stakeholder</property>
+                                    <property name="resizable">TRUE</property>
+                                </object>
+                            </child>
+                            <child>
+                                <object class="GtkColumnViewColumn">
+                                    <property name="id">requirement_created</property>
+                                    <property name="title">Created</property>
+                                    <property name="resizable">TRUE</property>
+                                </object>
+                            </child>
+                            <child>
+                                <object class="GtkColumnViewColumn">
+                                    <property name="id">requirement_modified</property>
+                                    <property name="title">Modified</property>
+                                    <property name="resizable">TRUE</property>
+                                </object>
+                            </child>
                         </object>
                     </child>
                 </object>

@@ -3,164 +3,196 @@
   - 2025 Oliver Dixon <od641@york.ac.uk>
   -->
 
-<object class="GtkPaned">
-    <property name="orientation">vertical</property>
+<object class="GtkBox">
     <child>
-        <object class="GtkBox">
-            <property name="orientation">vertical</property>
-            <child>
-                <object class="GtkBox">
-                    <property name="halign">GTK_ALIGN_FILL</property>
-                    <style>
-                        <class name="toolbar"/>
-                        <class name="optifol_boxed"/>
-                    </style>
-                    <child>
-                        <object class="GtkMenuButton" id="new_analysis_group">
-                            <property name="icon-name">folder-new-symbolic</property>
-                            <property name="tooltip-text">New Analysis Group</property>
-                        </object>
-                    </child>
-                    <child>
-                        <object class="GtkMenuButton" id="edit_analysis_group">
-                            <property name="icon-name">document-edit-symbolic</property>
-                            <property name="tooltip-text">Edit Selected Analysis Group</property>
-                            <property name="sensitive">FALSE</property>
-                        </object>
-                    </child>
-                    <child>
-                        <object class="GtkMenuButton" id="delete_analysis_group">
-                            <property name="icon-name">edit-delete-symbolic</property>
-                            <property name="tooltip-text">Delete Selected Analysis Group</property>
-                            <property name="sensitive">FALSE</property>
-                        </object>
-                    </child>
-                    <child>
-                        <object class="GtkSeparator" />
-                    </child>
-                    <child>
-                        <object class="GtkMenuButton">
-                            <property name="icon-name">edit-copy-symbolic</property>
-                            <property name="tooltip-text">Copy Selected Requirement to Analysis Group</property>
-                            <property name="sensitive">FALSE</property>
-                        </object>
-                    </child>
-                    <child>
-                        <object class="GtkMenuButton">
-                            <property name="icon-name">go-bottom-symbolic</property>
-                            <property name="tooltip-text">Move Selected Requirement to Analysis Group</property>
-                            <property name="sensitive">FALSE</property>
-                        </object>
-                    </child>
-                    <child>
-                        <object class="GtkMenuButton">
-                            <property name="icon-name">list-remove-symbolic</property>
-                            <property name="tooltip-text">Remove Selected Requirement from Analysis Group</property>
-                            <property name="sensitive">FALSE</property>
-                        </object>
-                    </child>
-                    <child>
-                        <object class="GtkSeparator" />
-                    </child>
-                    <child>
-                        <object class="GtkMenuButton">
-                            <property name="icon-name">object-select-symbolic</property>
-                            <property name="tooltip-text">Check Consistency of Selected Analysis Group</property>
-                        </object>
-                    </child>
-                    <child>
-                        <object class="GtkMenuButton">
-                            <property name="icon-name">list-remove-all-symbolic</property>
-                            <property name="tooltip-text">Check Redundancy of Selected Analysis Group</property>
-                        </object>
-                    </child>
-                    <child>
-                        <object class="GtkBox">
-                            <property name="hexpand">TRUE</property>
-                            <property name="halign">GTK_ALIGN_END</property>
-                            <child>
-                                <object class="GtkEntry">
-                                    <property name="sensitive">FALSE</property>
-                                    <property name="placeholder-text">Search by Name</property>
-                                </object>
-                            </child>
-                            <child>
-                                <object class="GtkButton">
-                                    <property name="sensitive">FALSE</property>
-                                    <property name="icon-name">edit-find-symbolic</property>
-                                    <property name="tooltip-text">Search Requirements</property>
-                                </object>
-                            </child>
-                            <child>
-                                <object class="GtkButton">
-                                    <property name="sensitive">FALSE</property>
-                                    <property name="icon-name">edit-clear-all-symbolic</property>
-                                    <property name="tooltip-text">Clear Search</property>
-                                </object>
-                            </child>
-                        </object>
-                    </child>
-                </object>
-            </child>
-            <child>
-                <object class="GtkScrolledWindow">
-                    <property name="vexpand">TRUE</property>
-                    <child>
-                        <object class="GtkColumnView" id="analysis_groups_view">
-                            <child>
-                                <object class="GtkColumnViewColumn">
-                                    <property name="id">analysis_requirement_group</property>
-                                    <property name="title">Analysis Group</property>
-                                    <property name="resizable">TRUE</property>
-                                </object>
-                            </child>
-                            <child>
-                                <object class="GtkColumnViewColumn">
-                                    <property name="id">analysis_requirement_name</property>
-                                    <property name="title">Requirement Name</property>
-                                    <property name="resizable">TRUE</property>
-                                </object>
-                            </child>
-                            <child>
-                                <object class="GtkColumnViewColumn">
-                                    <property name="id">analysis_requirement_statement</property>
-                                    <property name="title">Statement</property>
-                                    <property name="resizable">TRUE</property>
-                                </object>
-                            </child>
-                            <child>
-                                <object class="GtkColumnViewColumn">
-                                    <property name="id">analysis_requirement_cnf</property>
-                                    <property name="title">Normalised Statement</property>
-                                    <property name="resizable">TRUE</property>
-                                </object>
-                            </child>
-                        </object>
-                    </child>
-                </object>
-            </child>
+        <object class="GtkLabel" id="analysis_advice_unselected">
+            <style>
+                <class name="optifol_advisory"/>
+                <class name="optifol_boxed"/>
+            </style>
+            <property name="use-markup">TRUE</property>
+            <property name="justify">GTK_JUSTIFY_CENTER</property>
+            <property name="halign">GTK_ALIGN_CENTER</property>
+            <property name="valign">GTK_ALIGN_CENTER</property>
+            <property name="hexpand">TRUE</property>
+            <property name="vexpand">TRUE</property>
+            <property name="max-width-chars">80</property>
+            <property name="wrap">TRUE</property>
+            <property name="label">
+                <![CDATA[<b>The Analysis View is not applicable to Project-level scopes.</b>
+
+The <i>Analysis View</i> allows organisation of Requirements defined in the selected Subsystem into <i>Analysis Groups</i>.
+
+Analysis Groups can be individually checked for logical consistency and scanned for redundant entries.
+
+To prepare Analysis Groups, select a Subsystem from the left-hand <i>Project Explorer</i> pane and define some Requirements in the <i>Requirements Index</i> view.]]>
+            </property>
         </object>
     </child>
     <child>
-        <object class="GtkNotebook">
+        <object class="GtkPaned" id="analysis_index_content">
+            <property name="visible">FALSE</property>
+            <property name="orientation">vertical</property>
             <child>
-                <object class="GtkLabel">
-                    <property name="label">Content: Group A Consistency Check</property>
-                </object>
-            </child>
-            <child type="tab">
-                <object class="GtkLabel">
-                    <property name="label">Group A: Consistency Check</property>
+                <object class="GtkBox">
+                    <property name="orientation">vertical</property>
+                    <child>
+                        <object class="GtkBox">
+                            <property name="halign">GTK_ALIGN_FILL</property>
+                            <style>
+                                <class name="toolbar"/>
+                                <class name="optifol_boxed"/>
+                            </style>
+                            <child>
+                                <object class="GtkMenuButton" id="new_analysis_group">
+                                    <property name="icon-name">folder-new-symbolic</property>
+                                    <property name="tooltip-text">New Analysis Group</property>
+                                </object>
+                            </child>
+                            <child>
+                                <object class="GtkMenuButton" id="edit_analysis_group">
+                                    <property name="icon-name">document-edit-symbolic</property>
+                                    <property name="tooltip-text">Edit Selected Analysis Group</property>
+                                    <property name="sensitive">FALSE</property>
+                                </object>
+                            </child>
+                            <child>
+                                <object class="GtkMenuButton" id="delete_analysis_group">
+                                    <property name="icon-name">edit-delete-symbolic</property>
+                                    <property name="tooltip-text">Delete Selected Analysis Group</property>
+                                    <property name="sensitive">FALSE</property>
+                                </object>
+                            </child>
+                            <child>
+                                <object class="GtkSeparator"/>
+                            </child>
+                            <child>
+                                <object class="GtkMenuButton">
+                                    <property name="icon-name">edit-copy-symbolic</property>
+                                    <property name="tooltip-text">Copy Selected Requirement to Analysis Group</property>
+                                    <property name="sensitive">FALSE</property>
+                                </object>
+                            </child>
+                            <child>
+                                <object class="GtkMenuButton">
+                                    <property name="icon-name">go-bottom-symbolic</property>
+                                    <property name="tooltip-text">Move Selected Requirement to Analysis Group</property>
+                                    <property name="sensitive">FALSE</property>
+                                </object>
+                            </child>
+                            <child>
+                                <object class="GtkMenuButton">
+                                    <property name="icon-name">list-remove-symbolic</property>
+                                    <property name="tooltip-text">Remove Selected Requirement from Analysis Group
+                                    </property>
+                                    <property name="sensitive">FALSE</property>
+                                </object>
+                            </child>
+                            <child>
+                                <object class="GtkSeparator"/>
+                            </child>
+                            <child>
+                                <object class="GtkMenuButton">
+                                    <property name="icon-name">object-select-symbolic</property>
+                                    <property name="tooltip-text">Check Consistency of Selected Analysis Group
+                                    </property>
+                                </object>
+                            </child>
+                            <child>
+                                <object class="GtkMenuButton">
+                                    <property name="icon-name">list-remove-all-symbolic</property>
+                                    <property name="tooltip-text">Check Redundancy of Selected Analysis Group</property>
+                                </object>
+                            </child>
+                            <child>
+                                <object class="GtkBox">
+                                    <property name="hexpand">TRUE</property>
+                                    <property name="halign">GTK_ALIGN_END</property>
+                                    <child>
+                                        <object class="GtkEntry">
+                                            <property name="sensitive">FALSE</property>
+                                            <property name="placeholder-text">Search by Name</property>
+                                        </object>
+                                    </child>
+                                    <child>
+                                        <object class="GtkButton">
+                                            <property name="sensitive">FALSE</property>
+                                            <property name="icon-name">edit-find-symbolic</property>
+                                            <property name="tooltip-text">Search Requirements</property>
+                                        </object>
+                                    </child>
+                                    <child>
+                                        <object class="GtkButton">
+                                            <property name="sensitive">FALSE</property>
+                                            <property name="icon-name">edit-clear-all-symbolic</property>
+                                            <property name="tooltip-text">Clear Search</property>
+                                        </object>
+                                    </child>
+                                </object>
+                            </child>
+                        </object>
+                    </child>
+                    <child>
+                        <object class="GtkScrolledWindow">
+                            <property name="vexpand">TRUE</property>
+                            <child>
+                                <object class="GtkColumnView" id="analysis_groups_view">
+                                    <child>
+                                        <object class="GtkColumnViewColumn">
+                                            <property name="id">analysis_requirement_group</property>
+                                            <property name="title">Analysis Group</property>
+                                            <property name="resizable">TRUE</property>
+                                        </object>
+                                    </child>
+                                    <child>
+                                        <object class="GtkColumnViewColumn">
+                                            <property name="id">analysis_requirement_name</property>
+                                            <property name="title">Requirement Name</property>
+                                            <property name="resizable">TRUE</property>
+                                        </object>
+                                    </child>
+                                    <child>
+                                        <object class="GtkColumnViewColumn">
+                                            <property name="id">analysis_requirement_statement</property>
+                                            <property name="title">Statement</property>
+                                            <property name="resizable">TRUE</property>
+                                        </object>
+                                    </child>
+                                    <child>
+                                        <object class="GtkColumnViewColumn">
+                                            <property name="id">analysis_requirement_cnf</property>
+                                            <property name="title">Normalised Statement</property>
+                                            <property name="resizable">TRUE</property>
+                                        </object>
+                                    </child>
+                                </object>
+                            </child>
+                        </object>
+                    </child>
                 </object>
             </child>
             <child>
-                <object class="GtkLabel">
-                    <property name="label">Content: Group B Redundancy Check</property>
-                </object>
-            </child>
-            <child type="tab">
-                <object class="GtkLabel">
-                    <property name="label">Group B: Redundancy Check</property>
+                <object class="GtkNotebook">
+                    <child>
+                        <object class="GtkLabel">
+                            <property name="label">Content: Group A Consistency Check</property>
+                        </object>
+                    </child>
+                    <child type="tab">
+                        <object class="GtkLabel">
+                            <property name="label">Group A: Consistency Check</property>
+                        </object>
+                    </child>
+                    <child>
+                        <object class="GtkLabel">
+                            <property name="label">Content: Group B Redundancy Check</property>
+                        </object>
+                    </child>
+                    <child type="tab">
+                        <object class="GtkLabel">
+                            <property name="label">Group B: Redundancy Check</property>
+                        </object>
+                    </child>
                 </object>
             </child>
         </object>

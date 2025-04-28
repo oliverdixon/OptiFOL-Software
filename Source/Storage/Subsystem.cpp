@@ -24,6 +24,7 @@ Subsystem::Subsystem(std::string &&name, TreeNode *parent) :
     TreeNode(parent)
 {
     property_name().set_value(std::move(name));
+    analysis_groups->append(Glib::make_refptr_for_instance(new AnalysisGroup("Unassigned Requirements")));
 }
 
 Subsystem::Subsystem(std::string &&name, BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &builder,
@@ -33,6 +34,7 @@ Subsystem::Subsystem(std::string &&name, BaseObjectType *cobject, const Glib::Re
     TreeNode(parent)
 {
     property_name().set_value(std::move(name));
+    analysis_groups->append(Glib::make_refptr_for_instance(new AnalysisGroup("Unassigned Requirements")));
 }
 
 bool Subsystem::operator==(const Subsystem &other) const noexcept

@@ -16,6 +16,17 @@
 namespace optifol
 {
 
+AnalysisGroup::AnalysisGroup(std::string &&name) :
+    Glib::ObjectBase("AnalysisGroup")
+{
+    property_name().set_value(std::move(name));
+}
 
+AnalysisGroup::AnalysisGroup(std::string &&name, BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &builder) :
+    Glib::ObjectBase("AnalysisGroup"),
+    StorageObjectBase(cobject, builder)
+{
+    property_name().set_value(std::move(name));
+}
 
 }
