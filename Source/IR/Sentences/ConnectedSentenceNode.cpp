@@ -13,8 +13,8 @@
 namespace optifol
 {
 
-ConnectedSentenceNode::ConnectedSentenceNode(BinaryOperatorTypes operator_type, std::shared_ptr<ISentenceNode> lhs,
-                                             std::shared_ptr<ISentenceNode> rhs) :
+ConnectedSentenceNode::ConnectedSentenceNode(const BinaryOperatorTypes operator_type,
+    std::unique_ptr<ISentenceNode>&& lhs, std::unique_ptr<ISentenceNode>&& rhs) :
         operator_type(operator_type),
         lhs(std::move(lhs)),
         rhs(std::move(rhs))
@@ -30,14 +30,14 @@ BinaryOperatorTypes ConnectedSentenceNode::get_operator_type() const
     return operator_type;
 }
 
-std::shared_ptr<ISentenceNode> ConnectedSentenceNode::get_lhs_operand() const
+std::unique_ptr<ISentenceNode> ConnectedSentenceNode::get_lhs_operand()
 {
-    return lhs;
+    return std::move(lhs);
 }
 
-std::shared_ptr<ISentenceNode> ConnectedSentenceNode::get_rhs_operand() const
+std::unique_ptr<ISentenceNode> ConnectedSentenceNode::get_rhs_operand()
 {
-    return rhs;
+    return std::move(rhs);
 }
 
 void ConnectedSentenceNode::accept(IObservingSentenceVisitor &visitor) const

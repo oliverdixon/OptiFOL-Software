@@ -20,6 +20,8 @@ class ITermNode
 public:
     virtual ~ITermNode() = default;
 
+    [[nodiscard]] virtual std::unique_ptr<ITermNode> clone() const = 0;
+
     [[nodiscard]] virtual std::string to_string() const = 0;
 
     [[nodiscard]] virtual std::string get_disambiguated_name() const = 0;

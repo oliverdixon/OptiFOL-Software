@@ -34,7 +34,7 @@ public:
     void reset() override;
 
 private:
-    std::shared_ptr<ISentenceNode> extracted_sentence;
+    std::unique_ptr<ISentenceNode> extracted_sentence;
 };
 
 }

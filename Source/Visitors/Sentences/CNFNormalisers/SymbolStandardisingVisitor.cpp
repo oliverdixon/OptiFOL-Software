@@ -27,7 +27,7 @@ void SymbolStandardisingVisitor::visit(QuantifiedSentenceNode &node)
     // If there's any applicable rewriting rules, make the relevant substitution before continuing.
     const auto &rule = rewriting_rules.find(node.get_bound_variable()->get_disambiguated_name());
     if (rule != rewriting_rules.cend())
-        node.replace_bound_variable(rule->second);
+        node.swap_bound_variable(rule->second);
 
     // Open the scope, deal with the contents, and close it.
     open_scope(node);
@@ -99,7 +99,7 @@ void SymbolStandardisingVisitor::open_scope(QuantifiedSentenceNode &node)
          * appear given a prospectively ambiguous variable node, which clashes with a bound variable in an adjacent
          * scope. */
         auto new_variable = std::make_shared<VariableNode>(original_name, new_name);
-        node.replace_bound_variable(new_variable);
+        node.swap_bound_variable(new_variable);
         rewriting_rules.emplace(original_name, std::move(new_variable));
     }
 

@@ -23,7 +23,7 @@ class FunctionNode :
 {
 public:
     [[maybe_unused]] explicit FunctionNode(std::string name,
-                                           std::vector<std::shared_ptr<ITermNode>> &&arguments) :
+                                           std::vector<std::unique_ptr<ITermNode>> &&arguments) :
             name(std::move(name)), arguments(std::move(arguments))
     {}
 
@@ -43,6 +43,16 @@ public:
         return result;
     }
 
+    [[nodiscard]] std::unique_ptr<ITermNode> clone() const override
+    {
+        std::vector<std::unique_ptr<ITermNode>> cloned_arguments;
+        cloned_arguments.reserve(arguments.size());
+        for (const auto& argument : arguments)
+            cloned_arguments.push_back(argument->clone());
+
+        return std::make_unique<FunctionNode>(name, std::move(cloned_arguments));
+    }
+
     [[nodiscard]] std::string get_disambiguated_name() const override
     {
         return to_string();
@@ -53,14 +63,14 @@ public:
         visitor.visit(*this);
     }
 
-    std::vector<std::shared_ptr<ITermNode>>& get_arguments()
+    std::vector<std::unique_ptr<ITermNode>>& get_arguments()
     {
         return arguments;
     }
 
 private:
     const std::string name;
-    std::vector<std::shared_ptr<ITermNode>> arguments;
+    std::vector<std::unique_ptr<ITermNode>> arguments;
 };
 
 }

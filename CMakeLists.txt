@@ -278,6 +278,8 @@ add_executable(OptifolGUI
         Source/GUI/Panels/AnalysisArea.hpp
         Source/Storage/AnalysisGroup.cpp
         Source/Storage/AnalysisGroup.hpp
+        Source/Storage/AnalysisManager.cpp
+        Source/Storage/AnalysisManager.hpp
 )
 
 set(COMMON_COMPILER_OPTIONS
@@ -292,7 +294,7 @@ set(COMMON_COMPILER_OPTIONS
         -Wno-shadow-field
 )
 
-if (FALSE)
+if (TRUE)
     # Disable the GUI? This is for testing the application logic that is unrelated to the GUI e.g. FOL resolution.
     target_compile_definitions(OptifolGUI PRIVATE OPTIFOL_DISABLE_GUI)
 endif ()

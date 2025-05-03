@@ -60,18 +60,21 @@ void DisjunctionDistributionVisitor::visit(ConnectedSentenceNode &node)
 
 bool DisjunctionDistributionVisitor::attempt_reduction(ConnectedSentenceNode &node)
 {
+#if 0
     assert(node.get_operator_type() == BinaryOperatorTypes::Disjunction);
 
     if (!tracked_operands.empty()) {
-        const auto simple = (tracking_state == TrackingState::LeftMajor) ? node.rhs : node.lhs;
+        auto simple_lhs = tracking_state == TrackingState::LeftMajor ? std::move(node.rhs) :
+            std::move(node.lhs);
+        std::unique_ptr<ISentenceNode> simple_rhs(&*simple_lhs);
         auto &complex = tracked_operands.top();
 
         assert(complex.first != nullptr && complex.second != nullptr);
 
         node.operator_type = BinaryOperatorTypes::Conjunction;
-        node.lhs = std::make_shared<ConnectedSentenceNode>(BinaryOperatorTypes::Disjunction, simple,
+        node.lhs = std::make_unique<ConnectedSentenceNode>(BinaryOperatorTypes::Disjunction, std::move(simple_lhs),
                                                            std::move(complex.first));
-        node.rhs = std::make_shared<ConnectedSentenceNode>(BinaryOperatorTypes::Disjunction, simple,
+        node.rhs = std::make_unique<ConnectedSentenceNode>(BinaryOperatorTypes::Disjunction, std::move(simple_rhs),
                                                            std::move(complex.second));
 
         tracked_operands.pop();
@@ -81,6 +84,10 @@ bool DisjunctionDistributionVisitor::attempt_reduction(ConnectedSentenceNode &no
         return true;
     }
 
+    return false;
+#endif
+
+    // TODO
     return false;
 }
 

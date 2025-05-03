@@ -45,6 +45,24 @@ public:
 
     void deselect_model();
 
+    /**
+     * @brief Bind a Requirement description attribute to a label
+     * @param list_item The container in which the destination label exists
+     */
+    static void on_bind_property_description(const Glib::RefPtr<Gtk::ListItem> &list_item);
+
+    /**
+     * @brief Bind a Requirement statement attribute to a label
+     * @param list_item The container in which the destination label exists
+     */
+    static void on_bind_property_statement(const Glib::RefPtr<Gtk::ListItem> &list_item);
+
+    /**
+     * @brief Bind a Requirement priority attribute to a label
+     * @param list_item The container in which the destination label exists
+     */
+    static void on_bind_property_priority(const Glib::RefPtr<Gtk::ListItem> &list_item);
+
 private:
     Glib::RefPtr<Gio::ListStore<Requirement>> data_model;
     Glib::RefPtr<Gtk::SingleSelection> selection_model = Gtk::SingleSelection::create();
@@ -64,24 +82,6 @@ private:
     void configure_delete_requirement_popover(Gtk::Builder& builder) const;
 
     void configure_duplicate_requirement_popover(Gtk::Builder& builder) const;
-
-    /**
-     * @brief Bind a Requirement description attribute to a label
-     * @param list_item The container in which the destination label exists
-     */
-    static void on_bind_property_description(const Glib::RefPtr<Gtk::ListItem> &list_item);
-
-    /**
-     * @brief Bind a Requirement statement attribute to a label
-     * @param list_item The container in which the destination label exists
-     */
-    static void on_bind_property_statement(const Glib::RefPtr<Gtk::ListItem> &list_item);
-
-    /**
-     * @brief Bind a Requirement priority attribute to a label
-     * @param list_item The container in which the destination label exists
-     */
-    static void on_bind_property_priority(const Glib::RefPtr<Gtk::ListItem> &list_item);
 };
 
 }

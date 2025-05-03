@@ -97,7 +97,7 @@ RequirementsIndexArea::RequirementsIndexArea(Gtk::Builder& builder) :
             const auto factory = Gtk::SignalListItemFactory::create();
 
             if (gtk_id == "requirement_name") {
-                factory->signal_setup().connect(sigc::bind(&GTKHelpers::on_setup_flat_label, true));
+                factory->signal_setup().connect(sigc::bind(&GTKHelpers::on_setup_flat_label, false));
                 factory->signal_bind().connect(sigc::ptr_fun(&GTKHelpers::on_bind_flat_name));
             } else if (gtk_id == "requirement_statement") {
                 factory->signal_setup().connect(sigc::bind(&GTKHelpers::on_setup_flat_label, true));

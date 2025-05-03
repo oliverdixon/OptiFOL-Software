@@ -18,13 +18,13 @@ class NodeProxy :
         public ISentenceNode
 {
 public:
-    explicit NodeProxy(std::shared_ptr<ISentenceNode> node);
+    explicit NodeProxy(std::unique_ptr<ISentenceNode>&& node);
 
     void accept(MutatingSentenceVisitorBase& visitor) override;
 
     void accept(IObservingSentenceVisitor& visitor) const override;
 
-    std::shared_ptr<ISentenceNode> sentence;
+    std::unique_ptr<ISentenceNode> sentence;
 };
 
 }

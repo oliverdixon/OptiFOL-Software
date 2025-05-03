@@ -13,6 +13,7 @@
 
 #include "AnalysisArea.hpp"
 
+#include "RequirementsIndexArea.hpp"
 #include "../GTKHelpers.hpp"
 
 namespace optifol
@@ -87,7 +88,7 @@ AnalysisArea::AnalysisArea(Gtk::Builder &builder) :
             const auto& gtk_id = column->get_id();
             const auto factory = Gtk::SignalListItemFactory::create();
 
-            if (gtk_id == "analysis_requirement_group") {
+            if (gtk_id == "analysis_requirement_name") {
                 factory->signal_setup().connect(sigc::bind(&GTKHelpers::on_setup_expandable_label, false));
                 factory->signal_bind().connect([this](const Glib::RefPtr<Gtk::ListItem> &list_item)
                 {
@@ -96,8 +97,11 @@ AnalysisArea::AnalysisArea(Gtk::Builder &builder) :
                      * on execution of the bind call. Hence, calling bind(tree_model) on the below function would fix
                      * all subsequent invocations to the initial value of the tree_model.
                      */
-                    GTKHelpers::on_bind_expandable_name<AnalysisGroup>(list_item, tree_model);
+                    GTKHelpers::on_bind_expandable_name(list_item, tree_model);
                 });
+            } else if (gtk_id == "analysis_requirement_statement") {
+                factory->signal_setup().connect(sigc::bind(&GTKHelpers::on_setup_flat_label, false));
+                factory->signal_bind().connect(sigc::ptr_fun(&RequirementsIndexArea::on_bind_property_statement));
             } else
                 // Jump out here if unrecognised, so all further code can assume a factory was configured.
                 continue;

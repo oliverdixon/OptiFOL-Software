@@ -139,15 +139,8 @@ To prepare Analysis Groups, select a Subsystem from the left-hand <i>Project Exp
                                 <object class="GtkColumnView" id="analysis_groups_view">
                                     <child>
                                         <object class="GtkColumnViewColumn">
-                                            <property name="id">analysis_requirement_group</property>
-                                            <property name="title">Analysis Group</property>
-                                            <property name="resizable">TRUE</property>
-                                        </object>
-                                    </child>
-                                    <child>
-                                        <object class="GtkColumnViewColumn">
                                             <property name="id">analysis_requirement_name</property>
-                                            <property name="title">Requirement Name</property>
+                                            <property name="title">Requirement</property>
                                             <property name="resizable">TRUE</property>
                                         </object>
                                     </child>

@@ -21,7 +21,7 @@ namespace optifol
 
 TermResolutionVisitor::TermResolutionVisitor(
         const std::unordered_set<std::string> &scope_hook,
-        const std::unordered_map<std::string, std::shared_ptr<VariableNode>> &rewriting_rules_hook) :
+        std::unordered_map<std::string, std::unique_ptr<VariableNode>>& rewriting_rules_hook) :
 
         scope_hook(scope_hook), rewriting_rules_hook(rewriting_rules_hook)
 {}
@@ -33,8 +33,8 @@ void TermResolutionVisitor::visit(FunctionNode &node)
 
     for (std::remove_const_t<decltype(argument_count)> i = 0; i < argument_count; ++i) {
         const auto &rule = rewriting_rules_hook.find(args[i]->get_disambiguated_name());
-        if (rule != rewriting_rules_hook.cend())
-            args[i] = rule->second;
+        if (rule != rewriting_rules_hook.end())
+            args[i] = std::move(rule->second);
 
         args[i]->accept(*this);
     }

@@ -19,16 +19,16 @@ class NegatedSentenceNode :
         public ISentenceNode
 {
 public:
-    [[maybe_unused]] explicit NegatedSentenceNode(std::shared_ptr<ISentenceNode> operand);
+    [[maybe_unused]] explicit NegatedSentenceNode(std::unique_ptr<ISentenceNode>&& operand);
 
-    [[nodiscard]] std::shared_ptr<ISentenceNode> get_operand() const;
+    [[nodiscard]] std::unique_ptr<ISentenceNode> get_operand();
 
     void accept(MutatingSentenceVisitorBase& visitor) override;
 
     void accept(IObservingSentenceVisitor& visitor) const override;
 
 private:
-    std::shared_ptr<ISentenceNode> operand;
+    std::unique_ptr<ISentenceNode> operand;
 };
 
 }

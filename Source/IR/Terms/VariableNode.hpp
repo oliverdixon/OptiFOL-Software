@@ -3,8 +3,6 @@
  * 2025 Oliver Dixon <od641@york.ac.uk>
  */
 
-
-
 #ifndef OPTIFOL_VARIABLENODE_HPP
 #define OPTIFOL_VARIABLENODE_HPP
 
@@ -27,6 +25,11 @@ public:
             name(std::move(name)),
             disambiguated_name(disambiguated_name)
     {}
+
+    [[nodiscard]] std::unique_ptr<ITermNode> clone() const override
+    {
+        return std::make_unique<VariableNode>(name);
+    }
 
     [[nodiscard]] std::string to_string() const override
     {

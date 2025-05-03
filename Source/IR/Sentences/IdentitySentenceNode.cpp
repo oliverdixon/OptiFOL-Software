@@ -13,19 +13,19 @@
 namespace optifol
 {
 
-IdentitySentenceNode::IdentitySentenceNode(std::shared_ptr<ITermNode> lhs, std::shared_ptr<ITermNode> rhs) :
+IdentitySentenceNode::IdentitySentenceNode(std::unique_ptr<ITermNode>&& lhs, std::unique_ptr<ITermNode>&& rhs) :
         lhs(std::move(lhs)),
         rhs(std::move(rhs))
 {}
 
-std::shared_ptr<ITermNode> IdentitySentenceNode::get_lhs_operand() const
+std::unique_ptr<ITermNode> IdentitySentenceNode::get_lhs_operand()
 {
-    return lhs;
+    return std::move(lhs);
 }
 
-std::shared_ptr<ITermNode> IdentitySentenceNode::get_rhs_operand() const
+std::unique_ptr<ITermNode> IdentitySentenceNode::get_rhs_operand()
 {
-    return rhs;
+    return std::move(rhs);
 }
 
 void IdentitySentenceNode::accept(MutatingSentenceVisitorBase &visitor)
@@ -38,14 +38,14 @@ void IdentitySentenceNode::accept(IObservingSentenceVisitor &visitor) const
     visitor.visit(*this);
 }
 
-void IdentitySentenceNode::swap_lhs_operand(std::shared_ptr<ITermNode> new_lhs)
+void IdentitySentenceNode::swap_lhs_operand(std::unique_ptr<ITermNode>& new_lhs)
 {
-    lhs = std::move(new_lhs);
+    lhs.swap(new_lhs);
 }
 
-void IdentitySentenceNode::swap_rhs_operand(std::shared_ptr<ITermNode> new_rhs)
+void IdentitySentenceNode::swap_rhs_operand(std::unique_ptr<ITermNode>& new_rhs)
 {
-    rhs = std::move(new_rhs);
+    rhs.swap(new_rhs);
 }
 
 }

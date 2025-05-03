@@ -29,22 +29,22 @@ class ConnectedSentenceNode :
 {
 public:
     [[maybe_unused]] explicit ConnectedSentenceNode(BinaryOperatorTypes operator_type,
-                                                    std::shared_ptr<ISentenceNode> lhs,
-                                                    std::shared_ptr<ISentenceNode> rhs);
+                                                    std::unique_ptr<ISentenceNode>&& lhs,
+                                                    std::unique_ptr<ISentenceNode>&& rhs);
 
     [[nodiscard]] BinaryOperatorTypes get_operator_type() const;
 
-    [[nodiscard]] std::shared_ptr<ISentenceNode> get_lhs_operand() const;
+    [[nodiscard]] std::unique_ptr<ISentenceNode> get_lhs_operand();
 
-    [[nodiscard]] std::shared_ptr<ISentenceNode> get_rhs_operand() const;
+    [[nodiscard]] std::unique_ptr<ISentenceNode> get_rhs_operand();
 
     void accept(MutatingSentenceVisitorBase& visitor) override;
 
     void accept(IObservingSentenceVisitor& visitor) const override;
 
     BinaryOperatorTypes operator_type;
-    std::shared_ptr<ISentenceNode> lhs;
-    std::shared_ptr<ISentenceNode> rhs;
+    std::unique_ptr<ISentenceNode> lhs;
+    std::unique_ptr<ISentenceNode> rhs;
 };
 
 }

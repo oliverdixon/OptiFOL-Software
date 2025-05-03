@@ -23,14 +23,14 @@ class PredicationNode :
 {
 public:
     [[maybe_unused]] explicit PredicationNode(std::string name,
-                                              std::vector<std::shared_ptr<ITermNode>> &&arguments);
+                                              std::vector<std::unique_ptr<ITermNode>> &&arguments);
 
     void accept(MutatingSentenceVisitorBase &visitor) override;
 
     void accept(IObservingSentenceVisitor &visitor) const override;
 
     const std::string name;
-    std::vector<std::shared_ptr<ITermNode>> arguments;
+    std::vector<std::unique_ptr<ITermNode>> arguments;
 };
 
 }

@@ -15,6 +15,7 @@
 #define REQUIREMENT_HPP
 
 #include "StorageObjectBase.hpp"
+#include "../IR/Sentences/ISentenceNode.hpp"
 
 namespace optifol
 {
@@ -90,6 +91,8 @@ private:
     Glib::Property<Glib::ustring> description;
 
     Glib::Property<guint> priority;
+
+    std::unique_ptr<ISentenceNode> parsed_statement;
 };
 
 }

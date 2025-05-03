@@ -7,8 +7,7 @@
 
 #ifndef OPTIFOL_ISENTENCENODE_HPP
 #define OPTIFOL_ISENTENCENODE_HPP
-
-#include <string>
+#include <memory>
 
 namespace optifol
 {
@@ -20,6 +19,8 @@ class ISentenceNode
 {
 public:
     virtual ~ISentenceNode() = default;
+
+    [[nodiscard]] virtual std::unique_ptr<ISentenceNode> clone() const = 0;
 
     virtual void accept(MutatingSentenceVisitorBase &visitor) = 0;
 

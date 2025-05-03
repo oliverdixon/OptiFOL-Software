@@ -12,7 +12,7 @@
 namespace optifol
 {
 
-NodeProxy::NodeProxy(std::shared_ptr<ISentenceNode> node) :
+NodeProxy::NodeProxy(std::unique_ptr<ISentenceNode>&& node) :
         sentence(std::move(node))
 {}
 

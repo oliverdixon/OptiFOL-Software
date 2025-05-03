@@ -21,6 +21,11 @@ public:
             name(std::move(name))
     {}
 
+    [[nodiscard]] std::unique_ptr<ITermNode> clone() const override
+    {
+        return std::make_unique<ConstantNode>(name);
+    }
+
     [[nodiscard]] std::string to_string() const override
     {
         return name;

@@ -35,11 +35,11 @@ void DMLVisitor::visit(ConnectedSentenceNode &node)
         const auto type = node.get_operator_type();
 
         if (type == BinaryOperatorTypes::Conjunction || type == BinaryOperatorTypes::Disjunction) {
-            // TODO: can we std::move these? Need a non-const stealer in ConnectedSentenceNode.
-            std::shared_ptr<ISentenceNode> lhs_neg = std::make_shared<NodeProxy>(
-                    std::make_shared<NegatedSentenceNode>(node.get_lhs_operand()));
-            std::shared_ptr<ISentenceNode> rhs_neg = std::make_shared<NodeProxy>(
-                    std::make_shared<NegatedSentenceNode>(node.get_rhs_operand()));
+            // Negate both operands and put them in a proxy.
+            std::unique_ptr<ISentenceNode> lhs_neg = std::make_unique<NodeProxy>(
+                std::make_unique<NegatedSentenceNode>(node.get_lhs_operand()));
+            std::unique_ptr<ISentenceNode> rhs_neg = std::make_unique<NodeProxy>(
+                std::make_unique<NegatedSentenceNode>(node.get_rhs_operand()));
 
             /* Negating the operands may introduce opportunities for further reduction; in particular, if the
              * operand was a conjunctive or disjunction binary-connected sentence. Recurse down on both sides, using
@@ -64,7 +64,7 @@ void DMLVisitor::visit(ConnectedSentenceNode &node)
 
             negative_context.pop();
 
-            pending_transformation.pending_dml = std::make_shared<ConnectedSentenceNode>(
+            pending_transformation.pending_dml = std::make_unique<ConnectedSentenceNode>(
                     (type == BinaryOperatorTypes::Conjunction) ?
                     BinaryOperatorTypes::Disjunction :
                     BinaryOperatorTypes::Conjunction,
@@ -101,9 +101,8 @@ void DMLVisitor::visit(QuantifiedSentenceNode &node)
 
         /* Negate the detained sentence within a proxy (due to a potential ~~P-type to P-type conversion). The detained
          * sentence is DML-normalised, so a layer of negation context is required. */
-        // TODO: can we std::move this? Need a non-const stealer in QuantifiedSentenceNode.
-        auto neg_operand = std::make_shared<NodeProxy>(
-                std::make_shared<NegatedSentenceNode>(node.get_sentence()));
+        auto neg_operand = std::make_unique<NodeProxy>(
+                std::make_unique<NegatedSentenceNode>(node.get_sentence()));
 
         negative_context.emplace();
         neg_operand->accept(*this);
@@ -113,11 +112,9 @@ void DMLVisitor::visit(QuantifiedSentenceNode &node)
 
         negative_context.pop();
 
-        pending_transformation.pending_dml = std::make_shared<QuantifiedSentenceNode>(
-                (type == QuantifierTypes::Universal) ?
-                QuantifierTypes::Existential :
-                QuantifierTypes::Universal,
-                node.get_bound_variable(), // TODO: we can definitely steal this
+        pending_transformation.pending_dml = std::make_unique<QuantifiedSentenceNode>(
+                type == QuantifierTypes::Universal ? QuantifierTypes::Existential : QuantifierTypes::Universal,
+                node.get_bound_variable(),
                 std::move(neg_operand));
 
         pending_transformation.skip_node_count = 1;
@@ -167,12 +164,12 @@ void DMLVisitor::visit(NodeProxy &node)
             --pending_transformation.skip_node_count;
     }
 
-    const auto &layer = negative_context.top();
+    auto &layer = negative_context.top();
 
     if (layer.negative_branch != nullptr) {
         assert(layer.positive_branch != nullptr);
-        node.sentence = layer.is_positive ? layer.positive_branch : layer.negative_branch;
-        pending_transformation.pending_dml = node.sentence;
+        node.sentence = layer.is_positive ? std::move(layer.positive_branch) : std::move(layer.negative_branch);
+        pending_transformation.pending_dml = std::move(node.sentence);
         pending_transformation.skip_node_count = 0;
     }
 
@@ -195,7 +192,7 @@ bool DMLVisitor::PendingTransformation::pending() const
     return pending_dml != nullptr;
 }
 
-std::shared_ptr<ISentenceNode> DMLVisitor::PendingTransformation::steal()
+std::unique_ptr<ISentenceNode> DMLVisitor::PendingTransformation::steal()
 {
     auto ptr = std::move(pending_dml);
     pending_dml = nullptr;

@@ -94,12 +94,12 @@ private:
         /**
          * @brief The positive branch of the expression, of the form P for some predicate P.
          */
-        std::shared_ptr<ISentenceNode> positive_branch;
+        std::unique_ptr<ISentenceNode> positive_branch;
 
         /**
          * @brief The negative branch of the expression, of the form ~P for some predicate P.
          */
-        std::shared_ptr<ISentenceNode> negative_branch;
+        std::unique_ptr<ISentenceNode> negative_branch;
     };
 
     /**
@@ -120,7 +120,7 @@ private:
         /**
          * @brief The pending DML-transformed sentence
          */
-        std::shared_ptr<ISentenceNode> pending_dml;
+        std::unique_ptr<ISentenceNode> pending_dml;
 
         /**
          * @brief The number of remaining 'skips' the pending DML-transformed sentence should undertake before
@@ -138,7 +138,7 @@ private:
          * @return The r-value stolen sentence
          * @warning This member function invalidates the internal state of the container.
          */
-        [[nodiscard("The stealer invalidates the internal state.")]] std::shared_ptr<ISentenceNode> steal();
+        [[nodiscard("The stealer invalidates the internal state.")]] std::unique_ptr<ISentenceNode> steal();
     };
 
     /**

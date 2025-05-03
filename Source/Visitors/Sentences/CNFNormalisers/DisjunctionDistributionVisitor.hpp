@@ -75,7 +75,7 @@ private:
      * @brief The tracked operand stack stores, depth-wise, the major and minor child operands of connected nodes,
      *  respectively.
      */
-    std::stack<std::pair<std::shared_ptr<ISentenceNode>, std::shared_ptr<ISentenceNode>>> tracked_operands;
+    std::stack<std::pair<std::unique_ptr<ISentenceNode>, std::unique_ptr<ISentenceNode>>> tracked_operands;
 
     /**
      * @brief Apply any applicable reductions to the given node, given the collected tracked operands from eligible

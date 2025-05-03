@@ -12,13 +12,13 @@
 namespace optifol
 {
 
-NegatedSentenceNode::NegatedSentenceNode(std::shared_ptr<ISentenceNode> operand) :
+NegatedSentenceNode::NegatedSentenceNode(std::unique_ptr<ISentenceNode>&& operand) :
         operand(std::move(operand))
 {}
 
-std::shared_ptr<ISentenceNode> NegatedSentenceNode::get_operand() const
+std::unique_ptr<ISentenceNode> NegatedSentenceNode::get_operand()
 {
-    return operand;
+    return std::move(operand);
 }
 
 void NegatedSentenceNode::accept(MutatingSentenceVisitorBase &visitor)

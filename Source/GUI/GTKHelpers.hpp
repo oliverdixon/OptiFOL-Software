@@ -176,7 +176,6 @@ public:
         list_item->set_child(*expander);
     }
 
-
     /**
      * @brief Establish a property-synched binding between the 'name' property of a StorableObjectBase-like object, and
      *  a flat (non-expandable) label in a Gtk::ListView.
@@ -232,24 +231,19 @@ public:
     /**
      * @brief Establish a property-synched binding between the 'name' property of a StorableObjectBase-like object, and
      *  a tree-expandable label in a Gtk::ListView with nested expanders.
-     * @tparam ExpandableType The type of the node to expand. Typically, though not necessarily, satisfying the
-     *  StorableType concept.
      * @param list_item The list item provided by the GTK callback invocation
      * @param tree_model The tree model in which the list item exists, required to update expander responsibility
      *  delegation
      */
-    template<class ExpandableType>
     static void on_bind_expandable_name(const Glib::RefPtr<Gtk::ListItem> &list_item,
         const Glib::RefPtr<Gtk::TreeListModel>& tree_model)
     {
         const auto position = list_item->get_position();
         const auto model_item = std::dynamic_pointer_cast<StorageObjectBase>(list_item->
             get_item());
-        const auto node_item = std::dynamic_pointer_cast<ExpandableType>(list_item->get_item());
         const auto expander = dynamic_cast<Gtk::TreeExpander*>(list_item->get_child());
 
-        if (position == GTK_INVALID_LIST_POSITION || model_item == nullptr || expander == nullptr ||
-                node_item == nullptr)
+        if (position == GTK_INVALID_LIST_POSITION || model_item == nullptr || expander == nullptr)
             return;
 
         const auto gui_row = tree_model->get_row(position);

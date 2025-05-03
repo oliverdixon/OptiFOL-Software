@@ -51,9 +51,9 @@
 %left Conjunction
 %right Negation
 
-%type <std::shared_ptr<ISentenceNode>> sentence
-%type <std::shared_ptr<ITermNode>> term
-%type <std::vector<std::shared_ptr<ITermNode>>> term_vector
+%type <std::unique_ptr<ISentenceNode>> sentence
+%type <std::unique_ptr<ITermNode>> term
+%type <std::vector<std::unique_ptr<ITermNode>>> term_vector
 
 %start line
 
@@ -75,10 +75,10 @@ line :
 sentence :
          Universal Variable LeftParenthesis sentence RightParenthesis
          {
-             $$ = std::make_shared<NodeProxy>(
-                 std::make_shared<QuantifiedSentenceNode>(
+             $$ = std::make_unique<NodeProxy>(
+                 std::make_unique<QuantifiedSentenceNode>(
                      QuantifierTypes::Universal,
-                     std::make_shared<VariableNode>($2),
+                     std::make_unique<VariableNode>($2),
                      $4
                  )
              );
@@ -86,10 +86,10 @@ sentence :
          |
          Existential Variable LeftParenthesis sentence RightParenthesis
          {
-             $$ = std::make_shared<NodeProxy>(
-                 std::make_shared<QuantifiedSentenceNode>(
+             $$ = std::make_unique<NodeProxy>(
+                 std::make_unique<QuantifiedSentenceNode>(
                      QuantifierTypes::Existential,
-                     std::make_shared<VariableNode>($2),
+                     std::make_unique<VariableNode>($2),
                      $4
                  )
              );
@@ -97,18 +97,18 @@ sentence :
          |
          Predicate LeftParenthesis term_vector RightParenthesis
          {
-             $$ = std::make_shared<PredicationNode>($1, std::move($3));
+             $$ = std::make_unique<PredicationNode>($1, std::move($3));
          }
          |
          term Identity term
          {
-             $$ = std::make_shared<IdentitySentenceNode>($1, $3);
+             $$ = std::make_unique<IdentitySentenceNode>($1, $3);
          }
          |
          Negation sentence
          {
-             $$ = std::make_shared<NodeProxy>(
-                 std::make_shared<NegatedSentenceNode>(
+             $$ = std::make_unique<NodeProxy>(
+                 std::make_unique<NegatedSentenceNode>(
                      $2
                  )
              );
@@ -116,7 +116,7 @@ sentence :
          |
          sentence Conjunction sentence
          {
-             $$ = std::make_shared<ConnectedSentenceNode>(
+             $$ = std::make_unique<ConnectedSentenceNode>(
                  BinaryOperatorTypes::Conjunction,
                  $1,
                  $3
@@ -125,7 +125,7 @@ sentence :
          |
          sentence Disjunction sentence
          {
-             $$ = std::make_shared<ConnectedSentenceNode>(
+             $$ = std::make_unique<ConnectedSentenceNode>(
                  BinaryOperatorTypes::Disjunction,
                  $1,
                  $3
@@ -134,7 +134,7 @@ sentence :
          |
          sentence Implication sentence
          {
-             $$ = std::make_shared<ConnectedSentenceNode>(
+             $$ = std::make_unique<ConnectedSentenceNode>(
                  BinaryOperatorTypes::Implication,
                  $1,
                  $3
@@ -143,7 +143,7 @@ sentence :
          |
          sentence Biconditional sentence
          {
-             $$ = std::make_shared<ConnectedSentenceNode>(
+             $$ = std::make_unique<ConnectedSentenceNode>(
                  BinaryOperatorTypes::Biconditional,
                  $1,
                  $3
@@ -172,17 +172,17 @@ term_vector :
 term :
      Function LeftParenthesis term_vector RightParenthesis
      {
-         $$ = std::make_shared<FunctionNode>($1, std::move($3));
+         $$ = std::make_unique<FunctionNode>($1, std::move($3));
      }
      |
      Constant
      {
-         $$ = std::make_shared<ConstantNode>($1);
+         $$ = std::make_unique<ConstantNode>($1);
      }
      |
      Variable
      {
-         $$ = std::make_shared<VariableNode>($1);
+         $$ = std::make_unique<VariableNode>($1);
      }
      ;
 

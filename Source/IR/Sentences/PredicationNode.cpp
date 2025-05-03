@@ -12,7 +12,7 @@
 namespace optifol
 {
 
-PredicationNode::PredicationNode(std::string name, std::vector<std::shared_ptr<ITermNode>> &&arguments) :
+PredicationNode::PredicationNode(std::string name, std::vector<std::unique_ptr<ITermNode>> &&arguments) :
         name(std::move(name)),
         arguments(std::move(arguments))
 {}

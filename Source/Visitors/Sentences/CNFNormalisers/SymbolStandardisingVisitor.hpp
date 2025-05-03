@@ -73,11 +73,11 @@ public:
 private:
     /**
      * @brief Name-rewriting rules for variables encountered in the current scope.
-     * @details Any variable with a name matching a key of the map should be completely replaced by the variable shared
+     * @details Any variable with a name matching a key of the map should be completely replaced by the variable unique
      *  pointer in the corresponding value. Only variables with disambiguated names occupy entries in the map, and the
      *  map should be cleared down when the scope is released.
      */
-    std::unordered_map<std::string, std::shared_ptr<VariableNode>> rewriting_rules;
+    std::unordered_map<std::string, std::unique_ptr<VariableNode>> rewriting_rules;
 
     /**
      * @brief The set of pre-disambiguated names bound in the current scope.

@@ -32,7 +32,7 @@ class TermResolutionVisitor :
 public:
     TermResolutionVisitor(
             const std::unordered_set<std::string> &scope_hook,
-            const std::unordered_map<std::string, std::shared_ptr<VariableNode>> &rewriting_rules_hook
+            std::unordered_map<std::string, std::unique_ptr<VariableNode>> &rewriting_rules_hook
     );
 
     void visit(FunctionNode &node) override;
@@ -42,7 +42,7 @@ public:
 private:
     const std::unordered_set<std::string> &scope_hook;
 
-    const std::unordered_map<std::string, std::shared_ptr<VariableNode>> &rewriting_rules_hook;
+    std::unordered_map<std::string, std::unique_ptr<VariableNode>>& rewriting_rules_hook;
 };
 
 }
