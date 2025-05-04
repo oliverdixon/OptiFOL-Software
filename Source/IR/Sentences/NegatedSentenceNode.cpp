@@ -16,9 +16,24 @@ NegatedSentenceNode::NegatedSentenceNode(std::unique_ptr<ISentenceNode>&& operan
         operand(std::move(operand))
 {}
 
-std::unique_ptr<ISentenceNode> NegatedSentenceNode::get_operand()
+std::unique_ptr<ISentenceNode> NegatedSentenceNode::clone() const
+{
+    return std::make_unique<NegatedSentenceNode>(operand->clone());
+}
+
+std::unique_ptr<ISentenceNode> NegatedSentenceNode::take_operand()
 {
     return std::move(operand);
+}
+
+const ISentenceNode * NegatedSentenceNode::observe_operand() const
+{
+    return operand.get();
+}
+
+void NegatedSentenceNode::put_operand(std::unique_ptr<ISentenceNode> &&operand)
+{
+    this->operand = std::move(operand);
 }
 
 void NegatedSentenceNode::accept(MutatingSentenceVisitorBase &visitor)

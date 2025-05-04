@@ -26,12 +26,12 @@ namespace optifol
 void JSONSerialiserVisitor::visit(const QuantifiedSentenceNode &node)
 {
     // Get the sentence to build its JSON structure
-    node.get_sentence()->accept(*this);
+    node.observe_sentence()->accept(*this);
 
     output = {
         { "type", "quantified" },
         { "nature", get_operator_symbol(node.get_quantifier_type()) },
-        { "variable", node.get_bound_variable()->get_disambiguated_name() },
+        { "variable", node.observe_bound_term()->get_disambiguated_name() },
         { "sentence", std::move(output) }
     };
 }
@@ -39,11 +39,11 @@ void JSONSerialiserVisitor::visit(const QuantifiedSentenceNode &node)
 void JSONSerialiserVisitor::visit(const ConnectedSentenceNode &node)
 {
     // Get the LHS to build its JSON structure, and move the entire structure into the local scope
-    node.get_lhs_operand()->accept(*this);
+    node.observe_lhs_operand()->accept(*this);
     nlohmann::json lhs = std::move(output);
 
     // Get the RHS to build its JSON structure, and move the entire structure into the local scope
-    node.get_rhs_operand()->accept(*this);
+    node.observe_rhs_operand()->accept(*this);
     nlohmann::json rhs = std::move(output);
 
     // Use the moved operand structures to rebuild the output
@@ -57,7 +57,7 @@ void JSONSerialiserVisitor::visit(const ConnectedSentenceNode &node)
 
 void JSONSerialiserVisitor::visit(const NegatedSentenceNode &node)
 {
-    node.get_operand()->accept(*this);
+    node.observe_operand()->accept(*this);
 
     output = {
         { "type", "negated" },
@@ -74,8 +74,8 @@ void JSONSerialiserVisitor::visit(const IdentitySentenceNode &node)
 {
     output = {
         { "type", "equality" },
-        { "lhs", node.get_lhs_operand()->get_disambiguated_name() },
-        { "rhs", node.get_rhs_operand()->get_disambiguated_name() }
+        { "lhs", node.observe_lhs_operand()->get_disambiguated_name() },
+        { "rhs", node.observe_rhs_operand()->get_disambiguated_name() }
     };
 }
 

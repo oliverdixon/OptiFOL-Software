@@ -23,7 +23,7 @@ void UniversalEliminationVisitor::visit(QuantifiedSentenceNode &node)
     MutatingSentenceVisitorBase::visit(node);
 
     if (node.get_quantifier_type() == QuantifierTypes::Universal)
-        extracted_sentence = node.move_sentence();
+        extracted_sentence = std::move(node.take_sentence());
 }
 
 void UniversalEliminationVisitor::visit(NodeProxy &proxy)

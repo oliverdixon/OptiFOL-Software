@@ -32,11 +32,21 @@ public:
                                                     std::unique_ptr<ISentenceNode>&& lhs,
                                                     std::unique_ptr<ISentenceNode>&& rhs);
 
+    [[nodiscard]] std::unique_ptr<ISentenceNode> clone() const override;
+
     [[nodiscard]] BinaryOperatorTypes get_operator_type() const;
 
-    [[nodiscard]] std::unique_ptr<ISentenceNode> get_lhs_operand();
+    [[nodiscard]] std::unique_ptr<ISentenceNode> take_lhs_operand();
 
-    [[nodiscard]] std::unique_ptr<ISentenceNode> get_rhs_operand();
+    [[nodiscard]] std::unique_ptr<ISentenceNode> take_rhs_operand();
+
+    [[nodiscard]] const ISentenceNode * observe_lhs_operand() const;
+
+    [[nodiscard]] const ISentenceNode * observe_rhs_operand() const;
+
+    void put_lhs_operand(std::unique_ptr<ISentenceNode>&& operand);
+
+    void put_rhs_operand(std::unique_ptr<ISentenceNode>&& operand);
 
     void accept(MutatingSentenceVisitorBase& visitor) override;
 

@@ -17,6 +17,7 @@
 #include <unordered_map>
 
 #include "../MutatingSentenceVisitorBase.hpp"
+#include "../../../IR/Terms/ITermNode.hpp"
 #include "../../Terms/TermResolutionVisitor.hpp"
 
 namespace optifol
@@ -77,7 +78,7 @@ private:
      *  pointer in the corresponding value. Only variables with disambiguated names occupy entries in the map, and the
      *  map should be cleared down when the scope is released.
      */
-    std::unordered_map<std::string, std::unique_ptr<VariableNode>> rewriting_rules;
+    std::unordered_map<std::string, const ITermNode *> rewriting_rules;
 
     /**
      * @brief The set of pre-disambiguated names bound in the current scope.
@@ -113,7 +114,7 @@ private:
      * @pre The scope naming set must contain a variable name of the given node.
      * @param node The variable bound by the scope
      */
-    void close_scope(const VariableNode& node);
+    void close_scope(const ITermNode * node);
 
     /**
      * @brief Suffix the given variable name with a unique identifier, until it does not conflict with any member of the

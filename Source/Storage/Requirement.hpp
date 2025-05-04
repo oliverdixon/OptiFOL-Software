@@ -68,6 +68,12 @@ public:
     [[nodiscard]] Glib::PropertyProxy<guint> property_priority();
 
     /**
+     * @brief Get a read-write proxy for the 'normalised statement' property
+     * @return The read-write 'normalised statement' proxy
+     */
+    [[nodiscard]] Glib::PropertyProxy<Glib::ustring> property_normalised();
+
+    /**
      * @brief Get a read-only proxy for the 'statement' property
      * @return The read-only 'statement' proxy
      */
@@ -85,14 +91,28 @@ public:
      */
     [[nodiscard]] Glib::PropertyProxy_ReadOnly<guint> property_priority() const;
 
+    /**
+     * @brief Get a read-only proxy for the 'normalised statement' property
+     * @return The read-only 'normalised statement' proxy
+     */
+    [[nodiscard]] Glib::PropertyProxy_ReadOnly<Glib::ustring> property_normalised() const;
+
+    [[nodiscard]] std::string get_formatted_statement() const;
+
 private:
+    void setup_properties(std::string&& name, std::string&& statement, std::string&& description, guint priority);
+
     Glib::Property<Glib::ustring> statement;
+
+    Glib::Property<Glib::ustring> normalised_statement;
 
     Glib::Property<Glib::ustring> description;
 
     Glib::Property<guint> priority;
 
-    std::unique_ptr<ISentenceNode> parsed_statement;
+    std::unique_ptr<ISentenceNode> cnf_ast;
+
+    std::string formatted_input_statement;
 };
 
 }

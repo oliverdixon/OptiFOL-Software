@@ -51,8 +51,8 @@
 %left Conjunction
 %right Negation
 
-%type <std::unique_ptr<ISentenceNode>> sentence
-%type <std::unique_ptr<ITermNode>> term
+%type <ISentenceNode *> sentence
+%type <ITermNode *> term
 %type <std::vector<std::unique_ptr<ITermNode>>> term_vector
 
 %start line
@@ -62,7 +62,7 @@
 line :
      sentence End
      {
-         static_cast<FOLParser *>(this)->register_sentence($1);
+         static_cast<FOLParser *>(this)->register_sentence(std::unique_ptr<ISentenceNode>($1));
          return 0;
      }
      |
@@ -75,78 +75,78 @@ line :
 sentence :
          Universal Variable LeftParenthesis sentence RightParenthesis
          {
-             $$ = std::make_unique<NodeProxy>(
+             $$ = new NodeProxy(
                  std::make_unique<QuantifiedSentenceNode>(
                      QuantifierTypes::Universal,
                      std::make_unique<VariableNode>($2),
-                     $4
+                     std::unique_ptr<ISentenceNode>($4)
                  )
              );
          }
          |
          Existential Variable LeftParenthesis sentence RightParenthesis
          {
-             $$ = std::make_unique<NodeProxy>(
+             $$ = new NodeProxy(
                  std::make_unique<QuantifiedSentenceNode>(
                      QuantifierTypes::Existential,
                      std::make_unique<VariableNode>($2),
-                     $4
+                     std::unique_ptr<ISentenceNode>($4)
                  )
              );
          }
          |
          Predicate LeftParenthesis term_vector RightParenthesis
          {
-             $$ = std::make_unique<PredicationNode>($1, std::move($3));
+             $$ = new PredicationNode($1, std::move($3));
          }
          |
          term Identity term
          {
-             $$ = std::make_unique<IdentitySentenceNode>($1, $3);
+             $$ = new IdentitySentenceNode(std::unique_ptr<ITermNode>($1), std::unique_ptr<ITermNode>($3));
          }
          |
          Negation sentence
          {
-             $$ = std::make_unique<NodeProxy>(
+             $$ = new NodeProxy(
                  std::make_unique<NegatedSentenceNode>(
-                     $2
+                     std::unique_ptr<ISentenceNode>($2)
                  )
              );
          }
          |
          sentence Conjunction sentence
          {
-             $$ = std::make_unique<ConnectedSentenceNode>(
+             $$ = new ConnectedSentenceNode(
                  BinaryOperatorTypes::Conjunction,
-                 $1,
-                 $3
+                 std::unique_ptr<ISentenceNode>($1),
+                 std::unique_ptr<ISentenceNode>($3)
              );
          }
          |
          sentence Disjunction sentence
          {
-             $$ = std::make_unique<ConnectedSentenceNode>(
+             $$ = new ConnectedSentenceNode(
                  BinaryOperatorTypes::Disjunction,
-                 $1,
-                 $3
+                 std::unique_ptr<ISentenceNode>($1),
+                 std::unique_ptr<ISentenceNode>($3)
              );
          }
          |
          sentence Implication sentence
          {
-             $$ = std::make_unique<ConnectedSentenceNode>(
+             $$ = new ConnectedSentenceNode(
                  BinaryOperatorTypes::Implication,
-                 $1,
-                 $3
+                 std::unique_ptr<ISentenceNode>($1),
+                 std::unique_ptr<ISentenceNode>($3)
              );
          }
          |
          sentence Biconditional sentence
          {
-             $$ = std::make_unique<ConnectedSentenceNode>(
+             $$ = new ConnectedSentenceNode(
                  BinaryOperatorTypes::Biconditional,
-                 $1,
-                 $3
+                 std::unique_ptr<ISentenceNode>($1),
+                 std::unique_ptr<ISentenceNode>($3)
              );
          }
          |
@@ -159,30 +159,31 @@ sentence :
 term_vector :
             term
             {
-                $$ = { $1 };
+                $$ = std::vector<std::unique_ptr<ITermNode>>();
+                $$.push_back(std::unique_ptr<ITermNode>($1));
             }
             |
             term_vector Comma term
             {
                 $$ = std::move($1);
-                $$.push_back($3);
+                $$.push_back(std::unique_ptr<ITermNode>($3));
             }
             ;
 
 term :
      Function LeftParenthesis term_vector RightParenthesis
      {
-         $$ = std::make_unique<FunctionNode>($1, std::move($3));
+         $$ = new FunctionNode($1, std::move($3));
      }
      |
      Constant
      {
-         $$ = std::make_unique<ConstantNode>($1);
+         $$ = new ConstantNode($1);
      }
      |
      Variable
      {
-         $$ = std::make_unique<VariableNode>($1);
+         $$ = new VariableNode($1);
      }
      ;
 

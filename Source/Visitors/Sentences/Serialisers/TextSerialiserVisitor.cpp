@@ -13,12 +13,12 @@
 
 #include "TextSerialiserVisitor.hpp"
 
-#include "../../../IR/Sentences/QuantifiedSentenceNode.hpp"
 #include "../../../IR/Sentences/ConnectedSentenceNode.hpp"
-#include "../../../IR/Sentences/NodeProxy.hpp"
-#include "../../../IR/Sentences/NegatedSentenceNode.hpp"
 #include "../../../IR/Sentences/IdentitySentenceNode.hpp"
+#include "../../../IR/Sentences/NegatedSentenceNode.hpp"
+#include "../../../IR/Sentences/NodeProxy.hpp"
 #include "../../../IR/Sentences/PredicationNode.hpp"
+#include "../../../IR/Sentences/QuantifiedSentenceNode.hpp"
 
 namespace optifol
 {
@@ -26,18 +26,18 @@ namespace optifol
 void TextSerialiserVisitor::visit(const QuantifiedSentenceNode &node)
 {
     output_stream << get_operator_symbol(node.get_quantifier_type())
-                  << node.get_bound_variable()->get_disambiguated_name() << ' ';
+                  << node.observe_bound_term()->get_disambiguated_name() << ' ';
 
-    node.get_sentence()->accept(*this);
+    node.observe_sentence()->accept(*this);
 }
 
 void TextSerialiserVisitor::visit(const ConnectedSentenceNode &node)
 {
     output_stream << '(';
 
-    node.get_lhs_operand()->accept(*this);
+    node.observe_lhs_operand()->accept(*this);
     output_stream << get_operator_symbol(node.get_operator_type());
-    node.get_rhs_operand()->accept(*this);
+    node.observe_rhs_operand()->accept(*this);
 
     output_stream << ')';
 }
@@ -45,7 +45,7 @@ void TextSerialiserVisitor::visit(const ConnectedSentenceNode &node)
 void TextSerialiserVisitor::visit(const NegatedSentenceNode &node)
 {
     output_stream << '~' << ' ';
-    node.get_operand()->accept(*this);
+    node.observe_operand()->accept(*this);
 }
 
 void TextSerialiserVisitor::visit(const NodeProxy &node)
@@ -55,8 +55,8 @@ void TextSerialiserVisitor::visit(const NodeProxy &node)
 
 void TextSerialiserVisitor::visit(const IdentitySentenceNode &node)
 {
-    output_stream << '(' << node.get_lhs_operand()->get_disambiguated_name() << ' ' << '=' << ' '
-                  << node.get_rhs_operand()->get_disambiguated_name() << ')';
+    output_stream << '(' << node.observe_lhs_operand()->get_disambiguated_name() << ' ' << '=' << ' '
+                  << node.observe_rhs_operand()->get_disambiguated_name() << ')';
 }
 
 void TextSerialiserVisitor::visit(const PredicationNode &node)
@@ -105,5 +105,4 @@ const char *TextSerialiserVisitor::get_operator_symbol(QuantifierTypes type)
         return "ThereExists ";
     }
 }
-
 }

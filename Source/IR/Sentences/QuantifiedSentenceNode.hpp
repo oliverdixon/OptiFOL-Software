@@ -27,20 +27,24 @@ class QuantifiedSentenceNode :
 {
 public:
     [[maybe_unused]] QuantifiedSentenceNode(QuantifierTypes quantifier_type,
-                                            std::unique_ptr<VariableNode>&& bound_variable,
+                                            std::unique_ptr<ITermNode>&& bound_term,
                                             std::unique_ptr<ISentenceNode>&& sentence);
 
     [[nodiscard]] std::unique_ptr<ISentenceNode> clone() const override;
 
     [[nodiscard]] QuantifierTypes get_quantifier_type() const;
 
-    [[nodiscard]] std::unique_ptr<VariableNode> get_bound_variable();
+    [[nodiscard]] const ITermNode * observe_bound_term() const;
 
-    [[nodiscard]] std::unique_ptr<ISentenceNode> get_sentence();
+    [[nodiscard]] std::unique_ptr<ITermNode> take_bound_term();
 
-    [[nodiscard]] std::unique_ptr<ISentenceNode> move_sentence();
+    [[nodiscard]] std::unique_ptr<ISentenceNode> take_sentence();
 
-    void swap_bound_variable(std::unique_ptr<VariableNode>&& new_bound_variable);
+    [[nodiscard]] const ISentenceNode * observe_sentence() const;
+
+    void put_sentence(std::unique_ptr<ISentenceNode>&& sentence);
+
+    void swap_bound_term(std::unique_ptr<ITermNode>&& new_bound_term);
 
     void accept(MutatingSentenceVisitorBase& visitor) override;
 
@@ -48,7 +52,7 @@ public:
 
 private:
     QuantifierTypes quantifier_type;
-    std::unique_ptr<VariableNode> bound_variable;
+    std::unique_ptr<ITermNode> bound_term;
     std::unique_ptr<ISentenceNode> sentence;
 };
 

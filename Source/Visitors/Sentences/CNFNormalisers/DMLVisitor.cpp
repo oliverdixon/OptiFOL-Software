@@ -37,9 +37,9 @@ void DMLVisitor::visit(ConnectedSentenceNode &node)
         if (type == BinaryOperatorTypes::Conjunction || type == BinaryOperatorTypes::Disjunction) {
             // Negate both operands and put them in a proxy.
             std::unique_ptr<ISentenceNode> lhs_neg = std::make_unique<NodeProxy>(
-                std::make_unique<NegatedSentenceNode>(node.get_lhs_operand()));
+                std::make_unique<NegatedSentenceNode>(node.take_lhs_operand()));
             std::unique_ptr<ISentenceNode> rhs_neg = std::make_unique<NodeProxy>(
-                std::make_unique<NegatedSentenceNode>(node.get_rhs_operand()));
+                std::make_unique<NegatedSentenceNode>(node.take_rhs_operand()));
 
             /* Negating the operands may introduce opportunities for further reduction; in particular, if the
              * operand was a conjunctive or disjunction binary-connected sentence. Recurse down on both sides, using
@@ -80,11 +80,11 @@ void DMLVisitor::visit(ConnectedSentenceNode &node)
          * care to provide suitable negative context layers. */
 
         negative_context.emplace();
-        node.get_lhs_operand()->accept(*this);
+        node.take_lhs_operand()->accept(*this);
         negative_context.pop();
 
         negative_context.emplace();
-        node.get_rhs_operand()->accept(*this);
+        node.take_rhs_operand()->accept(*this);
         negative_context.pop();
     }
 
@@ -102,7 +102,7 @@ void DMLVisitor::visit(QuantifiedSentenceNode &node)
         /* Negate the detained sentence within a proxy (due to a potential ~~P-type to P-type conversion). The detained
          * sentence is DML-normalised, so a layer of negation context is required. */
         auto neg_operand = std::make_unique<NodeProxy>(
-                std::make_unique<NegatedSentenceNode>(node.get_sentence()));
+                std::make_unique<NegatedSentenceNode>(node.take_sentence()));
 
         negative_context.emplace();
         neg_operand->accept(*this);
@@ -114,7 +114,7 @@ void DMLVisitor::visit(QuantifiedSentenceNode &node)
 
         pending_transformation.pending_dml = std::make_unique<QuantifiedSentenceNode>(
                 type == QuantifierTypes::Universal ? QuantifierTypes::Existential : QuantifierTypes::Universal,
-                node.get_bound_variable(),
+                node.take_bound_term(),
                 std::move(neg_operand));
 
         pending_transformation.skip_node_count = 1;
@@ -142,12 +142,12 @@ void DMLVisitor::visit(NegatedSentenceNode &node)
     if (context_layer.positive_branch == nullptr)
         /* If this is the first negated node in a consecutive chain ~...~P, we must be visiting precisely ~P. Therefore,
          * we save P in the first slot of the negated operand cache. */
-        context_layer.positive_branch = node.get_operand();
+        context_layer.positive_branch = node.take_operand();
 
     else if (context_layer.negative_branch == nullptr)
         /* If this is the second negated node in a consecutive chain ~...~P, we must be visiting precisely ~~P.
          * Therefore, we save ~P in the second slot of the negated operand cache. */
-        context_layer.negative_branch = node.get_operand();
+        context_layer.negative_branch = node.take_operand();
 
     assert(!negative_context.empty());
 }

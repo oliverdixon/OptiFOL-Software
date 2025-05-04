@@ -22,8 +22,9 @@ class PredicationNode :
         public ISentenceNode
 {
 public:
-    [[maybe_unused]] explicit PredicationNode(std::string name,
-                                              std::vector<std::unique_ptr<ITermNode>> &&arguments);
+    [[maybe_unused]] PredicationNode(std::string name, std::vector<std::unique_ptr<ITermNode>> &&arguments);
+
+    [[nodiscard]] std::unique_ptr<ISentenceNode> clone() const override;
 
     void accept(MutatingSentenceVisitorBase &visitor) override;
 

@@ -20,12 +20,17 @@ class IdentitySentenceNode :
         public ISentenceNode
 {
 public:
-    [[maybe_unused]] IdentitySentenceNode(std::unique_ptr<ITermNode>&& lhs,
-                                          std::unique_ptr<ITermNode>&& rhs);
+    [[maybe_unused]] IdentitySentenceNode(std::unique_ptr<ITermNode>&& lhs, std::unique_ptr<ITermNode>&& rhs);
 
-    [[nodiscard]] std::unique_ptr<ITermNode> get_lhs_operand();
+    [[nodiscard]] std::unique_ptr<ISentenceNode> clone() const override;
 
-    [[nodiscard]] std::unique_ptr<ITermNode> get_rhs_operand();
+    [[nodiscard]] std::unique_ptr<ITermNode> take_lhs_operand();
+
+    [[nodiscard]] std::unique_ptr<ITermNode> take_rhs_operand();
+
+    [[nodiscard]] const ITermNode * observe_lhs_operand() const;
+
+    [[nodiscard]] const ITermNode * observe_rhs_operand() const;
 
     void swap_lhs_operand(std::unique_ptr<ITermNode>& new_lhs);
 

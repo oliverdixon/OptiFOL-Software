@@ -19,7 +19,7 @@ namespace optifol
 
 void MutatingTermVisitorBase::visit(FunctionNode &node)
 {
-    auto& arguments = node.get_arguments();
+    const auto& arguments = node.observe_arguments();
 
     for (const auto& argument : arguments)
         argument->accept(*this);

@@ -18,14 +18,29 @@ IdentitySentenceNode::IdentitySentenceNode(std::unique_ptr<ITermNode>&& lhs, std
         rhs(std::move(rhs))
 {}
 
-std::unique_ptr<ITermNode> IdentitySentenceNode::get_lhs_operand()
+std::unique_ptr<ISentenceNode> IdentitySentenceNode::clone() const
+{
+    return std::make_unique<IdentitySentenceNode>(lhs->clone(), rhs->clone());
+}
+
+std::unique_ptr<ITermNode> IdentitySentenceNode::take_lhs_operand()
 {
     return std::move(lhs);
 }
 
-std::unique_ptr<ITermNode> IdentitySentenceNode::get_rhs_operand()
+std::unique_ptr<ITermNode> IdentitySentenceNode::take_rhs_operand()
 {
     return std::move(rhs);
+}
+
+const ITermNode * IdentitySentenceNode::observe_lhs_operand() const
+{
+    return lhs.get();
+}
+
+const ITermNode * IdentitySentenceNode::observe_rhs_operand() const
+{
+    return rhs.get();
 }
 
 void IdentitySentenceNode::accept(MutatingSentenceVisitorBase &visitor)

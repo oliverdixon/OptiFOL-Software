@@ -20,6 +20,7 @@
 #include <unordered_map>
 
 #include "MutatingTermVisitorBase.hpp"
+#include "../../IR/Terms/ITermNode.hpp"
 
 namespace optifol
 {
@@ -32,7 +33,7 @@ class TermResolutionVisitor :
 public:
     TermResolutionVisitor(
             const std::unordered_set<std::string> &scope_hook,
-            std::unordered_map<std::string, std::unique_ptr<VariableNode>> &rewriting_rules_hook
+            std::unordered_map<std::string, const ITermNode *> &rewriting_rules_hook
     );
 
     void visit(FunctionNode &node) override;
@@ -42,7 +43,7 @@ public:
 private:
     const std::unordered_set<std::string> &scope_hook;
 
-    std::unordered_map<std::string, std::unique_ptr<VariableNode>>& rewriting_rules_hook;
+    std::unordered_map<std::string, const ITermNode *>& rewriting_rules_hook;
 };
 
 }

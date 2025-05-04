@@ -20,6 +20,14 @@ class NodeProxy :
 public:
     explicit NodeProxy(std::unique_ptr<ISentenceNode>&& node);
 
+    [[nodiscard]] std::unique_ptr<ISentenceNode> take_sentence();
+
+    [[nodiscard]] const ISentenceNode * observe_sentence() const;
+
+    void put_sentence(std::unique_ptr<ISentenceNode>&& sentence);
+
+    [[nodiscard]] std::unique_ptr<ISentenceNode> clone() const override;
+
     void accept(MutatingSentenceVisitorBase& visitor) override;
 
     void accept(IObservingSentenceVisitor& visitor) const override;

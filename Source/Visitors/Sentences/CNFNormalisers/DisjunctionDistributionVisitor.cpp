@@ -27,11 +27,11 @@ void DisjunctionDistributionVisitor::visit(ConnectedSentenceNode &node)
         // If we're a conjunction node, we might be a candidate child. Check if we should be tracking.
         switch (tracking_state) {
         case TrackingState::LeftMajor:
-            tracked_operands.emplace(node.get_lhs_operand(), node.get_rhs_operand());
+            tracked_operands.emplace(node.take_lhs_operand(), node.take_rhs_operand());
             break;
 
         case TrackingState::RightMajor:
-            tracked_operands.emplace(node.get_rhs_operand(), node.get_lhs_operand());
+            tracked_operands.emplace(node.take_rhs_operand(), node.take_lhs_operand());
             break;
 
         case TrackingState::NotTracking:
@@ -46,11 +46,11 @@ void DisjunctionDistributionVisitor::visit(ConnectedSentenceNode &node)
          * candidate children, reducing if necessary. Once we've done a reduction, stop the tracking. */
 
         tracking_state = TrackingState::RightMajor;
-        node.get_rhs_operand()->accept(*this);
+        node.take_rhs_operand()->accept(*this);
 
         if (!attempt_reduction(node)) {
             tracking_state = TrackingState::LeftMajor;
-            node.get_lhs_operand()->accept(*this);
+            node.take_lhs_operand()->accept(*this);
             attempt_reduction(node);
         }
 

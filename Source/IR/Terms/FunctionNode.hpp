@@ -63,7 +63,7 @@ public:
         visitor.visit(*this);
     }
 
-    std::vector<std::unique_ptr<ITermNode>>& get_arguments()
+    std::vector<std::unique_ptr<ITermNode>>& observe_arguments()
     {
         return arguments;
     }

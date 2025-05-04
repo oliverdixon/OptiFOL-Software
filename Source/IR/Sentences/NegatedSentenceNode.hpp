@@ -21,7 +21,13 @@ class NegatedSentenceNode :
 public:
     [[maybe_unused]] explicit NegatedSentenceNode(std::unique_ptr<ISentenceNode>&& operand);
 
-    [[nodiscard]] std::unique_ptr<ISentenceNode> get_operand();
+    [[nodiscard]] std::unique_ptr<ISentenceNode> clone() const override;
+
+    [[nodiscard]] std::unique_ptr<ISentenceNode> take_operand();
+
+    [[nodiscard]] const ISentenceNode * observe_operand() const;
+
+    void put_operand(std::unique_ptr<ISentenceNode>&& operand);
 
     void accept(MutatingSentenceVisitorBase& visitor) override;
 

@@ -13,16 +13,16 @@ namespace optifol
 {
 
 QuantifiedSentenceNode::QuantifiedSentenceNode(const QuantifierTypes quantifier_type,
-                                               std::unique_ptr<VariableNode>&& bound_variable,
+                                               std::unique_ptr<ITermNode>&& bound_term,
                                                std::unique_ptr<ISentenceNode>&& sentence) :
         quantifier_type(quantifier_type),
-        bound_variable(std::move(bound_variable)),
+        bound_term(std::move(bound_term)),
         sentence(std::move(sentence))
 {}
 
 std::unique_ptr<ISentenceNode> QuantifiedSentenceNode::clone() const
 {
-    return std::make_unique<QuantifiedSentenceNode>(quantifier_type, bound_variable->clone(), sentence->clone());
+    return std::make_unique<QuantifiedSentenceNode>(quantifier_type, bound_term->clone(), sentence->clone());
 }
 
 QuantifierTypes QuantifiedSentenceNode::get_quantifier_type() const
@@ -30,14 +30,29 @@ QuantifierTypes QuantifiedSentenceNode::get_quantifier_type() const
     return quantifier_type;
 }
 
-std::unique_ptr<VariableNode> QuantifiedSentenceNode::get_bound_variable()
+const ITermNode * QuantifiedSentenceNode::observe_bound_term() const
 {
-    return std::move(bound_variable);
+    return bound_term.get();
 }
 
-std::unique_ptr<ISentenceNode> QuantifiedSentenceNode::get_sentence()
+std::unique_ptr<ITermNode> QuantifiedSentenceNode::take_bound_term()
+{
+    return std::move(bound_term);
+}
+
+std::unique_ptr<ISentenceNode> QuantifiedSentenceNode::take_sentence()
 {
     return std::move(sentence);
+}
+
+const ISentenceNode * QuantifiedSentenceNode::observe_sentence() const
+{
+    return sentence.get();
+}
+
+void QuantifiedSentenceNode::put_sentence(std::unique_ptr<ISentenceNode> &&sentence)
+{
+    this->sentence = std::move(sentence);
 }
 
 void QuantifiedSentenceNode::accept(MutatingSentenceVisitorBase &visitor)
@@ -45,21 +60,14 @@ void QuantifiedSentenceNode::accept(MutatingSentenceVisitorBase &visitor)
     visitor.visit(*this);
 }
 
-std::unique_ptr<ISentenceNode> QuantifiedSentenceNode::move_sentence()
-{
-    auto borrowed = std::move(sentence);
-    sentence = nullptr;
-    return borrowed;
-}
-
 void QuantifiedSentenceNode::accept(IObservingSentenceVisitor &visitor) const
 {
     visitor.visit(*this);
 }
 
-void QuantifiedSentenceNode::swap_bound_variable(std::unique_ptr<VariableNode>&& new_bound_variable)
+void QuantifiedSentenceNode::swap_bound_term(std::unique_ptr<ITermNode>&& new_bound_term)
 {
-    bound_variable.swap(new_bound_variable);
+    bound_term.swap(new_bound_term);
 }
 
 }

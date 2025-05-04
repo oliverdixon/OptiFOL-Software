@@ -13,9 +13,9 @@
 
 #include "MutatingSentenceVisitorBase.hpp"
 
-#include "../../IR/Sentences/NodeProxy.hpp"
-#include "../../IR/Sentences/NegatedSentenceNode.hpp"
 #include "../../IR/Sentences/ConnectedSentenceNode.hpp"
+#include "../../IR/Sentences/NegatedSentenceNode.hpp"
+#include "../../IR/Sentences/NodeProxy.hpp"
 #include "../../IR/Sentences/QuantifiedSentenceNode.hpp"
 
 namespace optifol
@@ -23,23 +23,34 @@ namespace optifol
 
 void MutatingSentenceVisitorBase::visit(QuantifiedSentenceNode &node)
 {
-    node.get_sentence()->accept(*this);
+    auto borrowed_sentence = node.take_sentence();
+    borrowed_sentence->accept(*this);
+    node.put_sentence(std::move(borrowed_sentence));
 }
 
 void MutatingSentenceVisitorBase::visit(ConnectedSentenceNode &node)
 {
-    node.get_lhs_operand()->accept(*this);
-    node.get_rhs_operand()->accept(*this);
+    auto borrowed_operand = node.take_lhs_operand();
+    borrowed_operand->accept(*this);
+    node.put_lhs_operand(std::move(borrowed_operand));
+
+    borrowed_operand = node.take_rhs_operand();
+    borrowed_operand->accept(*this);
+    node.put_rhs_operand(std::move(borrowed_operand));
 }
 
 void MutatingSentenceVisitorBase::visit(NegatedSentenceNode &node)
 {
-    node.get_operand()->accept(*this);
+    auto borrowed_operand = node.take_operand();
+    borrowed_operand->accept(*this);
+    node.put_operand(std::move(borrowed_operand));
 }
 
 void MutatingSentenceVisitorBase::visit(NodeProxy &node)
 {
-    node.sentence->accept(*this);
+    auto borrowed_sentence = node.take_sentence();
+    borrowed_sentence->accept(*this);
+    node.put_sentence(std::move(borrowed_sentence));
 }
 
 void MutatingSentenceVisitorBase::visit(IdentitySentenceNode &node)

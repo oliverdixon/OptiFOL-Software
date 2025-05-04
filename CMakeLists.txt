@@ -250,7 +250,6 @@ set_source_files_properties(
 
 add_executable(OptifolGUI
         ${RESOURCE_OUT}
-        Source/Driver.cpp
         Source/GUI/GUIDriver.cpp
         Source/GUI/MainWindow.cpp
         Source/GUI/MainWindow.hpp
@@ -293,11 +292,6 @@ set(COMMON_COMPILER_OPTIONS
         -Wno-weak-vtables
         -Wno-shadow-field
 )
-
-if (TRUE)
-    # Disable the GUI? This is for testing the application logic that is unrelated to the GUI e.g. FOL resolution.
-    target_compile_definitions(OptifolGUI PRIVATE OPTIFOL_DISABLE_GUI)
-endif ()
 
 target_compile_options(OptifolGUI PRIVATE ${COMMON_COMPILER_OPTIONS})
 

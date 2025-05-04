@@ -344,7 +344,11 @@ void RequirementsIndexArea::on_bind_property_statement(const Glib::RefPtr<Gtk::L
 
     if (label != nullptr && item != nullptr)
         Glib::Binding::bind_property(item->property_statement(), label->property_label(),
-            Glib::Binding::Flags::SYNC_CREATE);
+            Glib::Binding::Flags::SYNC_CREATE,
+            [item](const Glib::ustring&)
+            {
+                return item->get_formatted_statement();
+            });
 }
 
 void RequirementsIndexArea::on_bind_property_priority(const Glib::RefPtr<Gtk::ListItem> &list_item)
@@ -354,6 +358,16 @@ void RequirementsIndexArea::on_bind_property_priority(const Glib::RefPtr<Gtk::Li
 
     if (label != nullptr && item != nullptr)
         Glib::Binding::bind_property(item->property_priority(), label->property_label(),
+            Glib::Binding::Flags::SYNC_CREATE);
+}
+
+void RequirementsIndexArea::on_bind_property_normalised(const Glib::RefPtr<Gtk::ListItem> &list_item)
+{
+    const auto label = dynamic_cast<Gtk::Label *>(list_item->get_child());
+    const auto item = std::dynamic_pointer_cast<Requirement>(list_item->get_item());
+
+    if (label != nullptr && item != nullptr)
+        Glib::Binding::bind_property(item->property_normalised(), label->property_label(),
             Glib::Binding::Flags::SYNC_CREATE);
 }
 

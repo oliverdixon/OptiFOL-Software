@@ -27,19 +27,21 @@ void ImplicationEliminationVisitor::visit(ConnectedSentenceNode &node)
     switch (node.get_operator_type()) {
     case BinaryOperatorTypes::Implication:
         node.operator_type = BinaryOperatorTypes::Disjunction;
-        node.lhs = std::make_shared<NegatedSentenceNode>(node.lhs);
+        node.lhs = std::make_unique<NegatedSentenceNode>(node.take_lhs_operand());
         break;
 
     case BinaryOperatorTypes::Biconditional:
         node.operator_type = BinaryOperatorTypes::Conjunction;
-        const auto save_lhs = node.lhs;
 
-        node.lhs = std::make_shared<ConnectedSentenceNode>(BinaryOperatorTypes::Disjunction,
-                                                           node.lhs,
-                                                           std::make_shared<NegatedSentenceNode>(node.rhs));
-        node.rhs = std::make_shared<ConnectedSentenceNode>(BinaryOperatorTypes::Disjunction,
-                                                           std::make_shared<NegatedSentenceNode>(save_lhs),
-                                                           node.rhs);
+        auto save_lhs = node.take_lhs_operand();
+        auto save_rhs = node.take_rhs_operand();
+
+        node.lhs = std::make_unique<ConnectedSentenceNode>(BinaryOperatorTypes::Disjunction,
+                                                           save_lhs->clone(),
+                                                           std::make_unique<NegatedSentenceNode>(save_rhs->clone()));
+        node.rhs = std::make_unique<ConnectedSentenceNode>(BinaryOperatorTypes::Disjunction,
+                                                           std::make_unique<NegatedSentenceNode>(std::move(save_lhs)),
+                                                           std::move(save_rhs));
         break;
     }
 #pragma clang diagnostic pop

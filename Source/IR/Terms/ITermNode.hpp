@@ -8,6 +8,7 @@
 #ifndef OPTIFOL_ITERMNODE_HPP
 #define OPTIFOL_ITERMNODE_HPP
 
+#include <memory>
 #include <string>
 
 namespace optifol
