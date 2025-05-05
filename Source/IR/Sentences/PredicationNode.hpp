@@ -22,16 +22,24 @@ class PredicationNode :
         public ISentenceNode
 {
 public:
-    [[maybe_unused]] PredicationNode(std::string name, std::vector<std::unique_ptr<ITermNode>> &&arguments);
+    [[maybe_unused]] PredicationNode(std::string name, std::vector<std::unique_ptr<ITermNode>> &&arguments,
+        bool is_positive = true);
 
     [[nodiscard]] std::unique_ptr<ISentenceNode> clone() const override;
+
+    void flip_polarity() override;
+
+    [[nodiscard]] bool is_negative_polarity() const override;
 
     void accept(MutatingSentenceVisitorBase &visitor) override;
 
     void accept(IObservingSentenceVisitor &visitor) const override;
 
-    const std::string name;
-    std::vector<std::unique_ptr<ITermNode>> arguments;
+    const std::string name; // TODO move
+    std::vector<std::unique_ptr<ITermNode>> arguments; // TODO move
+
+private:
+    bool is_positive;
 };
 
 }

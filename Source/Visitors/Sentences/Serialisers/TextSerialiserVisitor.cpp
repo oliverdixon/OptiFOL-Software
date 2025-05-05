@@ -15,8 +15,6 @@
 
 #include "../../../IR/Sentences/ConnectedSentenceNode.hpp"
 #include "../../../IR/Sentences/IdentitySentenceNode.hpp"
-#include "../../../IR/Sentences/NegatedSentenceNode.hpp"
-#include "../../../IR/Sentences/NodeProxy.hpp"
 #include "../../../IR/Sentences/PredicationNode.hpp"
 #include "../../../IR/Sentences/QuantifiedSentenceNode.hpp"
 
@@ -25,6 +23,7 @@ namespace optifol
 
 void TextSerialiserVisitor::visit(const QuantifiedSentenceNode &node)
 {
+    print_polarity(&node);
     output_stream << get_operator_symbol(node.get_quantifier_type())
                   << node.observe_bound_term()->get_disambiguated_name() << ' ';
 
@@ -33,6 +32,7 @@ void TextSerialiserVisitor::visit(const QuantifiedSentenceNode &node)
 
 void TextSerialiserVisitor::visit(const ConnectedSentenceNode &node)
 {
+    print_polarity(&node);
     output_stream << '(';
 
     node.observe_lhs_operand()->accept(*this);
@@ -42,25 +42,16 @@ void TextSerialiserVisitor::visit(const ConnectedSentenceNode &node)
     output_stream << ')';
 }
 
-void TextSerialiserVisitor::visit(const NegatedSentenceNode &node)
-{
-    output_stream << '~' << ' ';
-    node.observe_operand()->accept(*this);
-}
-
-void TextSerialiserVisitor::visit(const NodeProxy &node)
-{
-    node.sentence->accept(*this);
-}
-
 void TextSerialiserVisitor::visit(const IdentitySentenceNode &node)
 {
+    print_polarity(&node);
     output_stream << '(' << node.observe_lhs_operand()->get_disambiguated_name() << ' ' << '=' << ' '
                   << node.observe_rhs_operand()->get_disambiguated_name() << ')';
 }
 
 void TextSerialiserVisitor::visit(const PredicationNode &node)
 {
+    print_polarity(&node);
     output_stream << node.name << '(';
 
     const auto argument_count = node.arguments.size();
@@ -105,4 +96,11 @@ const char *TextSerialiserVisitor::get_operator_symbol(QuantifierTypes type)
         return "ThereExists ";
     }
 }
+
+void TextSerialiserVisitor::print_polarity(const ISentenceNode *node)
+{
+    if (node->is_negative_polarity())
+        output_stream << '~';
+}
+
 }

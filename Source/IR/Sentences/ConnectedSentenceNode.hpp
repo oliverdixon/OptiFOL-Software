@@ -30,11 +30,18 @@ class ConnectedSentenceNode :
 public:
     [[maybe_unused]] explicit ConnectedSentenceNode(BinaryOperatorTypes operator_type,
                                                     std::unique_ptr<ISentenceNode>&& lhs,
-                                                    std::unique_ptr<ISentenceNode>&& rhs);
+                                                    std::unique_ptr<ISentenceNode>&& rhs,
+                                                    bool is_positive = true);
 
     [[nodiscard]] std::unique_ptr<ISentenceNode> clone() const override;
 
+    void flip_polarity() override;
+
+    [[nodiscard]] bool is_negative_polarity() const override;
+
     [[nodiscard]] BinaryOperatorTypes get_operator_type() const;
+
+    void set_operator_type(BinaryOperatorTypes new_type);
 
     [[nodiscard]] std::unique_ptr<ISentenceNode> take_lhs_operand();
 
@@ -52,9 +59,14 @@ public:
 
     void accept(IObservingSentenceVisitor& visitor) const override;
 
+private:
     BinaryOperatorTypes operator_type;
+
     std::unique_ptr<ISentenceNode> lhs;
+
     std::unique_ptr<ISentenceNode> rhs;
+
+    bool is_positive;
 };
 
 }

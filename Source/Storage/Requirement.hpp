@@ -14,6 +14,7 @@
 #ifndef REQUIREMENT_HPP
 #define REQUIREMENT_HPP
 
+#include "FOLLexer.hpp"
 #include "StorageObjectBase.hpp"
 #include "../IR/Sentences/ISentenceNode.hpp"
 
@@ -102,6 +103,10 @@ public:
 private:
     void setup_properties(std::string&& name, std::string&& statement, std::string&& description, guint priority);
 
+    void cnf_renormalise();
+
+    static std::string text_serialise(const ISentenceNode * sentence);
+
     Glib::Property<Glib::ustring> statement;
 
     Glib::Property<Glib::ustring> normalised_statement;
@@ -110,9 +115,15 @@ private:
 
     Glib::Property<guint> priority;
 
+    std::unique_ptr<ISentenceNode> original_ast;
+
     std::unique_ptr<ISentenceNode> cnf_ast;
 
     std::string formatted_input_statement;
+
+    static std::istringstream lexer_input_stream;
+    static FOLLexer lexer;
+    static FOLParser parser;
 };
 
 }

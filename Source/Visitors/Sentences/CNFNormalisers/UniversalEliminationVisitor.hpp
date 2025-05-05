@@ -29,8 +29,6 @@ class UniversalEliminationVisitor :
 public:
     void visit(QuantifiedSentenceNode& node) override;
 
-    void visit(NodeProxy& proxy) override;
-
     void reset() override;
 
 private:

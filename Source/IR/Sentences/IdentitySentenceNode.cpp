@@ -13,14 +13,26 @@
 namespace optifol
 {
 
-IdentitySentenceNode::IdentitySentenceNode(std::unique_ptr<ITermNode>&& lhs, std::unique_ptr<ITermNode>&& rhs) :
-        lhs(std::move(lhs)),
-        rhs(std::move(rhs))
+IdentitySentenceNode::IdentitySentenceNode(std::unique_ptr<ITermNode>&& lhs, std::unique_ptr<ITermNode>&& rhs,
+        const bool is_positive) :
+    lhs(std::move(lhs)),
+    rhs(std::move(rhs)),
+    is_positive(is_positive)
 {}
 
 std::unique_ptr<ISentenceNode> IdentitySentenceNode::clone() const
 {
-    return std::make_unique<IdentitySentenceNode>(lhs->clone(), rhs->clone());
+    return std::make_unique<IdentitySentenceNode>(lhs->clone(), rhs->clone(), is_positive);
+}
+
+void IdentitySentenceNode::flip_polarity()
+{
+    is_positive = !is_positive;
+}
+
+bool IdentitySentenceNode::is_negative_polarity() const
+{
+    return !is_positive;
 }
 
 std::unique_ptr<ITermNode> IdentitySentenceNode::take_lhs_operand()

@@ -15,13 +15,10 @@
     #include "../IR/Terms/FunctionNode.hpp"
     #include "../IR/Terms/ConstantNode.hpp"
 
-    #include "../IR/Sentences/NegatedSentenceNode.hpp"
     #include "../IR/Sentences/PredicationNode.hpp"
     #include "../IR/Sentences/IdentitySentenceNode.hpp"
     #include "../IR/Sentences/ConnectedSentenceNode.hpp"
     #include "../IR/Sentences/QuantifiedSentenceNode.hpp"
-
-    #include "../IR/Sentences/NodeProxy.hpp"
 
     namespace optifol
     {
@@ -75,23 +72,19 @@ line :
 sentence :
          Universal Variable LeftParenthesis sentence RightParenthesis
          {
-             $$ = new NodeProxy(
-                 std::make_unique<QuantifiedSentenceNode>(
-                     QuantifierTypes::Universal,
-                     std::make_unique<VariableNode>($2),
-                     std::unique_ptr<ISentenceNode>($4)
-                 )
+             $$ = new QuantifiedSentenceNode(
+                 QuantifierTypes::Universal,
+                 std::make_unique<VariableNode>($2),
+                 std::unique_ptr<ISentenceNode>($4)
              );
          }
          |
          Existential Variable LeftParenthesis sentence RightParenthesis
          {
-             $$ = new NodeProxy(
-                 std::make_unique<QuantifiedSentenceNode>(
-                     QuantifierTypes::Existential,
-                     std::make_unique<VariableNode>($2),
-                     std::unique_ptr<ISentenceNode>($4)
-                 )
+             $$ = new QuantifiedSentenceNode(
+                 QuantifierTypes::Existential,
+                 std::make_unique<VariableNode>($2),
+                 std::unique_ptr<ISentenceNode>($4)
              );
          }
          |
@@ -107,11 +100,8 @@ sentence :
          |
          Negation sentence
          {
-             $$ = new NodeProxy(
-                 std::make_unique<NegatedSentenceNode>(
-                     std::unique_ptr<ISentenceNode>($2)
-                 )
-             );
+             $2->flip_polarity();
+             $$ = $2;
          }
          |
          sentence Conjunction sentence

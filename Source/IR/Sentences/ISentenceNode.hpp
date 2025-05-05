@@ -20,6 +20,10 @@ class ISentenceNode
 public:
     virtual ~ISentenceNode() = default;
 
+    virtual void flip_polarity() = 0;
+
+    [[nodiscard]] virtual bool is_negative_polarity() const = 0;
+
     [[nodiscard]] virtual std::unique_ptr<ISentenceNode> clone() const = 0;
 
     virtual void accept(MutatingSentenceVisitorBase &visitor) = 0;

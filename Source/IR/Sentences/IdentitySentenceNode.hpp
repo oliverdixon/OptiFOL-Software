@@ -20,9 +20,14 @@ class IdentitySentenceNode :
         public ISentenceNode
 {
 public:
-    [[maybe_unused]] IdentitySentenceNode(std::unique_ptr<ITermNode>&& lhs, std::unique_ptr<ITermNode>&& rhs);
+    [[maybe_unused]] IdentitySentenceNode(std::unique_ptr<ITermNode>&& lhs, std::unique_ptr<ITermNode>&& rhs,
+        bool is_positive = true);
 
     [[nodiscard]] std::unique_ptr<ISentenceNode> clone() const override;
+
+    void flip_polarity() override;
+
+    [[nodiscard]] bool is_negative_polarity() const override;
 
     [[nodiscard]] std::unique_ptr<ITermNode> take_lhs_operand();
 
@@ -43,6 +48,8 @@ public:
 private:
     std::unique_ptr<ITermNode> lhs;
     std::unique_ptr<ITermNode> rhs;
+
+    bool is_positive;
 };
 
 }

@@ -13,7 +13,6 @@
 
 #include "UniversalEliminationVisitor.hpp"
 #include "../../../IR/Sentences/QuantifiedSentenceNode.hpp"
-#include "../../../IR/Sentences/NodeProxy.hpp"
 
 namespace optifol
 {
@@ -24,16 +23,6 @@ void UniversalEliminationVisitor::visit(QuantifiedSentenceNode &node)
 
     if (node.get_quantifier_type() == QuantifierTypes::Universal)
         extracted_sentence = std::move(node.take_sentence());
-}
-
-void UniversalEliminationVisitor::visit(NodeProxy &proxy)
-{
-    MutatingSentenceVisitorBase::visit(proxy);
-
-    if (extracted_sentence != nullptr) {
-        proxy.sentence = std::move(extracted_sentence);
-        extracted_sentence = nullptr;
-    }
 }
 
 void UniversalEliminationVisitor::reset()

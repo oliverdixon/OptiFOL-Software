@@ -103,17 +103,13 @@ add_library(OptifolCommon OBJECT
         Source/IR/Sentences/PredicationNode.hpp
         Source/IR/Sentences/ConnectedSentenceNode.hpp
         Source/IR/Sentences/IdentitySentenceNode.hpp
-        Source/IR/Sentences/NegatedSentenceNode.hpp
         Source/IR/Sentences/QuantifiedSentenceNode.hpp
         Source/Interpreter/FOLParser.hpp
         Source/Visitors/Sentences/CNFNormalisers/ImplicationEliminationVisitor.hpp
         Source/Visitors/Sentences/MutatingSentenceVisitorBase.hpp
-        Source/IR/Sentences/NodeProxy.hpp
         Source/Visitors/Sentences/CNFNormalisers/DMLVisitor.hpp
         Source/IR/Sentences/ConnectedSentenceNode.cpp
-        Source/IR/Sentences/NegatedSentenceNode.cpp
         Source/IR/Sentences/QuantifiedSentenceNode.cpp
-        Source/IR/Sentences/NodeProxy.cpp
         Source/IR/Sentences/IdentitySentenceNode.cpp
         Source/IR/Sentences/PredicationNode.cpp
         Source/Visitors/Sentences/CNFNormalisers/UniversalEliminationVisitor.hpp
@@ -277,8 +273,6 @@ add_executable(OptifolGUI
         Source/GUI/Panels/AnalysisArea.hpp
         Source/Storage/AnalysisGroup.cpp
         Source/Storage/AnalysisGroup.hpp
-        Source/Storage/AnalysisManager.cpp
-        Source/Storage/AnalysisManager.hpp
 )
 
 set(COMMON_COMPILER_OPTIONS

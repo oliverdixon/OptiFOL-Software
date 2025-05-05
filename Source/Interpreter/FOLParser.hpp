@@ -5,7 +5,7 @@
 
 /**
  * @file
- * @brief Class declaration of the exposed first-order logic parser
+ * @brief Class specification of the exposed first-order logic parser
  * @date 2024-11-21
  * @author Oliver Dixon <od641@york.ac.uk>
  * @warning This file depends on build-time generated source from Flex and Bison.

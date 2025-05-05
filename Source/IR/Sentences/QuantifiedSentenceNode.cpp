@@ -14,15 +14,33 @@ namespace optifol
 
 QuantifiedSentenceNode::QuantifiedSentenceNode(const QuantifierTypes quantifier_type,
                                                std::unique_ptr<ITermNode>&& bound_term,
-                                               std::unique_ptr<ISentenceNode>&& sentence) :
-        quantifier_type(quantifier_type),
-        bound_term(std::move(bound_term)),
-        sentence(std::move(sentence))
+                                               std::unique_ptr<ISentenceNode>&& sentence,
+                                               const bool is_positive) :
+    quantifier_type(quantifier_type),
+    bound_term(std::move(bound_term)),
+    sentence(std::move(sentence)),
+    is_positive(is_positive)
 {}
 
 std::unique_ptr<ISentenceNode> QuantifiedSentenceNode::clone() const
 {
-    return std::make_unique<QuantifiedSentenceNode>(quantifier_type, bound_term->clone(), sentence->clone());
+    return std::make_unique<QuantifiedSentenceNode>(quantifier_type, bound_term->clone(), sentence->clone(),
+        is_positive);
+}
+
+void QuantifiedSentenceNode::flip_polarity()
+{
+    is_positive = !is_positive;
+}
+
+bool QuantifiedSentenceNode::is_negative_polarity() const
+{
+    return !is_positive;
+}
+
+void QuantifiedSentenceNode::set_quantifier_type(const QuantifierTypes quantifier_type)
+{
+    this->quantifier_type = quantifier_type;
 }
 
 QuantifierTypes QuantifiedSentenceNode::get_quantifier_type() const

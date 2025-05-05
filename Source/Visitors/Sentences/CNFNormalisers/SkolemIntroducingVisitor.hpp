@@ -3,7 +3,13 @@
  * 2025 Oliver Dixon <od641@york.ac.uk>
  */
 
-
+/**
+ * @file
+ * @brief Class specification for the Existential Shifting Visitor
+ * @author Oliver Dixon
+ * @date 2025-05-04
+ * @version Development
+ */
 
 #ifndef OPTIFOL_SKOLEMINTRODUCINGVISITOR_HPP
 #define OPTIFOL_SKOLEMINTRODUCINGVISITOR_HPP

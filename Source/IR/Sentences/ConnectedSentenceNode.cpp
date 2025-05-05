@@ -7,22 +7,35 @@
 
 
 #include "ConnectedSentenceNode.hpp"
-#include "../../Visitors/Sentences/MutatingSentenceVisitorBase.hpp"
+
 #include "../../Visitors/Sentences/IObservingSentenceVisitor.hpp"
+#include "../../Visitors/Sentences/MutatingSentenceVisitorBase.hpp"
 
 namespace optifol
 {
 
 ConnectedSentenceNode::ConnectedSentenceNode(const BinaryOperatorTypes operator_type,
-    std::unique_ptr<ISentenceNode>&& lhs, std::unique_ptr<ISentenceNode>&& rhs) :
-        operator_type(operator_type),
-        lhs(std::move(lhs)),
-        rhs(std::move(rhs))
-{}
+        std::unique_ptr<ISentenceNode>&& lhs, std::unique_ptr<ISentenceNode>&& rhs, const bool is_positive) :
+    operator_type(operator_type),
+    lhs(std::move(lhs)),
+    rhs(std::move(rhs)),
+    is_positive(is_positive)
+{
+}
 
 std::unique_ptr<ISentenceNode> ConnectedSentenceNode::clone() const
 {
-    return std::make_unique<ConnectedSentenceNode>(operator_type, lhs->clone(), rhs->clone());
+    return std::make_unique<ConnectedSentenceNode>(operator_type, lhs->clone(), rhs->clone(), is_positive);
+}
+
+void ConnectedSentenceNode::flip_polarity()
+{
+    is_positive = !is_positive;
+}
+
+bool ConnectedSentenceNode::is_negative_polarity() const
+{
+    return !is_positive;
 }
 
 void ConnectedSentenceNode::accept(MutatingSentenceVisitorBase &visitor)
@@ -33,6 +46,11 @@ void ConnectedSentenceNode::accept(MutatingSentenceVisitorBase &visitor)
 BinaryOperatorTypes ConnectedSentenceNode::get_operator_type() const
 {
     return operator_type;
+}
+
+void ConnectedSentenceNode::set_operator_type(const BinaryOperatorTypes new_type)
+{
+    operator_type = new_type;
 }
 
 std::unique_ptr<ISentenceNode> ConnectedSentenceNode::take_lhs_operand()

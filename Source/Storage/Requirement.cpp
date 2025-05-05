@@ -13,10 +13,24 @@
 
 #include "Requirement.hpp"
 
-#include "AnalysisManager.hpp"
+#include <cassert>
+
+#include "../Visitors/Sentences/CNFNormalisers/DMLVisitor.hpp"
+#include "../Visitors/Sentences/CNFNormalisers/ImplicationEliminationVisitor.hpp"
+#include "../Visitors/Sentences/Serialisers/TextSerialiserVisitor.hpp"
 
 namespace optifol
 {
+
+std::istringstream Requirement::lexer_input_stream;
+
+/*
+ * TODO: this construction is possibly undefined due to std::cerr. But for the real case, we'll use a custom error
+ *  handler that can be statically initialised in the Analysis Manager, so this is OK for development.
+ */
+FOLLexer Requirement::lexer{Requirement::lexer_input_stream, std::cerr};
+FOLParser Requirement::parser{&Requirement::lexer};
+
 
 Requirement::Requirement(std::string&& name, std::string&& statement, std::string&& description, const guint priority) :
     Glib::ObjectBase("Requirement"),
@@ -90,18 +104,15 @@ void Requirement::setup_properties(std::string&& name, std::string&& statement, 
 {
     property_statement().signal_changed().connect([this]
     {
+        // If the statement has changed, pass it through the parser and normaliser. TODO: error-checking.
         if (!property_statement().get_value().empty()) {
-            auto parsed_ast = AnalysisManager::parse_sentence(property_statement().get_value());
-            formatted_input_statement = AnalysisManager::get_text(parsed_ast.get());
+            lexer_input_stream.str(property_statement().get_value());
+            parser.parse();
+            original_ast = parser.retrieve_sentence();
+            formatted_input_statement = text_serialise(original_ast.get());
 
-            cnf_ast = AnalysisManager::normalise_sentence(
-                std::move(parsed_ast),
-                AnalysisManager::NormalisationExtent::ImplicationElimination);
-
-            property_normalised().set_value(AnalysisManager::get_text(cnf_ast.get()));
-        } else {
-            cnf_ast = nullptr;
-            property_normalised().set_value({});
+            cnf_renormalise();
+            property_normalised().set_value(text_serialise(cnf_ast.get()));
         }
     });
 
@@ -109,6 +120,32 @@ void Requirement::setup_properties(std::string&& name, std::string&& statement, 
     property_statement().set_value(std::move(statement));
     property_description().set_value(std::move(description));
     property_priority().set_value(priority);
+}
+
+void Requirement::cnf_renormalise()
+{
+    assert(original_ast != nullptr);
+
+    auto borrowed_sentence = std::move(original_ast);
+
+    // Step 1: Implication Elimination
+    static auto implication_elimination_visitor = ImplicationEliminationVisitor();
+    borrowed_sentence->accept(implication_elimination_visitor);
+    implication_elimination_visitor.reset();
+
+    // Step 2: De Morgan's Law
+    static auto demorgan_visitor = DMLVisitor();
+    borrowed_sentence->accept(demorgan_visitor);
+    demorgan_visitor.reset();
+
+    cnf_ast = std::move(borrowed_sentence);
+}
+
+std::string Requirement::text_serialise(const ISentenceNode *sentence)
+{
+    static TextSerialiserVisitor text_serialiser_visitor;
+    sentence->accept(text_serialiser_visitor);
+    return text_serialiser_visitor.extract();
 }
 
 }

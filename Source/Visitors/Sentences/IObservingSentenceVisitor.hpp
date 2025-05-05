@@ -19,8 +19,6 @@ namespace optifol
 
 class QuantifiedSentenceNode;
 class ConnectedSentenceNode;
-class NegatedSentenceNode;
-class NodeProxy;
 class IdentitySentenceNode;
 class PredicationNode;
 
@@ -32,10 +30,6 @@ public:
     virtual void visit(const QuantifiedSentenceNode& node) = 0;
 
     virtual void visit(const ConnectedSentenceNode& node) = 0;
-
-    virtual void visit(const NegatedSentenceNode& node) = 0;
-
-    virtual void visit(const NodeProxy& node) = 0;
 
     virtual void visit(const IdentitySentenceNode& node) = 0;
 

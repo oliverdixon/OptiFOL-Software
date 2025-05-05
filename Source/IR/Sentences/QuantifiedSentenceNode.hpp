@@ -28,9 +28,16 @@ class QuantifiedSentenceNode :
 public:
     [[maybe_unused]] QuantifiedSentenceNode(QuantifierTypes quantifier_type,
                                             std::unique_ptr<ITermNode>&& bound_term,
-                                            std::unique_ptr<ISentenceNode>&& sentence);
+                                            std::unique_ptr<ISentenceNode>&& sentence,
+                                            bool is_positive = true);
 
     [[nodiscard]] std::unique_ptr<ISentenceNode> clone() const override;
+
+    void flip_polarity() override;
+
+    [[nodiscard]] bool is_negative_polarity() const override;
+
+    void set_quantifier_type(QuantifierTypes quantifier_type);
 
     [[nodiscard]] QuantifierTypes get_quantifier_type() const;
 
@@ -54,6 +61,8 @@ private:
     QuantifierTypes quantifier_type;
     std::unique_ptr<ITermNode> bound_term;
     std::unique_ptr<ISentenceNode> sentence;
+
+    bool is_positive;
 };
 
 }

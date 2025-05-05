@@ -17,6 +17,7 @@
 #include <sstream>
 
 #include "../IObservingSentenceVisitor.hpp"
+#include "../../../IR/Sentences/ISentenceNode.hpp"
 
 namespace optifol
 {
@@ -32,10 +33,6 @@ public:
 
     void visit(const ConnectedSentenceNode& node) override;
 
-    void visit(const NegatedSentenceNode& node) override;
-
-    void visit(const NodeProxy& node) override;
-
     void visit(const IdentitySentenceNode& node) override;
 
     void visit(const PredicationNode& node) override;
@@ -48,6 +45,8 @@ private:
     [[nodiscard]] static const char *get_operator_symbol(BinaryOperatorTypes type);
 
     [[nodiscard]] static const char *get_operator_symbol(QuantifierTypes type);
+
+    void print_polarity(const ISentenceNode * node);
 };
 
 }

@@ -14,7 +14,6 @@
 #include "ImplicationEliminationVisitor.hpp"
 
 #include "../../../IR/Sentences/ConnectedSentenceNode.hpp"
-#include "../../../IR/Sentences/NegatedSentenceNode.hpp"
 
 namespace optifol
 {
@@ -22,29 +21,36 @@ void ImplicationEliminationVisitor::visit(ConnectedSentenceNode &node)
 {
     MutatingSentenceVisitorBase::visit(node);
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wswitch"
-    switch (node.get_operator_type()) {
-    case BinaryOperatorTypes::Implication:
-        node.operator_type = BinaryOperatorTypes::Disjunction;
-        node.lhs = std::make_unique<NegatedSentenceNode>(node.take_lhs_operand());
-        break;
+    const auto operator_type = node.get_operator_type();
 
-    case BinaryOperatorTypes::Biconditional:
-        node.operator_type = BinaryOperatorTypes::Conjunction;
+    if (operator_type == BinaryOperatorTypes::Implication) {
+        node.set_operator_type(BinaryOperatorTypes::Disjunction);
+        auto borrowed_lhs = node.take_lhs_operand();
+        borrowed_lhs->flip_polarity();
+        node.put_lhs_operand(std::move(borrowed_lhs));
+    } else if (operator_type == BinaryOperatorTypes::Biconditional) {
+        node.set_operator_type(BinaryOperatorTypes::Conjunction);
 
         auto save_lhs = node.take_lhs_operand();
         auto save_rhs = node.take_rhs_operand();
 
-        node.lhs = std::make_unique<ConnectedSentenceNode>(BinaryOperatorTypes::Disjunction,
-                                                           save_lhs->clone(),
-                                                           std::make_unique<NegatedSentenceNode>(save_rhs->clone()));
-        node.rhs = std::make_unique<ConnectedSentenceNode>(BinaryOperatorTypes::Disjunction,
-                                                           std::make_unique<NegatedSentenceNode>(std::move(save_lhs)),
-                                                           std::move(save_rhs));
-        break;
+        auto new_rhs = save_rhs->clone();
+        new_rhs->flip_polarity();
+
+        node.put_lhs_operand(std::make_unique<ConnectedSentenceNode>(
+            BinaryOperatorTypes::Disjunction,
+            save_lhs->clone(),
+            std::move(new_rhs)
+        ));
+
+        save_lhs->flip_polarity();
+
+        node.put_rhs_operand(std::make_unique<ConnectedSentenceNode>(
+            BinaryOperatorTypes::Disjunction,
+            std::move(save_lhs),
+            std::move(save_rhs)
+        ));
     }
-#pragma clang diagnostic pop
 }
 
 void ImplicationEliminationVisitor::reset()

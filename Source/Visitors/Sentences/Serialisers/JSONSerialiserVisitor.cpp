@@ -15,8 +15,6 @@
 
 #include "../../../IR/Sentences/ConnectedSentenceNode.hpp"
 #include "../../../IR/Sentences/IdentitySentenceNode.hpp"
-#include "../../../IR/Sentences/NegatedSentenceNode.hpp"
-#include "../../../IR/Sentences/NodeProxy.hpp"
 #include "../../../IR/Sentences/PredicationNode.hpp"
 #include "../../../IR/Sentences/QuantifiedSentenceNode.hpp"
 
@@ -53,21 +51,6 @@ void JSONSerialiserVisitor::visit(const ConnectedSentenceNode &node)
         { "lhs", std::move(lhs) },
         { "rhs", std::move(rhs) }
     };
-}
-
-void JSONSerialiserVisitor::visit(const NegatedSentenceNode &node)
-{
-    node.observe_operand()->accept(*this);
-
-    output = {
-        { "type", "negated" },
-        { "content", std::move(output) }
-    };
-}
-
-void JSONSerialiserVisitor::visit(const NodeProxy &node)
-{
-    node.sentence->accept(*this);
 }
 
 void JSONSerialiserVisitor::visit(const IdentitySentenceNode &node)
@@ -124,6 +107,12 @@ const char *JSONSerialiserVisitor::get_operator_symbol(QuantifierTypes type)
     case QuantifierTypes::Existential:
         return "existential";
     }
+}
+
+void JSONSerialiserVisitor::print_polarity(const ISentenceNode *node)
+{
+    if (node->is_negative_polarity())
+        output.push_back({ "negative", true });
 }
 
 }

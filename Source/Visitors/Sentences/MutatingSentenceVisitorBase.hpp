@@ -19,8 +19,6 @@ namespace optifol
 
 class QuantifiedSentenceNode;
 class ConnectedSentenceNode;
-class NegatedSentenceNode;
-class NodeProxy;
 class IdentitySentenceNode;
 class PredicationNode;
 
@@ -48,18 +46,6 @@ public:
      * @param node The connected sentence root node of the transformation target.
      */
     virtual void visit(ConnectedSentenceNode& node);
-
-    /**
-     * @brief Applies a mutating transformation to the given negated sentence node.
-     * @param node The negated root node of the transformation target.
-     */
-    virtual void visit(NegatedSentenceNode& node);
-
-    /**
-     * @brief Applies a mutating transformation to the given sentence proxy node, including any contained nodes.
-     * @param node The node proxy containing the sentence root of the transformation target.
-     */
-    virtual void visit(NodeProxy& node);
 
     /**
      * @brief Applies a mutating transformation to the given term-identity sentence node and both operands.
