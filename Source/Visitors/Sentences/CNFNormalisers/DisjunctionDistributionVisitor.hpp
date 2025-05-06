@@ -50,8 +50,6 @@ public:
      */
     void visit(ConnectedSentenceNode &node) override;
 
-    void reset() override;
-
 private:
     /**
      * @enum TrackingMode

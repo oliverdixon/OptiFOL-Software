@@ -47,8 +47,6 @@ public:
     void visit(ConnectedSentenceNode &node) override;
 
     void visit(QuantifiedSentenceNode &node) override;
-
-    void reset() override;
 };
 
 }

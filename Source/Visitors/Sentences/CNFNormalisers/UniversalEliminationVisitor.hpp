@@ -33,8 +33,6 @@ public:
 
     void visit(SentenceRoot& node) override;
 
-    void reset() override;
-
 private:
     std::unique_ptr<ISentenceNode> extracted_sentence;
 };

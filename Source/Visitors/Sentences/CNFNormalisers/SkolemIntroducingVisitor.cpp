@@ -16,9 +16,4 @@
 namespace optifol
 {
 
-void SkolemIntroducingVisitor::reset()
-{
-    (void) 0;
-}
-
 }

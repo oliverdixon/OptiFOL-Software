@@ -69,8 +69,6 @@ public:
      */
     void visit(IdentitySentenceNode &node) override;
 
-    void reset() override;
-
 private:
     /**
      * @brief Name-rewriting rules for variables encountered in the current scope.

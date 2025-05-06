@@ -22,8 +22,7 @@ namespace optifol
 class SkolemIntroducingVisitor:
         public MutatingSentenceVisitorBase
 {
-public:
-    void reset() override;
+
 };
 
 }

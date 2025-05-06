@@ -26,9 +26,6 @@ class SentenceRoot;
 /**
  * @class MutatingSentenceVisitorBase
  * @brief The Mutating Sentence Visitor Base provides an abstract base for sentence-mutating visitors.
- * @note Visitor implementations may optionally maintain an internal state to track their position within the AST. The
- *  @ref MutatingSentenceVisitorBase::reset() member function will reset any internal state to its implementation-
- *  defined default value.
  */
 class MutatingSentenceVisitorBase
 {
@@ -65,13 +62,6 @@ public:
      * @param node The sentence root container containing the root of the sentence.
      */
     virtual void visit(SentenceRoot& node);
-
-    /**
-     * @brief Reset any internal state of the visitor.
-     * @note This member function is purely virtual to prevent authors of stateful visitors forgetting to implement the
-     *  required resetter.
-     */
-    virtual void reset() = 0;
 };
 
 }

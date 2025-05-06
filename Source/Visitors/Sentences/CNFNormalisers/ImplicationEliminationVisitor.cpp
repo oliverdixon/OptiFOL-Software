@@ -53,9 +53,4 @@ void ImplicationEliminationVisitor::visit(ConnectedSentenceNode &node)
     }
 }
 
-void ImplicationEliminationVisitor::reset()
-{
-    // Visitor does not maintain any internal state.
-    (void) 0;
-}
 }

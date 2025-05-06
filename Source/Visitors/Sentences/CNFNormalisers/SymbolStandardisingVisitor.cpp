@@ -75,14 +75,6 @@ void SymbolStandardisingVisitor::visit(IdentitySentenceNode &node)
     node.put_rhs_operand(std::move(borrowed_rhs));
 }
 
-void SymbolStandardisingVisitor::reset()
-{
-    scope.clear();
-    adjacent.clear();
-    rewriting_rules.clear();
-    unique_name_counter = 0;
-}
-
 void SymbolStandardisingVisitor::open_scope(QuantifiedSentenceNode &node)
 {
     const auto& original_name = node.observe_bound_term()->to_string();
@@ -101,7 +93,7 @@ void SymbolStandardisingVisitor::open_scope(QuantifiedSentenceNode &node)
         /* In addition to updating the scope set, we also manage the rewriting rules table, since an entry would only
          * appear given a prospectively ambiguous variable node, which clashes with a bound variable in an adjacent
          * scope. */
-        node.swap_bound_term(std::make_unique<VariableNode>(original_name, new_name));
+        node.put_bound_term(std::make_unique<VariableNode>(original_name, new_name));
         rewriting_rules.emplace(original_name, node.observe_bound_term());
     }
 

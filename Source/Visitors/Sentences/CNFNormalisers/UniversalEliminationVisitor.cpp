@@ -62,10 +62,4 @@ void UniversalEliminationVisitor::visit(SentenceRoot &node)
         node.put_sentence(std::move(extracted_sentence));
 }
 
-void UniversalEliminationVisitor::reset()
-{
-    // Ensure there's no sentence that was taken from a node and not returned.
-    assert(extracted_sentence == nullptr);
-}
-
 }

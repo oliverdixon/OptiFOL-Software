@@ -57,7 +57,7 @@ public:
 
     void put_sentence(std::unique_ptr<ISentenceNode>&& sentence);
 
-    void swap_bound_term(std::unique_ptr<ITermNode>&& new_bound_term);
+    void put_bound_term(std::unique_ptr<ITermNode>&& new_bound_term);
 
     void accept(MutatingSentenceVisitorBase& visitor) override;
 

@@ -41,8 +41,6 @@ public:
      * @param node The connected sentence root node on which the implication-elimination should be applied
      */
     void visit(ConnectedSentenceNode &node) override;
-
-    void reset() override;
 };
 
 }

@@ -134,43 +134,32 @@ void Requirement::cnf_renormalise()
     auto borrowed_sentence = std::move(original_ast);
 
     // Step 1: Implication Elimination
-    static auto implication_elimination_visitor = ImplicationEliminationVisitor();
+    auto implication_elimination_visitor = ImplicationEliminationVisitor();
     borrowed_sentence->accept(implication_elimination_visitor);
-    implication_elimination_visitor.reset();
 
     // Step 2: De Morgan's Law
-    static auto demorgan_visitor = DMLVisitor();
+    auto demorgan_visitor = DMLVisitor();
     borrowed_sentence->accept(demorgan_visitor);
-    demorgan_visitor.reset();
 
     // Step 3: Variable standardisation
-    static auto variable_standardising_visitor = SymbolStandardisingVisitor();
+    auto variable_standardising_visitor = SymbolStandardisingVisitor();
     borrowed_sentence->accept(variable_standardising_visitor);
-    variable_standardising_visitor.reset();
 
     // Step 4: Quantifier extraction
-#if 0
-    static auto quantifier_extraction_visitor = QuantifierExtractingVisitor();
+    auto quantifier_extraction_visitor = QuantifierExtractingVisitor();
     borrowed_sentence->accept(quantifier_extraction_visitor);
-    quantifier_extraction_visitor.reset();
-#endif // TODO
 
     // Step 5: Skolem function introduction
-#if 0
-    static auto skolem_introducing_visitor = SkolemIntroducingVisitor();
+    auto skolem_introducing_visitor = SkolemIntroducingVisitor(); // TODO
     borrowed_sentence->accept(skolem_introducing_visitor);
-    skolem_introducing_visitor.reset();
-#endif // TODO
 
     // Step 6: Universal elimination
-    static auto universal_elimination_visitor = UniversalEliminationVisitor();
+    auto universal_elimination_visitor = UniversalEliminationVisitor();
     borrowed_sentence->accept(universal_elimination_visitor);
-    universal_elimination_visitor.reset();
 
     // Step 7: Disjunction distribution
-    static auto disjunction_distribution_visitor = DisjunctionDistributionVisitor();
+    auto disjunction_distribution_visitor = DisjunctionDistributionVisitor();
     borrowed_sentence->accept(disjunction_distribution_visitor);
-    disjunction_distribution_visitor.reset();
 
     cnf_ast = std::move(borrowed_sentence);
 }

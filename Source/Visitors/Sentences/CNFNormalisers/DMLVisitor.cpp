@@ -90,9 +90,4 @@ void DMLVisitor::visit(QuantifiedSentenceNode &node)
     MutatingSentenceVisitorBase::visit(node);
 }
 
-void DMLVisitor::reset()
-{
-
-}
-
 }

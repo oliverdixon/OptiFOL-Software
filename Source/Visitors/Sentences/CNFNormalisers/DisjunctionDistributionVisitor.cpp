@@ -129,12 +129,4 @@ bool DisjunctionDistributionVisitor::attempt_reduction(ConnectedSentenceNode &no
     return false;
 }
 
-void DisjunctionDistributionVisitor::reset()
-{
-    tracking_mode = TrackingMode::NotTracking;
-
-    while (!tracked_operands.empty())
-        tracked_operands.pop();
-}
-
 }

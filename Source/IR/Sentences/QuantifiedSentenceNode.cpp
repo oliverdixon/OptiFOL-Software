@@ -89,9 +89,9 @@ void QuantifiedSentenceNode::accept(IObservingSentenceVisitor &visitor) const
     visitor.visit(*this);
 }
 
-void QuantifiedSentenceNode::swap_bound_term(std::unique_ptr<ITermNode>&& new_bound_term)
+void QuantifiedSentenceNode::put_bound_term(std::unique_ptr<ITermNode>&& new_bound_term)
 {
-    bound_term.swap(new_bound_term);
+    bound_term = std::move(new_bound_term);
 }
 
 }

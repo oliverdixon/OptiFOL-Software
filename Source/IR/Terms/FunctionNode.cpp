@@ -25,7 +25,7 @@ FunctionNode::FunctionNode(std::string name, std::vector<std::unique_ptr<ITermNo
 
 std::string FunctionNode::to_string() const
 {
-    std::string result = name + '(';
+    std::string result = get_disambiguated_name() + '(';
 
     auto argument_count = arguments.size();
 
@@ -51,7 +51,7 @@ std::unique_ptr<ITermNode> FunctionNode::clone() const
 
 std::string FunctionNode::get_disambiguated_name() const
 {
-    return to_string();
+    return name;
 }
 
 void FunctionNode::accept(MutatingTermVisitorBase &visitor)
