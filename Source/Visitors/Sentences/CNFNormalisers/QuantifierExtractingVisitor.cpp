@@ -5,18 +5,18 @@
 
 /**
  * @file
- * @brief Class implementation for the Existential Shifting Visitor
+ * @brief Class implementation for the Quantifier Extracting Visitor
  * @author Oliver Dixon
  * @date 2025-05-04
  * @version Development
  */
 
-#include "ExistentialShiftingVisitor.hpp"
+#include "QuantifierExtractingVisitor.hpp"
 
 namespace optifol
 {
 
-void ExistentialShiftingVisitor::reset()
+void QuantifierExtractingVisitor::reset()
 {
     (void) 0;
 }

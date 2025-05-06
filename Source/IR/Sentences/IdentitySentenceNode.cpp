@@ -65,14 +65,24 @@ void IdentitySentenceNode::accept(IObservingSentenceVisitor &visitor) const
     visitor.visit(*this);
 }
 
-void IdentitySentenceNode::swap_lhs_operand(std::unique_ptr<ITermNode>& new_lhs)
+void IdentitySentenceNode::swap_lhs_operand(std::unique_ptr<ITermNode>&& new_lhs)
 {
     lhs.swap(new_lhs);
 }
 
-void IdentitySentenceNode::swap_rhs_operand(std::unique_ptr<ITermNode>& new_rhs)
+void IdentitySentenceNode::swap_rhs_operand(std::unique_ptr<ITermNode>&& new_rhs)
 {
     rhs.swap(new_rhs);
+}
+
+void IdentitySentenceNode::put_lhs_operand(std::unique_ptr<ITermNode> &&new_lhs)
+{
+    lhs = std::move(new_lhs);
+}
+
+void IdentitySentenceNode::put_rhs_operand(std::unique_ptr<ITermNode> &&new_rhs)
+{
+    rhs = std::move(new_rhs);
 }
 
 }

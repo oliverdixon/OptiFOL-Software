@@ -22,24 +22,22 @@ namespace optifol
 TermResolutionVisitor::TermResolutionVisitor(
         const std::unordered_set<std::string> &scope_hook,
         std::unordered_map<std::string, const ITermNode *>& rewriting_rules_hook) :
-
-        scope_hook(scope_hook), rewriting_rules_hook(rewriting_rules_hook)
+    scope_hook(scope_hook),
+    rewriting_rules_hook(rewriting_rules_hook)
 {}
 
 void TermResolutionVisitor::visit(FunctionNode &node)
 {
-#if 0
     auto &args = node.observe_arguments();
     const auto argument_count = args.size();
 
     for (std::remove_const_t<decltype(argument_count)> i = 0; i < argument_count; ++i) {
         const auto &rule = rewriting_rules_hook.find(args[i]->get_disambiguated_name());
         if (rule != rewriting_rules_hook.end())
-            args[i] = rule->second;
+            args[i] = rule->second->clone();
 
         args[i]->accept(*this);
     }
-#endif // TODO
 }
 
 void TermResolutionVisitor::visit(VariableNode &node)

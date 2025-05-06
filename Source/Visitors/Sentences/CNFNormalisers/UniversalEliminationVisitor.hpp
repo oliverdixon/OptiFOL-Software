@@ -29,6 +29,10 @@ class UniversalEliminationVisitor :
 public:
     void visit(QuantifiedSentenceNode& node) override;
 
+    void visit(ConnectedSentenceNode &node) override;
+
+    std::unique_ptr<ISentenceNode> get_extracted_root();
+
     void reset() override;
 
 private:

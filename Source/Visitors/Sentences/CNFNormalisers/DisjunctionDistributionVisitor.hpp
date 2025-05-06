@@ -54,12 +54,12 @@ public:
 
 private:
     /**
-     * @enum TrackingState
+     * @enum TrackingMode
      * @brief Indicate the current state of 'tracking', as required by a calling visitor.
      * @details When tracking is enabled (left- or right-major), operands/children of binary-connected nodes should
      *  be tracked by the DisjunctionDistributionVisitor instance.
      */
-    enum class TrackingState
+    enum class TrackingMode
     {
         NotTracking, /**< Not tracking; nested children shouldn't record their operands. */
         LeftMajor, /**< Tracking to the left: nested children should record their left operands in the major slot */
@@ -69,7 +69,7 @@ private:
     /**
      * @brief The current operand-tracking state
      */
-    TrackingState tracking_state = TrackingState::NotTracking;
+    TrackingMode tracking_mode = TrackingMode::NotTracking;
 
     /**
      * @brief The tracked operand stack stores, depth-wise, the major and minor child operands of connected nodes,
@@ -80,9 +80,8 @@ private:
     /**
      * @brief Apply any applicable reductions to the given node, given the collected tracked operands from eligible
      *  children.
-     * @pre The given node must be of a disjunctive nature. The top of the tracked operands stack must be fully
-     *  pending and not contain any sentinel containers.
-     * @post The tracked operand stack is sentinel.
+     * @pre The given node must be of a disjunctive nature.
+     * @post The tracked operand stack is empty.
      * @param node The root node on which reduction should be applied
      * @return Was at least one reduction performed?
      */

@@ -14,10 +14,9 @@
 #ifndef OPTIFOL_TERMRESOLUTIONVISITOR_HPP
 #define OPTIFOL_TERMRESOLUTIONVISITOR_HPP
 
-#include <memory>
 #include <string>
-#include <unordered_set>
 #include <unordered_map>
+#include <unordered_set>
 
 #include "MutatingTermVisitorBase.hpp"
 #include "../../IR/Terms/ITermNode.hpp"

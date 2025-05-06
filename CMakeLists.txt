@@ -131,8 +131,8 @@ add_library(OptifolCommon OBJECT
         Source/Visitors/Terms/TermResolutionVisitor.hpp
         Source/Visitors/Terms/MutatingTermVisitorBase.cpp
         Source/Visitors/Sentences/MutatingSentenceVisitorBase.cpp
-        Source/Visitors/Sentences/CNFNormalisers/ExistentialShiftingVisitor.cpp
-        Source/Visitors/Sentences/CNFNormalisers/ExistentialShiftingVisitor.hpp
+        Source/Visitors/Sentences/CNFNormalisers/QuantifierExtractingVisitor.cpp
+        Source/Visitors/Sentences/CNFNormalisers/QuantifierExtractingVisitor.hpp
         Source/Visitors/Sentences/CNFNormalisers/SkolemIntroducingVisitor.cpp
         Source/Visitors/Sentences/CNFNormalisers/SkolemIntroducingVisitor.hpp
         Source/Exceptions/ExceptionBase.hpp

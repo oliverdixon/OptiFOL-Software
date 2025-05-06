@@ -28,6 +28,9 @@ public:
 
     [[nodiscard]] std::unique_ptr<ITermNode> clone() const override
     {
+        if (disambiguated_name.has_value())
+            return std::make_unique<VariableNode>(name, *disambiguated_name);
+
         return std::make_unique<VariableNode>(name);
     }
 

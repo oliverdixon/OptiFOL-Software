@@ -27,22 +27,14 @@ namespace optifol
 
 void SymbolStandardisingVisitor::visit(QuantifiedSentenceNode &node)
 {
-#if 0
-    // If there's any applicable rewriting rules, make the relevant substitution before continuing.
-    const auto &rule = rewriting_rules.find(node.take_bound_term()->get_disambiguated_name());
-    if (rule != rewriting_rules.cend())
-        node.swap_bound_term(rule->second);
-
     // Open the scope, deal with the contents, and close it.
     open_scope(node);
     MutatingSentenceVisitorBase::visit(node);
     close_scope(node.observe_bound_term());
-#endif // TODO
 }
 
 void SymbolStandardisingVisitor::visit(PredicationNode &node)
 {
-#if 0
     auto &args = node.arguments;
     const auto argument_count = args.size();
 
@@ -50,37 +42,37 @@ void SymbolStandardisingVisitor::visit(PredicationNode &node)
     for (std::remove_const_t<decltype(argument_count)> i = 0; i < argument_count; ++i) {
         const auto& rule = rewriting_rules.find(args[i]->get_disambiguated_name());
         if (rule != rewriting_rules.cend())
-            args[i] = rule->second;
+            /*
+             * TODO: should we be cloning here? Shouldn't the same variable be stored once and referred to with
+             *  shared_ptr?
+             */
+            args[i] = rule->second->clone();
 
         args[i]->accept(term_visitor);
     }
-
-    MutatingSentenceVisitorBase::visit(node);
-#endif // TODO
 }
 
 void SymbolStandardisingVisitor::visit(IdentitySentenceNode &node)
 {
-#if 0
-    const auto& lhs_operand = node.take_lhs_operand();
-    const auto& rhs_operand = node.take_rhs_operand();
+    auto borrowed_lhs = node.take_lhs_operand();
 
     // Apply any relevant disambiguation rewriting to the LHS operand.
-    const auto& lhs_rule = rewriting_rules.find(lhs_operand->get_disambiguated_name());
+    const auto& lhs_rule = rewriting_rules.find(borrowed_lhs->get_disambiguated_name());
     if (lhs_rule != rewriting_rules.cend())
-        node.swap_lhs_operand(lhs_rule->second);
+        node.swap_lhs_operand(lhs_rule->second->clone());
+
+    borrowed_lhs->accept(term_visitor);
+    node.put_lhs_operand(std::move(borrowed_lhs));
+
+    auto borrowed_rhs = node.take_rhs_operand();
 
     // Apply any relevant disambiguation rewriting to the RHS operand.
-    const auto& rhs_rule = rewriting_rules.find(rhs_operand->get_disambiguated_name());
+    const auto& rhs_rule = rewriting_rules.find(borrowed_rhs->get_disambiguated_name());
     if (rhs_rule != rewriting_rules.cend())
-        node.swap_rhs_operand(rhs_rule->second);
+        node.swap_rhs_operand(rhs_rule->second->clone());
 
-    // Recurse down both branches, with the disambiguated names.
-    node.take_lhs_operand()->accept(term_visitor);
-    node.take_rhs_operand()->accept(term_visitor);
-
-    MutatingSentenceVisitorBase::visit(node);
-#endif // TODO
+    borrowed_rhs->accept(term_visitor);
+    node.put_rhs_operand(std::move(borrowed_rhs));
 }
 
 void SymbolStandardisingVisitor::reset()
@@ -93,27 +85,27 @@ void SymbolStandardisingVisitor::reset()
 
 void SymbolStandardisingVisitor::open_scope(QuantifiedSentenceNode &node)
 {
-#if 0
-    const auto& original_name = node.take_bound_term()->to_string();
+    const auto& original_name = node.observe_bound_term()->to_string();
 
     if (scope.contains(original_name))
         throw SemanticException("Declared variable \"" + original_name + "\" is already defined in the current scope.");
 
     if (adjacent.contains(original_name)) {
+        // If an adjacent scope has already used a variable with this name, it is ambiguous and needs renaming.
         auto new_name = generate_name(original_name);
 
         while (adjacent.contains(new_name))
+            // Repeatedly disambiguate until we have something unique.
             new_name = generate_name(new_name);
 
         /* In addition to updating the scope set, we also manage the rewriting rules table, since an entry would only
          * appear given a prospectively ambiguous variable node, which clashes with a bound variable in an adjacent
          * scope. */
         node.swap_bound_term(std::make_unique<VariableNode>(original_name, new_name));
-        rewriting_rules.emplace(original_name, std::move(new_variable));
+        rewriting_rules.emplace(original_name, node.observe_bound_term());
     }
 
-    scope.emplace(node.take_bound_term()->to_string());
-#endif // TODO
+    scope.emplace(node.observe_bound_term()->to_string());
 }
 
 void SymbolStandardisingVisitor::close_scope(const ITermNode * node)

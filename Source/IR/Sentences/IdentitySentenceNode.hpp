@@ -37,9 +37,13 @@ public:
 
     [[nodiscard]] const ITermNode * observe_rhs_operand() const;
 
-    void swap_lhs_operand(std::unique_ptr<ITermNode>& new_lhs);
+    void swap_lhs_operand(std::unique_ptr<ITermNode>&& new_lhs);
 
-    void swap_rhs_operand(std::unique_ptr<ITermNode>& new_rhs);
+    void swap_rhs_operand(std::unique_ptr<ITermNode>&& new_rhs);
+
+    void put_lhs_operand(std::unique_ptr<ITermNode>&& new_lhs);
+
+    void put_rhs_operand(std::unique_ptr<ITermNode>&& new_rhs);
 
     void accept(MutatingSentenceVisitorBase& visitor) override;
 
