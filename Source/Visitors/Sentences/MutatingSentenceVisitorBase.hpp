@@ -11,8 +11,8 @@
  * @version Development
  */
 
-#ifndef OPTIFOL_MUTATINGSENTENCEVISITORBASE_HPP
-#define OPTIFOL_MUTATINGSENTENCEVISITORBASE_HPP
+#ifndef MUTATINGSENTENCEVISITORBASE_HPP
+#define MUTATINGSENTENCEVISITORBASE_HPP
 
 namespace optifol
 {
@@ -21,6 +21,7 @@ class QuantifiedSentenceNode;
 class ConnectedSentenceNode;
 class IdentitySentenceNode;
 class PredicationNode;
+class SentenceRoot;
 
 /**
  * @class MutatingSentenceVisitorBase
@@ -58,6 +59,12 @@ public:
      * @param node The predicate sentence root node of the transformation target.
      */
     virtual void visit(PredicationNode& node);
+
+    /**
+     * @brief Applies a mutating transformation to the given sentence root
+     * @param node The sentence root container containing the root of the sentence.
+     */
+    virtual void visit(SentenceRoot& node);
 
     /**
      * @brief Reset any internal state of the visitor.

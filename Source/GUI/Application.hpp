@@ -11,8 +11,8 @@
  * @version Development
  */
 
-#ifndef OPTIFOL_APPLICATION_HPP
-#define OPTIFOL_APPLICATION_HPP
+#ifndef APPLICATION_HPP
+#define APPLICATION_HPP
 
 #include <gtkmm.h>
 

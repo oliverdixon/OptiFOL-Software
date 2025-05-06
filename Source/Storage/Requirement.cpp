@@ -165,9 +165,6 @@ void Requirement::cnf_renormalise()
     // Step 6: Universal elimination
     static auto universal_elimination_visitor = UniversalEliminationVisitor();
     borrowed_sentence->accept(universal_elimination_visitor);
-    auto eliminated_root = universal_elimination_visitor.get_extracted_root();
-    if (eliminated_root != nullptr)
-        borrowed_sentence = std::move(eliminated_root);
     universal_elimination_visitor.reset();
 
     // Step 7: Disjunction distribution

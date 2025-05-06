@@ -11,8 +11,8 @@
  * @version Development
  */
 
-#ifndef OPTIFOL_MAINWINDOW_HPP
-#define OPTIFOL_MAINWINDOW_HPP
+#ifndef MAINWINDOW_HPP
+#define MAINWINDOW_HPP
 
 #include <gtkmm.h>
 

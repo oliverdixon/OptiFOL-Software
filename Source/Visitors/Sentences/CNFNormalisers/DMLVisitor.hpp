@@ -11,8 +11,8 @@
  * @version Development
  */
 
-#ifndef OPTIFOL_DMLVISITOR_HPP
-#define OPTIFOL_DMLVISITOR_HPP
+#ifndef DMLVISITOR_HPP
+#define DMLVISITOR_HPP
 
 #include <memory>
 #include <vector>

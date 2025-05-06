@@ -11,8 +11,8 @@
  * @version Development
  */
 
-#ifndef OPTIFOL_JSONSERIALISERVISITOR_HPP
-#define OPTIFOL_JSONSERIALISERVISITOR_HPP
+#ifndef JSONSERIALISERVISITOR_HPP
+#define JSONSERIALISERVISITOR_HPP
 
 #include <nlohmann/json.hpp>
 
@@ -36,6 +36,8 @@ public:
     void visit(const IdentitySentenceNode& node) override;
 
     void visit(const PredicationNode& node) override;
+
+    void visit(const SentenceRoot& node) override;
 
     [[nodiscard]] nlohmann::json extract();
 

@@ -3,10 +3,16 @@
  * 2025 Oliver Dixon <od641@york.ac.uk>
  */
 
+/**
+ * @file
+ * @brief Class specification for the Constant Term IR node
+ * @author Oliver Dixon
+ * @date 2025-05-06
+ * @version Development
+ */
 
-
-#ifndef OPTIFOL_CONSTANTNODE_HPP
-#define OPTIFOL_CONSTANTNODE_HPP
+#ifndef CONSTANTNODE_HPP
+#define CONSTANTNODE_HPP
 
 #include "ITermNode.hpp"
 
@@ -17,29 +23,15 @@ class ConstantNode :
         public ITermNode
 {
 public:
-    [[maybe_unused]] explicit ConstantNode(std::string name) :
-            name(std::move(name))
-    {}
+    [[maybe_unused]] explicit ConstantNode(std::string name);
 
-    [[nodiscard]] std::unique_ptr<ITermNode> clone() const override
-    {
-        return std::make_unique<ConstantNode>(name);
-    }
+    [[nodiscard]] std::unique_ptr<ITermNode> clone() const override;
 
-    [[nodiscard]] std::string to_string() const override
-    {
-        return name;
-    }
+    [[nodiscard]] std::string to_string() const override;
 
-    [[nodiscard]] std::string get_disambiguated_name() const override
-    {
-        return to_string();
-    }
+    [[nodiscard]] std::string get_disambiguated_name() const override;
 
-    void accept(MutatingTermVisitorBase& visitor) override
-    {
-        visitor.visit(*this);
-    }
+    void accept(MutatingTermVisitorBase& visitor) override;
 
 private:
     const std::string name;

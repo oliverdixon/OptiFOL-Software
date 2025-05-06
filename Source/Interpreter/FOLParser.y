@@ -19,6 +19,7 @@
     #include "../IR/Sentences/IdentitySentenceNode.hpp"
     #include "../IR/Sentences/ConnectedSentenceNode.hpp"
     #include "../IR/Sentences/QuantifiedSentenceNode.hpp"
+    #include "../IR/Sentences/SentenceRoot.hpp"
 
     namespace optifol
     {
@@ -59,7 +60,10 @@
 line :
      sentence End
      {
-         static_cast<FOLParser *>(this)->register_sentence(std::unique_ptr<ISentenceNode>($1));
+         static_cast<FOLParser *>(this)->register_sentence(
+             std::make_unique<SentenceRoot>(std::unique_ptr<ISentenceNode>($1))
+         );
+
          return 0;
      }
      |

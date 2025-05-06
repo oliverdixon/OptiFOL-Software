@@ -3,10 +3,16 @@
  * 2025 Oliver Dixon <od641@york.ac.uk>
  */
 
+/**
+ * @file
+ * @brief Class specification for the generic IR Sentence interface
+ * @author Oliver Dixon
+ * @date 2025-05-06
+ * @version Development
+ */
 
-
-#ifndef OPTIFOL_ISENTENCENODE_HPP
-#define OPTIFOL_ISENTENCENODE_HPP
+#ifndef ISENTENCENODE_HPP
+#define ISENTENCENODE_HPP
 #include <memory>
 
 namespace optifol

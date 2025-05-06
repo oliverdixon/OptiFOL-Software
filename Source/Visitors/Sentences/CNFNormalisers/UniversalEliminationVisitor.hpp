@@ -11,8 +11,8 @@
  * @version Development
  */
 
-#ifndef OPTIFOL_UNIVERSALELIMINATIONVISITOR_HPP
-#define OPTIFOL_UNIVERSALELIMINATIONVISITOR_HPP
+#ifndef UNIVERSALELIMINATIONVISITOR_HPP
+#define UNIVERSALELIMINATIONVISITOR_HPP
 
 #include <memory>
 
@@ -31,7 +31,7 @@ public:
 
     void visit(ConnectedSentenceNode &node) override;
 
-    std::unique_ptr<ISentenceNode> get_extracted_root();
+    void visit(SentenceRoot& node) override;
 
     void reset() override;
 

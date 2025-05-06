@@ -3,12 +3,20 @@
  * 2025 Oliver Dixon <od641@york.ac.uk>
  */
 
-#ifndef OPTIFOL_VARIABLENODE_HPP
-#define OPTIFOL_VARIABLENODE_HPP
+/**
+ * @file
+ * @brief Class specification for the Variable Term IR node
+ * @author Oliver Dixon
+ * @date 2025-05-06
+ * @version Development
+ */
+
+#ifndef VARIABLENODE_HPP
+#define VARIABLENODE_HPP
 
 #include <optional>
+
 #include "ITermNode.hpp"
-#include "../../Visitors/Terms/MutatingTermVisitorBase.hpp"
 
 namespace optifol
 {
@@ -17,40 +25,21 @@ class VariableNode :
         public ITermNode
 {
 public:
-    explicit VariableNode(std::string name) :
-            name(std::move(name))
-    {}
+    explicit VariableNode(std::string name);
 
-    explicit VariableNode(std::string name, const std::string& disambiguated_name) :
-            name(std::move(name)),
-            disambiguated_name(disambiguated_name)
-    {}
+    explicit VariableNode(std::string name, const std::string& disambiguated_name);
 
-    [[nodiscard]] std::unique_ptr<ITermNode> clone() const override
-    {
-        if (disambiguated_name.has_value())
-            return std::make_unique<VariableNode>(name, *disambiguated_name);
+    [[nodiscard]] std::unique_ptr<ITermNode> clone() const override;
 
-        return std::make_unique<VariableNode>(name);
-    }
+    [[nodiscard]] std::string to_string() const override;
 
-    [[nodiscard]] std::string to_string() const override
-    {
-        return name;
-    }
+    [[nodiscard]] std::string get_disambiguated_name() const override;
 
-    [[nodiscard]] std::string get_disambiguated_name() const override
-    {
-        return disambiguated_name.value_or(name);
-    }
-
-    void accept(MutatingTermVisitorBase& visitor) override
-    {
-        visitor.visit(*this);
-    }
+    void accept(MutatingTermVisitorBase& visitor) override;
 
 private:
     const std::string name;
+
     std::optional<std::string> disambiguated_name;
 };
 

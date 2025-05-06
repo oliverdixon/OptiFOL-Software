@@ -3,7 +3,13 @@
  * 2025 Oliver Dixon <od641@york.ac.uk>
  */
 
-
+/**
+ * @file
+ * @brief Class implementation for the Quantified Sentence IR node
+ * @author Oliver Dixon
+ * @date 2025-05-06
+ * @version Development
+ */
 
 #include "QuantifiedSentenceNode.hpp"
 #include "../../Visitors/Sentences/IObservingSentenceVisitor.hpp"

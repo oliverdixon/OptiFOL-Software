@@ -11,8 +11,8 @@
  * @version Development
  */
 
-#ifndef OPTIFOL_SKOLEMINTRODUCINGVISITOR_HPP
-#define OPTIFOL_SKOLEMINTRODUCINGVISITOR_HPP
+#ifndef SKOLEMINTRODUCINGVISITOR_HPP
+#define SKOLEMINTRODUCINGVISITOR_HPP
 
 #include "../MutatingSentenceVisitorBase.hpp"
 

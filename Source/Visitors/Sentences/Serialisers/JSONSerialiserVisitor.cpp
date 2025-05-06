@@ -17,6 +17,7 @@
 #include "../../../IR/Sentences/IdentitySentenceNode.hpp"
 #include "../../../IR/Sentences/PredicationNode.hpp"
 #include "../../../IR/Sentences/QuantifiedSentenceNode.hpp"
+#include "../../../IR/Sentences/SentenceRoot.hpp"
 
 namespace optifol
 {
@@ -76,6 +77,11 @@ void JSONSerialiserVisitor::visit(const PredicationNode &node)
     };
 }
 
+void JSONSerialiserVisitor::visit(const SentenceRoot &node)
+{
+    node.observe_sentence()->accept(*this);
+}
+
 nlohmann::json JSONSerialiserVisitor::extract()
 {
     auto output = std::move(this->output);
@@ -83,7 +89,7 @@ nlohmann::json JSONSerialiserVisitor::extract()
     return output; // TODO: check move NRVO is working
 }
 
-const char *JSONSerialiserVisitor::get_operator_symbol(BinaryOperatorTypes type)
+const char *JSONSerialiserVisitor::get_operator_symbol(const BinaryOperatorTypes type)
 {
     switch (type) {
     case BinaryOperatorTypes::Conjunction:
@@ -99,7 +105,7 @@ const char *JSONSerialiserVisitor::get_operator_symbol(BinaryOperatorTypes type)
     }
 }
 
-const char *JSONSerialiserVisitor::get_operator_symbol(QuantifierTypes type)
+const char *JSONSerialiserVisitor::get_operator_symbol(const QuantifierTypes type)
 {
     switch (type) {
     case QuantifierTypes::Universal:

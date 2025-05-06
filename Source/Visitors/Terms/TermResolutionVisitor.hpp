@@ -11,8 +11,8 @@
  * @version Development
  */
 
-#ifndef OPTIFOL_TERMRESOLUTIONVISITOR_HPP
-#define OPTIFOL_TERMRESOLUTIONVISITOR_HPP
+#ifndef TERMRESOLUTIONVISITOR_HPP
+#define TERMRESOLUTIONVISITOR_HPP
 
 #include <string>
 #include <unordered_map>

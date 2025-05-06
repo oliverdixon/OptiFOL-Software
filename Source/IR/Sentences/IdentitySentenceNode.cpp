@@ -3,12 +3,18 @@
  * 2025 Oliver Dixon <od641@york.ac.uk>
  */
 
-
+/**
+ * @file
+ * @brief Class implementation for the Identity Sentence IR node
+ * @author Oliver Dixon
+ * @date 2025-05-06
+ * @version Development
+ */
 
 #include "IdentitySentenceNode.hpp"
 
-#include "../../Visitors/Sentences/MutatingSentenceVisitorBase.hpp"
 #include "../../Visitors/Sentences/IObservingSentenceVisitor.hpp"
+#include "../../Visitors/Sentences/MutatingSentenceVisitorBase.hpp"
 
 namespace optifol
 {

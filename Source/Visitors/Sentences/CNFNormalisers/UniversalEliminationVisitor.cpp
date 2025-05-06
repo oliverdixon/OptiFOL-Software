@@ -17,6 +17,7 @@
 
 #include "../../../IR/Sentences/ConnectedSentenceNode.hpp"
 #include "../../../IR/Sentences/QuantifiedSentenceNode.hpp"
+#include "../../../IR/Sentences/SentenceRoot.hpp"
 
 namespace optifol
 {
@@ -51,9 +52,14 @@ void UniversalEliminationVisitor::visit(ConnectedSentenceNode &node)
         node.put_rhs_operand(std::move(extracted_sentence));
 }
 
-std::unique_ptr<ISentenceNode> UniversalEliminationVisitor::get_extracted_root()
+void UniversalEliminationVisitor::visit(SentenceRoot &node)
 {
-    return std::move(extracted_sentence);
+    auto borrowed_sentence = node.take_sentence();
+    borrowed_sentence->accept(*this);
+    if (extracted_sentence == nullptr)
+        node.put_sentence(std::move(borrowed_sentence));
+    else
+        node.put_sentence(std::move(extracted_sentence));
 }
 
 void UniversalEliminationVisitor::reset()

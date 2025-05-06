@@ -11,8 +11,8 @@
  * @version Development
  */
 
-#ifndef OPTIFOL_TEXTSERIALISERVISITOR_HPP
-#define OPTIFOL_TEXTSERIALISERVISITOR_HPP
+#ifndef TEXTSERIALISERVISITOR_HPP
+#define TEXTSERIALISERVISITOR_HPP
 
 #include <sstream>
 
@@ -36,6 +36,8 @@ public:
     void visit(const IdentitySentenceNode& node) override;
 
     void visit(const PredicationNode& node) override;
+
+    void visit(const SentenceRoot& node) override;
 
     [[nodiscard]] std::string extract();
 

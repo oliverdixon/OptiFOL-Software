@@ -11,8 +11,8 @@
  * @warning This file depends on build-time generated source from Flex and Bison.
  */
 
-#ifndef OPTIFOL_FOLPARSER_HPP
-#define OPTIFOL_FOLPARSER_HPP
+#ifndef FOLPARSER_HPP
+#define FOLPARSER_HPP
 
 #include <memory>
 

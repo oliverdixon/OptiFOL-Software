@@ -3,10 +3,16 @@
  * 2025 Oliver Dixon <od641@york.ac.uk>
  */
 
+/**
+ * @file
+ * @brief Class specification for the Identity Sentence IR node
+ * @author Oliver Dixon
+ * @date 2025-05-06
+ * @version Development
+ */
 
-
-#ifndef OPTIFOL_IDENTITYSENTENCENODE_HPP
-#define OPTIFOL_IDENTITYSENTENCENODE_HPP
+#ifndef IDENTITYSENTENCENODE_HPP
+#define IDENTITYSENTENCENODE_HPP
 
 #include "ISentenceNode.hpp"
 #include "../Terms/ITermNode.hpp"

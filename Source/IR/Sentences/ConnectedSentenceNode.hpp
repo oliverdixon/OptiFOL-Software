@@ -3,10 +3,16 @@
  * 2025 Oliver Dixon <od641@york.ac.uk>
  */
 
+/**
+ * @file
+ * @brief Class specification for the binary-Connected Sentence IR node
+ * @author Oliver Dixon
+ * @date 2025-05-06
+ * @version Development
+ */
 
-
-#ifndef OPTIFOL_CONNECTEDSENTENCENODE_HPP
-#define OPTIFOL_CONNECTEDSENTENCENODE_HPP
+#ifndef CONNECTEDSENTENCENODE_HPP
+#define CONNECTEDSENTENCENODE_HPP
 
 #include "ISentenceNode.hpp"
 

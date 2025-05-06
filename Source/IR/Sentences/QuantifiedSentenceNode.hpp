@@ -3,10 +3,16 @@
  * 2025 Oliver Dixon <od641@york.ac.uk>
  */
 
+/**
+ * @file
+ * @brief Class specification for the Quantified Sentence IR node
+ * @author Oliver Dixon
+ * @date 2025-05-06
+ * @version Development
+ */
 
-
-#ifndef OPTIFOL_QUANTIFIEDSENTENCENODE_HPP
-#define OPTIFOL_QUANTIFIEDSENTENCENODE_HPP
+#ifndef QUANTIFIEDSENTENCENODE_HPP
+#define QUANTIFIEDSENTENCENODE_HPP
 
 #include <memory>
 

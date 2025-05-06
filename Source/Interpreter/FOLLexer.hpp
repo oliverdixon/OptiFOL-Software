@@ -3,8 +3,8 @@
  * 2025 Oliver Dixon <od641@york.ac.uk>
  */
 
-#ifndef OPTIFOL_FOLLEXER_HPP
-#define OPTIFOL_FOLLEXER_HPP
+#ifndef FOLLEXER_HPP
+#define FOLLEXER_HPP
 
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "OCUnusedStructInspection"

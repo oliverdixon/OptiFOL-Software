@@ -3,8 +3,13 @@
  * 2025 Oliver Dixon <od641@york.ac.uk>
  */
 
-
-
+/**
+ * @file
+ * @brief Class implementation for the binary-Connected Sentence IR node
+ * @author Oliver Dixon
+ * @date 2025-05-06
+ * @version Development
+ */
 
 #include "ConnectedSentenceNode.hpp"
 

@@ -3,10 +3,16 @@
  * 2025 Oliver Dixon <od641@york.ac.uk>
  */
 
+/**
+ * @file
+ * @brief Class specification for the Predicate IR node
+ * @author Oliver Dixon
+ * @date 2025-05-06
+ * @version Development
+ */
 
-
-#ifndef OPTIFOL_PREDICATIONNODE_HPP
-#define OPTIFOL_PREDICATIONNODE_HPP
+#ifndef PREDICATIONNODE_HPP
+#define PREDICATIONNODE_HPP
 
 #include "ISentenceNode.hpp"
 

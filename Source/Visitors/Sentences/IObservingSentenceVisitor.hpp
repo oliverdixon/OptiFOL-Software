@@ -11,8 +11,8 @@
  * @version Development
  */
 
-#ifndef OPTIFOL_IOBSERVINGSENTENCEVISITOR_HPP
-#define OPTIFOL_IOBSERVINGSENTENCEVISITOR_HPP
+#ifndef IOBSERVINGSENTENCEVISITOR_HPP
+#define IOBSERVINGSENTENCEVISITOR_HPP
 
 namespace optifol
 {
@@ -21,6 +21,7 @@ class QuantifiedSentenceNode;
 class ConnectedSentenceNode;
 class IdentitySentenceNode;
 class PredicationNode;
+class SentenceRoot;
 
 class IObservingSentenceVisitor
 {
@@ -34,6 +35,8 @@ public:
     virtual void visit(const IdentitySentenceNode& node) = 0;
 
     virtual void visit(const PredicationNode& node) = 0;
+
+    virtual void visit(const SentenceRoot& node) = 0;
 };
 
 }

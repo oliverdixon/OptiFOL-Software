@@ -3,10 +3,16 @@
  * 2025 Oliver Dixon <od641@york.ac.uk>
  */
 
+/**
+ * @file
+ * @brief Class specification for the generic IR Term interface
+ * @author Oliver Dixon
+ * @date 2025-05-06
+ * @version Development
+ */
 
-
-#ifndef OPTIFOL_ITERMNODE_HPP
-#define OPTIFOL_ITERMNODE_HPP
+#ifndef ITERMNODE_HPP
+#define ITERMNODE_HPP
 
 #include <memory>
 #include <string>

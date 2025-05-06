@@ -11,8 +11,8 @@
  * @version Development
  */
 
-#ifndef OPTIFOL_HPP
-#define OPTIFOL_HPP
+#ifndef HPP
+#define HPP
 
 /**
  * @namespace optifol

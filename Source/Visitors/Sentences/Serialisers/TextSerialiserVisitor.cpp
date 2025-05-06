@@ -17,6 +17,7 @@
 #include "../../../IR/Sentences/IdentitySentenceNode.hpp"
 #include "../../../IR/Sentences/PredicationNode.hpp"
 #include "../../../IR/Sentences/QuantifiedSentenceNode.hpp"
+#include "../../../IR/Sentences/SentenceRoot.hpp"
 
 namespace optifol
 {
@@ -62,6 +63,11 @@ void TextSerialiserVisitor::visit(const PredicationNode &node)
         output_stream << node.arguments[argument_count - 1]->get_disambiguated_name();
 
     output_stream << ')';
+}
+
+void TextSerialiserVisitor::visit(const SentenceRoot &node)
+{
+    node.observe_sentence()->accept(*this);
 }
 
 std::string TextSerialiserVisitor::extract()

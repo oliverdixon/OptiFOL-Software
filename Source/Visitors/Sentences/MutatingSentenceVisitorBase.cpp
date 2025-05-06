@@ -15,6 +15,7 @@
 
 #include "../../IR/Sentences/ConnectedSentenceNode.hpp"
 #include "../../IR/Sentences/QuantifiedSentenceNode.hpp"
+#include "../../IR/Sentences/SentenceRoot.hpp"
 
 namespace optifol
 {
@@ -45,6 +46,13 @@ void MutatingSentenceVisitorBase::visit(IdentitySentenceNode &node)
 void MutatingSentenceVisitorBase::visit(PredicationNode &node)
 {
     (void) node;
+}
+
+void MutatingSentenceVisitorBase::visit(SentenceRoot &node)
+{
+    auto borrowed_sentence = node.take_sentence();
+    borrowed_sentence->accept(*this);
+    node.put_sentence(std::move(borrowed_sentence));
 }
 
 }

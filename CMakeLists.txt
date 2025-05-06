@@ -145,6 +145,11 @@ add_library(OptifolCommon OBJECT
         Source/Optifol.hpp
         Source/Logging.hpp
         Source/Logging.cpp
+        Source/IR/Sentences/SentenceRoot.hpp
+        Source/IR/Sentences/SentenceRoot.cpp
+        Source/IR/Terms/ConstantNode.cpp
+        Source/IR/Terms/FunctionNode.cpp
+        Source/IR/Terms/VariableNode.cpp
 )
 
 target_link_libraries(OptifolCommon PRIVATE nlohmann_json::nlohmann_json simdjson)
