@@ -21,9 +21,25 @@ SkolemFunctionNode::SkolemFunctionNode(std::string name,
     FunctionNode(std::move(name), std::move(quantified_variables))
 {}
 
+SkolemFunctionNode::SkolemFunctionNode(std::string name,
+        const std::vector<std::unique_ptr<ITermNode>> &quantified_variables) :
+    FunctionNode(std::move(name), quantified_variables)
+{}
+
+std::unique_ptr<ITermNode> SkolemFunctionNode::clone() const
+{
+    std::vector<std::unique_ptr<ITermNode>> cloned_arguments;
+
+    cloned_arguments.reserve(arguments.size());
+    for (const auto& argument : arguments)
+        cloned_arguments.push_back(argument->clone());
+
+    return std::make_unique<SkolemFunctionNode>(name, std::move(cloned_arguments));
+}
+
 std::string SkolemFunctionNode::get_disambiguated_name() const
 {
-    return '{' + FunctionNode::get_disambiguated_name() + '}';
+    return '{' + name + '}';
 }
 
 }

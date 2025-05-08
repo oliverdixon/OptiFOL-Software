@@ -14,11 +14,12 @@
 #ifndef SYMBOLSTANDARDISINGVISITOR_HPP
 #define SYMBOLSTANDARDISINGVISITOR_HPP
 
+#include <optional>
 #include <unordered_map>
 
 #include "../MutatingSentenceVisitorBase.hpp"
 #include "../../../IR/Terms/ITermNode.hpp"
-#include "../../Terms/TermResolutionVisitor.hpp"
+#include "../../Terms/ScopedTermResolutionVisitor.hpp"
 
 namespace optifol
 {
@@ -76,7 +77,7 @@ private:
      *  pointer in the corresponding value. Only variables with disambiguated names occupy entries in the map, and the
      *  map should be cleared down when the scope is released.
      */
-    std::unordered_map<std::string, const ITermNode *> rewriting_rules;
+    std::unordered_map<std::string, std::unique_ptr<ITermNode>> rewriting_rules;
 
     /**
      * @brief The set of pre-disambiguated names bound in the current scope.
@@ -97,22 +98,25 @@ private:
      * @brief The nested term visitor used to assist rewriting of variables nested in terms that are not accessible
      *  through the sentence interface (i.e. functions).
      */
-    TermResolutionVisitor term_visitor{scope, rewriting_rules};
+    ScopedTermResolutionVisitor term_visitor{scope, rewriting_rules};
 
     /**
      * @brief Establishes a new scope, introducing the variable bound by the given quantifier. If necessary, the bound
      *  name is disambiguated, in which case a rewriting rule entry is added.
      * @param node The bounding quantifier responsible for the opened scope
+     * @return TODO
      */
-    void open_scope(QuantifiedSentenceNode& node);
+    std::optional<decltype(rewriting_rules)::iterator> open_scope(QuantifiedSentenceNode &node);
 
     /**
      * @brief Closes the current scope, clearing applicable entries from the scope naming set and the rewriting rule
      *  map. The bound variable of the closed scope is comitted to the adjacents naming set.
      * @pre The scope naming set must contain a variable name of the given node.
      * @param node The variable bound by the scope
+     * @param rule_reference TODO
      */
-    void close_scope(const ITermNode * node);
+    void close_scope(QuantifiedSentenceNode &node,
+        const std::optional<decltype(rewriting_rules)::iterator> &rule_reference);
 
     /**
      * @brief Suffix the given variable name with a unique identifier, until it does not conflict with any member of the

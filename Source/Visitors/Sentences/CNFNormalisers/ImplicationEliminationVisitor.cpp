@@ -17,6 +17,7 @@
 
 namespace optifol
 {
+
 void ImplicationEliminationVisitor::visit(ConnectedSentenceNode &node)
 {
     MutatingSentenceVisitorBase::visit(node);

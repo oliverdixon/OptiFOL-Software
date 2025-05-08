@@ -28,6 +28,8 @@ class FunctionNode :
 public:
     [[maybe_unused]] explicit FunctionNode(std::string name, std::vector<std::unique_ptr<ITermNode>> &&arguments);
 
+    [[maybe_unused]] explicit FunctionNode(std::string name, const std::vector<std::unique_ptr<ITermNode>> &arguments);
+
     [[nodiscard]] std::string to_string() const override;
 
     [[nodiscard]] std::unique_ptr<ITermNode> clone() const override;
@@ -36,9 +38,11 @@ public:
 
     void accept(MutatingTermVisitorBase& visitor) override;
 
+    [[nodiscard]] const std::vector<std::unique_ptr<ITermNode>>& observe_arguments() const;
+
     std::vector<std::unique_ptr<ITermNode>>& observe_arguments();
 
-private:
+protected:
     const std::string name;
 
     std::vector<std::unique_ptr<ITermNode>> arguments;

@@ -23,6 +23,14 @@ FunctionNode::FunctionNode(std::string name, std::vector<std::unique_ptr<ITermNo
     arguments(std::move(arguments))
 {}
 
+FunctionNode::FunctionNode(std::string name, const std::vector<std::unique_ptr<ITermNode>> &arguments) :
+    name(std::move(name))
+{
+    this->arguments.reserve(arguments.size());
+    for (const auto& argument : arguments)
+        this->arguments.push_back(argument->clone());
+}
+
 std::string FunctionNode::to_string() const
 {
     std::string result = get_disambiguated_name() + '(';
@@ -30,7 +38,7 @@ std::string FunctionNode::to_string() const
     auto argument_count = arguments.size();
 
     for (const auto &arg: arguments) {
-        result += arg->get_disambiguated_name();
+        result += arg->to_string();
         if (--argument_count > 0)
             result += ", ";
     }
@@ -57,6 +65,11 @@ std::string FunctionNode::get_disambiguated_name() const
 void FunctionNode::accept(MutatingTermVisitorBase &visitor)
 {
     visitor.visit(*this);
+}
+
+const std::vector<std::unique_ptr<ITermNode>> & FunctionNode::observe_arguments() const
+{
+    return arguments;
 }
 
 std::vector<std::unique_ptr<ITermNode>> & FunctionNode::observe_arguments()

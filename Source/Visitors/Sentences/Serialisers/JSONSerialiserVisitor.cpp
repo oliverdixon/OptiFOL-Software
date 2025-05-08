@@ -30,7 +30,7 @@ void JSONSerialiserVisitor::visit(const QuantifiedSentenceNode &node)
     output = {
         { "type", "quantified" },
         { "nature", get_operator_symbol(node.get_quantifier_type()) },
-        { "variable", node.observe_bound_term()->get_disambiguated_name() },
+        { "variable", node.observe_bound_term()->to_string() },
         { "sentence", std::move(output) }
     };
 }
@@ -58,8 +58,8 @@ void JSONSerialiserVisitor::visit(const IdentitySentenceNode &node)
 {
     output = {
         { "type", "equality" },
-        { "lhs", node.observe_lhs_operand()->get_disambiguated_name() },
-        { "rhs", node.observe_rhs_operand()->get_disambiguated_name() }
+        { "lhs", node.observe_lhs_operand()->to_string() },
+        { "rhs", node.observe_rhs_operand()->to_string() }
     };
 }
 
@@ -68,7 +68,7 @@ void JSONSerialiserVisitor::visit(const PredicationNode &node)
     nlohmann::json arguments = nlohmann::json::array();
 
     for (const auto& argument : node.arguments)
-        arguments.push_back(argument->get_disambiguated_name());
+        arguments.push_back(argument->to_string());
 
     output = {
         { "type", "predicate" },

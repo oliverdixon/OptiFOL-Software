@@ -152,6 +152,8 @@ add_library(OptifolCommon OBJECT
         Source/IR/Terms/VariableNode.cpp
         Source/IR/Terms/SkolemFunctionNode.cpp
         Source/IR/Terms/SkolemFunctionNode.hpp
+        Source/Visitors/Terms/ScopedTermResolutionVisitor.cpp
+        Source/Visitors/Terms/ScopedTermResolutionVisitor.hpp
 )
 
 target_link_libraries(OptifolCommon PRIVATE nlohmann_json::nlohmann_json simdjson)

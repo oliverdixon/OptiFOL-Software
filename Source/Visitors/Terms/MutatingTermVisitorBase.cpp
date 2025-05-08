@@ -27,12 +27,17 @@ void MutatingTermVisitorBase::visit(FunctionNode &node)
 
 void MutatingTermVisitorBase::visit(ConstantNode &node)
 {
-    (void) node;
+    std::ignore = node;
 }
 
 void MutatingTermVisitorBase::visit(VariableNode &node)
 {
-    (void) node;
+    std::ignore = node;
+}
+
+void MutatingTermVisitorBase::visit(SkolemFunctionNode &node)
+{
+    std::ignore = node;
 }
 
 }

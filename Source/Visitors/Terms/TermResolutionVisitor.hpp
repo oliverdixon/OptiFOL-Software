@@ -30,19 +30,14 @@ class TermResolutionVisitor :
         public MutatingTermVisitorBase
 {
 public:
-    TermResolutionVisitor(
-            const std::unordered_set<std::string> &scope_hook,
-            std::unordered_map<std::string, const ITermNode *> &rewriting_rules_hook
+    explicit TermResolutionVisitor(
+            const std::unordered_map<std::string, std::unique_ptr<ITermNode>> &rewriting_rules_hook
     );
 
     void visit(FunctionNode &node) override;
 
-    void visit(VariableNode &node) override;
-
 private:
-    const std::unordered_set<std::string> &scope_hook;
-
-    std::unordered_map<std::string, const ITermNode *>& rewriting_rules_hook;
+    const std::unordered_map<std::string, std::unique_ptr<ITermNode>>& rewriting_rules_hook;
 };
 
 }

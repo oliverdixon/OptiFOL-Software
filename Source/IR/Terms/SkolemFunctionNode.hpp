@@ -30,6 +30,11 @@ public:
     [[maybe_unused]] explicit SkolemFunctionNode(std::string name,
         std::vector<std::unique_ptr<ITermNode>> &&quantified_variables);
 
+    [[maybe_unused]] explicit SkolemFunctionNode(std::string name,
+        const std::vector<std::unique_ptr<ITermNode>> &quantified_variables);
+
+    [[nodiscard]] std::unique_ptr<ITermNode> clone() const override;
+
     [[nodiscard]] std::string get_disambiguated_name() const override;
 };
 

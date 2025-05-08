@@ -26,7 +26,7 @@ void TextSerialiserVisitor::visit(const QuantifiedSentenceNode &node)
 {
     print_polarity(&node);
     output_stream << get_operator_symbol(node.get_quantifier_type())
-                  << node.observe_bound_term()->get_disambiguated_name() << ' ';
+                  << node.observe_bound_term()->to_string() << ' ';
 
     node.observe_sentence()->accept(*this);
 }
@@ -46,8 +46,8 @@ void TextSerialiserVisitor::visit(const ConnectedSentenceNode &node)
 void TextSerialiserVisitor::visit(const IdentitySentenceNode &node)
 {
     print_polarity(&node);
-    output_stream << '(' << node.observe_lhs_operand()->get_disambiguated_name() << ' ' << '=' << ' '
-                  << node.observe_rhs_operand()->get_disambiguated_name() << ')';
+    output_stream << '(' << node.observe_lhs_operand()->to_string() << ' ' << '=' << ' '
+                  << node.observe_rhs_operand()->to_string() << ')';
 }
 
 void TextSerialiserVisitor::visit(const PredicationNode &node)
@@ -57,10 +57,10 @@ void TextSerialiserVisitor::visit(const PredicationNode &node)
 
     const auto argument_count = node.arguments.size();
     for (std::remove_const_t<decltype(argument_count)> i = 1; i < argument_count; ++i)
-        output_stream << node.arguments[i - 1]->get_disambiguated_name() << ',' << ' ';
+        output_stream << node.arguments[i - 1]->to_string() << ',' << ' ';
 
     if (argument_count > 0)
-        output_stream << node.arguments[argument_count - 1]->get_disambiguated_name();
+        output_stream << node.arguments[argument_count - 1]->to_string();
 
     output_stream << ')';
 }

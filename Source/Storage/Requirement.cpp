@@ -150,7 +150,7 @@ void Requirement::cnf_renormalise()
     borrowed_sentence->accept(quantifier_extraction_visitor);
 
     // Step 5: Skolem function introduction
-    auto skolem_introducing_visitor = SkolemIntroducingVisitor(); // TODO
+    auto skolem_introducing_visitor = SkolemIntroducingVisitor();
     borrowed_sentence->accept(skolem_introducing_visitor);
 
     // Step 6: Universal elimination

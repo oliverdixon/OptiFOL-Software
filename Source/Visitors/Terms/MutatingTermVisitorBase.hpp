@@ -20,6 +20,7 @@ namespace optifol
 class FunctionNode;
 class ConstantNode;
 class VariableNode;
+class SkolemFunctionNode;
 
 class MutatingTermVisitorBase
 {
@@ -31,6 +32,8 @@ public:
     virtual void visit(ConstantNode &node);
 
     virtual void visit(VariableNode &node);
+
+    virtual void visit(SkolemFunctionNode& node);
 };
 
 }

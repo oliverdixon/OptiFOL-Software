@@ -13,16 +13,12 @@
 
 #include "TermResolutionVisitor.hpp"
 #include "../../IR/Terms/FunctionNode.hpp"
-#include "../../IR/Terms/VariableNode.hpp"
-#include "../../Exceptions/SemanticException.hpp"
 
 namespace optifol
 {
 
 TermResolutionVisitor::TermResolutionVisitor(
-        const std::unordered_set<std::string> &scope_hook,
-        std::unordered_map<std::string, const ITermNode *>& rewriting_rules_hook) :
-    scope_hook(scope_hook),
+        const std::unordered_map<std::string, std::unique_ptr<ITermNode>> & rewriting_rules_hook) :
     rewriting_rules_hook(rewriting_rules_hook)
 {}
 
@@ -32,20 +28,13 @@ void TermResolutionVisitor::visit(FunctionNode &node)
     const auto argument_count = args.size();
 
     for (std::remove_const_t<decltype(argument_count)> i = 0; i < argument_count; ++i) {
-        const auto &rule = rewriting_rules_hook.find(args[i]->get_disambiguated_name());
+        const auto &rule = rewriting_rules_hook.find(args[i]->
+            get_disambiguated_name());
         if (rule != rewriting_rules_hook.end())
             args[i] = rule->second->clone();
 
         args[i]->accept(*this);
     }
-}
-
-void TermResolutionVisitor::visit(VariableNode &node)
-{
-    const auto &name = node.to_string();
-
-    if (!scope_hook.contains(name))
-        throw SemanticException("Referenced variable \"" + name + "\" is not defined in the current scope.");
 }
 
 }

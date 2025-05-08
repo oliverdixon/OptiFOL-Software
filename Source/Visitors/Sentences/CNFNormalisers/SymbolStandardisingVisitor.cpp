@@ -27,10 +27,15 @@ namespace optifol
 
 void SymbolStandardisingVisitor::visit(QuantifiedSentenceNode &node)
 {
-    // Open the scope, deal with the contents, and close it.
-    open_scope(node);
+    /*
+     * Open the scope, deal with the contents, and close it. Note that the act of opening a scope transfers ownership of
+     * the bound term to the internal visitor state, hence it cannot be used until the scope is closed and the bound
+     * term is returned. It is invariant that SymbolStandardisingVisitor::visit(QuantifiedSentenceNode&) does attempt to
+     * access its own bound term while its relevant scope is open.
+     */
+    const auto rule_reference = open_scope(node);
     MutatingSentenceVisitorBase::visit(node);
-    close_scope(node.observe_bound_term());
+    close_scope(node, rule_reference);
 }
 
 void SymbolStandardisingVisitor::visit(PredicationNode &node)
@@ -42,10 +47,6 @@ void SymbolStandardisingVisitor::visit(PredicationNode &node)
     for (std::remove_const_t<decltype(argument_count)> i = 0; i < argument_count; ++i) {
         const auto& rule = rewriting_rules.find(args[i]->get_disambiguated_name());
         if (rule != rewriting_rules.cend())
-            /*
-             * TODO: should we be cloning here? Shouldn't the same variable be stored once and referred to with
-             *  shared_ptr?
-             */
             args[i] = rule->second->clone();
 
         args[i]->accept(term_visitor);
@@ -75,7 +76,8 @@ void SymbolStandardisingVisitor::visit(IdentitySentenceNode &node)
     node.put_rhs_operand(std::move(borrowed_rhs));
 }
 
-void SymbolStandardisingVisitor::open_scope(QuantifiedSentenceNode &node)
+std::optional<decltype(SymbolStandardisingVisitor::rewriting_rules)::iterator> SymbolStandardisingVisitor::open_scope(
+    QuantifiedSentenceNode &node)
 {
     const auto& original_name = node.observe_bound_term()->to_string();
 
@@ -94,20 +96,36 @@ void SymbolStandardisingVisitor::open_scope(QuantifiedSentenceNode &node)
          * appear given a prospectively ambiguous variable node, which clashes with a bound variable in an adjacent
          * scope. */
         node.put_bound_term(std::make_unique<VariableNode>(original_name, new_name));
-        rewriting_rules.emplace(original_name, node.observe_bound_term());
+        scope.emplace(node.observe_bound_term()->to_string());
+        return rewriting_rules.emplace(original_name, node.take_bound_term()).first;
     }
 
     scope.emplace(node.observe_bound_term()->to_string());
+    return {};
 }
 
-void SymbolStandardisingVisitor::close_scope(const ITermNode * node)
+void SymbolStandardisingVisitor::close_scope(QuantifiedSentenceNode &node,
+    const std::optional<decltype(SymbolStandardisingVisitor::rewriting_rules)::iterator> &rule_reference)
 {
-    const auto& name = node->to_string();
-    assert(scope.contains(name));
+    if (rule_reference.has_value() && rule_reference != rewriting_rules.end()) {
+        /*
+         * If we were provided with a valid rule iterator reference, return the borrowed bound term to the quantifier.
+         * If the optional container is empty, we assume that no rewriting rule was produced for this scope, and thus
+         * there was no borrowed bound term that needs to be returned. This is verified with an assert to ensure that we
+         * can get some observing reference to the bound term of the given quantified node.
+         */
+        node.put_bound_term(std::move(rule_reference->operator->()->second));
+        rewriting_rules.erase(*rule_reference);
+    }
+
+    const auto bound_term = node.observe_bound_term();
+    assert(bound_term != nullptr); // Ensure that the bound term has been correctly returned to the quantifier node.
+
+    const auto& name = bound_term->to_string();
+    assert(scope.contains(name)); // Ensure that the current scope is what we expect.
 
     scope.erase(name);
-    rewriting_rules.erase(name);
-    adjacent.emplace(node->get_disambiguated_name());
+    adjacent.emplace(bound_term->get_disambiguated_name());
 }
 
 std::string SymbolStandardisingVisitor::generate_name(const std::string &name)
