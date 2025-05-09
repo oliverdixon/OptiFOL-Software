@@ -16,6 +16,8 @@
 #include "Application.hpp"
 #include "GTKHelpers.hpp"
 #include "MainWindow.hpp"
+
+#include "../Storage/Project.hpp"
 #include "../Storage/Requirement.hpp"
 #include "../Storage/Subsystem.hpp"
 

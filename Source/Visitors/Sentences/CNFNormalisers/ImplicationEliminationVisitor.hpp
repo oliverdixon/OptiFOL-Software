@@ -36,11 +36,16 @@ class ImplicationEliminationVisitor :
         public MutatingSentenceVisitorBase
 {
 public:
+    std::string_view get_visitor_name() const override;
+
     /**
      * @brief Recursively applies implication-elimination transformations to the given connected sentence root
      * @param node The connected sentence root node on which the implication-elimination should be applied
      */
     void visit(ConnectedSentenceNode &node) override;
+
+private:
+    static const char * visitor_name;
 };
 
 }

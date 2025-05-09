@@ -13,14 +13,19 @@
 
 #include "UniversalEliminationVisitor.hpp"
 
-#include <cassert>
-
 #include "../../../IR/Sentences/ConnectedSentenceNode.hpp"
 #include "../../../IR/Sentences/QuantifiedSentenceNode.hpp"
 #include "../../../IR/Sentences/SentenceRoot.hpp"
 
 namespace optifol
 {
+
+const char * UniversalEliminationVisitor::visitor_name = "UniversalElimination";
+
+std::string_view UniversalEliminationVisitor::get_visitor_name() const
+{
+    return visitor_name;
+}
 
 void UniversalEliminationVisitor::visit(QuantifiedSentenceNode &node)
 {

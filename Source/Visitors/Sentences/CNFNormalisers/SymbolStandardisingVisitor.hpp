@@ -49,6 +49,8 @@ class SymbolStandardisingVisitor :
         public MutatingSentenceVisitorBase
 {
 public:
+    std::string_view get_visitor_name() const override;
+
     /**
      * @brief Recursively applies the symbol-standardisation procedures to the given quantified sentence root.
      * @param node The root quantified sentence node
@@ -71,6 +73,8 @@ public:
     void visit(IdentitySentenceNode &node) override;
 
 private:
+    static const char * visitor_name;
+
     /**
      * @brief Name-rewriting rules for variables encountered in the current scope.
      * @details Any variable with a name matching a key of the map should be completely replaced by the variable unique

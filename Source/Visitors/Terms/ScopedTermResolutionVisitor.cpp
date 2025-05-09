@@ -25,6 +25,11 @@ ScopedTermResolutionVisitor::ScopedTermResolutionVisitor(const std::unordered_se
     scope_hook(scope_hook)
 {}
 
+void ScopedTermResolutionVisitor::visit(FunctionNode &node)
+{
+    TermResolutionVisitor::visit(node);
+}
+
 void ScopedTermResolutionVisitor::visit(VariableNode &node)
 {
     const auto &name = node.to_string();

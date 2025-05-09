@@ -44,9 +44,14 @@ class DMLVisitor :
         public MutatingSentenceVisitorBase
 {
 public:
+    std::string_view get_visitor_name() const override;
+
     void visit(ConnectedSentenceNode &node) override;
 
     void visit(QuantifiedSentenceNode &node) override;
+
+private:
+    static const char * visitor_name;
 };
 
 }

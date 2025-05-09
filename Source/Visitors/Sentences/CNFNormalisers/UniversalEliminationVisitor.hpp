@@ -27,6 +27,8 @@ class UniversalEliminationVisitor :
         public MutatingSentenceVisitorBase
 {
 public:
+    std::string_view get_visitor_name() const override;
+
     void visit(QuantifiedSentenceNode& node) override;
 
     void visit(ConnectedSentenceNode &node) override;
@@ -34,6 +36,8 @@ public:
     void visit(SentenceRoot& node) override;
 
 private:
+    static const char * visitor_name;
+
     std::unique_ptr<ISentenceNode> extracted_sentence;
 };
 

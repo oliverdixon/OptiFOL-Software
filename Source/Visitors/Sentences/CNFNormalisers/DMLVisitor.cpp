@@ -18,6 +18,13 @@
 namespace optifol
 {
 
+const char * DMLVisitor::visitor_name = "DeMorgan";
+
+std::string_view DMLVisitor::get_visitor_name() const
+{
+    return visitor_name;
+}
+
 void DMLVisitor::visit(ConnectedSentenceNode &node)
 {
     /*

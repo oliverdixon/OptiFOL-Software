@@ -14,7 +14,9 @@
 #ifndef MAINWINDOW_HPP
 #define MAINWINDOW_HPP
 
-#include <gtkmm.h>
+#include <gtkmm/applicationwindow.h>
+#include <gtkmm/box.h>
+#include <gtkmm/builder.h>
 
 #include "Panels/AnalysisArea.hpp"
 #include "Panels/ProjectHierarchyPane.hpp"
@@ -34,8 +36,6 @@ private:
     static const char * const area_name;
 
     Gtk::Box * const root_grid;
-
-    Glib::RefPtr<Gtk::AlertDialog> database_alert;
 
     std::unique_ptr<ProjectHierarchyPane> project_hierarchy_pane;
     std::unique_ptr<RequirementsIndexArea> requirements_index_area;

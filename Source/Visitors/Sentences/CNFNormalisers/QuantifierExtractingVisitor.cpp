@@ -21,6 +21,13 @@
 namespace optifol
 {
 
+const char * QuantifierExtractingVisitor::visitor_name = "QuantifierExtraction";
+
+std::string_view QuantifierExtractingVisitor::get_visitor_name() const
+{
+    return visitor_name;
+}
+
 void QuantifierExtractingVisitor::visit(ConnectedSentenceNode &node)
 {
     assert(!transformation_metadata.has_value()); // Ensure there is no pending transformation.

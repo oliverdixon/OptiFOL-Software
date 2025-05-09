@@ -44,6 +44,8 @@ class DisjunctionDistributionVisitor :
         public MutatingSentenceVisitorBase
 {
 public:
+    std::string_view get_visitor_name() const override;
+
     /**
      * @brief Recursively applies disjunction-distribution to the connected sentence, in-place.
      * @param node The root of the connected sentence on which disjunction-distribution should be applied.
@@ -63,6 +65,8 @@ private:
         LeftMajor, /**< Tracking to the left: nested children should record their left operands in the major slot */
         RightMajor /**< Tracking to the right: nested children should record their right operands in the major slot */
     };
+
+    static const char * visitor_name;
 
     /**
      * @brief The current operand-tracking state

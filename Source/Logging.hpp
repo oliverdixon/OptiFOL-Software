@@ -24,7 +24,9 @@ class Logging
 public:
     static log4cxx::LoggerPtr get_logger();
 
-    static log4cxx::LoggerPtr get_logger(const std::string& name);
+    static log4cxx::LoggerPtr get_logger(const char * name);
+
+    static log4cxx::LoggerPtr get_logger(std::vector<std::string> &&name);
 
 private:
     static struct LifecycleManager

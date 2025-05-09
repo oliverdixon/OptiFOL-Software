@@ -13,6 +13,9 @@
 
 #include "SkolemIntroducingVisitor.hpp"
 
+#include <cassert>
+
+#include "../../../Logging.hpp"
 #include "../../../IR/Sentences/ConnectedSentenceNode.hpp"
 #include "../../../IR/Sentences/IdentitySentenceNode.hpp"
 #include "../../../IR/Sentences/PredicationNode.hpp"
@@ -23,9 +26,22 @@
 namespace optifol
 {
 
+const char * SkolemIntroducingVisitor::visitor_name = "SkolemIntroduction";
+
 SkolemIntroducingVisitor::SkolemIntroducingVisitor()
 {
     universally_quantified_variables.emplace();
+}
+
+SkolemIntroducingVisitor::~SkolemIntroducingVisitor()
+{
+    assert(skolem_replacements.empty());
+    assert(universally_quantified_variables.size() == 1 && universally_quantified_variables.top().empty());
+}
+
+std::string_view SkolemIntroducingVisitor::get_visitor_name() const
+{
+    return visitor_name;
 }
 
 void SkolemIntroducingVisitor::visit(QuantifiedSentenceNode &node)
@@ -34,9 +50,9 @@ void SkolemIntroducingVisitor::visit(QuantifiedSentenceNode &node)
 
     switch (node.get_quantifier_type()) {
     case QuantifierTypes::Universal:
-        open_scope(node.observe_bound_term()->clone());
+        open_scope(node);
         borrowed_sentence->accept(*this);
-        close_latest_scope();
+        close_latest_scope(node);
 
         if (extracted_sentence == nullptr)
             node.put_sentence(std::move(borrowed_sentence));
@@ -57,7 +73,7 @@ void SkolemIntroducingVisitor::visit(QuantifiedSentenceNode &node)
 void SkolemIntroducingVisitor::visit(PredicationNode &node)
 {
     if (skolem_replacements.empty())
-        MutatingSentenceVisitorBase::visit(node);
+        return;
 
     auto &args = node.arguments;
     const auto argument_count = args.size();
@@ -122,17 +138,33 @@ void SkolemIntroducingVisitor::visit(SentenceRoot &node)
         node.put_sentence(std::move(borrowed_sentence));
     else
         node.put_sentence(std::move(extracted_sentence));
+
+    skolem_replacements.clear();
 }
 
-void SkolemIntroducingVisitor::open_scope(std::unique_ptr<ITermNode> &&cloned_bound_variable)
+void SkolemIntroducingVisitor::open_scope(QuantifiedSentenceNode &node)
 {
-    universally_quantified_variables.top().push_back(std::move(cloned_bound_variable));
+    universally_quantified_variables.top().push_back(node.take_bound_term());
 }
 
-void SkolemIntroducingVisitor::close_latest_scope()
+void SkolemIntroducingVisitor::close_latest_scope(QuantifiedSentenceNode &node)
 {
-    universally_quantified_variables.pop();
-    universally_quantified_variables.emplace();
+    const auto scoped_var_count = universally_quantified_variables.top().size();
+    assert(scoped_var_count > 0); // We assume to be within a scope, and thus must have at least one bound variable.
+
+    // Return the latest variable from the latest scope to the given node, assumed to be its original owner.
+    node.put_bound_term(std::move(universally_quantified_variables.top().back()));
+
+    if (scoped_var_count == 1) {
+        // If there's only one variable currently scoped, we clear this scope level and reset it.
+        universally_quantified_variables.pop();
+        universally_quantified_variables.emplace();
+    } else
+        /*
+         * Otherwise, just remove the returned variable. There are other universally quantified variables that need to
+         * be returned at this scope level.
+         */
+        universally_quantified_variables.top().pop_back();
 }
 
 void SkolemIntroducingVisitor::eliminate_existential(const ITermNode &target_bound_variable)

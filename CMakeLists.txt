@@ -135,11 +135,6 @@ add_library(OptifolCommon OBJECT
         Source/Visitors/Sentences/CNFNormalisers/QuantifierExtractingVisitor.hpp
         Source/Visitors/Sentences/CNFNormalisers/SkolemIntroducingVisitor.cpp
         Source/Visitors/Sentences/CNFNormalisers/SkolemIntroducingVisitor.hpp
-        Source/Exceptions/ExceptionBase.hpp
-        Source/Exceptions/StorageExceptionBase.hpp
-        Source/Exceptions/StorageConnectionException.hpp
-        Source/Exceptions/BadStorageNotificationException.hpp
-        Source/Exceptions/ExceptionPrefixes.cpp
         Source/LegacyWrappers.cpp
         Source/LegacyWrappers.hpp
         Source/Optifol.hpp
@@ -154,6 +149,7 @@ add_library(OptifolCommon OBJECT
         Source/IR/Terms/SkolemFunctionNode.hpp
         Source/Visitors/Terms/ScopedTermResolutionVisitor.cpp
         Source/Visitors/Terms/ScopedTermResolutionVisitor.hpp
+        Source/Exceptions/ParseError.hpp
 )
 
 target_link_libraries(OptifolCommon PRIVATE nlohmann_json::nlohmann_json simdjson)
@@ -286,6 +282,7 @@ add_executable(OptifolGUI
 
 set(COMMON_COMPILER_OPTIONS
         -Weverything
+        -Wno-exit-time-destructors
         -Wno-unknown-pragmas # Support some IntelliJ IDEA in-line directives
         -Wno-c++98-compat
         -Wno-padded
@@ -294,6 +291,7 @@ set(COMMON_COMPILER_OPTIONS
         -Wno-shadow-field-in-constructor
         -Wno-weak-vtables
         -Wno-shadow-field
+        -Wno-global-constructors
 )
 
 target_compile_options(OptifolGUI PRIVATE ${COMMON_COMPILER_OPTIONS})

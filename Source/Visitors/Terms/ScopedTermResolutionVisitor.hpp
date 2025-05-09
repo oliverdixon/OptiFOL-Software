@@ -28,6 +28,8 @@ public:
         const std::unordered_map<std::string, std::unique_ptr<ITermNode>> &rewriting_rules_hook
     );
 
+    void visit(FunctionNode &node) override;
+
     void visit(VariableNode &node) override;
 
 private:

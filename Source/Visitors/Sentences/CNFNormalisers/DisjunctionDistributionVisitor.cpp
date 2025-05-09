@@ -19,6 +19,13 @@
 namespace optifol
 {
 
+const char * DisjunctionDistributionVisitor::visitor_name = "DisjunctionDistribution";
+
+std::string_view DisjunctionDistributionVisitor::get_visitor_name() const
+{
+    return visitor_name;
+}
+
 void DisjunctionDistributionVisitor::visit(ConnectedSentenceNode &node)
 {
     const auto current_operator_type = node.get_operator_type();

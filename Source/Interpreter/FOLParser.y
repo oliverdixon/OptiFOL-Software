@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) All Rights Reserved
+ * 2025 Oliver Dixon <od641@york.ac.uk>
+ */
+
 %require "3.7.4"
 %language "C++"
 

@@ -14,6 +14,8 @@
 #ifndef MUTATINGSENTENCEVISITORBASE_HPP
 #define MUTATINGSENTENCEVISITORBASE_HPP
 
+#include <string_view>
+
 namespace optifol
 {
 
@@ -31,6 +33,8 @@ class MutatingSentenceVisitorBase
 {
 public:
     virtual ~MutatingSentenceVisitorBase() = default;
+
+    virtual std::string_view get_visitor_name() const = 0;
 
     /**
      * @brief Applies a mutating transformation to the given quantified sentence node, including the quantified

@@ -25,7 +25,7 @@ SentenceRoot::SentenceRoot(std::unique_ptr<ISentenceNode> &&sentence) :
 
 std::unique_ptr<ISentenceNode> SentenceRoot::clone() const
 {
-    return sentence->clone();
+    return std::make_unique<SentenceRoot>(sentence->clone());
 }
 
 void SentenceRoot::flip_polarity()

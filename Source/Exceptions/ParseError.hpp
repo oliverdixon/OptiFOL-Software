@@ -1,0 +1,41 @@
+/*
+ * Copyright (c) All Rights Reserved
+ * 2025 Oliver Dixon <od641@york.ac.uk>
+ */
+
+/**
+ * @file
+ * @brief Class specification and implementation for the Parse Error exception
+ * @date 2025-05-09
+ * @author Oliver Dixon <od641@york.ac.uk>
+ */
+
+#ifndef PARSEERROR_HPP
+#define PARSEERROR_HPP
+
+#include <stdexcept>
+
+namespace optifol
+{
+
+class ParseError final :
+        public std::runtime_error
+{
+public:
+    explicit ParseError(const std::string& message, const std::size_t column):
+        std::runtime_error(std::string("Parsing Error: ") + message),
+        column(column)
+    { }
+
+    explicit ParseError(const char* message, const std::size_t column):
+        std::runtime_error(std::string("Parsing Error: ") + message),
+        column(column)
+    { }
+
+private:
+    std::size_t column;
+};
+
+}
+
+#endif

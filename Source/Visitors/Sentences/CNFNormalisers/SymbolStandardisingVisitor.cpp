@@ -25,6 +25,13 @@
 namespace optifol
 {
 
+const char * SymbolStandardisingVisitor::visitor_name = "SymbolStandardiser";
+
+std::string_view SymbolStandardisingVisitor::get_visitor_name() const
+{
+    return visitor_name;
+}
+
 void SymbolStandardisingVisitor::visit(QuantifiedSentenceNode &node)
 {
     /*
@@ -40,6 +47,9 @@ void SymbolStandardisingVisitor::visit(QuantifiedSentenceNode &node)
 
 void SymbolStandardisingVisitor::visit(PredicationNode &node)
 {
+    if (rewriting_rules.empty())
+        return;
+
     auto &args = node.arguments;
     const auto argument_count = args.size();
 

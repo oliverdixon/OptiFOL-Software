@@ -5,7 +5,7 @@
 
 /**
  * @file
- * @brief Class specification for the Semantic Exception
+ * @brief Class specification and implementation for the Semantic Exception
  * @author Oliver Dixon
  * @date 2024-11-30
  * @version Development
@@ -14,7 +14,7 @@
 #ifndef SEMANTICEXCEPTION_HPP
 #define SEMANTICEXCEPTION_HPP
 
-#include "ExceptionBase.hpp"
+#include <stdexcept>
 
 namespace optifol
 {
@@ -27,28 +27,16 @@ namespace optifol
  *  inconsistency in a requirement sentence according to the rules of FOL. See, for example, SymbolStandardisingVisitor.
  */
 class SemanticException final :
-        public ExceptionBase
+        public std::runtime_error
 {
 public:
-    /**
-     * @copydoc ExceptionBase::ExceptionBase(const std::string&)
-     */
     explicit SemanticException(const std::string& message):
-        ExceptionBase(prefix + message)
+        std::runtime_error(std::string("Semantic Exception: ") + message)
     { }
 
-    /**
-     * @copydoc ExceptionBase::ExceptionBase(const char *)
-     */
     explicit SemanticException(const char* message):
-        ExceptionBase(std::string(prefix) + message)
+        std::runtime_error(std::string("Semantic Exception: ") + message)
     { }
-
-private:
-    /**
-     * @brief The prefix string to prepend to all SemanticException messages
-     */
-    static const char * prefix;
 };
 
 }

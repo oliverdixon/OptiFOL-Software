@@ -18,6 +18,13 @@
 namespace optifol
 {
 
+const char * ImplicationEliminationVisitor::visitor_name = "ImplicationElimination";
+
+std::string_view ImplicationEliminationVisitor::get_visitor_name() const
+{
+    return visitor_name;
+}
+
 void ImplicationEliminationVisitor::visit(ConnectedSentenceNode &node)
 {
     MutatingSentenceVisitorBase::visit(node);

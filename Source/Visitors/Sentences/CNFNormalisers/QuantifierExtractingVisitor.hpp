@@ -28,6 +28,8 @@ class QuantifierExtractingVisitor:
         public MutatingSentenceVisitorBase
 {
 public:
+    std::string_view get_visitor_name() const override;
+
     void visit(ConnectedSentenceNode &node) override;
 
     void visit(QuantifiedSentenceNode &node) override;
@@ -65,6 +67,8 @@ private:
         LeftMajor,
         RightMajor
     };
+
+    static const char * visitor_name;
 
     TrackingMode tracking_mode = TrackingMode::NotTracking;
     std::optional<QuantifiedTemplate> quant_lhs_data;

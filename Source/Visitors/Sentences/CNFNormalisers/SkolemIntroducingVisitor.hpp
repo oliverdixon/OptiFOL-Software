@@ -20,7 +20,6 @@
 
 #include "../MutatingSentenceVisitorBase.hpp"
 #include "../../../IR/Sentences/ISentenceNode.hpp"
-#include "../../../IR/Terms/SkolemFunctionNode.hpp"
 #include "../../Terms/TermResolutionVisitor.hpp"
 
 namespace optifol
@@ -31,6 +30,10 @@ class SkolemIntroducingVisitor:
 {
 public:
     SkolemIntroducingVisitor();
+
+    ~SkolemIntroducingVisitor() override;
+
+    std::string_view get_visitor_name() const override;
 
     void visit(QuantifiedSentenceNode &node) override;
 
@@ -43,11 +46,13 @@ public:
     void visit(SentenceRoot &node) override;
 
 private:
-    void open_scope(std::unique_ptr<ITermNode>&& cloned_bound_variable);
+    void open_scope(QuantifiedSentenceNode &node);
 
-    void close_latest_scope();
+    void close_latest_scope(QuantifiedSentenceNode &node);
 
     void eliminate_existential(const ITermNode &target_bound_variable);
+
+    static const char * visitor_name;
 
     std::stack<std::vector<std::unique_ptr<ITermNode>>> universally_quantified_variables;
 

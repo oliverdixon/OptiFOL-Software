@@ -14,6 +14,8 @@
 #ifndef REQUIREMENT_HPP
 #define REQUIREMENT_HPP
 
+#include <log4cxx/logger.h>
+
 #include "FOLLexer.hpp"
 #include "StorageObjectBase.hpp"
 #include "../IR/Sentences/ISentenceNode.hpp"
@@ -101,9 +103,12 @@ public:
     [[nodiscard]] std::string get_formatted_statement() const;
 
 private:
-    void setup_properties(std::string&& name, std::string&& statement, std::string&& description, guint priority);
+    static log4cxx::LoggerPtr parse_logger;
+    static log4cxx::LoggerPtr cnf_logger;
 
-    void cnf_renormalise();
+    void setup_properties(std::string&& requirement_name, std::string&& requirement_statement, std::string&& requirement_description, guint requirement_priority);
+
+    void cnf_normalise();
 
     static std::string text_serialise(const ISentenceNode * sentence);
 

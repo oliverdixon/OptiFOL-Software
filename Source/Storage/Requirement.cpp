@@ -15,6 +15,8 @@
 
 #include <cassert>
 
+#include "../Logging.hpp"
+#include "../Exceptions/SemanticException.hpp"
 #include "../Visitors/Sentences/CNFNormalisers/DisjunctionDistributionVisitor.hpp"
 #include "../Visitors/Sentences/CNFNormalisers/DMLVisitor.hpp"
 #include "../Visitors/Sentences/CNFNormalisers/ImplicationEliminationVisitor.hpp"
@@ -36,6 +38,8 @@ std::istringstream Requirement::lexer_input_stream;
 FOLLexer Requirement::lexer{Requirement::lexer_input_stream, std::cerr};
 FOLParser Requirement::parser{&Requirement::lexer};
 
+log4cxx::LoggerPtr Requirement::cnf_logger = Logging::get_logger({"LogicServices", "CNFNormalisation"});
+log4cxx::LoggerPtr Requirement::parse_logger = Logging::get_logger({"LogicServices", "FormalParsing"});
 
 Requirement::Requirement(std::string&& name, std::string&& statement, std::string&& description, const guint priority) :
     Glib::ObjectBase("Requirement"),
@@ -104,64 +108,84 @@ std::string Requirement::get_formatted_statement() const
     return formatted_input_statement;
 }
 
-void Requirement::setup_properties(std::string&& name, std::string&& statement, std::string&& description,
-                                   const guint priority)
+void Requirement::setup_properties(std::string&& requirement_name, std::string&& requirement_statement,
+    std::string&& requirement_description, const guint requirement_priority)
 {
     property_statement().signal_changed().connect([this]
     {
-        // If the statement has changed, pass it through the parser and normaliser. TODO: error-checking.
+        // If the statement has changed, pass it through the parser and normaliser.
         if (!property_statement().get_value().empty()) {
             lexer_input_stream.str(property_statement().get_value());
-            parser.parse();
+
+            try {
+                parser.parse();
+            } catch (const ParseError& parse_error) {
+                parse_logger->error(parse_error.what());
+                return;
+            }
+
             original_ast = parser.retrieve_sentence();
             formatted_input_statement = text_serialise(original_ast.get());
 
-            cnf_renormalise();
+            try {
+                cnf_normalise();
+            } catch (const SemanticException& semantic_exception) {
+                cnf_logger->error(semantic_exception.what());
+                return;
+            }
+
             property_normalised().set_value(text_serialise(cnf_ast.get()));
         }
     });
 
-    property_name().set_value(std::move(name));
-    property_statement().set_value(std::move(statement));
-    property_description().set_value(std::move(description));
-    property_priority().set_value(priority);
+    property_name().set_value(std::move(requirement_name));
+    property_statement().set_value(std::move(requirement_statement));
+    property_description().set_value(std::move(requirement_description));
+    property_priority().set_value(requirement_priority);
 }
 
-void Requirement::cnf_renormalise()
+void Requirement::cnf_normalise()
 {
     assert(original_ast != nullptr);
 
-    auto borrowed_sentence = std::move(original_ast);
+    auto cnf_sentence = original_ast->clone();
 
-    // Step 1: Implication Elimination
-    auto implication_elimination_visitor = ImplicationEliminationVisitor();
-    borrowed_sentence->accept(implication_elimination_visitor);
+    if (cnf_logger->isInfoEnabled()) {
+        cnf_logger->info("Beginning CNF pipeline transformation.");
+        cnf_logger->info("Initial sentence: " + text_serialise(cnf_sentence.get()));
+    }
 
-    // Step 2: De Morgan's Law
-    auto demorgan_visitor = DMLVisitor();
-    borrowed_sentence->accept(demorgan_visitor);
+    const std::array<std::unique_ptr<MutatingSentenceVisitorBase>, 7> visitors{
+        std::make_unique<ImplicationEliminationVisitor>(),
+        std::make_unique<DMLVisitor>(),
+        std::make_unique<SymbolStandardisingVisitor>(),
+        std::make_unique<QuantifierExtractingVisitor>(),
+        std::make_unique<SkolemIntroducingVisitor>(),
+        std::make_unique<UniversalEliminationVisitor>(),
+        std::make_unique<DisjunctionDistributionVisitor>()
+    };
 
-    // Step 3: Variable standardisation
-    auto variable_standardising_visitor = SymbolStandardisingVisitor();
-    borrowed_sentence->accept(variable_standardising_visitor);
+    if (cnf_logger->isDebugEnabled())
+        /*
+         * Explicitly check if debugging is enabled on the CNF logger, as running a serialisation visitor down the
+         * entire tree for each step in the normalisation pipeline would be a great inefficiency if the strings were not
+         * used!
+         */
+        for (const auto& visitor : visitors) {
+            cnf_sentence->accept(*visitor);
+            Logging::get_logger({cnf_logger->getName(), std::string(visitor->get_visitor_name())})->debug(
+                text_serialise(cnf_sentence.get()));
+        }
+    else
+        for (const auto& visitor : visitors)
+            cnf_sentence->accept(*visitor);
 
-    // Step 4: Quantifier extraction
-    auto quantifier_extraction_visitor = QuantifierExtractingVisitor();
-    borrowed_sentence->accept(quantifier_extraction_visitor);
+    if (cnf_logger->isInfoEnabled()) {
+        cnf_logger->info("Completed CNF transformation.");
+        cnf_logger->info("Normalised sentence: " + text_serialise(cnf_sentence.get()));
+    }
 
-    // Step 5: Skolem function introduction
-    auto skolem_introducing_visitor = SkolemIntroducingVisitor();
-    borrowed_sentence->accept(skolem_introducing_visitor);
-
-    // Step 6: Universal elimination
-    auto universal_elimination_visitor = UniversalEliminationVisitor();
-    borrowed_sentence->accept(universal_elimination_visitor);
-
-    // Step 7: Disjunction distribution
-    auto disjunction_distribution_visitor = DisjunctionDistributionVisitor();
-    borrowed_sentence->accept(disjunction_distribution_visitor);
-
-    cnf_ast = std::move(borrowed_sentence);
+    cnf_ast = std::move(cnf_sentence);
 }
 
 std::string Requirement::text_serialise(const ISentenceNode *sentence)
