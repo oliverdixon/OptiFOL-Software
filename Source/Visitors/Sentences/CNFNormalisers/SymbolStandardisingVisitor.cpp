@@ -47,9 +47,6 @@ void SymbolStandardisingVisitor::visit(QuantifiedSentenceNode &node)
 
 void SymbolStandardisingVisitor::visit(PredicationNode &node)
 {
-    if (rewriting_rules.empty())
-        return;
-
     auto &args = node.arguments;
     const auto argument_count = args.size();
 

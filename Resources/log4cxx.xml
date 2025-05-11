@@ -18,4 +18,9 @@
         <appender-ref ref="ConsoleAppender"/>
     </logger>
 
+    <logger name="LogicServices.SATEngine" additivity="false">
+        <priority value="debug" />
+        <appender-ref ref="ConsoleAppender"/>
+    </logger>
+
 </log4j:configuration>

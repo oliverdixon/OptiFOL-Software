@@ -44,7 +44,7 @@ class DisjunctionDistributionVisitor :
         public MutatingSentenceVisitorBase
 {
 public:
-    std::string_view get_visitor_name() const override;
+    [[nodiscard]] std::string_view get_visitor_name() const override;
 
     /**
      * @brief Recursively applies disjunction-distribution to the connected sentence, in-place.

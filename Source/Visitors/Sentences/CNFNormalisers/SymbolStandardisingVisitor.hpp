@@ -49,7 +49,7 @@ class SymbolStandardisingVisitor :
         public MutatingSentenceVisitorBase
 {
 public:
-    std::string_view get_visitor_name() const override;
+    [[nodiscard]] std::string_view get_visitor_name() const override;
 
     /**
      * @brief Recursively applies the symbol-standardisation procedures to the given quantified sentence root.

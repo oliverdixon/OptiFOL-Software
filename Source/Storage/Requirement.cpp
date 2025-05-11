@@ -126,11 +126,11 @@ void Requirement::setup_properties(std::string&& requirement_name, std::string&&
 
             original_ast = parser.retrieve_sentence();
             formatted_input_statement = text_serialise(original_ast.get());
-
             try {
                 cnf_normalise();
-            } catch (const SemanticException& semantic_exception) {
-                cnf_logger->error(semantic_exception.what());
+            } catch (const SemanticException&) {
+                cnf_logger->warn("Normalisation process was unsuccessful due to invalid logical semantics; "
+                                 "requirements will be missing.");
                 return;
             }
 
@@ -172,13 +172,26 @@ void Requirement::cnf_normalise()
          * used!
          */
         for (const auto& visitor : visitors) {
-            cnf_sentence->accept(*visitor);
+            try {
+                cnf_sentence->accept(*visitor);
+            } catch (const SemanticException& semantic_exception) {
+                Logging::get_logger({cnf_logger->getName(), std::string(visitor->get_visitor_name())})->error(
+                    semantic_exception.what());
+                throw;
+            }
+
             Logging::get_logger({cnf_logger->getName(), std::string(visitor->get_visitor_name())})->debug(
                 text_serialise(cnf_sentence.get()));
         }
     else
         for (const auto& visitor : visitors)
-            cnf_sentence->accept(*visitor);
+            try {
+                cnf_sentence->accept(*visitor);
+            } catch (const SemanticException& semantic_exception) {
+                Logging::get_logger({cnf_logger->getName(), std::string(visitor->get_visitor_name())})->error(
+                    semantic_exception.what());
+                throw;
+            }
 
     if (cnf_logger->isInfoEnabled()) {
         cnf_logger->info("Completed CNF transformation.");
