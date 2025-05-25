@@ -41,6 +41,8 @@ public:
 
     void accept(IObservingSentenceVisitor& visitor) const override;
 
+    [[nodiscard]] std::size_t hash() const noexcept override;
+
 private:
     std::unique_ptr<ISentenceNode> sentence;
 

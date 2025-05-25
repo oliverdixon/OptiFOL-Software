@@ -12,8 +12,6 @@
  */
 
 #include "Project.hpp"
-
-#include "StorageHashFunctor.hpp"
 #include "../Logging.hpp"
 
 namespace optifol

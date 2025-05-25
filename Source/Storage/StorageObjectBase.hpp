@@ -18,7 +18,8 @@
 #include <glibmm/object.h>
 #include <glibmm/property.h>
 #include <gtkmm/builder.h>
-#include <gtkmm/listitem.h>
+
+#include "../IHashable.hpp"
 
 namespace optifol
 {
@@ -28,7 +29,8 @@ namespace optifol
  * @brief Defines the base class for a Glib-registered storable object in the Optifol storage hierarchy
  */
 class StorageObjectBase :
-        public Glib::Object
+        public Glib::Object,
+        public IHashable
 {
 public:
     /**
@@ -72,6 +74,8 @@ public:
      * @return The read-only 'last-modified time' proxy
      */
     [[nodiscard]] Glib::PropertyProxy_ReadOnly<TimeT> property_modified_time() const;
+
+    [[nodiscard]] std::size_t hash() const noexcept override;
 
 protected:
     /**

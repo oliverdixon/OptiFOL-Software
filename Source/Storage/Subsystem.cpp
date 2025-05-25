@@ -14,8 +14,6 @@
 #include <cassert>
 
 #include "Subsystem.hpp"
-
-#include "StorageHashFunctor.hpp"
 #include "../Logging.hpp"
 
 namespace optifol

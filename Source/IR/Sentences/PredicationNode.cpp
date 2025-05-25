@@ -56,4 +56,13 @@ void PredicationNode::accept(IObservingSentenceVisitor &visitor) const
     visitor.visit(*this);
 }
 
+std::size_t PredicationNode::hash() const noexcept
+{
+    auto hash_code = std::hash<std::string>{}(name);
+    for (const auto& argument : arguments)
+        hash_code = hash_combine(hash_code, argument->hash());
+
+    return hash_code;
 }
+
+} // namespace optifol

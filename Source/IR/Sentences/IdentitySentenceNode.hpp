@@ -55,6 +55,8 @@ public:
 
     void accept(IObservingSentenceVisitor& visitor) const override;
 
+    [[nodiscard]] std::size_t hash() const noexcept override;
+
 private:
     std::unique_ptr<ITermNode> lhs;
     std::unique_ptr<ITermNode> rhs;

@@ -63,4 +63,9 @@ void SentenceRoot::accept(IObservingSentenceVisitor &visitor) const
     visitor.visit(*this);
 }
 
+std::size_t SentenceRoot::hash() const noexcept
+{
+    return sentence->hash();
 }
+
+} // namespace optifol

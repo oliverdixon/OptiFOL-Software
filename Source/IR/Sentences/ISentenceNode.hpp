@@ -13,7 +13,10 @@
 
 #ifndef ISENTENCENODE_HPP
 #define ISENTENCENODE_HPP
+
 #include <memory>
+
+#include "../../IHashable.hpp"
 
 namespace optifol
 {
@@ -21,10 +24,11 @@ namespace optifol
 class MutatingSentenceVisitorBase;
 class IObservingSentenceVisitor;
 
-class ISentenceNode
+class ISentenceNode :
+        public IHashable
 {
 public:
-    virtual ~ISentenceNode() = default;
+    ~ISentenceNode() override = default;
 
     virtual void flip_polarity() = 0;
 
@@ -35,6 +39,8 @@ public:
     virtual void accept(MutatingSentenceVisitorBase &visitor) = 0;
 
     virtual void accept(IObservingSentenceVisitor &visitor) const = 0;
+
+    [[nodiscard]] std::size_t hash() const noexcept override = 0;
 };
 
 }

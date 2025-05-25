@@ -17,15 +17,19 @@
 #include <memory>
 #include <string>
 
+#include "../../IHashable.hpp"
+
 namespace optifol
 {
 
 class MutatingTermVisitorBase;
+class UnifyingVisitor;
 
-class ITermNode
+class ITermNode :
+        public IHashable
 {
 public:
-    virtual ~ITermNode() = default;
+    ~ITermNode() override = default;
 
     [[nodiscard]] virtual std::unique_ptr<ITermNode> clone() const = 0;
 
@@ -34,6 +38,11 @@ public:
     [[nodiscard]] virtual std::string get_disambiguated_name() const = 0;
 
     virtual void accept(MutatingTermVisitorBase& visitor) = 0;
+
+    [[nodiscard]] std::size_t hash() const noexcept override
+    {
+        return std::hash<std::string>{}(get_disambiguated_name());
+    }
 };
 
 }

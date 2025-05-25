@@ -150,16 +150,9 @@ add_library(OptifolCommon OBJECT
         Source/Visitors/Terms/ScopedTermResolutionVisitor.cpp
         Source/Visitors/Terms/ScopedTermResolutionVisitor.hpp
         Source/Exceptions/ParseError.hpp
-        Source/Analysis/Clause.cpp
-        Source/Analysis/Clause.hpp
-        Source/Analysis/Literal.cpp
-        Source/Analysis/Literal.hpp
-        Source/Analysis/Variable.cpp
-        Source/Analysis/Variable.hpp
-        Source/Analysis/ObjectRegistry.cpp
-        Source/Analysis/ObjectRegistry.hpp
-        Source/Analysis/SATSolver.cpp
-        Source/Analysis/SATSolver.hpp
+        Source/IR/Derived/Literal.cpp
+        Source/IR/Derived/Literal.hpp
+        Source/IHashable.hpp
 )
 
 target_link_libraries(OptifolCommon PRIVATE nlohmann_json::nlohmann_json simdjson)
@@ -274,7 +267,6 @@ add_executable(OptifolGUI
         Source/Storage/Subsystem.cpp
         Source/Storage/Subsystem.hpp
         Source/Storage/StorageObjectBase.hpp
-        Source/Storage/StorageHashFunctor.hpp
         Source/GUI/Panels/ProjectHierarchyPane.cpp
         Source/GUI/Panels/ProjectHierarchyPane.hpp
         Source/GUI/Panels/RequirementsIndexArea.cpp

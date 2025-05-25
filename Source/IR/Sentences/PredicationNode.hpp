@@ -16,8 +16,8 @@
 
 #include "ISentenceNode.hpp"
 
-#include <vector>
 #include <memory>
+#include <vector>
 
 namespace optifol
 {
@@ -43,6 +43,8 @@ public:
 
     const std::string name; // TODO move
     std::vector<std::unique_ptr<ITermNode>> arguments; // TODO move
+
+    [[nodiscard]] std::size_t hash() const noexcept override;
 
 private:
     bool is_positive;

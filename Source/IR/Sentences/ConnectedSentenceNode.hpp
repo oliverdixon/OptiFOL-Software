@@ -65,6 +65,8 @@ public:
 
     void accept(IObservingSentenceVisitor& visitor) const override;
 
+    [[nodiscard]] std::size_t hash() const noexcept override;
+
 private:
     BinaryOperatorTypes operator_type;
 

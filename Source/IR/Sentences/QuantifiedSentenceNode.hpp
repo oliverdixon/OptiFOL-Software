@@ -63,6 +63,8 @@ public:
 
     void accept(IObservingSentenceVisitor& visitor) const override;
 
+    [[nodiscard]] std::size_t hash() const noexcept override;
+
 private:
     QuantifierTypes quantifier_type;
     std::unique_ptr<ITermNode> bound_term;

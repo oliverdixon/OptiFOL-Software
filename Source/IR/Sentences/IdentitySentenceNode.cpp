@@ -71,6 +71,11 @@ void IdentitySentenceNode::accept(IObservingSentenceVisitor &visitor) const
     visitor.visit(*this);
 }
 
+std::size_t IdentitySentenceNode::hash() const noexcept
+{
+    return hash_combine(lhs->hash(), rhs->hash());
+}
+
 void IdentitySentenceNode::swap_lhs_operand(std::unique_ptr<ITermNode>&& new_lhs)
 {
     lhs.swap(new_lhs);

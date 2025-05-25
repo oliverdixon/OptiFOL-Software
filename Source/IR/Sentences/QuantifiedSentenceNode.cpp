@@ -89,6 +89,12 @@ void QuantifiedSentenceNode::accept(IObservingSentenceVisitor &visitor) const
     visitor.visit(*this);
 }
 
+std::size_t QuantifiedSentenceNode::hash() const noexcept
+{
+    return hash_combine(hash_combine(bound_term->hash(), sentence->hash()), std::hash<std::underlying_type_t<
+        QuantifierTypes>>{}(static_cast<std::underlying_type_t<QuantifierTypes>>(quantifier_type)));
+}
+
 void QuantifiedSentenceNode::put_bound_term(std::unique_ptr<ITermNode>&& new_bound_term)
 {
     bound_term = std::move(new_bound_term);
