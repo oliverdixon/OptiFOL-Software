@@ -50,4 +50,4 @@ void VariableNode::accept(MutatingTermVisitorBase &visitor)
     visitor.visit(*this);
 }
 
-}
+} // namespace optifol

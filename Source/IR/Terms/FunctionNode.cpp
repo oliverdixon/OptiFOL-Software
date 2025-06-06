@@ -72,9 +72,23 @@ const std::vector<std::unique_ptr<ITermNode>> & FunctionNode::observe_arguments(
     return arguments;
 }
 
-std::vector<std::unique_ptr<ITermNode>> & FunctionNode::observe_arguments()
+std::vector<std::unique_ptr<ITermNode>> &FunctionNode::observe_arguments()
 {
     return arguments;
 }
 
+bool FunctionNode::unify_work(const FunctionNode &function)
+{
+    const auto argument_count = arguments.size();
+
+    if (hash() != function.hash() || argument_count != function.arguments.size())
+        return false;
+
+    for (std::size_t argument_idx = 0; argument_idx < argument_count; ++argument_idx)
+        if (arguments[argument_idx]->unify_work(*function.arguments[argument_idx]) == false)
+            return false;
+
+    return true;
 }
+
+} // namespace optifol

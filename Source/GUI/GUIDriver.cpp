@@ -12,7 +12,6 @@
  */
 
 #include <log4cxx/basicconfigurator.h>
-
 #include "Application.hpp"
 
 int main(const int argc, char **argv)

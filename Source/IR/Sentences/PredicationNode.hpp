@@ -19,13 +19,16 @@
 #include <memory>
 #include <vector>
 
+#include "../Support/UnifyCandidateBase.hpp"
+
 namespace optifol
 {
 
 class ITermNode;
 
 class PredicationNode :
-        public ISentenceNode
+        public ISentenceNode,
+        public UnifyCandidateBase
 {
 public:
     [[maybe_unused]] PredicationNode(std::string name, std::vector<std::unique_ptr<ITermNode>> &&arguments,
@@ -40,6 +43,8 @@ public:
     void accept(MutatingSentenceVisitorBase &visitor) override;
 
     void accept(IObservingSentenceVisitor &visitor) const override;
+
+    bool unify_work(const PredicationNode &predicate) override;
 
     const std::string name; // TODO move
     std::vector<std::unique_ptr<ITermNode>> arguments; // TODO move

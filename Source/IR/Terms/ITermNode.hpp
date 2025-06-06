@@ -18,15 +18,16 @@
 #include <string>
 
 #include "../../IHashable.hpp"
+#include "../Support/UnifyCandidateBase.hpp"
 
 namespace optifol
 {
 
 class MutatingTermVisitorBase;
-class UnifyingVisitor;
 
 class ITermNode :
-        public IHashable
+        public IHashable,
+        public UnifyCandidateBase
 {
 public:
     ~ITermNode() override = default;

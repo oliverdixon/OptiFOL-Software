@@ -150,9 +150,11 @@ add_library(OptifolCommon OBJECT
         Source/Visitors/Terms/ScopedTermResolutionVisitor.cpp
         Source/Visitors/Terms/ScopedTermResolutionVisitor.hpp
         Source/Exceptions/ParseError.hpp
-        Source/IR/Derived/Literal.cpp
-        Source/IR/Derived/Literal.hpp
         Source/IHashable.hpp
+        Source/IR/Support/UnifyCandidateBase.hpp
+        Source/IR/Support/Substitution.cpp
+        Source/IR/Support/Substitution.hpp
+        Source/IR/Support/UnifyCandidateBase.cpp
 )
 
 target_link_libraries(OptifolCommon PRIVATE nlohmann_json::nlohmann_json simdjson)
