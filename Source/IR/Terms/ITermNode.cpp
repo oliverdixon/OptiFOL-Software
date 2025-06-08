@@ -12,44 +12,33 @@
  */
 
 #include "ITermNode.hpp"
-#include "VariableNode.hpp"
+#include "../../IR/Terms/FunctionNode.hpp"
+#include "../../Visitors/Unification/UnificationVisitor.hpp"
 
 namespace optifol
 {
 
-ITermNode::~ITermNode()
+std::size_t ITermNode::hash() const noexcept
 {
-    for (const auto key: substitution_keys)
-        unify_substitution->bindings.erase(key);
+    return std::hash<std::string>{}(get_disambiguated_name());
 }
 
-bool ITermNode::unify_with_me(const VariableNode &variable)
+bool ITermNode::accept(UnificationVisitor &visitor, const VariableNode &target) const
 {
-    if (hash() == variable.hash())
-        // If atomics (e.g. variables) are trivially identical, they can be unified without an explicit substitution.
-        return true;
-
-    if (unify_substitution.has_value()) {
-        // If the given variable already has a binding, ensure that its bound mapping can be unified with ourselves.
-        const auto &binding_it = unify_substitution->bindings.find(variable);
-        if (binding_it != unify_substitution->bindings.cend())
-            return static_cast<UnifyCandidateBase &>(binding_it->second).unify_with_me(*this);
-    }
-
-    // TODO: occurs check on us vs. unifier applied on variable
-
-    // If all checks pass, we can do a unification. Register the substitution and indicate success.
-    register_substitution(variable, *this);
-    return true;
+    // Justification: unification has the commutative property.
+    return visitor.visit(target, *this);
 }
 
-void ITermNode::register_substitution(const VariableNode &bound_key, ITermNode &bound_value)
+bool ITermNode::accept(UnificationVisitor &visitor, const ITermNode &target) const
 {
-    const auto wrapped_variable = std::cref(bound_key);
-    substitution_keys.push_back(wrapped_variable);
-    if (unify_substitution.has_value() == false)
-        unify_substitution.emplace();
-    unify_substitution->bindings.emplace(wrapped_variable, std::ref(bound_value));
+    std::ignore = visitor;
+    return optifol::UnificationVisitor::visit(*this, target);
 }
 
-} // namespace optifol
+bool ITermNode::accept(UnificationVisitor &visitor, const FunctionNode &target) const
+{
+    std::ignore = visitor;
+    return optifol::UnificationVisitor::visit(*this, target);
+}
+
+}

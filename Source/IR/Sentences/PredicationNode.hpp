@@ -19,8 +19,7 @@
 #include <memory>
 #include <vector>
 
-#include "../../Visitors/Unification/PredicateUnificationVisitor.hpp"
-#include "../Support/UnifyCandidateBase.hpp"
+#include "../../Visitors/Unification/UnificationVisitor.hpp"
 
 namespace optifol
 {
@@ -28,8 +27,7 @@ namespace optifol
 class ITermNode;
 
 class PredicationNode :
-        public ISentenceNode,
-        public UnifyCandidateBase
+        public ISentenceNode
 {
 public:
     [[maybe_unused]] PredicationNode(std::string name, std::vector<std::unique_ptr<ITermNode>> &&arguments,
@@ -45,9 +43,7 @@ public:
 
     void accept(IObservingSentenceVisitor &visitor) const override;
 
-    void accept(PredicateUnificationVisitor& visitor, PredicationNode& target);
-
-    bool unify_with_me(const PredicationNode &predicate) override;
+    bool accept(UnificationVisitor &visitor, const PredicationNode &target) const;
 
     const std::string name; // TODO move
     std::vector<std::unique_ptr<ITermNode>> arguments; // TODO move

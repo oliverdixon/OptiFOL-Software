@@ -22,11 +22,10 @@
 namespace optifol
 {
 
-class FunctionNode :
-        public ITermNode
+class FunctionNode : public ITermNode
 {
 public:
-    [[maybe_unused]] explicit FunctionNode(std::string name, std::vector<std::unique_ptr<ITermNode>> &&arguments);
+    [[maybe_unused]] explicit FunctionNode(std::string name, std::vector<std::unique_ptr<ITermNode>> &&arguments = {});
 
     [[maybe_unused]] explicit FunctionNode(std::string name, const std::vector<std::unique_ptr<ITermNode>> &arguments);
 
@@ -36,13 +35,15 @@ public:
 
     [[nodiscard]] std::string get_disambiguated_name() const override;
 
-    void accept(MutatingTermVisitorBase& visitor) override;
+    void accept(MutatingTermVisitorBase &visitor) override;
 
-    [[nodiscard]] const std::vector<std::unique_ptr<ITermNode>>& observe_arguments() const;
+    bool accept(UnificationVisitor &visitor, const ITermNode &target) const override;
 
-    std::vector<std::unique_ptr<ITermNode>>& observe_arguments();
+    bool accept(UnificationVisitor &visitor, const FunctionNode &target) const override;
 
-    bool unify_with_me(const FunctionNode &function) override;
+    [[nodiscard]] const std::vector<std::unique_ptr<ITermNode>> &observe_arguments() const;
+
+    std::vector<std::unique_ptr<ITermNode>> &observe_arguments();
 
 protected:
     const std::string name;

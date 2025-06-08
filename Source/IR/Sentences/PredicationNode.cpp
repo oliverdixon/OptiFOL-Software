@@ -57,31 +57,15 @@ void PredicationNode::accept(IObservingSentenceVisitor &visitor) const
     visitor.visit(*this);
 }
 
-void PredicationNode::accept(PredicateUnificationVisitor &visitor, PredicationNode& target)
+bool PredicationNode::accept(UnificationVisitor &visitor, const PredicationNode &target) const
 {
-    visitor.visit(*this, target);
-}
-
-bool PredicationNode::unify_with_me(const PredicationNode &predicate)
-{
-    const auto argument_count = arguments.size();
-
-    if (name != predicate.name || argument_count != predicate.arguments.size())
-        // Cannot unify if predicates are fundamentally different.
-        return false;
-
-    for (std::size_t argument_idx = 0; argument_idx < argument_count; ++argument_idx)
-        if (arguments[argument_idx].get()->unify_with_me(*predicate.arguments[argument_idx]) == false)
-            // If zipped/pairwise arguments cannot be independently term-unified, the predicate cannot be unified.
-            return false;
-
-    return true;
+    return visitor.visit(*this, target);
 }
 
 std::size_t PredicationNode::hash() const noexcept
 {
     auto hash_code = std::hash<std::string>{}(name);
-    for (const auto& argument : arguments)
+    for (const auto &argument: arguments)
         hash_code = hash_combine(hash_code, argument->hash());
 
     return hash_code;

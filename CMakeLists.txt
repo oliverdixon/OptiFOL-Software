@@ -151,13 +151,11 @@ add_library(OptifolCommon OBJECT
         Source/Visitors/Terms/ScopedTermResolutionVisitor.hpp
         Source/Exceptions/ParseError.hpp
         Source/IHashable.hpp
-        Source/IR/Support/UnifyCandidateBase.hpp
         Source/IR/Support/Substitution.cpp
         Source/IR/Support/Substitution.hpp
-        Source/IR/Support/UnifyCandidateBase.cpp
         Source/IR/Terms/ITermNode.cpp
-        Source/Visitors/Unification/PredicateUnificationVisitor.cpp
-        Source/Visitors/Unification/PredicateUnificationVisitor.hpp
+        Source/Visitors/Unification/UnificationVisitor.cpp
+        Source/Visitors/Unification/UnificationVisitor.hpp
 )
 
 target_link_libraries(OptifolCommon PRIVATE nlohmann_json::nlohmann_json simdjson)
@@ -345,6 +343,8 @@ enable_testing()
 
 add_executable(OptifolTesting
         Source/Tests/FOLParserTest.cpp
+        Source/Tests/CNFNormalisationTest.cpp
+        Source/Tests/UnificationTest.cpp
 )
 
 target_include_directories(OptifolTesting PRIVATE Source/Interpreter/)

@@ -5,7 +5,7 @@
 
 /**
  * @file
- * @brief Basic parsing tester for FOL sentences
+ * @brief Test lexing and parsing of FOL sentences in the Optifol grammar
  * @author Oliver Dixon
  * @date 2025-02-16
  * @version Development
@@ -23,8 +23,7 @@ namespace optifol
  * @class FOLParserTest
  * @brief Provide a convenient input-streamer to the FOL lexer and parser for use with the Google Test framework
  */
-class FOLParserTest :
-        public testing::Test
+class FOLParserTest : public testing::Test
 {
 protected:
     void TearDown() override
@@ -37,7 +36,7 @@ protected:
      * @param input The raw input string to pass to the lexer
      * @param expected The expected output JSON object
      */
-    void equality_on_input(const char * input, nlohmann::json&& expected)
+    void equality_on_input(const char *input, nlohmann::json &&expected)
     {
         lexer_input_stream.str(input);
         parser.parse();
@@ -56,6 +55,7 @@ private:
 
 TEST_F(FOLParserTest, Quantifier_Universal)
 {
+    // clang-format off
     equality_on_input(
         "%Ux(P(x))",
         {
@@ -73,6 +73,7 @@ TEST_F(FOLParserTest, Quantifier_Universal)
 
 TEST_F(FOLParserTest, Quantifier_Existential)
 {
+    // clang-format off
     equality_on_input(
         "%Ey(Q(y))",
         {
@@ -90,6 +91,7 @@ TEST_F(FOLParserTest, Quantifier_Existential)
 
 TEST_F(FOLParserTest, Quantifier_Nested)
 {
+    // clang-format off
     equality_on_input(
         "%Ux(%Ey(P(x) & Q(y)))",
         {
@@ -121,6 +123,7 @@ TEST_F(FOLParserTest, Quantifier_Nested)
 
 TEST_F(FOLParserTest, Identity_Constants)
 {
+    // clang-format off
     equality_on_input(
         "_X = _Y",
         {

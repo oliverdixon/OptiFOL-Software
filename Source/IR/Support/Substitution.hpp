@@ -42,9 +42,15 @@ private:
     };
 
 public:
+    Substitution() = default;
+
+    explicit Substitution(std::initializer_list<std::pair<const VariableNode&, const ITermNode&>> entries);
+
     // TODO
-    std::unordered_map<std::reference_wrapper<const VariableNode>, std::reference_wrapper<ITermNode>,
+    std::unordered_map<std::reference_wrapper<const VariableNode>, std::reference_wrapper<const ITermNode>,
         KeyRefHashingFunctor, KeyRefEqualityFunctor> bindings;
+
+    bool operator==(const Substitution& substitution) const;
 };
 
 }
