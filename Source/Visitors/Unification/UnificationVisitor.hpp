@@ -110,7 +110,6 @@ public:
      */
     [[nodiscard]] bool visit(const VariableNode &variable_lhs, const VariableNode &variable_rhs);
 
-
     /**
      * @brief Attempt to unify two functions
      * @details To unify two functions, refer to the process for unifying two predicates defined in

@@ -17,7 +17,8 @@
 #include <memory>
 
 #include "ISentenceNode.hpp"
-#include "../Terms/VariableNode.hpp"
+#include "../../IR/Terms/ITermNode.hpp"
+#include "../../IR/Support/Buildable.hpp"
 
 namespace optifol
 {
@@ -29,7 +30,8 @@ enum class QuantifierTypes
 };
 
 class QuantifiedSentenceNode :
-        public ISentenceNode
+        public ISentenceNode,
+        public Buildable<QuantifiedSentenceNode>
 {
 public:
     [[maybe_unused]] QuantifiedSentenceNode(QuantifierTypes quantifier_type,

@@ -5,7 +5,7 @@
 
 /**
  * @file
- * @brief Class definition for the generic IR Term interface
+ * @brief Class specification for the generic IR Term interface
  * @author Oliver Dixon
  * @date 2025-05-06
  * @version Development

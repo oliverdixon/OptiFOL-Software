@@ -15,12 +15,14 @@
 #define SENTENCEROOT_HPP
 
 #include "ISentenceNode.hpp"
+#include "../Support/Buildable.hpp"
 
 namespace optifol
 {
 
 class SentenceRoot :
-        public ISentenceNode
+        public ISentenceNode,
+        public Buildable<SentenceRoot>
 {
 public:
     [[maybe_unused]] explicit SentenceRoot(std::unique_ptr<ISentenceNode>&& sentence);

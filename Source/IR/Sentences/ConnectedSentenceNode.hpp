@@ -14,9 +14,10 @@
 #ifndef CONNECTEDSENTENCENODE_HPP
 #define CONNECTEDSENTENCENODE_HPP
 
-#include "ISentenceNode.hpp"
-
 #include <memory>
+
+#include "ISentenceNode.hpp"
+#include "../Support/Buildable.hpp"
 
 namespace optifol
 {
@@ -31,7 +32,8 @@ enum class BinaryOperatorTypes
 };
 
 class ConnectedSentenceNode :
-        public ISentenceNode
+        public ISentenceNode,
+        public Buildable<ConnectedSentenceNode>
 {
 public:
     [[maybe_unused]] explicit ConnectedSentenceNode(BinaryOperatorTypes operator_type,

@@ -17,12 +17,15 @@
 #include <memory>
 #include <vector>
 
+#include "../Support/Buildable.hpp"
 #include "ITermNode.hpp"
 
 namespace optifol
 {
 
-class FunctionNode : public ITermNode
+class FunctionNode :
+        public ITermNode,
+        public Buildable<FunctionNode>
 {
 public:
     [[maybe_unused]] explicit FunctionNode(std::string name, std::vector<std::unique_ptr<ITermNode>> &&arguments = {});

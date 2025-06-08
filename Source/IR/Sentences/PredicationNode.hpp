@@ -20,6 +20,7 @@
 #include <vector>
 
 #include "../../Visitors/Unification/UnificationVisitor.hpp"
+#include "../Support/Buildable.hpp"
 
 namespace optifol
 {
@@ -27,7 +28,8 @@ namespace optifol
 class ITermNode;
 
 class PredicationNode :
-        public ISentenceNode
+        public ISentenceNode,
+        public Buildable<PredicationNode>
 {
 public:
     [[maybe_unused]] PredicationNode(std::string name, std::vector<std::unique_ptr<ITermNode>> &&arguments,

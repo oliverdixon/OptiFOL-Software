@@ -28,7 +28,8 @@ class VariableNode;
 class UnificationVisitor;
 class MutatingTermVisitorBase;
 
-class ITermNode : public IHashable
+class ITermNode :
+        public IHashable
 {
 public:
     [[nodiscard]] virtual std::unique_ptr<ITermNode> clone() const = 0;

@@ -37,25 +37,18 @@ TEST_F(UnificationTest, Predicate)
 {
     optifol::UnificationVisitor unification_visitor;
 
-    const auto john_function = std::make_unique<optifol::FunctionNode>("John");
-    const auto jane_function = std::make_unique<optifol::FunctionNode>("Jane");
-    const auto x_variable = std::make_unique<optifol::VariableNode>("x");
+    const auto john = FunctionNode::build("John");
+    const auto jane = FunctionNode::build("Jane");
+    const auto xvar = VariableNode::build("x");
 
-    const PredicationNode john_knows_x("Knows", UnificationTest::make_terms(
-        john_function->clone(),
-        x_variable->clone()
-    ));
-
-    const PredicationNode john_knows_jane("Knows", make_terms(
-        john_function->clone(),
-        jane_function->clone()
-    ));
+    const PredicationNode john_knows_x("Knows", UnificationTest::make_terms(john->clone(), xvar->clone()));
+    const PredicationNode john_knows_jane("Knows", make_terms(john->clone(), jane->clone()));
 
     EXPECT_TRUE(john_knows_x.accept(unification_visitor, john_knows_jane));
     EXPECT_TRUE(unification_visitor.observe_substitutions().has_value());
     EXPECT_EQ(
         *unification_visitor.observe_substitutions(),
-        Substitution({ { *x_variable, *jane_function } })
+        Substitution({ { *xvar, *jane } })
     );
 }
 

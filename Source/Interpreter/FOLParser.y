@@ -60,13 +60,20 @@
 
 %start line
 
+/*
+ * Note the overall strategy for handling internal state during the parse. Raw C pointers are used to refer to nodes
+ * during the build process, and are only transformed into unique pointers (via std::unique_ptr<T>(T*) or T::build(...))
+ * at their relative termini. Thus the built model has full ownership semantics, and we don't have to worry about Bison
+ * generating implicit calls to the default copy constructor, which is deleted for std::unique_ptr.
+ */
+
 %%
 
 line :
      sentence End
      {
          static_cast<FOLParser *>(this)->register_sentence(
-             std::make_unique<SentenceRoot>(std::unique_ptr<ISentenceNode>($1))
+             SentenceRoot::build(std::unique_ptr<ISentenceNode>($1))
          );
 
          return 0;
@@ -83,7 +90,7 @@ sentence :
          {
              $$ = new QuantifiedSentenceNode(
                  QuantifierTypes::Universal,
-                 std::make_unique<VariableNode>($2),
+                 VariableNode::build($2),
                  std::unique_ptr<ISentenceNode>($4)
              );
          }
@@ -92,7 +99,7 @@ sentence :
          {
              $$ = new QuantifiedSentenceNode(
                  QuantifierTypes::Existential,
-                 std::make_unique<VariableNode>($2),
+                 VariableNode::build($2),
                  std::unique_ptr<ISentenceNode>($4)
              );
          }

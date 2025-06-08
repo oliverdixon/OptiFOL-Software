@@ -14,16 +14,18 @@
 #ifndef IDENTITYSENTENCENODE_HPP
 #define IDENTITYSENTENCENODE_HPP
 
+#include <memory>
+
 #include "ISentenceNode.hpp"
 #include "../Terms/ITermNode.hpp"
-
-#include <memory>
+#include "../Support/Buildable.hpp"
 
 namespace optifol
 {
 
 class IdentitySentenceNode :
-        public ISentenceNode
+        public ISentenceNode,
+        public Buildable<IdentitySentenceNode>
 {
 public:
     [[maybe_unused]] IdentitySentenceNode(std::unique_ptr<ITermNode>&& lhs, std::unique_ptr<ITermNode>&& rhs,

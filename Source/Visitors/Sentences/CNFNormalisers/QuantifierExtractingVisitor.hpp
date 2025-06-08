@@ -15,11 +15,12 @@
 #define QUANTIFIEREXTRACTINGVISITOR_HPP
 
 #include <memory>
+#include <optional>
 
-#include "../MutatingSentenceVisitorBase.hpp"
 #include "../../../IR/Sentences/ISentenceNode.hpp"
 #include "../../../IR/Sentences/QuantifiedSentenceNode.hpp"
 #include "../../../IR/Terms/ITermNode.hpp"
+#include "../MutatingSentenceVisitorBase.hpp"
 
 namespace optifol
 {

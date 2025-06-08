@@ -14,13 +14,15 @@
 #ifndef CONSTANTNODE_HPP
 #define CONSTANTNODE_HPP
 
+#include "../Support/Buildable.hpp"
 #include "ITermNode.hpp"
 
 namespace optifol
 {
 
 class ConstantNode :
-        public ITermNode
+        public ITermNode,
+        public Buildable<ConstantNode>
 {
 public:
     [[maybe_unused]] explicit ConstantNode(std::string name);

@@ -21,6 +21,7 @@
 #include "../../../IR/Sentences/IdentitySentenceNode.hpp"
 #include "../../../IR/Sentences/PredicationNode.hpp"
 #include "../../../IR/Sentences/QuantifiedSentenceNode.hpp"
+#include "../../../IR/Terms/VariableNode.hpp"
 
 namespace optifol
 {

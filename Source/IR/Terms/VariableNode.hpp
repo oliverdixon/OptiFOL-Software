@@ -16,13 +16,15 @@
 
 #include <optional>
 
+#include "../Support/Buildable.hpp"
 #include "ITermNode.hpp"
 
 namespace optifol
 {
 
 class VariableNode :
-        public ITermNode
+        public ITermNode,
+        public Buildable<VariableNode>
 {
 public:
     explicit VariableNode(std::string name);

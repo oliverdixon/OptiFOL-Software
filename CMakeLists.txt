@@ -7,9 +7,7 @@
 # Date: 2024-11-15
 # Version: Development
 
-# TODO: separate this out into multiple CMake files: Generated, Common, GUI, test, and Doxygen (where applicable).
-
-cmake_minimum_required(VERSION 3.7 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 include(FetchContent)
 project(Optifol)
 
@@ -156,6 +154,7 @@ add_library(OptifolCommon OBJECT
         Source/IR/Terms/ITermNode.cpp
         Source/Visitors/Unification/UnificationVisitor.cpp
         Source/Visitors/Unification/UnificationVisitor.hpp
+        Source/IR/Support/Buildable.hpp
 )
 
 target_link_libraries(OptifolCommon PRIVATE nlohmann_json::nlohmann_json simdjson)
