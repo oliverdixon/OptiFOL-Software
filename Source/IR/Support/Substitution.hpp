@@ -13,18 +13,38 @@
 
 #ifndef SUBSTITUTION_HPP
 #define SUBSTITUTION_HPP
-#include <unordered_map>
 
-#include "../Terms/VariableNode.hpp"
+#include <functional>
+#include <unordered_map>
 
 namespace optifol
 {
 
+class VariableNode;
+class ITermNode;
+
 class Substitution
 {
+private:
+    struct KeyRefHashingFunctor
+    {
+        using is_transparent = void;
+
+        std::size_t operator()(std::reference_wrapper<const VariableNode> object) const noexcept;
+    };
+
+    struct KeyRefEqualityFunctor
+    {
+        using is_transparent = void;
+
+        bool operator()(std::reference_wrapper<const VariableNode> lhs_object,
+                        std::reference_wrapper<const VariableNode> rhs_object) const noexcept;
+    };
+
 public:
     // TODO
-    std::unordered_map<std::shared_ptr<VariableNode>, std::shared_ptr<ITermNode>> bindings;
+    std::unordered_map<std::reference_wrapper<const VariableNode>, std::reference_wrapper<ITermNode>,
+        KeyRefHashingFunctor, KeyRefEqualityFunctor> bindings;
 };
 
 }

@@ -155,6 +155,9 @@ add_library(OptifolCommon OBJECT
         Source/IR/Support/Substitution.cpp
         Source/IR/Support/Substitution.hpp
         Source/IR/Support/UnifyCandidateBase.cpp
+        Source/IR/Terms/ITermNode.cpp
+        Source/Visitors/Unification/PredicateUnificationVisitor.cpp
+        Source/Visitors/Unification/PredicateUnificationVisitor.hpp
 )
 
 target_link_libraries(OptifolCommon PRIVATE nlohmann_json::nlohmann_json simdjson)

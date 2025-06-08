@@ -16,34 +16,35 @@
 namespace optifol
 {
 
-std::optional<Substitution> UnifyCandidateBase::unify(const PredicationNode &predicate)
+const std::optional<Substitution> &UnifyCandidateBase::unify(const PredicationNode &predicate)
 {
-    return std::move(unify_substitution);
+    unify_with_me(predicate);
+    return unify_substitution;
 }
 
-std::optional<Substitution> UnifyCandidateBase::unify(const ITermNode &variable)
+const std::optional<Substitution> &UnifyCandidateBase::unify(const ITermNode &variable)
 {
-    return std::move(unify_substitution);
+    return unify_substitution;
 }
 
-bool UnifyCandidateBase::unify_work(const ITermNode &term)
-{
-    return false;
-}
-
-bool UnifyCandidateBase::unify_work(const PredicationNode &predicate)
+bool UnifyCandidateBase::unify_with_me(ITermNode &term)
 {
     return false;
 }
 
-bool UnifyCandidateBase::unify_work(const FunctionNode &function)
+bool UnifyCandidateBase::unify_with_me(const PredicationNode &predicate)
 {
     return false;
 }
 
-bool UnifyCandidateBase::unify_work(const VariableNode &variable)
+bool UnifyCandidateBase::unify_with_me(const FunctionNode &function)
 {
     return false;
 }
 
+bool UnifyCandidateBase::unify_with_me(const VariableNode &variable)
+{
+    return false;
 }
+
+} // namespace optifol

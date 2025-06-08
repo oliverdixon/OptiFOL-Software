@@ -68,4 +68,4 @@ std::size_t SentenceRoot::hash() const noexcept
     return sentence->hash();
 }
 
-} // namespace optifol
+}

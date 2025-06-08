@@ -16,6 +16,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "../../IHashable.hpp"
 #include "../Support/UnifyCandidateBase.hpp"
@@ -30,7 +31,7 @@ class ITermNode :
         public UnifyCandidateBase
 {
 public:
-    ~ITermNode() override = default;
+    ~ITermNode() override;
 
     [[nodiscard]] virtual std::unique_ptr<ITermNode> clone() const = 0;
 
@@ -38,12 +39,20 @@ public:
 
     [[nodiscard]] virtual std::string get_disambiguated_name() const = 0;
 
-    virtual void accept(MutatingTermVisitorBase& visitor) = 0;
+    virtual void accept(MutatingTermVisitorBase &visitor) = 0;
 
     [[nodiscard]] std::size_t hash() const noexcept override
     {
         return std::hash<std::string>{}(get_disambiguated_name());
     }
+
+    bool unify_with_me(const VariableNode &variable) override;
+
+protected:
+    void register_substitution(const VariableNode &bound_key, ITermNode &bound_value);
+
+private:
+    std::vector<std::reference_wrapper<const VariableNode>> substitution_keys;
 };
 
 }

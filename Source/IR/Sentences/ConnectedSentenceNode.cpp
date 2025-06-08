@@ -98,4 +98,4 @@ std::size_t ConnectedSentenceNode::hash() const noexcept
     return hash_combine(lhs->hash(), rhs->hash());
 }
 
-} // namespace optifol
+}

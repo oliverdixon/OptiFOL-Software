@@ -24,6 +24,7 @@ namespace optifol
 class FunctionNode;
 class PredicationNode;
 class ITermNode;
+class VariableNode;
 
 /**
  * @class UnifyCandidateBase
@@ -48,22 +49,22 @@ public:
      * @param predicate The PredicationNode unification target
      * @return A unifying variable-substitution map, if one exists. If no unification can be made, empty is returned.
      */
-    [[nodiscard]] std::optional<Substitution> unify(const PredicationNode &predicate);
+    [[nodiscard]] const std::optional<Substitution> &unify(const PredicationNode &predicate);
 
     /**
      * @brief Attempts to unify the candidate with a generic ITermNode
      * @param variable The ITermNode unification target
      * @return A unifying variable-substitution map, if one exists. If no unification can be made, empty is returned.
      */
-    [[nodiscard]] std::optional<Substitution> unify(const ITermNode &variable);
+    [[nodiscard]] const std::optional<Substitution> &unify(const ITermNode &variable);
 
-    [[nodiscard]] virtual bool unify_work(const ITermNode &term);
+    virtual bool unify_with_me(ITermNode &term);
 
-    [[nodiscard]] virtual bool unify_work(const PredicationNode &predicate);
+    virtual bool unify_with_me(const PredicationNode &predicate);
 
-    [[nodiscard]] virtual bool unify_work(const FunctionNode &function);
+    virtual bool unify_with_me(const FunctionNode &function);
 
-    [[nodiscard]] virtual bool unify_work(const VariableNode &variable);
+    virtual bool unify_with_me(const VariableNode &variable);
 
 protected:
     std::optional<Substitution> unify_substitution;

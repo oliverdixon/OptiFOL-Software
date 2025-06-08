@@ -15,7 +15,7 @@ std::size_t LegacyWrappers::get_pid()
     return static_cast<std::size_t>(getpid());
 }
 
-} // namespace optifol
+}
 
 std::size_t std::hash<std::chrono::time_point<std::chrono::system_clock>>::operator()(
         const std::chrono::system_clock::time_point &time) const noexcept

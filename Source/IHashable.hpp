@@ -43,7 +43,7 @@ protected:
 template<typename Type>
 concept IsHashable = std::derived_from<Type, IHashable>;
 
-} // namespace optifol
+}
 
 template<optifol::IsHashable Type>
 struct std::hash<Type> // NOLINT(*-dcl58-cpp) Specialising std::hash does not result in UB.

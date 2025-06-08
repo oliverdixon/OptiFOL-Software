@@ -42,7 +42,7 @@ public:
 
     std::vector<std::unique_ptr<ITermNode>>& observe_arguments();
 
-    [[nodiscard]] bool unify_work(const FunctionNode &function) override;
+    bool unify_with_me(const FunctionNode &function) override;
 
 protected:
     const std::string name;

@@ -37,6 +37,10 @@ public:
 
     void accept(MutatingTermVisitorBase& visitor) override;
 
+    bool unify_with_me(const VariableNode &variable) override;
+
+    bool unify_with_me(ITermNode &term) override;
+
 private:
     const std::string name;
 

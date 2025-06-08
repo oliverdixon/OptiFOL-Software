@@ -69,4 +69,4 @@ StorageObjectBase::StorageObjectBase(BaseObjectType *cobject, const Glib::RefPtr
 {
 }
 
-} // namespace optifol
+}

@@ -19,6 +19,7 @@
 #include <memory>
 #include <vector>
 
+#include "../../Visitors/Unification/PredicateUnificationVisitor.hpp"
 #include "../Support/UnifyCandidateBase.hpp"
 
 namespace optifol
@@ -44,7 +45,9 @@ public:
 
     void accept(IObservingSentenceVisitor &visitor) const override;
 
-    bool unify_work(const PredicationNode &predicate) override;
+    void accept(PredicateUnificationVisitor& visitor, PredicationNode& target);
+
+    bool unify_with_me(const PredicationNode &predicate) override;
 
     const std::string name; // TODO move
     std::vector<std::unique_ptr<ITermNode>> arguments; // TODO move

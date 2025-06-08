@@ -42,4 +42,4 @@ void ConstantNode::accept(MutatingTermVisitorBase &visitor)
     visitor.visit(*this);
 }
 
-} // namespace optifol
+}

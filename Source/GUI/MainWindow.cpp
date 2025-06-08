@@ -25,7 +25,6 @@ MainWindow::MainWindow():
     root_grid(GTKHelpers::get_widget<Gtk::Box>(area_name, *builder, "root_grid"))
 {
     set_title("Optifol");
-    set_default_size(600, 400);
     set_child(*root_grid);
 
     requirements_index_area = std::make_unique<RequirementsIndexArea>(*builder);

@@ -77,18 +77,19 @@ std::vector<std::unique_ptr<ITermNode>> &FunctionNode::observe_arguments()
     return arguments;
 }
 
-bool FunctionNode::unify_work(const FunctionNode &function)
+bool FunctionNode::unify_with_me(const FunctionNode &function)
 {
     const auto argument_count = arguments.size();
 
-    if (hash() != function.hash() || argument_count != function.arguments.size())
+    if (get_disambiguated_name() != function.get_disambiguated_name() || argument_count != function.arguments.size())
         return false;
 
     for (std::size_t argument_idx = 0; argument_idx < argument_count; ++argument_idx)
-        if (arguments[argument_idx]->unify_work(*function.arguments[argument_idx]) == false)
+        if (static_cast<UnifyCandidateBase *>(arguments[argument_idx].get())->
+                unify_with_me(*function.arguments[argument_idx]) == false)
             return false;
 
     return true;
 }
 
-} // namespace optifol
+}

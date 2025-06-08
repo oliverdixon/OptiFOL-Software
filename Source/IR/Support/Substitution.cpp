@@ -13,5 +13,22 @@
 
 #include "Substitution.hpp"
 
-namespace optifol {
-} // optifol
+#include "../Terms/VariableNode.hpp"
+
+namespace optifol
+{
+
+std::size_t Substitution::KeyRefHashingFunctor::operator()(const std::reference_wrapper<const VariableNode> object)
+        const noexcept
+{
+    return object.get().hash();
+}
+
+bool Substitution::KeyRefEqualityFunctor::operator()(
+        const std::reference_wrapper<const VariableNode> lhs_object,
+        const std::reference_wrapper<const VariableNode> rhs_object) const noexcept
+{
+    return lhs_object.get().hash() == rhs_object.get().hash();
+}
+
+}
