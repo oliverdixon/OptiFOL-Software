@@ -48,6 +48,8 @@ public:
 
     std::vector<std::unique_ptr<ITermNode>> &observe_arguments();
 
+    std::ostream &serialise(std::ostream &ostream) const override;
+
 protected:
     const std::string name;
 

@@ -9,6 +9,7 @@
  * @author Oliver Dixon
  * @date 2025-02-16
  * @version Development
+ * @todo Convert tests to use C++ object model rather than JSON. Keep JSONSerialiser as a nice-to-have.
  */
 
 #include <gtest/gtest.h>

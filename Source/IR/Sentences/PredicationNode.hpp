@@ -32,8 +32,10 @@ class PredicationNode :
         public Buildable<PredicationNode>
 {
 public:
-    [[maybe_unused]] PredicationNode(std::string name, std::vector<std::unique_ptr<ITermNode>> &&arguments,
+    explicit PredicationNode(std::string name, std::vector<std::unique_ptr<ITermNode>> &&arguments,
         bool is_positive = true);
+
+    explicit PredicationNode(std::string name, bool is_positive = true);
 
     [[nodiscard]] std::unique_ptr<ISentenceNode> clone() const override;
 
@@ -51,6 +53,8 @@ public:
     std::vector<std::unique_ptr<ITermNode>> arguments; // TODO move
 
     [[nodiscard]] std::size_t hash() const noexcept override;
+
+    std::ostream &serialise(std::ostream &ostream) const override;
 
 private:
     bool is_positive;

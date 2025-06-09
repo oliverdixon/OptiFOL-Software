@@ -42,4 +42,9 @@ void ConstantNode::accept(MutatingTermVisitorBase &visitor)
     visitor.visit(*this);
 }
 
+std::ostream &ConstantNode::serialise(std::ostream &ostream) const
+{
+    return ostream << name;
 }
+
+} // namespace optifol

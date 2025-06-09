@@ -43,6 +43,8 @@ public:
 
     bool accept(UnificationVisitor &visitor, const VariableNode &target) const override;
 
+    std::ostream &serialise(std::ostream &ostream) const override;
+
 private:
     const std::string name;
 

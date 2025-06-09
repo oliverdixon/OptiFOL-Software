@@ -3,6 +3,14 @@
  * 2025 Oliver Dixon <od641@york.ac.uk>
  */
 
+/**
+ * @file
+ * @brief Class specification for the IHashable interface
+ * @author Oliver Dixon
+ * @date 2025-06-09
+ * @version Development
+ */
+
 #ifndef IHASHABLE_HPP
 #define IHASHABLE_HPP
 
@@ -12,11 +20,24 @@
 namespace optifol
 {
 
+/**
+ * @class IHashable
+ * @brief An IHashable class can be hashed, such that a (relatively) content-dependent numerical hashcode can be
+ *  generated for any instance. Hashcodes are useful for implementing equality functor, but IHashable makes no
+ *  guarantees on the collision properties of the generated hashcodes.
+ */
 class IHashable
 {
 public:
+    /**
+     * @brief Destruct an IHashable instance
+     */
     virtual ~IHashable() = default;
 
+    /**
+     * @brief Produce a hash value of the IHashable object
+     * @return A hash value for the object
+     */
     [[nodiscard]] virtual std::size_t hash() const noexcept = 0;
 
 protected:
@@ -38,21 +59,68 @@ protected:
 
         return lhs;
     }
+
+
+    /**
+     * @brief Commutatively combine two hashes using sensible constants, inspired by boost::hash_combine.
+     * @param lhs The LHS hash value
+     * @param rhs The RHS hash value
+     * @return The LHS-RHS combined hash value such that LHS-RHS hash equals the equivalent RHS-LHS hash
+     *  (property of commutativity).
+     */
+    static std::size_t hash_combine_commutative(std::size_t lhs, std::size_t rhs)
+    {
+        /*
+         * The choice of operator> to collapse the hash operands into a commutative pair is arbitrary. We just need
+         * something reliable and universally defined on std::size_t.
+         */
+        if (lhs > rhs)
+            std::swap(lhs, rhs);
+
+        return hash_combine(lhs, rhs);
+    }
+
+    /**
+     * @brief Mutate a hash according the polarity of the node instantiation being hashed
+     * @param hash The produced hash for the unsigned node (i.e., the node without a polarity)
+     * @param is_negative Does the instantiation have a negative sign?
+     * @return If positive, the original hash. If negative, a mutated hash to reflect the difference in polarity.
+     */
+    static std::size_t hash_polarity(std::size_t hash, const bool is_negative)
+    {
+        // In the negative case, use MurmurHash3 as the XOR constant, and shift as usual.
+        return is_negative ? hash ^ 0x85ebca6b + (hash << 6) + (hash >> 2) : hash;
+    }
 };
 
-template<typename Type>
-concept IsHashable = std::derived_from<Type, IHashable>;
+} // namespace optifol
 
-}
+// ReSharper disable once CppDoxygenUnresolvedReference
 
-template<optifol::IsHashable Type>
+/**
+ * @class std::hash<Type>
+ * @brief Standard hasher implementation for Optifol's IHashable derived classes
+ * @tparam Type The IHashable type to hash
+ */
+template<typename Type> requires std::derived_from<Type, optifol::IHashable>
 struct std::hash<Type> // NOLINT(*-dcl58-cpp) Specialising std::hash does not result in UB.
 {
+    /**
+     * @brief Execute the hash functor to produce a hashcode of the object
+     * @param hashable The hashable object for which a hashcode should be generated
+     * @return The hashcode of the hashable object
+     */
     std::size_t operator()(const Type &hashable) const noexcept
     {
         return hashable.hash();
     }
 
+    /**
+     * @brief Execute the hash functor to produce a hashcode of the object contained within the ref-counted pointer
+     * @param shared_hashable The ref-counted pointer containing the hashable object for which a hashcode should be
+     *  generated
+     * @return The hashcode of the hashable object detained within the ref-counted pointer
+     */
     std::size_t operator()(const std::shared_ptr<Type>& shared_hashable) const noexcept
     {
         return shared_hashable->hash();

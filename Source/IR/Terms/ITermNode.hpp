@@ -48,6 +48,13 @@ public:
 
     virtual bool accept(UnificationVisitor &visitor, const FunctionNode &target) const;
 
+    virtual std::ostream &serialise(std::ostream &ostream) const = 0;
+
+    friend std::ostream& operator<<(std::ostream& ostream, const ITermNode& object)
+    {
+        return object.serialise(ostream);
+    }
+
 private:
     std::vector<std::reference_wrapper<const VariableNode>> substitution_keys;
 };

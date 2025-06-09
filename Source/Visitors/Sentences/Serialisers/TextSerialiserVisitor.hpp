@@ -41,12 +41,12 @@ public:
 
     [[nodiscard]] std::string extract();
 
-private:
-    std::ostringstream output_stream;
-
     [[nodiscard]] static const char *get_operator_symbol(BinaryOperatorTypes type);
 
     [[nodiscard]] static const char *get_operator_symbol(QuantifierTypes type);
+
+private:
+    std::ostringstream output_stream;
 
     void print_polarity(const ISentenceNode * node);
 };

@@ -21,11 +21,17 @@ namespace optifol
 {
 
 PredicationNode::PredicationNode(std::string name, std::vector<std::unique_ptr<ITermNode>> &&arguments,
-            const bool is_positive) :
+        const bool is_positive) :
     name(std::move(name)),
     arguments(std::move(arguments)),
     is_positive(is_positive)
-{}
+{
+}
+PredicationNode::PredicationNode(std::string name, const bool is_positive) :
+    name(std::move(name)),
+    is_positive(is_positive)
+{
+}
 
 std::unique_ptr<ISentenceNode> PredicationNode::clone() const
 {
@@ -64,11 +70,32 @@ bool PredicationNode::accept(UnificationVisitor &visitor, const PredicationNode 
 
 std::size_t PredicationNode::hash() const noexcept
 {
-    auto hash_code = std::hash<std::string>{}(name);
+    auto hash = std::hash<std::string>{}(name);
     for (const auto &argument: arguments)
-        hash_code = hash_combine(hash_code, argument->hash());
+        hash = hash_combine(hash, argument->hash());
 
-    return hash_code;
+    return hash_polarity(hash, is_negative_polarity());
+}
+
+std::ostream &PredicationNode::serialise(std::ostream &ostream) const
+{
+    if (is_negative_polarity())
+        ostream << '~';
+
+    ostream << name << '(';
+
+    if (arguments.empty() == false) {
+        const auto argument_count = arguments.size() - 1;
+
+        for (std::size_t argument_idx = 0; argument_idx < argument_count; ++argument_idx) {
+            arguments[argument_idx]->serialise(ostream);
+            ostream << ", ";
+        }
+
+        arguments[argument_count]->serialise(ostream);
+    }
+
+    return ostream << ')';
 }
 
 }

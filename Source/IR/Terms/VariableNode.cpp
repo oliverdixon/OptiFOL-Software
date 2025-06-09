@@ -62,4 +62,9 @@ bool VariableNode::accept(UnificationVisitor &visitor, const VariableNode &targe
     return visitor.visit(*this, target);
 }
 
+std::ostream &VariableNode::serialise(std::ostream &ostream) const
+{
+    return ostream << name;
+}
+
 }

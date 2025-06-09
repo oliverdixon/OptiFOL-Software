@@ -29,7 +29,6 @@ template<typename BuildType>
 class Buildable
 {
 public:
-
     /**
      * @brief Construct a class with the given constructor arguments in a unique pointer
      * @tparam PointerType The stored pointer type of the constructed unique pointer; must be a base of, or equal to,

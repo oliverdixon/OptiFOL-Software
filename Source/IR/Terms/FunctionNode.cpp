@@ -88,4 +88,22 @@ std::vector<std::unique_ptr<ITermNode>> &FunctionNode::observe_arguments()
     return arguments;
 }
 
+std::ostream &FunctionNode::serialise(std::ostream &ostream) const
+{
+    ostream << '$' << name << '(';
+
+    if (arguments.empty() == false) {
+        const auto argument_count = arguments.size() - 1;
+
+        for (std::size_t argument_idx = 0; argument_idx < argument_count; ++argument_idx) {
+            arguments[argument_idx]->serialise(ostream);
+            ostream << ", ";
+        }
+
+        arguments[argument_count]->serialise(ostream);
+    }
+
+    return ostream << ')';
 }
+
+} // namespace optifol

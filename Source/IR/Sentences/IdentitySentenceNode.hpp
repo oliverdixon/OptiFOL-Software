@@ -59,6 +59,8 @@ public:
 
     [[nodiscard]] std::size_t hash() const noexcept override;
 
+    std::ostream &serialise(std::ostream &ostream) const override;
+
 private:
     std::unique_ptr<ITermNode> lhs;
     std::unique_ptr<ITermNode> rhs;

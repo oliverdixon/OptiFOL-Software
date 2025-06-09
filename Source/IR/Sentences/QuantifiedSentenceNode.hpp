@@ -67,6 +67,8 @@ public:
 
     [[nodiscard]] std::size_t hash() const noexcept override;
 
+    std::ostream &serialise(std::ostream &ostream) const override;
+
 private:
     QuantifierTypes quantifier_type;
     std::unique_ptr<ITermNode> bound_term;

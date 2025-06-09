@@ -33,6 +33,8 @@ void JSONSerialiserVisitor::visit(const QuantifiedSentenceNode &node)
         { "variable", node.observe_bound_term()->to_string() },
         { "sentence", std::move(output) }
     };
+
+    print_polarity(&node);
 }
 
 void JSONSerialiserVisitor::visit(const ConnectedSentenceNode &node)
@@ -52,6 +54,8 @@ void JSONSerialiserVisitor::visit(const ConnectedSentenceNode &node)
         { "lhs", std::move(lhs) },
         { "rhs", std::move(rhs) }
     };
+
+    print_polarity(&node);
 }
 
 void JSONSerialiserVisitor::visit(const IdentitySentenceNode &node)
@@ -61,6 +65,8 @@ void JSONSerialiserVisitor::visit(const IdentitySentenceNode &node)
         { "lhs", node.observe_lhs_operand()->to_string() },
         { "rhs", node.observe_rhs_operand()->to_string() }
     };
+
+    print_polarity(&node);
 }
 
 void JSONSerialiserVisitor::visit(const PredicationNode &node)
@@ -75,6 +81,8 @@ void JSONSerialiserVisitor::visit(const PredicationNode &node)
         { "name", node.name },
         { "arguments", std::move(arguments) }
     };
+
+    print_polarity(&node);
 }
 
 void JSONSerialiserVisitor::visit(const SentenceRoot &node)

@@ -73,7 +73,18 @@ void IdentitySentenceNode::accept(IObservingSentenceVisitor &visitor) const
 
 std::size_t IdentitySentenceNode::hash() const noexcept
 {
-    return hash_combine(lhs->hash(), rhs->hash());
+    return hash_polarity(hash_combine_commutative(lhs->hash(), rhs->hash()), is_negative_polarity());
+}
+
+std::ostream &IdentitySentenceNode::serialise(std::ostream &ostream) const
+{
+    if (is_negative_polarity())
+        ostream << '~';
+
+    ostream << '(';
+    lhs->serialise(ostream);
+    ostream << " == ";
+    return rhs->serialise(ostream) << ')';
 }
 
 void IdentitySentenceNode::swap_lhs_operand(std::unique_ptr<ITermNode>&& new_lhs)

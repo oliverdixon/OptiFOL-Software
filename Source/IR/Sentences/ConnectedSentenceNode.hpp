@@ -69,6 +69,8 @@ public:
 
     [[nodiscard]] std::size_t hash() const noexcept override;
 
+    std::ostream &serialise(std::ostream &ostream) const override;
+
 private:
     BinaryOperatorTypes operator_type;
 

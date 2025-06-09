@@ -65,7 +65,17 @@ void SentenceRoot::accept(IObservingSentenceVisitor &visitor) const
 
 std::size_t SentenceRoot::hash() const noexcept
 {
-    return sentence->hash();
+    return hash_polarity(sentence->hash(), is_negative_polarity());
+}
+
+std::ostream &SentenceRoot::serialise(std::ostream &ostream) const
+{
+    if (is_negative_polarity())
+        ostream << '~';
+
+    ostream << '(';
+    sentence->serialise(ostream);
+    return ostream << ')';
 }
 
 }

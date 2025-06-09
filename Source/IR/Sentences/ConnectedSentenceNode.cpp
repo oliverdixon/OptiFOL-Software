@@ -15,6 +15,7 @@
 
 #include "../../Visitors/Sentences/IObservingSentenceVisitor.hpp"
 #include "../../Visitors/Sentences/MutatingSentenceVisitorBase.hpp"
+#include "../../Visitors/Sentences/Serialisers/TextSerialiserVisitor.hpp"
 
 namespace optifol
 {
@@ -95,7 +96,18 @@ void ConnectedSentenceNode::accept(IObservingSentenceVisitor &visitor) const
 
 std::size_t ConnectedSentenceNode::hash() const noexcept
 {
-    return hash_combine(lhs->hash(), rhs->hash());
+    return hash_polarity(hash_combine_commutative(lhs->hash(), rhs->hash()), is_negative_polarity());
+}
+
+std::ostream &ConnectedSentenceNode::serialise(std::ostream &ostream) const
+{
+    if (is_negative_polarity())
+        ostream << '~';
+
+    ostream << '(';
+    lhs->serialise(ostream);
+    ostream << TextSerialiserVisitor::get_operator_symbol(operator_type);
+    return rhs->serialise(ostream) << ')';
 }
 
 }

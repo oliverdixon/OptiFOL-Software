@@ -35,7 +35,7 @@ public:
 
 TEST_F(UnificationTest, Predicate)
 {
-    optifol::UnificationVisitor unification_visitor;
+    UnificationVisitor unification_visitor;
 
     const auto john = FunctionNode::build("John");
     const auto jane = FunctionNode::build("Jane");

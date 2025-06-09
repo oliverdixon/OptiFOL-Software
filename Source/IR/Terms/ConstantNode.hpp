@@ -35,6 +35,8 @@ public:
 
     void accept(MutatingTermVisitorBase& visitor) override;
 
+    std::ostream &serialise(std::ostream &ostream) const override;
+
 private:
     const std::string name;
 };
