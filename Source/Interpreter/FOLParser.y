@@ -16,15 +16,15 @@
 
 %code requires
 {
-    #include "../IR/Mutable/Terms/MutableVariableNode.hpp"
-    #include "../IR/Mutable/Terms/MutableFunctionNode.hpp"
-    #include "../IR/Mutable/Terms/MutableConstantNode.hpp"
+    #include "../IR/MutableVariants/Terms/MutableVariable.hpp"
+    #include "../IR/MutableVariants/Terms/MutableFunction.hpp"
+    #include "../IR/MutableVariants/Terms/MutableConstant.hpp"
 
-    #include "../IR/Mutable/Sentences/MutablePredicationNode.hpp"
-    #include "../IR/Mutable/Sentences/MutableIdentitySentenceNode.hpp"
-    #include "../IR/Mutable/Sentences/MutableConnectedSentenceNode.hpp"
-    #include "../IR/Mutable/Sentences/MutableQuantifiedSentenceNode.hpp"
-    #include "../IR/Mutable/Sentences/MutableSentenceRoot.hpp"
+    #include "../IR/MutableVariants/Sentences/MutablePredicate.hpp"
+    #include "../IR/MutableVariants/Sentences/MutableIdentity.hpp"
+    #include "../IR/MutableVariants/Sentences/MutableBinaryConnected.hpp"
+    #include "../IR/MutableVariants/Sentences/MutableQuantified.hpp"
+    #include "../IR/MutableVariants/Sentences/MutableSentenceRoot.hpp"
 
     namespace optifol
     {
@@ -54,9 +54,9 @@
 %left Conjunction
 %right Negation
 
-%type <IMutableSentenceNode *> sentence
-%type <IMutableTermNode *> term
-%type <std::vector<std::unique_ptr<IMutableTermNode>>> term_vector
+%type <IMutableSentence *> sentence
+%type <IMutableTerm *> term
+%type <std::vector<std::unique_ptr<IMutableTerm>>> term_vector
 
 %start line
 
@@ -73,7 +73,7 @@ line :
      sentence End
      {
          static_cast<FOLParser *>(this)->register_sentence(
-             MutableSentenceRoot::build(std::unique_ptr<IMutableSentenceNode>($1))
+             MutableSentenceRoot::build(std::unique_ptr<IMutableSentence>($1))
          );
 
          return 0;
@@ -88,30 +88,30 @@ line :
 sentence :
          Universal Variable LeftParenthesis sentence RightParenthesis
          {
-             $$ = new MutableQuantifiedSentenceNode(
+             $$ = new MutableQuantified(
                  QuantifierTypes::Universal,
-                 MutableVariableNode::build($2),
-                 std::unique_ptr<IMutableSentenceNode>($4)
+                 MutableVariable::build($2),
+                 std::unique_ptr<IMutableSentence>($4)
              );
          }
          |
          Existential Variable LeftParenthesis sentence RightParenthesis
          {
-             $$ = new MutableQuantifiedSentenceNode(
+             $$ = new MutableQuantified(
                  QuantifierTypes::Existential,
-                 MutableVariableNode::build($2),
-                 std::unique_ptr<IMutableSentenceNode>($4)
+                 MutableVariable::build($2),
+                 std::unique_ptr<IMutableSentence>($4)
              );
          }
          |
          Predicate LeftParenthesis term_vector RightParenthesis
          {
-             $$ = new MutablePredicationNode($1, std::move($3));
+             $$ = new MutablePredicate($1, std::move($3));
          }
          |
          term Identity term
          {
-             $$ = new MutableIdentitySentenceNode(std::unique_ptr<IMutableTermNode>($1), std::unique_ptr<IMutableTermNode>($3));
+             $$ = new MutableIdentity(std::unique_ptr<IMutableTerm>($1), std::unique_ptr<IMutableTerm>($3));
          }
          |
          Negation sentence
@@ -122,37 +122,37 @@ sentence :
          |
          sentence Conjunction sentence
          {
-             $$ = new MutableConnectedSentenceNode(
+             $$ = new MutableBinaryConnected(
                  BinaryOperatorTypes::Conjunction,
-                 std::unique_ptr<IMutableSentenceNode>($1),
-                 std::unique_ptr<IMutableSentenceNode>($3)
+                 std::unique_ptr<IMutableSentence>($1),
+                 std::unique_ptr<IMutableSentence>($3)
              );
          }
          |
          sentence Disjunction sentence
          {
-             $$ = new MutableConnectedSentenceNode(
+             $$ = new MutableBinaryConnected(
                  BinaryOperatorTypes::Disjunction,
-                 std::unique_ptr<IMutableSentenceNode>($1),
-                 std::unique_ptr<IMutableSentenceNode>($3)
+                 std::unique_ptr<IMutableSentence>($1),
+                 std::unique_ptr<IMutableSentence>($3)
              );
          }
          |
          sentence Implication sentence
          {
-             $$ = new MutableConnectedSentenceNode(
+             $$ = new MutableBinaryConnected(
                  BinaryOperatorTypes::Implication,
-                 std::unique_ptr<IMutableSentenceNode>($1),
-                 std::unique_ptr<IMutableSentenceNode>($3)
+                 std::unique_ptr<IMutableSentence>($1),
+                 std::unique_ptr<IMutableSentence>($3)
              );
          }
          |
          sentence Biconditional sentence
          {
-             $$ = new MutableConnectedSentenceNode(
+             $$ = new MutableBinaryConnected(
                  BinaryOperatorTypes::Biconditional,
-                 std::unique_ptr<IMutableSentenceNode>($1),
-                 std::unique_ptr<IMutableSentenceNode>($3)
+                 std::unique_ptr<IMutableSentence>($1),
+                 std::unique_ptr<IMutableSentence>($3)
              );
          }
          |
@@ -165,31 +165,31 @@ sentence :
 term_vector :
             term
             {
-                $$ = std::vector<std::unique_ptr<IMutableTermNode>>();
-                $$.push_back(std::unique_ptr<IMutableTermNode>($1));
+                $$ = std::vector<std::unique_ptr<IMutableTerm>>();
+                $$.push_back(std::unique_ptr<IMutableTerm>($1));
             }
             |
             term_vector Comma term
             {
                 $$ = std::move($1);
-                $$.push_back(std::unique_ptr<IMutableTermNode>($3));
+                $$.push_back(std::unique_ptr<IMutableTerm>($3));
             }
             ;
 
 term :
      Function LeftParenthesis term_vector RightParenthesis
      {
-         $$ = new MutableFunctionNode($1, std::move($3));
+         $$ = new MutableFunction($1, std::move($3));
      }
      |
      Constant
      {
-         $$ = new MutableConstantNode($1);
+         $$ = new MutableConstant($1);
      }
      |
      Variable
      {
-         $$ = new MutableVariableNode($1);
+         $$ = new MutableVariable($1);
      }
      ;
 

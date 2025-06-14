@@ -16,7 +16,7 @@
 
 #include <log4cxx/logger.h>
 
-#include "../IR/Mutable/Sentences/IMutableSentenceNode.hpp"
+#include "../IR/MutableVariants/Sentences/IMutableSentence.hpp"
 #include "FOLLexer.hpp"
 #include "StorageObjectBase.hpp"
 
@@ -110,7 +110,7 @@ private:
 
     void cnf_normalise();
 
-    static std::string text_serialise(const IMutableSentenceNode * sentence);
+    static std::string text_serialise(const IMutableSentence * sentence);
 
     Glib::Property<Glib::ustring> statement;
 
@@ -120,9 +120,9 @@ private:
 
     Glib::Property<guint> priority;
 
-    std::unique_ptr<IMutableSentenceNode> original_ast;
+    std::unique_ptr<IMutableSentence> original_ast;
 
-    std::unique_ptr<IMutableSentenceNode> cnf_ast;
+    std::unique_ptr<IMutableSentence> cnf_ast;
 
     std::string formatted_input_statement;
 

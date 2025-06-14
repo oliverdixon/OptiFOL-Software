@@ -37,7 +37,7 @@ protected:
      * @param test The raw input string to pass to the lexer
      * @param expected The expected output sentence structure
      */
-    void equality_on_input(const char *test, std::unique_ptr<IMutableSentenceNode>&& expected)
+    void equality_on_input(const char *test, std::unique_ptr<IMutableSentence>&& expected)
     {
         lexer_input_stream.str(test);
         parser.parse();
@@ -54,60 +54,60 @@ private:
 
 TEST_F(FOLParserTest, Quantifier_Universal)
 {
-    std::vector<std::unique_ptr<IMutableTermNode>> p_args;
-    p_args.push_back(MutableVariableNode::build<IMutableTermNode>("x"));
+    std::vector<std::unique_ptr<IMutableTerm>> p_args;
+    p_args.push_back(MutableVariable::build<IMutableTerm>("x"));
 
     // clang-format off
     equality_on_input(
         "%Ux(P(x))",
 
-        MutableQuantifiedSentenceNode::build(
+        MutableQuantified::build(
             QuantifierTypes::Universal,
-            MutableVariableNode::build("x"),
-            MutablePredicationNode::build("P", std::move(p_args))
+            MutableVariable::build("x"),
+            MutablePredicate::build("P", std::move(p_args))
         )
     );
 }
 
 TEST_F(FOLParserTest, Quantifier_NegativeExistential)
 {
-    std::vector<std::unique_ptr<IMutableTermNode>> q_args;
-    q_args.push_back(MutableVariableNode::build<IMutableTermNode>("y"));
+    std::vector<std::unique_ptr<IMutableTerm>> q_args;
+    q_args.push_back(MutableVariable::build<IMutableTerm>("y"));
 
     // clang-format off
     equality_on_input(
         "%Ey(~Q(y))",
 
-        MutableQuantifiedSentenceNode::build(
+        MutableQuantified::build(
             QuantifierTypes::Existential,
-            MutableVariableNode::build("y"),
-            MutablePredicationNode::build("Q", false, std::move(q_args))
+            MutableVariable::build("y"),
+            MutablePredicate::build("Q", false, std::move(q_args))
         )
     );
 }
 
 TEST_F(FOLParserTest, Quantifier_Nested)
 {
-    std::vector<std::unique_ptr<IMutableTermNode>> p_args;
-    p_args.push_back(MutableVariableNode::build<IMutableTermNode>("x"));
+    std::vector<std::unique_ptr<IMutableTerm>> p_args;
+    p_args.push_back(MutableVariable::build<IMutableTerm>("x"));
 
-    std::vector<std::unique_ptr<IMutableTermNode>> q_args;
-    q_args.push_back(MutableVariableNode::build<IMutableTermNode>("y"));
+    std::vector<std::unique_ptr<IMutableTerm>> q_args;
+    q_args.push_back(MutableVariable::build<IMutableTerm>("y"));
 
     // clang-format off
     equality_on_input(
         "%Ux(%Ey(P(x) & Q(y)))",
 
-        MutableQuantifiedSentenceNode::build(
+        MutableQuantified::build(
             QuantifierTypes::Universal,
-            MutableVariableNode::build("x"),
-            MutableQuantifiedSentenceNode::build(
+            MutableVariable::build("x"),
+            MutableQuantified::build(
                 QuantifierTypes::Existential,
-                MutableVariableNode::build("y"),
-                MutableConnectedSentenceNode::build(
+                MutableVariable::build("y"),
+                MutableBinaryConnected::build(
                     BinaryOperatorTypes::Conjunction,
-                    MutablePredicationNode::build("P", std::move(p_args)),
-                    MutablePredicationNode::build("Q", std::move(q_args))
+                    MutablePredicate::build("P", std::move(p_args)),
+                    MutablePredicate::build("Q", std::move(q_args))
                 )
             )
         )
@@ -120,9 +120,9 @@ TEST_F(FOLParserTest, Identity_Constants)
     equality_on_input(
         "_X = _Y",
 
-        MutableIdentitySentenceNode::build(
-            MutableConstantNode::build("_X"),
-            MutableConstantNode::build("_Y")
+        MutableIdentity::build(
+            MutableConstant::build("_X"),
+            MutableConstant::build("_Y")
         )
     );
 }

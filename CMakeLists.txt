@@ -93,70 +93,79 @@ get_target_property(SIMDJSON_INCLUDE_DIR simdjson INTERFACE_INCLUDE_DIRECTORIES)
 
 add_library(OptifolCommon OBJECT
         Source/Interpreter/FOLLexer.hpp
-        Source/IR/Mutable/Terms/IMutableTermNode.hpp
-        Source/IR/Mutable/Sentences/IMutableSentenceNode.hpp
-        Source/IR/Mutable/Terms/MutableVariableNode.hpp
-        Source/IR/Mutable/Terms/MutableConstantNode.hpp
-        Source/IR/Mutable/Terms/MutableFunctionNode.hpp
-        Source/IR/Mutable/Sentences/MutablePredicationNode.hpp
-        Source/IR/Mutable/Sentences/MutableConnectedSentenceNode.hpp
-        Source/IR/Mutable/Sentences/MutableIdentitySentenceNode.hpp
-        Source/IR/Mutable/Sentences/MutableQuantifiedSentenceNode.hpp
+        Source/IR/MutableVariants/Terms/IMutableTerm.hpp
+        Source/IR/MutableVariants/Sentences/IMutableSentence.hpp
+        Source/IR/MutableVariants/Terms/MutableVariable.hpp
+        Source/IR/MutableVariants/Terms/MutableConstant.hpp
+        Source/IR/MutableVariants/Terms/MutableFunction.hpp
+        Source/IR/MutableVariants/Sentences/MutablePredicate.hpp
+        Source/IR/MutableVariants/Sentences/MutableBinaryConnected.hpp
+        Source/IR/MutableVariants/Sentences/MutableIdentity.hpp
+        Source/IR/MutableVariants/Sentences/MutableQuantified.hpp
         Source/Interpreter/FOLParser.hpp
-        Source/Visitors/Sentences/CNFNormalisers/ImplicationEliminationVisitor.hpp
-        Source/Visitors/Sentences/MutatingSentenceVisitorBase.hpp
-        Source/Visitors/Sentences/CNFNormalisers/DMLVisitor.hpp
-        Source/IR/Mutable/Sentences/MutableConnectedSentenceNode.cpp
-        Source/IR/Mutable/Sentences/MutableQuantifiedSentenceNode.cpp
-        Source/IR/Mutable/Sentences/MutableIdentitySentenceNode.cpp
-        Source/IR/Mutable/Sentences/MutablePredicationNode.cpp
-        Source/Visitors/Sentences/CNFNormalisers/UniversalEliminationVisitor.hpp
-        Source/Visitors/Sentences/CNFNormalisers/DisjunctionDistributionVisitor.hpp
-        Source/Visitors/Sentences/CNFNormalisers/DisjunctionDistributionVisitor.cpp
-        Source/Visitors/Sentences/CNFNormalisers/UniversalEliminationVisitor.cpp
-        Source/Visitors/Sentences/CNFNormalisers/ImplicationEliminationVisitor.cpp
-        Source/Visitors/Sentences/CNFNormalisers/DMLVisitor.cpp
-        Source/Visitors/Sentences/Serialisers/TextSerialiserVisitor.cpp
-        Source/Visitors/Sentences/Serialisers/TextSerialiserVisitor.hpp
-        Source/Visitors/Sentences/Serialisers/JSONSerialiserVisitor.cpp
-        Source/Visitors/Sentences/Serialisers/JSONSerialiserVisitor.hpp
-        Source/Visitors/Sentences/IObservingSentenceVisitor.hpp
-        Source/Visitors/Sentences/CNFNormalisers/SymbolStandardisingVisitor.cpp
-        Source/Visitors/Sentences/CNFNormalisers/SymbolStandardisingVisitor.hpp
+        Source/Visitors/MutableTargets/Sentences/CNFNormalisers/ImplicationEliminationVisitor.hpp
+        Source/Visitors/MutableTargets/Sentences/MutatingSentenceVisitorBase.hpp
+        Source/Visitors/MutableTargets/Sentences/CNFNormalisers/DMLVisitor.hpp
+        Source/IR/MutableVariants/Sentences/MutableBinaryConnected.cpp
+        Source/IR/MutableVariants/Sentences/MutableQuantified.cpp
+        Source/IR/MutableVariants/Sentences/MutableIdentity.cpp
+        Source/IR/MutableVariants/Sentences/MutablePredicate.cpp
+        Source/Visitors/MutableTargets/Sentences/CNFNormalisers/UniversalEliminationVisitor.hpp
+        Source/Visitors/MutableTargets/Sentences/CNFNormalisers/DisjunctionDistributionVisitor.hpp
+        Source/Visitors/MutableTargets/Sentences/CNFNormalisers/DisjunctionDistributionVisitor.cpp
+        Source/Visitors/MutableTargets/Sentences/CNFNormalisers/UniversalEliminationVisitor.cpp
+        Source/Visitors/MutableTargets/Sentences/CNFNormalisers/ImplicationEliminationVisitor.cpp
+        Source/Visitors/MutableTargets/Sentences/CNFNormalisers/DMLVisitor.cpp
+        Source/Visitors/MutableTargets/Sentences/Serialisers/TextSerialiserVisitor.cpp
+        Source/Visitors/MutableTargets/Sentences/Serialisers/TextSerialiserVisitor.hpp
+        Source/Visitors/MutableTargets/Sentences/Serialisers/JSONSerialiserVisitor.cpp
+        Source/Visitors/MutableTargets/Sentences/Serialisers/JSONSerialiserVisitor.hpp
+        Source/Visitors/MutableTargets/Sentences/IObservingSentenceVisitor.hpp
+        Source/Visitors/MutableTargets/Sentences/CNFNormalisers/SymbolStandardisingVisitor.cpp
+        Source/Visitors/MutableTargets/Sentences/CNFNormalisers/SymbolStandardisingVisitor.hpp
         Source/Exceptions/SemanticException.hpp
-        Source/Visitors/Terms/MutatingTermVisitorBase.hpp
-        Source/Visitors/Terms/TermResolutionVisitor.cpp
-        Source/Visitors/Terms/TermResolutionVisitor.hpp
-        Source/Visitors/Terms/MutatingTermVisitorBase.cpp
-        Source/Visitors/Sentences/MutatingSentenceVisitorBase.cpp
-        Source/Visitors/Sentences/CNFNormalisers/QuantifierExtractingVisitor.cpp
-        Source/Visitors/Sentences/CNFNormalisers/QuantifierExtractingVisitor.hpp
-        Source/Visitors/Sentences/CNFNormalisers/SkolemIntroducingVisitor.cpp
-        Source/Visitors/Sentences/CNFNormalisers/SkolemIntroducingVisitor.hpp
+        Source/Visitors/MutableTargets/Terms/MutatingTermVisitorBase.hpp
+        Source/Visitors/MutableTargets/Terms/TermResolutionVisitor.cpp
+        Source/Visitors/MutableTargets/Terms/TermResolutionVisitor.hpp
+        Source/Visitors/MutableTargets/Terms/MutatingTermVisitorBase.cpp
+        Source/Visitors/MutableTargets/Sentences/MutatingSentenceVisitorBase.cpp
+        Source/Visitors/MutableTargets/Sentences/CNFNormalisers/QuantifierExtractingVisitor.cpp
+        Source/Visitors/MutableTargets/Sentences/CNFNormalisers/QuantifierExtractingVisitor.hpp
+        Source/Visitors/MutableTargets/Sentences/CNFNormalisers/SkolemIntroducingVisitor.cpp
+        Source/Visitors/MutableTargets/Sentences/CNFNormalisers/SkolemIntroducingVisitor.hpp
         Source/LegacyWrappers.cpp
         Source/LegacyWrappers.hpp
         Source/Optifol.hpp
         Source/Logging.hpp
         Source/Logging.cpp
-        Source/IR/Mutable/Sentences/MutableSentenceRoot.hpp
-        Source/IR/Mutable/Sentences/MutableSentenceRoot.cpp
-        Source/IR/Mutable/Terms/MutableConstantNode.cpp
-        Source/IR/Mutable/Terms/MutableFunctionNode.cpp
-        Source/IR/Mutable/Terms/MutableVariableNode.cpp
-        Source/IR/Mutable/Terms/MutableSkolemFunctionNode.cpp
-        Source/IR/Mutable/Terms/MutableSkolemFunctionNode.hpp
-        Source/Visitors/Terms/ScopedTermResolutionVisitor.cpp
-        Source/Visitors/Terms/ScopedTermResolutionVisitor.hpp
+        Source/IR/MutableVariants/Sentences/MutableSentenceRoot.hpp
+        Source/IR/MutableVariants/Sentences/MutableSentenceRoot.cpp
+        Source/IR/MutableVariants/Terms/MutableConstant.cpp
+        Source/IR/MutableVariants/Terms/MutableFunction.cpp
+        Source/IR/MutableVariants/Terms/MutableVariable.cpp
+        Source/IR/MutableVariants/Terms/MutableSkolemFunction.cpp
+        Source/IR/MutableVariants/Terms/MutableSkolemFunction.hpp
+        Source/Visitors/MutableTargets/Terms/ScopedTermResolutionVisitor.cpp
+        Source/Visitors/MutableTargets/Terms/ScopedTermResolutionVisitor.hpp
         Source/Exceptions/ParseError.hpp
         Source/IHashable.hpp
-        Source/IR/Immutable/Substitution.cpp
-        Source/IR/Immutable/Substitution.hpp
-        Source/IR/Mutable/Terms/IMutableTermNode.cpp
-        Source/Visitors/Unification/UnificationVisitor.cpp
-        Source/Visitors/Unification/UnificationVisitor.hpp
-        Source/IR/Mutable/OwningBuildable.hpp
-        Source/IR/Immutable/SymbolRepository.cpp
-        Source/IR/Immutable/SymbolRepository.hpp
+        Source/IR/Substitution.cpp
+        Source/IR/Substitution.hpp
+        Source/Visitors/RegularTargets/Unification/UnificationVisitor.cpp
+        Source/Visitors/RegularTargets/Unification/UnificationVisitor.hpp
+        Source/IR/MutableVariants/OwningBuildable.hpp
+        Source/IR/SymbolRepository.cpp
+        Source/IR/SymbolRepository.hpp
+        Source/IR/Sentences/ISentence.hpp
+        Source/IR/Terms/IProcessedTerm.hpp
+        Source/IR/Sentences/Predicate.cpp
+        Source/IR/Sentences/Predicate.hpp
+        Source/IR/Terms/Variable.cpp
+        Source/IR/Terms/Variable.hpp
+        Source/IR/Terms/Function.cpp
+        Source/IR/Terms/Function.hpp
+        Source/IR/Terms/IProcessedTerm.cpp
+        Source/IR/Terms/IProcessedTerm.hpp
 )
 
 target_link_libraries(OptifolCommon PRIVATE nlohmann_json::nlohmann_json simdjson)

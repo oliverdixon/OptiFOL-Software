@@ -22,7 +22,7 @@
 #pragma clang diagnostic pop
 
 #include "../Exceptions/ParseError.hpp"
-#include "../IR/Mutable/Sentences/IMutableSentenceNode.hpp"
+#include "../IR/MutableVariants/Sentences/IMutableSentence.hpp"
 
 namespace optifol
 {
@@ -52,12 +52,12 @@ public:
      * @brief Reports a new fully parsed root sentence, typically from another parser-like source
      * @param sentenceNode The parsed FOL sentence
      */
-    [[maybe_unused]] void register_sentence(std::unique_ptr<IMutableSentenceNode>&& sentenceNode)
+    [[maybe_unused]] void register_sentence(std::unique_ptr<IMutableSentence>&& sentenceNode)
     {
         last_parsed = std::move(sentenceNode);
     }
 
-    [[nodiscard]] std::unique_ptr<IMutableSentenceNode> retrieve_sentence()
+    [[nodiscard]] std::unique_ptr<IMutableSentence> retrieve_sentence()
     {
         auto sentence = std::move(last_parsed);
         last_parsed = nullptr;
@@ -68,7 +68,7 @@ private:
     /**
      * @brief A strong reference to the last-parsed FOL sentence.
      */
-    std::unique_ptr<IMutableSentenceNode> last_parsed;
+    std::unique_ptr<IMutableSentence> last_parsed;
 };
 
 }

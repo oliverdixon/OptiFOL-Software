@@ -1,0 +1,41 @@
+/*
+ * Copyright (c) All Rights Reserved
+ * 2025 Oliver Dixon <od641@york.ac.uk>
+ */
+
+/**
+ * @file
+ * @brief Class specification for the Mutating Term Visitor base class.
+ * @author Oliver Dixon
+ * @date 2024-11-30
+ * @version Development
+ */
+
+#ifndef MUTATINGTERMVISITORBASE_HPP
+#define MUTATINGTERMVISITORBASE_HPP
+
+namespace optifol
+{
+
+class MutableFunction;
+class MutableConstant;
+class MutableVariable;
+class MutableSkolemFunction;
+
+class MutatingTermVisitorBase
+{
+public:
+    virtual ~MutatingTermVisitorBase() = default;
+
+    virtual void visit(MutableFunction &node);
+
+    virtual void visit(MutableConstant &node);
+
+    virtual void visit(MutableVariable &node);
+
+    virtual void visit(MutableSkolemFunction& node);
+};
+
+}
+
+#endif

@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="OptifolHTMLDocumentation" type="CMakeRunConfiguration" factoryName="Application" activateToolWindowBeforeRun="false" PROGRAM_PARAMS="GeneratedDocumentation/html/index.html" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" WORKING_DIR="file://$PROJECT_DIR$" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Optifol" TARGET_NAME="OptifolHTMLDocumentation" CONFIG_NAME="DebugIWYU" RUN_PATH="/usr/bin/firefox">
+  <configuration default="false" name="OptifolHTMLDocumentation" type="CMakeRunConfiguration" factoryName="Application" activateToolWindowBeforeRun="false" PROGRAM_PARAMS="GeneratedDocumentation/html/index.html" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" WORKING_DIR="file://$PROJECT_DIR$" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Optifol" TARGET_NAME="OptifolHTMLDocumentation" CONFIG_NAME="DebugIWYU" RUN_PATH="/usr/bin/xdg-open">
     <method v="2">
       <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
     </method>

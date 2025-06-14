@@ -17,14 +17,14 @@
 
 #include "../Logging.hpp"
 #include "../Exceptions/SemanticException.hpp"
-#include "../Visitors/Sentences/CNFNormalisers/DisjunctionDistributionVisitor.hpp"
-#include "../Visitors/Sentences/CNFNormalisers/DMLVisitor.hpp"
-#include "../Visitors/Sentences/CNFNormalisers/ImplicationEliminationVisitor.hpp"
-#include "../Visitors/Sentences/CNFNormalisers/QuantifierExtractingVisitor.hpp"
-#include "../Visitors/Sentences/CNFNormalisers/SkolemIntroducingVisitor.hpp"
-#include "../Visitors/Sentences/CNFNormalisers/SymbolStandardisingVisitor.hpp"
-#include "../Visitors/Sentences/CNFNormalisers/UniversalEliminationVisitor.hpp"
-#include "../Visitors/Sentences/Serialisers/TextSerialiserVisitor.hpp"
+#include "../Visitors/MutableTargets/Sentences/CNFNormalisers/DisjunctionDistributionVisitor.hpp"
+#include "../Visitors/MutableTargets/Sentences/CNFNormalisers/DMLVisitor.hpp"
+#include "../Visitors/MutableTargets/Sentences/CNFNormalisers/ImplicationEliminationVisitor.hpp"
+#include "../Visitors/MutableTargets/Sentences/CNFNormalisers/QuantifierExtractingVisitor.hpp"
+#include "../Visitors/MutableTargets/Sentences/CNFNormalisers/SkolemIntroducingVisitor.hpp"
+#include "../Visitors/MutableTargets/Sentences/CNFNormalisers/SymbolStandardisingVisitor.hpp"
+#include "../Visitors/MutableTargets/Sentences/CNFNormalisers/UniversalEliminationVisitor.hpp"
+#include "../Visitors/MutableTargets/Sentences/Serialisers/TextSerialiserVisitor.hpp"
 
 namespace optifol
 {
@@ -201,7 +201,7 @@ void Requirement::cnf_normalise()
     cnf_ast = std::move(cnf_sentence);
 }
 
-std::string Requirement::text_serialise(const IMutableSentenceNode *sentence)
+std::string Requirement::text_serialise(const IMutableSentence *sentence)
 {
     static TextSerialiserVisitor text_serialiser_visitor;
     sentence->accept(text_serialiser_visitor);

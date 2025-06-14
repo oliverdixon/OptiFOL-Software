@@ -13,9 +13,10 @@
 
 #include <gtest/gtest.h>
 
-#include "../IR/Mutable/Sentences/MutableConnectedSentenceNode.hpp"
-#include "../IR/Mutable/Sentences/MutablePredicationNode.hpp"
-#include "../Visitors/Sentences/CNFNormalisers/ImplicationEliminationVisitor.hpp"
+#include "../IR/MutableVariants/Sentences/MutableBinaryConnected.hpp"
+#include "../IR/MutableVariants/Sentences/MutablePredicate.hpp"
+#include "../IR/MutableVariants/Terms/IMutableTerm.hpp"
+#include "../Visitors/MutableTargets/Sentences/CNFNormalisers/ImplicationEliminationVisitor.hpp"
 #include "GoogleTestSupport.hpp"
 
 namespace optifol
@@ -38,7 +39,7 @@ public:
      * @warning If the verification fails, a Google Test assertion failure is raised.
      */
     template<typename CNFVisitor> requires std::derived_from<CNFVisitor, MutatingSentenceVisitorBase>
-    static void cnf_test(std::unique_ptr<IMutableSentenceNode>&& test, std::unique_ptr<IMutableSentenceNode>&& expected)
+    static void cnf_test(std::unique_ptr<IMutableSentence>&& test, std::unique_ptr<IMutableSentence>&& expected)
     {
         CNFVisitor visitor;
         test->accept(visitor);
@@ -50,16 +51,16 @@ TEST_F(CNFNormalisationTest, ImplicationElimination_Basic)
 {
     // clang-format off
     cnf_test<ImplicationEliminationVisitor>(
-        MutableConnectedSentenceNode::build(
+        MutableBinaryConnected::build(
             BinaryOperatorTypes::Implication,
-            MutablePredicationNode::build("P"),
-            MutablePredicationNode::build("Q")
+            MutablePredicate::build("P"),
+            MutablePredicate::build("Q")
         ),
 
-        MutableConnectedSentenceNode::build(
+        MutableBinaryConnected::build(
             BinaryOperatorTypes::Disjunction,
-            MutablePredicationNode::build("P", false),
-            MutablePredicationNode::build("Q")
+            MutablePredicate::build("P", false),
+            MutablePredicate::build("Q")
         )
     );
 }
@@ -68,23 +69,23 @@ TEST_F(CNFNormalisationTest, ImplicationElimination_Biconditional)
 {
     // clang-format off
     cnf_test<ImplicationEliminationVisitor>(
-        MutableConnectedSentenceNode::build(
+        MutableBinaryConnected::build(
             BinaryOperatorTypes::Biconditional,
-            MutablePredicationNode::build("P"),
-            MutablePredicationNode::build("Q")
+            MutablePredicate::build("P"),
+            MutablePredicate::build("Q")
         ),
 
-        MutableConnectedSentenceNode::build(
+        MutableBinaryConnected::build(
             BinaryOperatorTypes::Conjunction,
-            MutableConnectedSentenceNode::build(
+            MutableBinaryConnected::build(
                 BinaryOperatorTypes::Disjunction,
-                MutablePredicationNode::build("P"),
-                MutablePredicationNode::build("Q", false)
+                MutablePredicate::build("P"),
+                MutablePredicate::build("Q", false)
             ),
-            MutableConnectedSentenceNode::build(
+            MutableBinaryConnected::build(
                 BinaryOperatorTypes::Disjunction,
-                MutablePredicationNode::build("P", false),
-                MutablePredicationNode::build("Q")
+                MutablePredicate::build("P", false),
+                MutablePredicate::build("Q")
             )
         )
     );
@@ -94,36 +95,36 @@ TEST_F(CNFNormalisationTest, ImplicationElimination_UnaryNesting)
 {
     // clang-format off
     cnf_test<ImplicationEliminationVisitor>(
-        MutableConnectedSentenceNode::build(
+        MutableBinaryConnected::build(
             BinaryOperatorTypes::Biconditional,
-            MutableConnectedSentenceNode::build(
+            MutableBinaryConnected::build(
                 BinaryOperatorTypes::Implication,
-                MutablePredicationNode::build("P"),
-                MutablePredicationNode::build("Q")
+                MutablePredicate::build("P"),
+                MutablePredicate::build("Q")
             ),
-            MutablePredicationNode::build("R")
+            MutablePredicate::build("R")
         ),
 
-        MutableConnectedSentenceNode::build(
+        MutableBinaryConnected::build(
             BinaryOperatorTypes::Conjunction,
-            MutableConnectedSentenceNode::build(
+            MutableBinaryConnected::build(
                 BinaryOperatorTypes::Disjunction,
-                MutableConnectedSentenceNode::build(
+                MutableBinaryConnected::build(
                     BinaryOperatorTypes::Disjunction,
-                    MutablePredicationNode::build("P", false),
-                    MutablePredicationNode::build("Q"),
+                    MutablePredicate::build("P", false),
+                    MutablePredicate::build("Q"),
                     false
                 ),
-                MutablePredicationNode::build("R")
+                MutablePredicate::build("R")
             ),
-            MutableConnectedSentenceNode::build(
+            MutableBinaryConnected::build(
                 BinaryOperatorTypes::Disjunction,
-                MutableConnectedSentenceNode::build(
+                MutableBinaryConnected::build(
                     BinaryOperatorTypes::Disjunction,
-                    MutablePredicationNode::build("P", false),
-                    MutablePredicationNode::build("Q")
+                    MutablePredicate::build("P", false),
+                    MutablePredicate::build("Q")
                 ),
-                MutablePredicationNode::build("R", false)
+                MutablePredicate::build("R", false)
             )
         )
     );
@@ -133,47 +134,47 @@ TEST_F(CNFNormalisationTest, ImplicationElimination_BinaryNesting)
 {
     // clang-format off
     cnf_test<ImplicationEliminationVisitor>(
-        MutableConnectedSentenceNode::build(
+        MutableBinaryConnected::build(
             BinaryOperatorTypes::Biconditional,
-            MutableConnectedSentenceNode::build(
+            MutableBinaryConnected::build(
                 BinaryOperatorTypes::Implication,
-                MutablePredicationNode::build("P"),
-                MutablePredicationNode::build("Q")
+                MutablePredicate::build("P"),
+                MutablePredicate::build("Q")
             ),
-            MutableConnectedSentenceNode::build(
+            MutableBinaryConnected::build(
                 BinaryOperatorTypes::Implication,
-                MutablePredicationNode::build("R"),
-                MutablePredicationNode::build("S")
+                MutablePredicate::build("R"),
+                MutablePredicate::build("S")
             )
         ),
 
-        MutableConnectedSentenceNode::build(
+        MutableBinaryConnected::build(
             BinaryOperatorTypes::Conjunction,
-            MutableConnectedSentenceNode::build(
+            MutableBinaryConnected::build(
                 BinaryOperatorTypes::Disjunction,
-                MutableConnectedSentenceNode::build(
+                MutableBinaryConnected::build(
                     BinaryOperatorTypes::Disjunction,
-                    MutablePredicationNode::build("P", false),
-                    MutablePredicationNode::build("Q"),
+                    MutablePredicate::build("P", false),
+                    MutablePredicate::build("Q"),
                     false
                 ),
-                MutableConnectedSentenceNode::build(
+                MutableBinaryConnected::build(
                     BinaryOperatorTypes::Disjunction,
-                    MutablePredicationNode::build("R", false),
-                    MutablePredicationNode::build("S")
+                    MutablePredicate::build("R", false),
+                    MutablePredicate::build("S")
                 )
             ),
-            MutableConnectedSentenceNode::build(
+            MutableBinaryConnected::build(
                 BinaryOperatorTypes::Disjunction,
-                MutableConnectedSentenceNode::build(
+                MutableBinaryConnected::build(
                     BinaryOperatorTypes::Disjunction,
-                    MutablePredicationNode::build("P", false),
-                    MutablePredicationNode::build("Q")
+                    MutablePredicate::build("P", false),
+                    MutablePredicate::build("Q")
                 ),
-                MutableConnectedSentenceNode::build(
+                MutableBinaryConnected::build(
                     BinaryOperatorTypes::Disjunction,
-                    MutablePredicationNode::build("R", false),
-                    MutablePredicationNode::build("S"),
+                    MutablePredicate::build("R", false),
+                    MutablePredicate::build("S"),
                     false
                 )
             )
