@@ -60,7 +60,6 @@ protected:
         return lhs;
     }
 
-
     /**
      * @brief Commutatively combine two hashes using sensible constants, inspired by boost::hash_combine.
      * @param lhs The LHS hash value
@@ -86,14 +85,40 @@ protected:
      * @param is_negative Does the instantiation have a negative sign?
      * @return If positive, the original hash. If negative, a mutated hash to reflect the difference in polarity.
      */
-    static std::size_t hash_polarity(std::size_t hash, const bool is_negative)
+    static std::size_t hash_polarity(const std::size_t hash, const bool is_negative)
     {
         // In the negative case, use MurmurHash3 as the XOR constant, and shift as usual.
         return is_negative ? hash ^ 0x85ebca6b + (hash << 6) + (hash >> 2) : hash;
     }
 };
 
-} // namespace optifol
+/**
+ * @concept TransparentlyHashable
+ * @brief Represents an Optifol hierarchy type that is usable in an unordered associative STL container and
+ *  transparently operable with smart pointers.
+ * @details For a type to be TransparentlyHashable, it must be:
+ *  <ol>
+ *      <li>Derived from @ref optifol::IHashable;</li>
+ *      <li>Hashable with a call operator on a specialisation of @ref std::hash;</li>
+ *      <li>Hashable as in (2) when wrapped in a @ref std::unique_ptr;</li>
+ *      <li>Hashable as in (3) when wrapped in a @ref std::shared_ptr;</li>
+ *      <li>Comparable with the equality operator with an equivalent @ref std::unique_ptr wrapper; and</li>
+ *      <li>Comparable with the equality operator with an equivalent @ref std::shared_ptr.</li>
+ *  </ol>
+ */
+template<typename BaseType>
+concept TransparentlyHashable =
+    std::derived_from<BaseType, IHashable> &&
+    requires(BaseType value, std::unique_ptr<BaseType> unique_wrapper, std::shared_ptr<BaseType> shared_wrapper)
+{
+    { std::hash<BaseType>{}(value) } -> std::convertible_to<std::size_t>;
+    { std::hash<BaseType>{}(unique_wrapper) } -> std::convertible_to<std::size_t>;
+    { std::hash<BaseType>{}(shared_wrapper) } -> std::convertible_to<std::size_t>;
+    { value == unique_wrapper } -> std::convertible_to<bool>;
+    { value == shared_wrapper } -> std::convertible_to<bool>;
+};
+
+}
 
 // ReSharper disable once CppDoxygenUnresolvedReference
 
@@ -103,8 +128,10 @@ protected:
  * @tparam Type The IHashable type to hash
  */
 template<typename Type> requires std::derived_from<Type, optifol::IHashable>
-struct std::hash<Type> // NOLINT(*-dcl58-cpp) Specialising std::hash does not result in UB.
+struct std::hash<Type> // NOLINT(*-dcl58-cpp) Specialising std::hash for non-standard types does not result in UB.
 {
+    using is_transparent = void;
+
     /**
      * @brief Execute the hash functor to produce a hashcode of the object
      * @param hashable The hashable object for which a hashcode should be generated
@@ -121,9 +148,19 @@ struct std::hash<Type> // NOLINT(*-dcl58-cpp) Specialising std::hash does not re
      *  generated
      * @return The hashcode of the hashable object detained within the ref-counted pointer
      */
-    std::size_t operator()(const std::shared_ptr<Type>& shared_hashable) const noexcept
+    std::size_t operator()(const std::shared_ptr<Type>& shared_hashable) const
     {
         return shared_hashable->hash();
+    }
+
+    /**
+     * @brief Execute the hash functor to produce a hashcode of the object contained within the unique pointer
+     * @param unique_hashable The unique pointer containing the hashable object for which a hashcode should be generated
+     * @return The hashcode of the hashable object detained within the unique pointer
+     */
+    std::size_t operator()(const std::unique_ptr<Type>& unique_hashable) const
+    {
+        return unique_hashable->hash();
     }
 };
 

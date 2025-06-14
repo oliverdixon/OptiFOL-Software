@@ -17,6 +17,7 @@
 #include <memory>
 
 #include "../MutatingSentenceVisitorBase.hpp"
+#include "../../../IR/Sentences/ISentenceNode.hpp"
 
 namespace optifol
 {

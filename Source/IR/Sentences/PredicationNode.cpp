@@ -20,16 +20,33 @@
 namespace optifol
 {
 
-PredicationNode::PredicationNode(std::string name, std::vector<std::unique_ptr<ITermNode>> &&arguments,
-        const bool is_positive) :
-    name(std::move(name)),
-    arguments(std::move(arguments)),
-    is_positive(is_positive)
+PredicationNode::PredicationNode(std::string name, const bool is_positive,
+                                 std::vector<std::unique_ptr<ITermNode>> &&arguments) :
+    name(std::move(name)), arguments(std::move(arguments)), is_positive(is_positive)
 {
 }
-PredicationNode::PredicationNode(std::string name, const bool is_positive) :
-    name(std::move(name)),
-    is_positive(is_positive)
+
+PredicationNode::PredicationNode(std::string name, const bool is_positive,
+                                 const std::vector<std::unique_ptr<ITermNode>> &arguments) :
+    name(std::move(name)), is_positive(is_positive)
+{
+    this->arguments.reserve(arguments.size());
+    for (const auto &arg: arguments)
+        this->arguments.push_back(arg->clone());
+}
+
+PredicationNode::PredicationNode(std::string name, std::vector<std::unique_ptr<ITermNode>> &&arguments) :
+    PredicationNode(std::move(name), true, std::move(arguments))
+{
+}
+
+PredicationNode::PredicationNode(std::string name, const std::vector<std::unique_ptr<ITermNode>> &arguments) :
+    PredicationNode(std::move(name), true, arguments)
+{
+}
+
+PredicationNode::PredicationNode(std::string name) :
+    PredicationNode(std::move(name), true, {})
 {
 }
 
@@ -40,7 +57,7 @@ std::unique_ptr<ISentenceNode> PredicationNode::clone() const
     for (const auto& argument : arguments)
         cloned_arguments.push_back(argument->clone());
 
-    return std::make_unique<PredicationNode>(name, std::move(cloned_arguments), is_positive);
+    return std::make_unique<PredicationNode>(name, is_positive, std::move(cloned_arguments));
 }
 
 void PredicationNode::flip_polarity()

@@ -48,11 +48,26 @@ public:
 
     virtual bool accept(UnificationVisitor &visitor, const FunctionNode &target) const;
 
+    bool operator==(const ITermNode &other) const
+    {
+        return hash() == other.hash();
+    }
+
     virtual std::ostream &serialise(std::ostream &ostream) const = 0;
 
     friend std::ostream& operator<<(std::ostream& ostream, const ITermNode& object)
     {
         return object.serialise(ostream);
+    }
+
+    bool operator==(const std::unique_ptr<ITermNode>& other) const
+    {
+        return other->hash() == hash();
+    }
+
+    bool operator==(const std::shared_ptr<ITermNode>& other) const
+    {
+        return other->hash() == hash();
     }
 
 private:

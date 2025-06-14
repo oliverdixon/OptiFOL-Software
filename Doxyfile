@@ -2861,3 +2861,5 @@ MSCGEN_TOOL            =
 # command).
 
 MSCFILE_DIRS           =
+
+TAGFILES += "GeneratedDocumentation/cppreference-doxygen-web.tag.xml=https://en.cppreference.com/w/"

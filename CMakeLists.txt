@@ -11,7 +11,7 @@ cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 include(FetchContent)
 project(Optifol)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(PkgConfig REQUIRED)
 
@@ -155,6 +155,8 @@ add_library(OptifolCommon OBJECT
         Source/Visitors/Unification/UnificationVisitor.cpp
         Source/Visitors/Unification/UnificationVisitor.hpp
         Source/IR/Support/Buildable.hpp
+        Source/IR/Support/SymbolRepository.cpp
+        Source/IR/Support/SymbolRepository.hpp
 )
 
 target_link_libraries(OptifolCommon PRIVATE nlohmann_json::nlohmann_json simdjson)
@@ -332,7 +334,8 @@ cmake_policy(SET CMP0135 NEW)
 
 FetchContent_Declare(
         googletest
-        URL https://github.com/google/googletest/archive/03597a01ee50ed33e9dfd640b249b4be3799d395.zip
+        GIT_REPOSITORY https://github.com/google/googletest.git
+        GIT_TAG 52eb8108c5bdec04579160ae17225d66034bd723 # v.1.17.0
 )
 
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
@@ -344,6 +347,7 @@ add_executable(OptifolTesting
         Source/Tests/FOLParserTest.cpp
         Source/Tests/CNFNormalisationTest.cpp
         Source/Tests/UnificationTest.cpp
+        Source/Tests/GoogleTestSupport.hpp
 )
 
 target_include_directories(OptifolTesting PRIVATE Source/Interpreter/)
@@ -356,4 +360,47 @@ target_compile_options(OptifolTesting PRIVATE
 
 gtest_discover_tests(OptifolTesting)
 
-# TODO: add a Doxygen target like https://github.com/halide/Halide/blob/main/doc/CMakeLists.txt
+######################################
+## Optifol Documentation Generation ##
+##                                  ##
+## Requires:                        ##
+##  - Doxygen                       ##
+##  - wget                          ##
+######################################
+
+set(DOXYGEN_OUTPUT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/GeneratedDocumentation)
+set(CPPREFERENCE_DOXYGEN_WEB_TAG ${DOXYGEN_OUTPUT_DIR}/cppreference-doxygen-web.tag.xml)
+set(DOXYGEN_SENTINEL ${DOXYGEN_OUTPUT_DIR}/.doxygen_cmake_sentinel)
+
+# Collate declared source files from all eligible targets containing Doxygen directives.
+set(DOXYGEN_TARGETS OptifolCommon OptifolGenerated OptifolTesting OptifolGUI)
+set(DOXYGEN_SOURCES)
+foreach (target IN LISTS DOXYGEN_TARGETS)
+    get_target_property(target_sources ${target} SOURCES)
+    if (target_sources)
+        list(APPEND DOXYGEN_SOURCES ${target_sources})
+    endif ()
+endforeach ()
+
+# Download a known version of the cppreference.com Doxygen web tag XML file.
+add_custom_command(
+        OUTPUT ${CPPREFERENCE_DOXYGEN_WEB_TAG}
+        WORKING_DIRECTORY ${DOXYGEN_OUTPUT_DIR}
+        VERBATIM
+        COMMAND wget https://web.archive.org/web/20170922081124/http://upload.cppreference.com/mwiki/images/f/f8/cppreference-doxygen-web.tag.xml
+)
+
+add_custom_command(
+        OUTPUT ${DOXYGEN_SENTINEL}
+        MAIN_DEPENDENCY Doxyfile
+        DEPENDS ${DOXYGEN_SOURCES}
+        VERBATIM
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        COMMAND doxygen
+        COMMAND touch ${DOXYGEN_SENTINEL}
+)
+
+add_custom_target(OptifolHTMLDocumentation DEPENDS
+        ${DOXYGEN_SENTINEL}
+        ${CPPREFERENCE_DOXYGEN_WEB_TAG}
+)

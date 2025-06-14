@@ -21,21 +21,27 @@
 
 #include "../../Visitors/Unification/UnificationVisitor.hpp"
 #include "../Support/Buildable.hpp"
+#include "../../IR/Terms/ITermNode.hpp"
 
 namespace optifol
 {
-
-class ITermNode;
 
 class PredicationNode :
         public ISentenceNode,
         public Buildable<PredicationNode>
 {
 public:
-    explicit PredicationNode(std::string name, std::vector<std::unique_ptr<ITermNode>> &&arguments,
-        bool is_positive = true);
+    explicit PredicationNode(std::string name, bool is_positive,
+        std::vector<std::unique_ptr<ITermNode>>&& arguments);
 
-    explicit PredicationNode(std::string name, bool is_positive = true);
+    explicit PredicationNode(std::string name, bool is_positive,
+        const std::vector<std::unique_ptr<ITermNode>>& arguments = {});
+
+    explicit PredicationNode(std::string name, std::vector<std::unique_ptr<ITermNode>>&& arguments);
+
+    explicit PredicationNode(std::string name, const std::vector<std::unique_ptr<ITermNode>>& arguments);
+
+    explicit PredicationNode(std::string name);
 
     [[nodiscard]] std::unique_ptr<ISentenceNode> clone() const override;
 
@@ -56,8 +62,18 @@ public:
 
     std::ostream &serialise(std::ostream &ostream) const override;
 
+    bool operator==(const std::unique_ptr<PredicationNode>& other) const
+    {
+        return other->hash() == hash();
+    }
+
+    bool operator==(const std::shared_ptr<PredicationNode>& other) const
+    {
+        return other->hash() == hash();
+    }
+
 private:
-    bool is_positive;
+    bool is_positive = true;
 };
 
 }

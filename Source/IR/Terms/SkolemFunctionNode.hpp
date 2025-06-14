@@ -28,7 +28,7 @@ class SkolemFunctionNode :
 {
 public:
     [[maybe_unused]] explicit SkolemFunctionNode(std::string name,
-        std::vector<std::unique_ptr<ITermNode>> &&quantified_variables);
+        std::vector<std::unique_ptr<ITermNode>> &&quantified_variables = {});
 
     [[maybe_unused]] explicit SkolemFunctionNode(std::string name,
         const std::vector<std::unique_ptr<ITermNode>> &quantified_variables);

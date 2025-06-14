@@ -9,13 +9,12 @@
  * @author Oliver Dixon
  * @date 2025-02-16
  * @version Development
- * @todo Convert tests to use C++ object model rather than JSON. Keep JSONSerialiser as a nice-to-have.
  */
 
 #include <gtest/gtest.h>
 
 #include "../Interpreter/FOLLexer.hpp"
-#include "../Visitors/Sentences/Serialisers/JSONSerialiserVisitor.hpp"
+#include "GoogleTestSupport.hpp"
 
 namespace optifol
 {
@@ -24,7 +23,8 @@ namespace optifol
  * @class FOLParserTest
  * @brief Provide a convenient input-streamer to the FOL lexer and parser for use with the Google Test framework
  */
-class FOLParserTest : public testing::Test
+class FOLParserTest :
+        public testing::Test
 {
 protected:
     void TearDown() override
@@ -33,22 +33,20 @@ protected:
     }
 
     /**
-     * @brief Tests that the given input correctly lexes and parses to the equivalent given JSON object
-     * @param input The raw input string to pass to the lexer
-     * @param expected The expected output JSON object
+     * @brief Tests that the given input correctly lexes and parses to the equivalent given typed structure
+     * @param test The raw input string to pass to the lexer
+     * @param expected The expected output sentence structure
      */
-    void equality_on_input(const char *input, nlohmann::json &&expected)
+    void equality_on_input(const char *test, std::unique_ptr<ISentenceNode>&& expected)
     {
-        lexer_input_stream.str(input);
+        lexer_input_stream.str(test);
         parser.parse();
 
         const auto sentence = parser.retrieve_sentence();
-        sentence->accept(json_serialiser);
-        EXPECT_EQ(json_serialiser.extract(), expected);
+        GoogleTestSupport::test_sentence_equality(*sentence, *expected);
     }
 
 private:
-    JSONSerialiserVisitor json_serialiser;
     std::istringstream lexer_input_stream;
     FOLLexer lexer{lexer_input_stream, std::cerr};
     FOLParser parser{&lexer};
@@ -56,69 +54,63 @@ private:
 
 TEST_F(FOLParserTest, Quantifier_Universal)
 {
+    std::vector<std::unique_ptr<ITermNode>> p_args;
+    p_args.push_back(VariableNode::build<ITermNode>("x"));
+
     // clang-format off
     equality_on_input(
         "%Ux(P(x))",
-        {
-            { "type", "quantified" },
-            { "nature", "universal" },
-            { "variable", "x" },
-            { "sentence", {
-                { "type", "predicate" },
-                { "name", "P" },
-                { "arguments", { "x" } }
-            } }
-        }
+
+        QuantifiedSentenceNode::build(
+            QuantifierTypes::Universal,
+            VariableNode::build("x"),
+            PredicationNode::build("P", std::move(p_args))
+        )
     );
 }
 
-TEST_F(FOLParserTest, Quantifier_Existential)
+TEST_F(FOLParserTest, Quantifier_NegativeExistential)
 {
+    std::vector<std::unique_ptr<ITermNode>> q_args;
+    q_args.push_back(VariableNode::build<ITermNode>("y"));
+
     // clang-format off
     equality_on_input(
-        "%Ey(Q(y))",
-        {
-            { "type", "quantified" },
-            { "nature", "existential" },
-            { "variable", "y" },
-            { "sentence", {
-                { "type", "predicate" },
-                { "name", "Q" },
-                { "arguments", { "y" } }
-            } }
-        }
+        "%Ey(~Q(y))",
+
+        QuantifiedSentenceNode::build(
+            QuantifierTypes::Existential,
+            VariableNode::build("y"),
+            PredicationNode::build("Q", false, std::move(q_args))
+        )
     );
 }
 
 TEST_F(FOLParserTest, Quantifier_Nested)
 {
+    std::vector<std::unique_ptr<ITermNode>> p_args;
+    p_args.push_back(VariableNode::build<ITermNode>("x"));
+
+    std::vector<std::unique_ptr<ITermNode>> q_args;
+    q_args.push_back(VariableNode::build<ITermNode>("y"));
+
     // clang-format off
     equality_on_input(
         "%Ux(%Ey(P(x) & Q(y)))",
-        {
-            { "type", "quantified" },
-            { "nature", "universal" },
-            { "variable", "x" },
-            { "sentence", {
-                { "type", "quantified" },
-                { "nature", "existential" },
-                { "variable", "y" },
-                { "sentence", {
-                    { "type", "binary" },
-                    { "operator", "conjunction" },
-                    { "lhs", {
-                        { "type", "predicate" },
-                        { "name", "P" },
-                        { "arguments", { "x" } }
-                    } },
-                    { "rhs", {
-                        { "type", "predicate" },
-                        { "name", "Q" },
-                        { "arguments", { "y" } }
-                    } }
-                } }
-            } }
-        }
+
+        QuantifiedSentenceNode::build(
+            QuantifierTypes::Universal,
+            VariableNode::build("x"),
+            QuantifiedSentenceNode::build(
+                QuantifierTypes::Existential,
+                VariableNode::build("y"),
+                ConnectedSentenceNode::build(
+                    BinaryOperatorTypes::Conjunction,
+                    PredicationNode::build("P", std::move(p_args)),
+                    PredicationNode::build("Q", std::move(q_args))
+                )
+            )
+        )
     );
 }
 
@@ -127,11 +119,11 @@ TEST_F(FOLParserTest, Identity_Constants)
     // clang-format off
     equality_on_input(
         "_X = _Y",
-        {
-            { "type", "equality" },
-            { "lhs", "_X" },
-            { "rhs", "_Y" }
-        }
+
+        IdentitySentenceNode::build(
+            ConstantNode::build("_X"),
+            ConstantNode::build("_Y")
+        )
     );
 }
 

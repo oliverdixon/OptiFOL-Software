@@ -108,7 +108,7 @@ std::ostream &QuantifiedSentenceNode::serialise(std::ostream &ostream) const
     bound_term->serialise(ostream);
     ostream << '(';
     sentence->serialise(ostream);
-    return ostream << '(' << '(';
+    return ostream << ')';
 }
 
 void QuantifiedSentenceNode::put_bound_term(std::unique_ptr<ITermNode> &&new_bound_term)
