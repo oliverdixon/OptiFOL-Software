@@ -22,7 +22,7 @@
 namespace optifol
 {
 
-class ISentenceNode;
+class IMutableSentenceNode;
 
 /**
  * @class DisjunctionDistributionVisitor
@@ -35,7 +35,7 @@ class ISentenceNode;
  *   <li><code>(P & Q) | R</code> becomes <code>(R | P) & (R | Q)</code>.</li>
  * </ul>
  * The rewriting rules executed herein do not make use of proxies, as fundamental types are not altered (i.e. only the
- * substance of the ConnectedSentenceNode operands are altered).
+ * substance of the MutableConnectedSentenceNode operands are altered).
  *
  * @warning Although multiple passes are not required for this CNF-normalising visitor, it does recurse on any produced
  * terms to ensure a full reduction. On extremely deeply nested sentences, this could cause a machine stack overflow.
@@ -50,7 +50,7 @@ public:
      * @brief Recursively applies disjunction-distribution to the connected sentence, in-place.
      * @param node The root of the connected sentence on which disjunction-distribution should be applied.
      */
-    void visit(ConnectedSentenceNode &node) override;
+    void visit(MutableConnectedSentenceNode &node) override;
 
 private:
     /**
@@ -77,7 +77,7 @@ private:
      * @brief The tracked operand stack stores, depth-wise, the major and minor child operands of connected nodes,
      *  respectively.
      */
-    std::stack<std::pair<std::unique_ptr<ISentenceNode>, std::unique_ptr<ISentenceNode>>> tracked_operands;
+    std::stack<std::pair<std::unique_ptr<IMutableSentenceNode>, std::unique_ptr<IMutableSentenceNode>>> tracked_operands;
 
     /**
      * @brief Apply any applicable reductions to the given node, given the collected tracked operands from eligible
@@ -87,7 +87,7 @@ private:
      * @param node The root node on which reduction should be applied
      * @return Was at least one reduction performed?
      */
-    bool attempt_reduction(ConnectedSentenceNode &node);
+    bool attempt_reduction(MutableConnectedSentenceNode &node);
 };
 
 }

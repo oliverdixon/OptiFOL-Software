@@ -12,12 +12,12 @@
  */
 
 #include "MutatingTermVisitorBase.hpp"
-#include "../../IR/Terms/FunctionNode.hpp"
+#include "../../IR/Mutable/Terms/MutableFunctionNode.hpp"
 
 namespace optifol
 {
 
-void MutatingTermVisitorBase::visit(FunctionNode &node)
+void MutatingTermVisitorBase::visit(MutableFunctionNode &node)
 {
     const auto& arguments = node.observe_arguments();
 
@@ -25,17 +25,17 @@ void MutatingTermVisitorBase::visit(FunctionNode &node)
         argument->accept(*this);
 }
 
-void MutatingTermVisitorBase::visit(ConstantNode &node)
+void MutatingTermVisitorBase::visit(MutableConstantNode &node)
 {
     std::ignore = node;
 }
 
-void MutatingTermVisitorBase::visit(VariableNode &node)
+void MutatingTermVisitorBase::visit(MutableVariableNode &node)
 {
     std::ignore = node;
 }
 
-void MutatingTermVisitorBase::visit(SkolemFunctionNode &node)
+void MutatingTermVisitorBase::visit(MutableSkolemFunctionNode &node)
 {
     std::ignore = node;
 }

@@ -22,7 +22,7 @@
 namespace optifol
 {
 
-class ISentenceNode;
+class IMutableSentenceNode;
 
 /**
  * @class DMLVisitor
@@ -46,9 +46,9 @@ class DMLVisitor :
 public:
     [[nodiscard]] std::string_view get_visitor_name() const override;
 
-    void visit(ConnectedSentenceNode &node) override;
+    void visit(MutableConnectedSentenceNode &node) override;
 
-    void visit(QuantifiedSentenceNode &node) override;
+    void visit(MutableQuantifiedSentenceNode &node) override;
 
 private:
     static const char * visitor_name;

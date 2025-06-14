@@ -17,23 +17,23 @@
 namespace optifol
 {
 
-class FunctionNode;
-class ConstantNode;
-class VariableNode;
-class SkolemFunctionNode;
+class MutableFunctionNode;
+class MutableConstantNode;
+class MutableVariableNode;
+class MutableSkolemFunctionNode;
 
 class MutatingTermVisitorBase
 {
 public:
     virtual ~MutatingTermVisitorBase() = default;
 
-    virtual void visit(FunctionNode &node);
+    virtual void visit(MutableFunctionNode &node);
 
-    virtual void visit(ConstantNode &node);
+    virtual void visit(MutableConstantNode &node);
 
-    virtual void visit(VariableNode &node);
+    virtual void visit(MutableVariableNode &node);
 
-    virtual void visit(SkolemFunctionNode& node);
+    virtual void visit(MutableSkolemFunctionNode& node);
 };
 
 }

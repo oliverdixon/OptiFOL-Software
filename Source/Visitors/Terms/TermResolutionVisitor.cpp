@@ -12,17 +12,17 @@
  */
 
 #include "TermResolutionVisitor.hpp"
-#include "../../IR/Terms/FunctionNode.hpp"
+#include "../../IR/Mutable/Terms/MutableFunctionNode.hpp"
 
 namespace optifol
 {
 
 TermResolutionVisitor::TermResolutionVisitor(
-        const std::unordered_map<std::string, std::unique_ptr<ITermNode>> & rewriting_rules_hook) :
+        const std::unordered_map<std::string, std::unique_ptr<IMutableTermNode>> & rewriting_rules_hook) :
     rewriting_rules_hook(rewriting_rules_hook)
 {}
 
-void TermResolutionVisitor::visit(FunctionNode &node)
+void TermResolutionVisitor::visit(MutableFunctionNode &node)
 {
     auto &args = node.observe_arguments();
     const auto argument_count = args.size();

@@ -93,23 +93,23 @@ get_target_property(SIMDJSON_INCLUDE_DIR simdjson INTERFACE_INCLUDE_DIRECTORIES)
 
 add_library(OptifolCommon OBJECT
         Source/Interpreter/FOLLexer.hpp
-        Source/IR/Terms/ITermNode.hpp
-        Source/IR/Sentences/ISentenceNode.hpp
-        Source/IR/Terms/VariableNode.hpp
-        Source/IR/Terms/ConstantNode.hpp
-        Source/IR/Terms/FunctionNode.hpp
-        Source/IR/Sentences/PredicationNode.hpp
-        Source/IR/Sentences/ConnectedSentenceNode.hpp
-        Source/IR/Sentences/IdentitySentenceNode.hpp
-        Source/IR/Sentences/QuantifiedSentenceNode.hpp
+        Source/IR/Mutable/Terms/IMutableTermNode.hpp
+        Source/IR/Mutable/Sentences/IMutableSentenceNode.hpp
+        Source/IR/Mutable/Terms/MutableVariableNode.hpp
+        Source/IR/Mutable/Terms/MutableConstantNode.hpp
+        Source/IR/Mutable/Terms/MutableFunctionNode.hpp
+        Source/IR/Mutable/Sentences/MutablePredicationNode.hpp
+        Source/IR/Mutable/Sentences/MutableConnectedSentenceNode.hpp
+        Source/IR/Mutable/Sentences/MutableIdentitySentenceNode.hpp
+        Source/IR/Mutable/Sentences/MutableQuantifiedSentenceNode.hpp
         Source/Interpreter/FOLParser.hpp
         Source/Visitors/Sentences/CNFNormalisers/ImplicationEliminationVisitor.hpp
         Source/Visitors/Sentences/MutatingSentenceVisitorBase.hpp
         Source/Visitors/Sentences/CNFNormalisers/DMLVisitor.hpp
-        Source/IR/Sentences/ConnectedSentenceNode.cpp
-        Source/IR/Sentences/QuantifiedSentenceNode.cpp
-        Source/IR/Sentences/IdentitySentenceNode.cpp
-        Source/IR/Sentences/PredicationNode.cpp
+        Source/IR/Mutable/Sentences/MutableConnectedSentenceNode.cpp
+        Source/IR/Mutable/Sentences/MutableQuantifiedSentenceNode.cpp
+        Source/IR/Mutable/Sentences/MutableIdentitySentenceNode.cpp
+        Source/IR/Mutable/Sentences/MutablePredicationNode.cpp
         Source/Visitors/Sentences/CNFNormalisers/UniversalEliminationVisitor.hpp
         Source/Visitors/Sentences/CNFNormalisers/DisjunctionDistributionVisitor.hpp
         Source/Visitors/Sentences/CNFNormalisers/DisjunctionDistributionVisitor.cpp
@@ -138,25 +138,25 @@ add_library(OptifolCommon OBJECT
         Source/Optifol.hpp
         Source/Logging.hpp
         Source/Logging.cpp
-        Source/IR/Sentences/SentenceRoot.hpp
-        Source/IR/Sentences/SentenceRoot.cpp
-        Source/IR/Terms/ConstantNode.cpp
-        Source/IR/Terms/FunctionNode.cpp
-        Source/IR/Terms/VariableNode.cpp
-        Source/IR/Terms/SkolemFunctionNode.cpp
-        Source/IR/Terms/SkolemFunctionNode.hpp
+        Source/IR/Mutable/Sentences/MutableSentenceRoot.hpp
+        Source/IR/Mutable/Sentences/MutableSentenceRoot.cpp
+        Source/IR/Mutable/Terms/MutableConstantNode.cpp
+        Source/IR/Mutable/Terms/MutableFunctionNode.cpp
+        Source/IR/Mutable/Terms/MutableVariableNode.cpp
+        Source/IR/Mutable/Terms/MutableSkolemFunctionNode.cpp
+        Source/IR/Mutable/Terms/MutableSkolemFunctionNode.hpp
         Source/Visitors/Terms/ScopedTermResolutionVisitor.cpp
         Source/Visitors/Terms/ScopedTermResolutionVisitor.hpp
         Source/Exceptions/ParseError.hpp
         Source/IHashable.hpp
-        Source/IR/Support/Substitution.cpp
-        Source/IR/Support/Substitution.hpp
-        Source/IR/Terms/ITermNode.cpp
+        Source/IR/Immutable/Substitution.cpp
+        Source/IR/Immutable/Substitution.hpp
+        Source/IR/Mutable/Terms/IMutableTermNode.cpp
         Source/Visitors/Unification/UnificationVisitor.cpp
         Source/Visitors/Unification/UnificationVisitor.hpp
-        Source/IR/Support/Buildable.hpp
-        Source/IR/Support/SymbolRepository.cpp
-        Source/IR/Support/SymbolRepository.hpp
+        Source/IR/Mutable/OwningBuildable.hpp
+        Source/IR/Immutable/SymbolRepository.cpp
+        Source/IR/Immutable/SymbolRepository.hpp
 )
 
 target_link_libraries(OptifolCommon PRIVATE nlohmann_json::nlohmann_json simdjson)
@@ -387,13 +387,13 @@ add_custom_command(
         OUTPUT ${CPPREFERENCE_DOXYGEN_WEB_TAG}
         WORKING_DIRECTORY ${DOXYGEN_OUTPUT_DIR}
         VERBATIM
-        COMMAND wget https://web.archive.org/web/20170922081124/http://upload.cppreference.com/mwiki/images/f/f8/cppreference-doxygen-web.tag.xml
+        COMMAND wget https://www-users.york.ac.uk/~od641/cppreference-doxygen-web.tag.xml
 )
 
 add_custom_command(
         OUTPUT ${DOXYGEN_SENTINEL}
         MAIN_DEPENDENCY Doxyfile
-        DEPENDS ${DOXYGEN_SOURCES}
+        DEPENDS ${DOXYGEN_SOURCES} ${CPPREFERENCE_DOXYGEN_WEB_TAG}
         VERBATIM
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         COMMAND doxygen
@@ -401,6 +401,6 @@ add_custom_command(
 )
 
 add_custom_target(OptifolHTMLDocumentation DEPENDS
-        ${DOXYGEN_SENTINEL}
         ${CPPREFERENCE_DOXYGEN_WEB_TAG}
+        ${DOXYGEN_SENTINEL}
 )

@@ -16,15 +16,15 @@
 
 #include <optional>
 
-#include "../../IR/Support/Substitution.hpp"
+#include "../../IR/Immutable/Substitution.hpp"
 
 namespace optifol
 {
 
-class FunctionNode;
-class ITermNode;
-class VariableNode;
-class PredicationNode;
+class MutableFunctionNode;
+class IMutableTermNode;
+class MutableVariableNode;
+class MutablePredicationNode;
 
 /**
  * @class UnificationVisitor
@@ -74,7 +74,7 @@ public:
      * @param predicate_rhs The RHS predicate
      * @return Can the predicates be unified?
      */
-    [[nodiscard]] bool visit(const PredicationNode &predicate_lhs, const PredicationNode &predicate_rhs);
+    [[nodiscard]] bool visit(const MutablePredicationNode &predicate_lhs, const MutablePredicationNode &predicate_rhs);
 
     /**
      * @brief Attempt to unify a variable with a non-variable generic term
@@ -96,30 +96,30 @@ public:
      * @return Can the variable and term be unified?
      * @todo Add occurs check to avoid cycles in the substitution map.
      */
-    [[nodiscard]] bool visit(const VariableNode &variable_lhs, const ITermNode &generic_term_rhs);
+    [[nodiscard]] bool visit(const MutableVariableNode &variable_lhs, const IMutableTermNode &generic_term_rhs);
 
     /**
      * @brief Attempt to unify two variables
      * @details To unify two variables, consider the process for unifying a variable and non-variable term. The process
      *  is identical, except for an additional check to ensure that the other (RHS) variable is not chain-ununifiable.
-     *  See UnificationVisitor::visit(const VariableNode &, ITermNode &).
+     *  See UnificationVisitor::visit(const MutableVariableNode &, IMutableTermNode &).
      * @param variable_lhs The LHS variable
      * @param variable_rhs The RHS variable
      * @return Can the variables be unified?
      * @todo Add occurs check to avoid cycles in the substitution map.
      */
-    [[nodiscard]] bool visit(const VariableNode &variable_lhs, const VariableNode &variable_rhs);
+    [[nodiscard]] bool visit(const MutableVariableNode &variable_lhs, const MutableVariableNode &variable_rhs);
 
     /**
      * @brief Attempt to unify two functions
      * @details To unify two functions, refer to the process for unifying two predicates defined in
-     *  UnificationVisitor::visit(const PredicationNode&, const PredicationNode&); it is isomorphic from predicates
+     *  UnificationVisitor::visit(const MutablePredicationNode&, const MutablePredicationNode&); it is isomorphic from predicates
      *  (sentence instantiations) to functions (term instantiations).
      * @param function_lhs The LHS function
      * @param function_rhs The RHS function
      * @return Can the functions be unified?
      */
-    [[nodiscard]] bool visit(const FunctionNode &function_lhs, const FunctionNode &function_rhs);
+    [[nodiscard]] bool visit(const MutableFunctionNode &function_lhs, const MutableFunctionNode &function_rhs);
 
     /**
      * @brief Constant base-case to catch attempts to unify a generic term with a function
@@ -127,7 +127,7 @@ public:
      * @param function_rhs The RHS generic function
      * @return Always false; these types are not eligible unification candidates.
      */
-    [[nodiscard]] static bool visit(const ITermNode &generic_term_lhs, const FunctionNode &function_rhs);
+    [[nodiscard]] static bool visit(const IMutableTermNode &generic_term_lhs, const MutableFunctionNode &function_rhs);
 
     /**
      * @brief Constant base-case to catch attempts to unify non-specialised generic terms
@@ -135,12 +135,12 @@ public:
      * @param generic_term_rhs The RHS generic term
      * @return Always false; these types are not eligible unification candidates.
      */
-    [[nodiscard]] static bool visit(const ITermNode &generic_term_lhs, const ITermNode &generic_term_rhs);
+    [[nodiscard]] static bool visit(const IMutableTermNode &generic_term_lhs, const IMutableTermNode &generic_term_rhs);
 
     const std::optional<Substitution> &observe_substitutions() const;
 
 private:
-    void register_substitution(const VariableNode &bound_key, const ITermNode &bound_value);
+    void register_substitution(const MutableVariableNode &bound_key, const IMutableTermNode &bound_value);
 
     std::optional<Substitution> substitutions;
 };

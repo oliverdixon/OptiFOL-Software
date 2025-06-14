@@ -13,7 +13,7 @@
 
 #include "ImplicationEliminationVisitor.hpp"
 
-#include "../../../IR/Sentences/ConnectedSentenceNode.hpp"
+#include "../../../IR/Mutable/Sentences/MutableConnectedSentenceNode.hpp"
 
 namespace optifol
 {
@@ -25,7 +25,7 @@ std::string_view ImplicationEliminationVisitor::get_visitor_name() const
     return visitor_name;
 }
 
-void ImplicationEliminationVisitor::visit(ConnectedSentenceNode &node)
+void ImplicationEliminationVisitor::visit(MutableConnectedSentenceNode &node)
 {
     MutatingSentenceVisitorBase::visit(node);
 
@@ -45,7 +45,7 @@ void ImplicationEliminationVisitor::visit(ConnectedSentenceNode &node)
         auto new_rhs = save_rhs->clone();
         new_rhs->flip_polarity();
 
-        node.put_lhs_operand(std::make_unique<ConnectedSentenceNode>(
+        node.put_lhs_operand(std::make_unique<MutableConnectedSentenceNode>(
             BinaryOperatorTypes::Disjunction,
             save_lhs->clone(),
             std::move(new_rhs)
@@ -53,7 +53,7 @@ void ImplicationEliminationVisitor::visit(ConnectedSentenceNode &node)
 
         save_lhs->flip_polarity();
 
-        node.put_rhs_operand(std::make_unique<ConnectedSentenceNode>(
+        node.put_rhs_operand(std::make_unique<MutableConnectedSentenceNode>(
             BinaryOperatorTypes::Disjunction,
             std::move(save_lhs),
             std::move(save_rhs)

@@ -18,10 +18,10 @@
 #include <algorithm>
 
 #include "../../../Exceptions/SemanticException.hpp"
-#include "../../../IR/Sentences/IdentitySentenceNode.hpp"
-#include "../../../IR/Sentences/PredicationNode.hpp"
-#include "../../../IR/Sentences/QuantifiedSentenceNode.hpp"
-#include "../../../IR/Terms/VariableNode.hpp"
+#include "../../../IR/Mutable/Sentences/MutableIdentitySentenceNode.hpp"
+#include "../../../IR/Mutable/Sentences/MutablePredicationNode.hpp"
+#include "../../../IR/Mutable/Sentences/MutableQuantifiedSentenceNode.hpp"
+#include "../../../IR/Mutable/Terms/MutableVariableNode.hpp"
 
 namespace optifol
 {
@@ -33,12 +33,12 @@ std::string_view SymbolStandardisingVisitor::get_visitor_name() const
     return visitor_name;
 }
 
-void SymbolStandardisingVisitor::visit(QuantifiedSentenceNode &node)
+void SymbolStandardisingVisitor::visit(MutableQuantifiedSentenceNode &node)
 {
     /*
      * Open the scope, deal with the contents, and close it. Note that the act of opening a scope transfers ownership of
      * the bound term to the internal visitor state, hence it cannot be used until the scope is closed and the bound
-     * term is returned. It is invariant that SymbolStandardisingVisitor::visit(QuantifiedSentenceNode&) does attempt to
+     * term is returned. It is invariant that SymbolStandardisingVisitor::visit(MutableQuantifiedSentenceNode&) does attempt to
      * access its own bound term while its relevant scope is open.
      */
     const auto rule_reference = open_scope(node);
@@ -46,7 +46,7 @@ void SymbolStandardisingVisitor::visit(QuantifiedSentenceNode &node)
     close_scope(node, rule_reference);
 }
 
-void SymbolStandardisingVisitor::visit(PredicationNode &node)
+void SymbolStandardisingVisitor::visit(MutablePredicationNode &node)
 {
     auto &args = node.arguments;
     const auto argument_count = args.size();
@@ -61,7 +61,7 @@ void SymbolStandardisingVisitor::visit(PredicationNode &node)
     }
 }
 
-void SymbolStandardisingVisitor::visit(IdentitySentenceNode &node)
+void SymbolStandardisingVisitor::visit(MutableIdentitySentenceNode &node)
 {
     auto borrowed_lhs = node.take_lhs_operand();
 
@@ -85,7 +85,7 @@ void SymbolStandardisingVisitor::visit(IdentitySentenceNode &node)
 }
 
 std::optional<decltype(SymbolStandardisingVisitor::rewriting_rules)::iterator> SymbolStandardisingVisitor::open_scope(
-    QuantifiedSentenceNode &node)
+    MutableQuantifiedSentenceNode &node)
 {
     const auto& original_name = node.observe_bound_term()->to_string();
 
@@ -103,7 +103,7 @@ std::optional<decltype(SymbolStandardisingVisitor::rewriting_rules)::iterator> S
         /* In addition to updating the scope set, we also manage the rewriting rules table, since an entry would only
          * appear given a prospectively ambiguous variable node, which clashes with a bound variable in an adjacent
          * scope. */
-        node.put_bound_term(std::make_unique<VariableNode>(original_name, new_name));
+        node.put_bound_term(std::make_unique<MutableVariableNode>(original_name, new_name));
         scope.emplace(node.observe_bound_term()->to_string());
         return rewriting_rules.emplace(original_name, node.take_bound_term()).first;
     }
@@ -112,7 +112,7 @@ std::optional<decltype(SymbolStandardisingVisitor::rewriting_rules)::iterator> S
     return {};
 }
 
-void SymbolStandardisingVisitor::close_scope(QuantifiedSentenceNode &node,
+void SymbolStandardisingVisitor::close_scope(MutableQuantifiedSentenceNode &node,
     const std::optional<decltype(SymbolStandardisingVisitor::rewriting_rules)::iterator> &rule_reference)
 {
     if (rule_reference.has_value() && rule_reference != rewriting_rules.end()) {

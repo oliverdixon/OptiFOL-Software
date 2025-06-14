@@ -12,8 +12,8 @@
  */
 
 #include "DMLVisitor.hpp"
-#include "../../../IR/Sentences/ConnectedSentenceNode.hpp"
-#include "../../../IR/Sentences/QuantifiedSentenceNode.hpp"
+#include "../../../IR/Mutable/Sentences/MutableConnectedSentenceNode.hpp"
+#include "../../../IR/Mutable/Sentences/MutableQuantifiedSentenceNode.hpp"
 
 namespace optifol
 {
@@ -25,10 +25,10 @@ std::string_view DMLVisitor::get_visitor_name() const
     return visitor_name;
 }
 
-void DMLVisitor::visit(ConnectedSentenceNode &node)
+void DMLVisitor::visit(MutableConnectedSentenceNode &node)
 {
     /*
-     * If we're in an immediately negative context ~(ConnectedSentenceNode), we apply the transformation according to
+     * If we're in an immediately negative context ~(MutableConnectedSentenceNode), we apply the transformation according to
      * the binary operator type. This requires taking temporary ownership of the operands.
      */
     if (node.is_negative_polarity()) {
@@ -65,10 +65,10 @@ void DMLVisitor::visit(ConnectedSentenceNode &node)
     MutatingSentenceVisitorBase::visit(node);
 }
 
-void DMLVisitor::visit(QuantifiedSentenceNode &node)
+void DMLVisitor::visit(MutableQuantifiedSentenceNode &node)
 {
     /*
-     * If we're in an immediately negative context ~(QuantifiedSentenceNode), we apply the transformation according to
+     * If we're in an immediately negative context ~(MutableQuantifiedSentenceNode), we apply the transformation according to
      * the quantification type. This requires taking temporary ownership of the quantified sentence.
      */
     if (node.is_negative_polarity()) {

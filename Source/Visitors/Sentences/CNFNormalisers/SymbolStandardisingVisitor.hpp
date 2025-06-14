@@ -17,9 +17,9 @@
 #include <optional>
 #include <unordered_map>
 
-#include "../MutatingSentenceVisitorBase.hpp"
-#include "../../../IR/Terms/ITermNode.hpp"
+#include "../../../IR/Mutable/Terms/IMutableTermNode.hpp"
 #include "../../Terms/ScopedTermResolutionVisitor.hpp"
+#include "../MutatingSentenceVisitorBase.hpp"
 
 namespace optifol
 {
@@ -56,21 +56,21 @@ public:
      * @param node The root quantified sentence node
      * @throws SemanticException TODO
      */
-    void visit(QuantifiedSentenceNode &node) override;
+    void visit(MutableQuantifiedSentenceNode &node) override;
 
     /**
      * @brief Recursively applies the symbol-standardisation procedures to the given predicate root node.
      * @param node The root predicate sentence node
      * @throws SemanticException TODO
      */
-    void visit(PredicationNode &node) override;
+    void visit(MutablePredicationNode &node) override;
 
     /**
      * @brief Recursively applies the symbol-standardisation procedures to the given identity sentence node.
      * @param node The root identity sentence node
      * @throws SemanticException TODO
      */
-    void visit(IdentitySentenceNode &node) override;
+    void visit(MutableIdentitySentenceNode &node) override;
 
 private:
     static const char * visitor_name;
@@ -81,7 +81,7 @@ private:
      *  pointer in the corresponding value. Only variables with disambiguated names occupy entries in the map, and the
      *  map should be cleared down when the scope is released.
      */
-    std::unordered_map<std::string, std::unique_ptr<ITermNode>> rewriting_rules;
+    std::unordered_map<std::string, std::unique_ptr<IMutableTermNode>> rewriting_rules;
 
     /**
      * @brief The set of pre-disambiguated names bound in the current scope.
@@ -110,7 +110,7 @@ private:
      * @param node The bounding quantifier responsible for the opened scope
      * @return TODO
      */
-    std::optional<decltype(rewriting_rules)::iterator> open_scope(QuantifiedSentenceNode &node);
+    std::optional<decltype(rewriting_rules)::iterator> open_scope(MutableQuantifiedSentenceNode &node);
 
     /**
      * @brief Closes the current scope, clearing applicable entries from the scope naming set and the rewriting rule
@@ -119,7 +119,7 @@ private:
      * @param node The variable bound by the scope
      * @param rule_reference TODO
      */
-    void close_scope(QuantifiedSentenceNode &node,
+    void close_scope(MutableQuantifiedSentenceNode &node,
         const std::optional<decltype(rewriting_rules)::iterator> &rule_reference);
 
     /**

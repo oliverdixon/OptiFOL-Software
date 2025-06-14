@@ -16,9 +16,9 @@
 
 #include <log4cxx/logger.h>
 
+#include "../IR/Mutable/Sentences/IMutableSentenceNode.hpp"
 #include "FOLLexer.hpp"
 #include "StorageObjectBase.hpp"
-#include "../IR/Sentences/ISentenceNode.hpp"
 
 namespace optifol
 {
@@ -110,7 +110,7 @@ private:
 
     void cnf_normalise();
 
-    static std::string text_serialise(const ISentenceNode * sentence);
+    static std::string text_serialise(const IMutableSentenceNode * sentence);
 
     Glib::Property<Glib::ustring> statement;
 
@@ -120,9 +120,9 @@ private:
 
     Glib::Property<guint> priority;
 
-    std::unique_ptr<ISentenceNode> original_ast;
+    std::unique_ptr<IMutableSentenceNode> original_ast;
 
-    std::unique_ptr<ISentenceNode> cnf_ast;
+    std::unique_ptr<IMutableSentenceNode> cnf_ast;
 
     std::string formatted_input_statement;
 

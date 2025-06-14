@@ -13,9 +13,9 @@
 
 #include "UniversalEliminationVisitor.hpp"
 
-#include "../../../IR/Sentences/ConnectedSentenceNode.hpp"
-#include "../../../IR/Sentences/QuantifiedSentenceNode.hpp"
-#include "../../../IR/Sentences/SentenceRoot.hpp"
+#include "../../../IR/Mutable/Sentences/MutableConnectedSentenceNode.hpp"
+#include "../../../IR/Mutable/Sentences/MutableQuantifiedSentenceNode.hpp"
+#include "../../../IR/Mutable/Sentences/MutableSentenceRoot.hpp"
 
 namespace optifol
 {
@@ -27,7 +27,7 @@ std::string_view UniversalEliminationVisitor::get_visitor_name() const
     return visitor_name;
 }
 
-void UniversalEliminationVisitor::visit(QuantifiedSentenceNode &node)
+void UniversalEliminationVisitor::visit(MutableQuantifiedSentenceNode &node)
 {
     auto borrowed_sentence = node.take_sentence();
     borrowed_sentence->accept(*this);
@@ -40,7 +40,7 @@ void UniversalEliminationVisitor::visit(QuantifiedSentenceNode &node)
         extracted_sentence = std::move(node.take_sentence());
 }
 
-void UniversalEliminationVisitor::visit(ConnectedSentenceNode &node)
+void UniversalEliminationVisitor::visit(MutableConnectedSentenceNode &node)
 {
     auto borrowed_operand = node.take_lhs_operand();
     borrowed_operand->accept(*this);
@@ -57,7 +57,7 @@ void UniversalEliminationVisitor::visit(ConnectedSentenceNode &node)
         node.put_rhs_operand(std::move(extracted_sentence));
 }
 
-void UniversalEliminationVisitor::visit(SentenceRoot &node)
+void UniversalEliminationVisitor::visit(MutableSentenceRoot &node)
 {
     auto borrowed_sentence = node.take_sentence();
     borrowed_sentence->accept(*this);

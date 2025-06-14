@@ -13,16 +13,16 @@
 
 #include "JSONSerialiserVisitor.hpp"
 
-#include "../../../IR/Sentences/ConnectedSentenceNode.hpp"
-#include "../../../IR/Sentences/IdentitySentenceNode.hpp"
-#include "../../../IR/Sentences/PredicationNode.hpp"
-#include "../../../IR/Sentences/QuantifiedSentenceNode.hpp"
-#include "../../../IR/Sentences/SentenceRoot.hpp"
+#include "../../../IR/Mutable/Sentences/MutableConnectedSentenceNode.hpp"
+#include "../../../IR/Mutable/Sentences/MutableIdentitySentenceNode.hpp"
+#include "../../../IR/Mutable/Sentences/MutablePredicationNode.hpp"
+#include "../../../IR/Mutable/Sentences/MutableQuantifiedSentenceNode.hpp"
+#include "../../../IR/Mutable/Sentences/MutableSentenceRoot.hpp"
 
 namespace optifol
 {
 
-void JSONSerialiserVisitor::visit(const QuantifiedSentenceNode &node)
+void JSONSerialiserVisitor::visit(const MutableQuantifiedSentenceNode &node)
 {
     // Get the sentence to build its JSON structure
     node.observe_sentence()->accept(*this);
@@ -37,7 +37,7 @@ void JSONSerialiserVisitor::visit(const QuantifiedSentenceNode &node)
     print_polarity(&node);
 }
 
-void JSONSerialiserVisitor::visit(const ConnectedSentenceNode &node)
+void JSONSerialiserVisitor::visit(const MutableConnectedSentenceNode &node)
 {
     // Get the LHS to build its JSON structure, and move the entire structure into the local scope
     node.observe_lhs_operand()->accept(*this);
@@ -58,7 +58,7 @@ void JSONSerialiserVisitor::visit(const ConnectedSentenceNode &node)
     print_polarity(&node);
 }
 
-void JSONSerialiserVisitor::visit(const IdentitySentenceNode &node)
+void JSONSerialiserVisitor::visit(const MutableIdentitySentenceNode &node)
 {
     output = {
         { "type", "equality" },
@@ -69,7 +69,7 @@ void JSONSerialiserVisitor::visit(const IdentitySentenceNode &node)
     print_polarity(&node);
 }
 
-void JSONSerialiserVisitor::visit(const PredicationNode &node)
+void JSONSerialiserVisitor::visit(const MutablePredicationNode &node)
 {
     nlohmann::json arguments = nlohmann::json::array();
 
@@ -85,7 +85,7 @@ void JSONSerialiserVisitor::visit(const PredicationNode &node)
     print_polarity(&node);
 }
 
-void JSONSerialiserVisitor::visit(const SentenceRoot &node)
+void JSONSerialiserVisitor::visit(const MutableSentenceRoot &node)
 {
     node.observe_sentence()->accept(*this);
 }
@@ -123,7 +123,7 @@ const char *JSONSerialiserVisitor::get_operator_symbol(const QuantifierTypes typ
     }
 }
 
-void JSONSerialiserVisitor::print_polarity(const ISentenceNode *node)
+void JSONSerialiserVisitor::print_polarity(const IMutableSentenceNode *node)
 {
     if (node->is_negative_polarity())
         output.push_back({ "negative", true });

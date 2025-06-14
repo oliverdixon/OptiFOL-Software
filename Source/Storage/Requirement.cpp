@@ -201,7 +201,7 @@ void Requirement::cnf_normalise()
     cnf_ast = std::move(cnf_sentence);
 }
 
-std::string Requirement::text_serialise(const ISentenceNode *sentence)
+std::string Requirement::text_serialise(const IMutableSentenceNode *sentence)
 {
     static TextSerialiserVisitor text_serialiser_visitor;
     sentence->accept(text_serialiser_visitor);

@@ -25,12 +25,12 @@ class ScopedTermResolutionVisitor :
 public:
     ScopedTermResolutionVisitor(
         const std::unordered_set<std::string> &scope_hook,
-        const std::unordered_map<std::string, std::unique_ptr<ITermNode>> &rewriting_rules_hook
+        const std::unordered_map<std::string, std::unique_ptr<IMutableTermNode>> &rewriting_rules_hook
     );
 
-    void visit(FunctionNode &node) override;
+    void visit(MutableFunctionNode &node) override;
 
-    void visit(VariableNode &node) override;
+    void visit(MutableVariableNode &node) override;
 
 private:
     const std::unordered_set<std::string> &scope_hook;

@@ -30,7 +30,7 @@ namespace optifol
  *  <li><code>P(x) &lt;=&gt; Q(x)</code> becomes <code>(P(x) | ~Q(x)) & (~P(x) | Q(x))</code>.</li>
  * </ul>
  * The rewriting rules executed herein do not make use of proxies, as fundamental types are not altered (i.e. only the
- * substance of the ConnectedSentenceNode operands are altered).
+ * substance of the MutableConnectedSentenceNode operands are altered).
  */
 class ImplicationEliminationVisitor :
         public MutatingSentenceVisitorBase
@@ -42,7 +42,7 @@ public:
      * @brief Recursively applies implication-elimination transformations to the given connected sentence root
      * @param node The connected sentence root node on which the implication-elimination should be applied
      */
-    void visit(ConnectedSentenceNode &node) override;
+    void visit(MutableConnectedSentenceNode &node) override;
 
 private:
     static const char * visitor_name;

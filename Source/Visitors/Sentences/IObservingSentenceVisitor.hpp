@@ -17,26 +17,26 @@
 namespace optifol
 {
 
-class QuantifiedSentenceNode;
-class ConnectedSentenceNode;
-class IdentitySentenceNode;
-class PredicationNode;
-class SentenceRoot;
+class MutableQuantifiedSentenceNode;
+class MutableConnectedSentenceNode;
+class MutableIdentitySentenceNode;
+class MutablePredicationNode;
+class MutableSentenceRoot;
 
 class IObservingSentenceVisitor
 {
 public:
     virtual ~IObservingSentenceVisitor() = default;
 
-    virtual void visit(const QuantifiedSentenceNode& node) = 0;
+    virtual void visit(const MutableQuantifiedSentenceNode& node) = 0;
 
-    virtual void visit(const ConnectedSentenceNode& node) = 0;
+    virtual void visit(const MutableConnectedSentenceNode& node) = 0;
 
-    virtual void visit(const IdentitySentenceNode& node) = 0;
+    virtual void visit(const MutableIdentitySentenceNode& node) = 0;
 
-    virtual void visit(const PredicationNode& node) = 0;
+    virtual void visit(const MutablePredicationNode& node) = 0;
 
-    virtual void visit(const SentenceRoot& node) = 0;
+    virtual void visit(const MutableSentenceRoot& node) = 0;
 };
 
 }

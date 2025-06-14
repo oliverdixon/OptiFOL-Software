@@ -14,7 +14,7 @@
 #include <cassert>
 
 #include "DisjunctionDistributionVisitor.hpp"
-#include "../../../IR/Sentences/ConnectedSentenceNode.hpp"
+#include "../../../IR/Mutable/Sentences/MutableConnectedSentenceNode.hpp"
 
 namespace optifol
 {
@@ -26,7 +26,7 @@ std::string_view DisjunctionDistributionVisitor::get_visitor_name() const
     return visitor_name;
 }
 
-void DisjunctionDistributionVisitor::visit(ConnectedSentenceNode &node)
+void DisjunctionDistributionVisitor::visit(MutableConnectedSentenceNode &node)
 {
     const auto current_operator_type = node.get_operator_type();
 
@@ -79,7 +79,7 @@ void DisjunctionDistributionVisitor::visit(ConnectedSentenceNode &node)
     }
 }
 
-bool DisjunctionDistributionVisitor::attempt_reduction(ConnectedSentenceNode &node)
+bool DisjunctionDistributionVisitor::attempt_reduction(MutableConnectedSentenceNode &node)
 {
     // Candidate children are, by definition, disjunctive clauses.
     assert(node.get_operator_type() == BinaryOperatorTypes::Disjunction);
@@ -106,7 +106,7 @@ bool DisjunctionDistributionVisitor::attempt_reduction(ConnectedSentenceNode &no
         node.set_operator_type(BinaryOperatorTypes::Conjunction);
 
         node.put_lhs_operand(
-            std::make_unique<ConnectedSentenceNode>(
+            std::make_unique<MutableConnectedSentenceNode>(
                 BinaryOperatorTypes::Disjunction,
                 std::move(destination_lhs_lhs),
                 std::move(destination_lhs_rhs)
@@ -114,7 +114,7 @@ bool DisjunctionDistributionVisitor::attempt_reduction(ConnectedSentenceNode &no
         );
 
         node.put_rhs_operand(
-            std::make_unique<ConnectedSentenceNode>(
+            std::make_unique<MutableConnectedSentenceNode>(
                 BinaryOperatorTypes::Disjunction,
                 std::move(destination_rhs_lhs),
                 std::move(destination_rhs_rhs)
@@ -126,7 +126,7 @@ bool DisjunctionDistributionVisitor::attempt_reduction(ConnectedSentenceNode &no
 
         /*
          * The above recursive call should empty the tracked operands stack with this member function. If we end with a
-         * non-empty stack, it still owns operands that should've been returned to the ConnectedSentenceNode or used to
+         * non-empty stack, it still owns operands that should've been returned to the MutableConnectedSentenceNode or used to
          * construct a new operand.
          */
         assert(tracked_operands.empty());

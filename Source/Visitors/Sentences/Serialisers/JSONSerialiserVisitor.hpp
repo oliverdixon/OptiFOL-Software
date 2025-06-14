@@ -16,8 +16,8 @@
 
 #include <nlohmann/json.hpp>
 
+#include "../../../IR/Mutable/Sentences/IMutableSentenceNode.hpp"
 #include "../IObservingSentenceVisitor.hpp"
-#include "../../../IR/Sentences/ISentenceNode.hpp"
 
 namespace optifol
 {
@@ -29,15 +29,15 @@ class JSONSerialiserVisitor:
         public IObservingSentenceVisitor
 {
 public:
-    void visit(const QuantifiedSentenceNode& node) override;
+    void visit(const MutableQuantifiedSentenceNode& node) override;
 
-    void visit(const ConnectedSentenceNode& node) override;
+    void visit(const MutableConnectedSentenceNode& node) override;
 
-    void visit(const IdentitySentenceNode& node) override;
+    void visit(const MutableIdentitySentenceNode& node) override;
 
-    void visit(const PredicationNode& node) override;
+    void visit(const MutablePredicationNode& node) override;
 
-    void visit(const SentenceRoot& node) override;
+    void visit(const MutableSentenceRoot& node) override;
 
     [[nodiscard]] nlohmann::json extract();
 
@@ -48,7 +48,7 @@ private:
 
     [[nodiscard]] static const char *get_operator_symbol(QuantifierTypes type);
 
-    void print_polarity(const ISentenceNode * node);
+    void print_polarity(const IMutableSentenceNode * node);
 };
 
 }

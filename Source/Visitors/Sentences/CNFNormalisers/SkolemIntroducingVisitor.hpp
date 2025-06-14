@@ -18,9 +18,9 @@
 #include <unordered_map>
 #include <vector>
 
-#include "../MutatingSentenceVisitorBase.hpp"
-#include "../../../IR/Sentences/ISentenceNode.hpp"
+#include "../../../IR/Mutable/Sentences/IMutableSentenceNode.hpp"
 #include "../../Terms/TermResolutionVisitor.hpp"
+#include "../MutatingSentenceVisitorBase.hpp"
 
 namespace optifol
 {
@@ -35,34 +35,34 @@ public:
 
     [[nodiscard]] std::string_view get_visitor_name() const override;
 
-    void visit(QuantifiedSentenceNode &node) override;
+    void visit(MutableQuantifiedSentenceNode &node) override;
 
-    void visit(PredicationNode &node) override;
+    void visit(MutablePredicationNode &node) override;
 
-    void visit(IdentitySentenceNode &node) override;
+    void visit(MutableIdentitySentenceNode &node) override;
 
-    void visit(ConnectedSentenceNode &node) override;
+    void visit(MutableConnectedSentenceNode &node) override;
 
-    void visit(SentenceRoot &node) override;
+    void visit(MutableSentenceRoot &node) override;
 
 private:
-    void open_scope(QuantifiedSentenceNode &node);
+    void open_scope(MutableQuantifiedSentenceNode &node);
 
-    void close_latest_scope(QuantifiedSentenceNode &node);
+    void close_latest_scope(MutableQuantifiedSentenceNode &node);
 
-    void eliminate_existential(const ITermNode &target_bound_variable);
+    void eliminate_existential(const IMutableTermNode &target_bound_variable);
 
     static const char * visitor_name;
 
-    std::stack<std::vector<std::unique_ptr<ITermNode>>> universally_quantified_variables;
+    std::stack<std::vector<std::unique_ptr<IMutableTermNode>>> universally_quantified_variables;
 
     std::size_t skolem_counter = 0;
 
-    std::unordered_map<std::string, std::unique_ptr<ITermNode>> skolem_replacements;
+    std::unordered_map<std::string, std::unique_ptr<IMutableTermNode>> skolem_replacements;
 
     TermResolutionVisitor term_visitor{skolem_replacements};
 
-    std::unique_ptr<ISentenceNode> extracted_sentence;
+    std::unique_ptr<IMutableSentenceNode> extracted_sentence;
 };
 
 }

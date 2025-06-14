@@ -13,16 +13,16 @@
 
 #include "TextSerialiserVisitor.hpp"
 
-#include "../../../IR/Sentences/ConnectedSentenceNode.hpp"
-#include "../../../IR/Sentences/IdentitySentenceNode.hpp"
-#include "../../../IR/Sentences/PredicationNode.hpp"
-#include "../../../IR/Sentences/QuantifiedSentenceNode.hpp"
-#include "../../../IR/Sentences/SentenceRoot.hpp"
+#include "../../../IR/Mutable/Sentences/MutableConnectedSentenceNode.hpp"
+#include "../../../IR/Mutable/Sentences/MutableIdentitySentenceNode.hpp"
+#include "../../../IR/Mutable/Sentences/MutablePredicationNode.hpp"
+#include "../../../IR/Mutable/Sentences/MutableQuantifiedSentenceNode.hpp"
+#include "../../../IR/Mutable/Sentences/MutableSentenceRoot.hpp"
 
 namespace optifol
 {
 
-void TextSerialiserVisitor::visit(const QuantifiedSentenceNode &node)
+void TextSerialiserVisitor::visit(const MutableQuantifiedSentenceNode &node)
 {
     print_polarity(&node);
     output_stream << get_operator_symbol(node.get_quantifier_type())
@@ -31,7 +31,7 @@ void TextSerialiserVisitor::visit(const QuantifiedSentenceNode &node)
     node.observe_sentence()->accept(*this);
 }
 
-void TextSerialiserVisitor::visit(const ConnectedSentenceNode &node)
+void TextSerialiserVisitor::visit(const MutableConnectedSentenceNode &node)
 {
     print_polarity(&node);
     output_stream << '(';
@@ -43,14 +43,14 @@ void TextSerialiserVisitor::visit(const ConnectedSentenceNode &node)
     output_stream << ')';
 }
 
-void TextSerialiserVisitor::visit(const IdentitySentenceNode &node)
+void TextSerialiserVisitor::visit(const MutableIdentitySentenceNode &node)
 {
     print_polarity(&node);
     output_stream << '(' << node.observe_lhs_operand()->to_string() << ' ' << '=' << ' '
                   << node.observe_rhs_operand()->to_string() << ')';
 }
 
-void TextSerialiserVisitor::visit(const PredicationNode &node)
+void TextSerialiserVisitor::visit(const MutablePredicationNode &node)
 {
     print_polarity(&node);
     output_stream << node.name << '(';
@@ -65,7 +65,7 @@ void TextSerialiserVisitor::visit(const PredicationNode &node)
     output_stream << ')';
 }
 
-void TextSerialiserVisitor::visit(const SentenceRoot &node)
+void TextSerialiserVisitor::visit(const MutableSentenceRoot &node)
 {
     node.observe_sentence()->accept(*this);
 }
@@ -103,7 +103,7 @@ const char *TextSerialiserVisitor::get_operator_symbol(QuantifierTypes type)
     }
 }
 
-void TextSerialiserVisitor::print_polarity(const ISentenceNode *node)
+void TextSerialiserVisitor::print_polarity(const IMutableSentenceNode *node)
 {
     if (node->is_negative_polarity())
         output_stream << '~';

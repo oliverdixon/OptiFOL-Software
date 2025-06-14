@@ -19,11 +19,11 @@
 namespace optifol
 {
 
-class QuantifiedSentenceNode;
-class ConnectedSentenceNode;
-class IdentitySentenceNode;
-class PredicationNode;
-class SentenceRoot;
+class MutableQuantifiedSentenceNode;
+class MutableConnectedSentenceNode;
+class MutableIdentitySentenceNode;
+class MutablePredicationNode;
+class MutableSentenceRoot;
 
 /**
  * @class MutatingSentenceVisitorBase
@@ -41,31 +41,31 @@ public:
      *  sentence.
      * @param node The quantified sentence root node of the transformation target.
      */
-    virtual void visit(QuantifiedSentenceNode& node);
+    virtual void visit(MutableQuantifiedSentenceNode& node);
 
     /**
      * @brief Applies a mutating transformation to the given connected sentence node and both operands.
      * @param node The connected sentence root node of the transformation target.
      */
-    virtual void visit(ConnectedSentenceNode& node);
+    virtual void visit(MutableConnectedSentenceNode& node);
 
     /**
      * @brief Applies a mutating transformation to the given term-identity sentence node and both operands.
      * @param node The identity sentence root node of the transformation target.
      */
-    virtual void visit(IdentitySentenceNode& node);
+    virtual void visit(MutableIdentitySentenceNode& node);
 
     /**
      * @brief Applies a mutating transformation to the given predicate sentence node and all arguments.
      * @param node The predicate sentence root node of the transformation target.
      */
-    virtual void visit(PredicationNode& node);
+    virtual void visit(MutablePredicationNode& node);
 
     /**
      * @brief Applies a mutating transformation to the given sentence root
      * @param node The sentence root container containing the root of the sentence.
      */
-    virtual void visit(SentenceRoot& node);
+    virtual void visit(MutableSentenceRoot& node);
 };
 
 }

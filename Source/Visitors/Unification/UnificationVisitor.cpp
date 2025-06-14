@@ -12,15 +12,15 @@
  */
 
 #include "UnificationVisitor.hpp"
-#include "../../IR/Sentences/PredicationNode.hpp"
-#include "../../IR/Terms/FunctionNode.hpp"
-#include "../../IR/Terms/ITermNode.hpp"
-#include "../../IR/Terms/VariableNode.hpp"
+#include "../../IR/Mutable/Sentences/MutablePredicationNode.hpp"
+#include "../../IR/Mutable/Terms/MutableFunctionNode.hpp"
+#include "../../IR/Mutable/Terms/IMutableTermNode.hpp"
+#include "../../IR/Mutable/Terms/MutableVariableNode.hpp"
 
 namespace optifol
 {
 
-bool UnificationVisitor::visit(const PredicationNode &predicate_lhs, const PredicationNode &predicate_rhs)
+bool UnificationVisitor::visit(const MutablePredicationNode &predicate_lhs, const MutablePredicationNode &predicate_rhs)
 {
     const auto argument_count = predicate_lhs.arguments.size();
 
@@ -36,7 +36,7 @@ bool UnificationVisitor::visit(const PredicationNode &predicate_lhs, const Predi
     return true;
 }
 
-bool UnificationVisitor::visit(const VariableNode &variable_lhs, const ITermNode &generic_term_rhs)
+bool UnificationVisitor::visit(const MutableVariableNode &variable_lhs, const IMutableTermNode &generic_term_rhs)
 {
     if (variable_lhs.hash() == generic_term_rhs.hash())
         // If atomics (e.g. variables) are trivially identical, they can be unified without an explicit substitution.
@@ -59,7 +59,7 @@ bool UnificationVisitor::visit(const VariableNode &variable_lhs, const ITermNode
     return true;
 }
 
-bool UnificationVisitor::visit(const VariableNode &variable_lhs, const VariableNode &variable_rhs)
+bool UnificationVisitor::visit(const MutableVariableNode &variable_lhs, const MutableVariableNode &variable_rhs)
 {
     if (variable_lhs.hash() == variable_rhs.hash())
         // If atomics (e.g. variables) are trivially identical, they can be unified without an explicit substitution.
@@ -90,7 +90,7 @@ bool UnificationVisitor::visit(const VariableNode &variable_lhs, const VariableN
     return true;
 }
 
-bool UnificationVisitor::visit(const FunctionNode &function_lhs, const FunctionNode &function_rhs)
+bool UnificationVisitor::visit(const MutableFunctionNode &function_lhs, const MutableFunctionNode &function_rhs)
 {
     const auto argument_count = function_lhs.observe_arguments().size();
 
@@ -108,7 +108,7 @@ bool UnificationVisitor::visit(const FunctionNode &function_lhs, const FunctionN
     return true;
 }
 
-bool UnificationVisitor::visit(const ITermNode &generic_term_lhs, const FunctionNode &function_rhs)
+bool UnificationVisitor::visit(const IMutableTermNode &generic_term_lhs, const MutableFunctionNode &function_rhs)
 {
     std::ignore = generic_term_lhs;
     std::ignore = function_rhs;
@@ -116,7 +116,7 @@ bool UnificationVisitor::visit(const ITermNode &generic_term_lhs, const Function
     return false;
 }
 
-bool UnificationVisitor::visit(const ITermNode &generic_term_lhs, const ITermNode &generic_term_rhs)
+bool UnificationVisitor::visit(const IMutableTermNode &generic_term_lhs, const IMutableTermNode &generic_term_rhs)
 {
     std::ignore = generic_term_lhs;
     std::ignore = generic_term_rhs;
@@ -129,7 +129,7 @@ const std::optional<Substitution> &UnificationVisitor::observe_substitutions() c
     return substitutions;
 }
 
-void UnificationVisitor::register_substitution(const VariableNode &bound_key, const ITermNode &bound_value)
+void UnificationVisitor::register_substitution(const MutableVariableNode &bound_key, const IMutableTermNode &bound_value)
 {
     const auto wrapped_variable = std::cref(bound_key);
     // substitution_keys.push_back(wrapped_variable); // TODO value in pair will be dangling if term node is deleted.

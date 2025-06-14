@@ -13,21 +13,21 @@
 
 #include "MutatingSentenceVisitorBase.hpp"
 
-#include "../../IR/Sentences/ConnectedSentenceNode.hpp"
-#include "../../IR/Sentences/QuantifiedSentenceNode.hpp"
-#include "../../IR/Sentences/SentenceRoot.hpp"
+#include "../../IR/Mutable/Sentences/MutableConnectedSentenceNode.hpp"
+#include "../../IR/Mutable/Sentences/MutableQuantifiedSentenceNode.hpp"
+#include "../../IR/Mutable/Sentences/MutableSentenceRoot.hpp"
 
 namespace optifol
 {
 
-void MutatingSentenceVisitorBase::visit(QuantifiedSentenceNode &node)
+void MutatingSentenceVisitorBase::visit(MutableQuantifiedSentenceNode &node)
 {
     auto borrowed_sentence = node.take_sentence();
     borrowed_sentence->accept(*this);
     node.put_sentence(std::move(borrowed_sentence));
 }
 
-void MutatingSentenceVisitorBase::visit(ConnectedSentenceNode &node)
+void MutatingSentenceVisitorBase::visit(MutableConnectedSentenceNode &node)
 {
     auto borrowed_operand = node.take_lhs_operand();
     borrowed_operand->accept(*this);
@@ -38,17 +38,17 @@ void MutatingSentenceVisitorBase::visit(ConnectedSentenceNode &node)
     node.put_rhs_operand(std::move(borrowed_operand));
 }
 
-void MutatingSentenceVisitorBase::visit(IdentitySentenceNode &node)
+void MutatingSentenceVisitorBase::visit(MutableIdentitySentenceNode &node)
 {
     (void) node;
 }
 
-void MutatingSentenceVisitorBase::visit(PredicationNode &node)
+void MutatingSentenceVisitorBase::visit(MutablePredicationNode &node)
 {
     (void) node;
 }
 
-void MutatingSentenceVisitorBase::visit(SentenceRoot &node)
+void MutatingSentenceVisitorBase::visit(MutableSentenceRoot &node)
 {
     auto borrowed_sentence = node.take_sentence();
     borrowed_sentence->accept(*this);

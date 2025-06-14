@@ -18,26 +18,26 @@
 #include <unordered_map>
 #include <unordered_set>
 
+#include "../../IR/Mutable/Terms/IMutableTermNode.hpp"
 #include "MutatingTermVisitorBase.hpp"
-#include "../../IR/Terms/ITermNode.hpp"
 
 namespace optifol
 {
 
-class VariableNode;
+class MutableVariableNode;
 
 class TermResolutionVisitor :
         public MutatingTermVisitorBase
 {
 public:
     explicit TermResolutionVisitor(
-            const std::unordered_map<std::string, std::unique_ptr<ITermNode>> &rewriting_rules_hook
+            const std::unordered_map<std::string, std::unique_ptr<IMutableTermNode>> &rewriting_rules_hook
     );
 
-    void visit(FunctionNode &node) override;
+    void visit(MutableFunctionNode &node) override;
 
 private:
-    const std::unordered_map<std::string, std::unique_ptr<ITermNode>>& rewriting_rules_hook;
+    const std::unordered_map<std::string, std::unique_ptr<IMutableTermNode>>& rewriting_rules_hook;
 };
 
 }

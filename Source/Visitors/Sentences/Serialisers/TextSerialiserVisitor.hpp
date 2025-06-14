@@ -16,8 +16,8 @@
 
 #include <sstream>
 
+#include "../../../IR/Mutable/Sentences/IMutableSentenceNode.hpp"
 #include "../IObservingSentenceVisitor.hpp"
-#include "../../../IR/Sentences/ISentenceNode.hpp"
 
 namespace optifol
 {
@@ -29,15 +29,15 @@ class TextSerialiserVisitor :
         public IObservingSentenceVisitor
 {
 public:
-    void visit(const QuantifiedSentenceNode& node) override;
+    void visit(const MutableQuantifiedSentenceNode& node) override;
 
-    void visit(const ConnectedSentenceNode& node) override;
+    void visit(const MutableConnectedSentenceNode& node) override;
 
-    void visit(const IdentitySentenceNode& node) override;
+    void visit(const MutableIdentitySentenceNode& node) override;
 
-    void visit(const PredicationNode& node) override;
+    void visit(const MutablePredicationNode& node) override;
 
-    void visit(const SentenceRoot& node) override;
+    void visit(const MutableSentenceRoot& node) override;
 
     [[nodiscard]] std::string extract();
 
@@ -48,7 +48,7 @@ public:
 private:
     std::ostringstream output_stream;
 
-    void print_polarity(const ISentenceNode * node);
+    void print_polarity(const IMutableSentenceNode * node);
 };
 
 }

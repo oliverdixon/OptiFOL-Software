@@ -15,8 +15,8 @@
 
 #include "QuantifierExtractingVisitor.hpp"
 
-#include "../../../IR/Sentences/ConnectedSentenceNode.hpp"
-#include "../../../IR/Sentences/SentenceRoot.hpp"
+#include "../../../IR/Mutable/Sentences/MutableConnectedSentenceNode.hpp"
+#include "../../../IR/Mutable/Sentences/MutableSentenceRoot.hpp"
 
 namespace optifol
 {
@@ -28,7 +28,7 @@ std::string_view QuantifierExtractingVisitor::get_visitor_name() const
     return visitor_name;
 }
 
-void QuantifierExtractingVisitor::visit(ConnectedSentenceNode &node)
+void QuantifierExtractingVisitor::visit(MutableConnectedSentenceNode &node)
 {
     assert(!transformation_metadata.has_value()); // Ensure there is no pending transformation.
 
@@ -57,7 +57,7 @@ void QuantifierExtractingVisitor::visit(ConnectedSentenceNode &node)
      *
      *  - If there's a quantifier on the LHS and the RHS, the quantifiers cannot be moved any further outwards.
      *  - If there's neither of the operands were quantifiers, there are no quantifiers to move outwards.
-     *  - If there's a quantifier on either the LHS or the RHS, prepare the current ConnectedSentenceNode to be the
+     *  - If there's a quantifier on either the LHS or the RHS, prepare the current MutableConnectedSentenceNode to be the
      *      quantified sentence by retaining the non-quantified side, and using the previously quantified sentence as
      *      the other operand.
      *
@@ -96,7 +96,7 @@ void QuantifierExtractingVisitor::visit(ConnectedSentenceNode &node)
     assert(!quant_rhs_data.has_value());
 }
 
-void QuantifierExtractingVisitor::visit(QuantifiedSentenceNode &node)
+void QuantifierExtractingVisitor::visit(MutableQuantifiedSentenceNode &node)
 {
     const auto was_tracking = tracking_mode;
     tracking_mode = TrackingMode::NotTracking;
@@ -109,7 +109,7 @@ void QuantifierExtractingVisitor::visit(QuantifiedSentenceNode &node)
      * transformation now.
      */
     if (transformation_metadata.has_value()) {
-        borrowed_sentence = std::make_unique<QuantifiedSentenceNode>(transformation_metadata->first,
+        borrowed_sentence = std::make_unique<MutableQuantifiedSentenceNode>(transformation_metadata->first,
             std::move(transformation_metadata->second), std::move(borrowed_sentence));
         transformation_metadata.reset();
 
@@ -132,13 +132,13 @@ void QuantifierExtractingVisitor::visit(QuantifiedSentenceNode &node)
     }
 }
 
-void QuantifierExtractingVisitor::visit(SentenceRoot &node)
+void QuantifierExtractingVisitor::visit(MutableSentenceRoot &node)
 {
     auto borrowed_sentence = node.take_sentence();
     borrowed_sentence->accept(*this);
 
     if (transformation_metadata.has_value()) {
-        borrowed_sentence = std::make_unique<QuantifiedSentenceNode>(transformation_metadata->first,
+        borrowed_sentence = std::make_unique<MutableQuantifiedSentenceNode>(transformation_metadata->first,
             std::move(transformation_metadata->second), std::move(borrowed_sentence));
         transformation_metadata.reset();
 

@@ -14,23 +14,23 @@
 #include "ScopedTermResolutionVisitor.hpp"
 
 #include "../../Exceptions/SemanticException.hpp"
-#include "../../IR/Terms/VariableNode.hpp"
+#include "../../IR/Mutable/Terms/MutableVariableNode.hpp"
 
 namespace optifol
 {
 
 ScopedTermResolutionVisitor::ScopedTermResolutionVisitor(const std::unordered_set<std::string> &scope_hook,
-        const std::unordered_map<std::string, std::unique_ptr<ITermNode>> &rewriting_rules_hook) :
+        const std::unordered_map<std::string, std::unique_ptr<IMutableTermNode>> &rewriting_rules_hook) :
     TermResolutionVisitor(rewriting_rules_hook),
     scope_hook(scope_hook)
 {}
 
-void ScopedTermResolutionVisitor::visit(FunctionNode &node)
+void ScopedTermResolutionVisitor::visit(MutableFunctionNode &node)
 {
     TermResolutionVisitor::visit(node);
 }
 
-void ScopedTermResolutionVisitor::visit(VariableNode &node)
+void ScopedTermResolutionVisitor::visit(MutableVariableNode &node)
 {
     const auto &name = node.to_string();
 

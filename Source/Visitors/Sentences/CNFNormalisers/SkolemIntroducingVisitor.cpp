@@ -16,12 +16,12 @@
 #include <cassert>
 
 #include "../../../Logging.hpp"
-#include "../../../IR/Sentences/ConnectedSentenceNode.hpp"
-#include "../../../IR/Sentences/IdentitySentenceNode.hpp"
-#include "../../../IR/Sentences/PredicationNode.hpp"
-#include "../../../IR/Sentences/QuantifiedSentenceNode.hpp"
-#include "../../../IR/Sentences/SentenceRoot.hpp"
-#include "../../../IR/Terms/SkolemFunctionNode.hpp"
+#include "../../../IR/Mutable/Sentences/MutableConnectedSentenceNode.hpp"
+#include "../../../IR/Mutable/Sentences/MutableIdentitySentenceNode.hpp"
+#include "../../../IR/Mutable/Sentences/MutablePredicationNode.hpp"
+#include "../../../IR/Mutable/Sentences/MutableQuantifiedSentenceNode.hpp"
+#include "../../../IR/Mutable/Sentences/MutableSentenceRoot.hpp"
+#include "../../../IR/Mutable/Terms/MutableSkolemFunctionNode.hpp"
 
 namespace optifol
 {
@@ -44,7 +44,7 @@ std::string_view SkolemIntroducingVisitor::get_visitor_name() const
     return visitor_name;
 }
 
-void SkolemIntroducingVisitor::visit(QuantifiedSentenceNode &node)
+void SkolemIntroducingVisitor::visit(MutableQuantifiedSentenceNode &node)
 {
     auto borrowed_sentence = node.take_sentence();
 
@@ -70,7 +70,7 @@ void SkolemIntroducingVisitor::visit(QuantifiedSentenceNode &node)
     }
 }
 
-void SkolemIntroducingVisitor::visit(PredicationNode &node)
+void SkolemIntroducingVisitor::visit(MutablePredicationNode &node)
 {
     if (skolem_replacements.empty())
         return;
@@ -88,7 +88,7 @@ void SkolemIntroducingVisitor::visit(PredicationNode &node)
     }
 }
 
-void SkolemIntroducingVisitor::visit(IdentitySentenceNode &node)
+void SkolemIntroducingVisitor::visit(MutableIdentitySentenceNode &node)
 {
     auto borrowed_lhs = node.take_lhs_operand();
 
@@ -113,7 +113,7 @@ void SkolemIntroducingVisitor::visit(IdentitySentenceNode &node)
     node.put_rhs_operand(std::move(borrowed_rhs));
 }
 
-void SkolemIntroducingVisitor::visit(ConnectedSentenceNode &node)
+void SkolemIntroducingVisitor::visit(MutableConnectedSentenceNode &node)
 {
     auto borrowed_operand = node.take_lhs_operand();
     borrowed_operand->accept(*this);
@@ -130,7 +130,7 @@ void SkolemIntroducingVisitor::visit(ConnectedSentenceNode &node)
         node.put_rhs_operand(std::move(extracted_sentence));
 }
 
-void SkolemIntroducingVisitor::visit(SentenceRoot &node)
+void SkolemIntroducingVisitor::visit(MutableSentenceRoot &node)
 {
     auto borrowed_sentence = node.take_sentence();
     borrowed_sentence->accept(*this);
@@ -142,12 +142,12 @@ void SkolemIntroducingVisitor::visit(SentenceRoot &node)
     skolem_replacements.clear();
 }
 
-void SkolemIntroducingVisitor::open_scope(QuantifiedSentenceNode &node)
+void SkolemIntroducingVisitor::open_scope(MutableQuantifiedSentenceNode &node)
 {
     universally_quantified_variables.top().push_back(node.take_bound_term());
 }
 
-void SkolemIntroducingVisitor::close_latest_scope(QuantifiedSentenceNode &node)
+void SkolemIntroducingVisitor::close_latest_scope(MutableQuantifiedSentenceNode &node)
 {
     const auto scoped_var_count = universally_quantified_variables.top().size();
     assert(scoped_var_count > 0); // We assume to be within a scope, and thus must have at least one bound variable.
@@ -167,10 +167,10 @@ void SkolemIntroducingVisitor::close_latest_scope(QuantifiedSentenceNode &node)
         universally_quantified_variables.top().pop_back();
 }
 
-void SkolemIntroducingVisitor::eliminate_existential(const ITermNode &target_bound_variable)
+void SkolemIntroducingVisitor::eliminate_existential(const IMutableTermNode &target_bound_variable)
 {
     // Create a new Skolem function to be parameterised by all universally quantified variables in the current scope.
-    auto skolem = std::make_unique<SkolemFunctionNode>('S' + std::to_string(skolem_counter++),
+    auto skolem = std::make_unique<MutableSkolemFunctionNode>('S' + std::to_string(skolem_counter++),
         universally_quantified_variables.top());
 
     /*

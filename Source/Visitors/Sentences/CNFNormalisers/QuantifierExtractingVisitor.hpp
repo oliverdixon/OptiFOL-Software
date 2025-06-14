@@ -17,9 +17,9 @@
 #include <memory>
 #include <optional>
 
-#include "../../../IR/Sentences/ISentenceNode.hpp"
-#include "../../../IR/Sentences/QuantifiedSentenceNode.hpp"
-#include "../../../IR/Terms/ITermNode.hpp"
+#include "../../../IR/Mutable/Sentences/IMutableSentenceNode.hpp"
+#include "../../../IR/Mutable/Sentences/MutableQuantifiedSentenceNode.hpp"
+#include "../../../IR/Mutable/Terms/IMutableTermNode.hpp"
 #include "../MutatingSentenceVisitorBase.hpp"
 
 namespace optifol
@@ -31,17 +31,17 @@ class QuantifierExtractingVisitor:
 public:
     [[nodiscard]] std::string_view get_visitor_name() const override;
 
-    void visit(ConnectedSentenceNode &node) override;
+    void visit(MutableConnectedSentenceNode &node) override;
 
-    void visit(QuantifiedSentenceNode &node) override;
+    void visit(MutableQuantifiedSentenceNode &node) override;
 
-    void visit(SentenceRoot &node) override;
+    void visit(MutableSentenceRoot &node) override;
 
 private:
     struct QuantifiedTemplate
     {
-        QuantifiedTemplate(const QuantifierTypes type, std::unique_ptr<ITermNode>&& bound_term,
-                std::unique_ptr<ISentenceNode>&& sentence, QuantifiedSentenceNode * owner) :
+        QuantifiedTemplate(const QuantifierTypes type, std::unique_ptr<IMutableTermNode>&& bound_term,
+                std::unique_ptr<IMutableSentenceNode>&& sentence, MutableQuantifiedSentenceNode * owner) :
             type(type),
             bound_term(std::move(bound_term)),
             sentence(std::move(sentence)),
@@ -55,11 +55,11 @@ private:
         }
 
         QuantifierTypes type;
-        std::unique_ptr<ITermNode> bound_term;
-        std::unique_ptr<ISentenceNode> sentence;
+        std::unique_ptr<IMutableTermNode> bound_term;
+        std::unique_ptr<IMutableSentenceNode> sentence;
 
     private:
-        QuantifiedSentenceNode * owner;
+        MutableQuantifiedSentenceNode * owner;
     };
 
     enum class TrackingMode
@@ -74,7 +74,7 @@ private:
     TrackingMode tracking_mode = TrackingMode::NotTracking;
     std::optional<QuantifiedTemplate> quant_lhs_data;
     std::optional<QuantifiedTemplate> quant_rhs_data;
-    std::optional<std::pair<QuantifierTypes, std::unique_ptr<ITermNode>>> transformation_metadata;
+    std::optional<std::pair<QuantifierTypes, std::unique_ptr<IMutableTermNode>>> transformation_metadata;
 };
 
 }
