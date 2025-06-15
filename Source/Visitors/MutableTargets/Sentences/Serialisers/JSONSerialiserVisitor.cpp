@@ -108,9 +108,9 @@ const char *JSONSerialiserVisitor::get_operator_symbol(const BinaryOperatorTypes
         return "implication";
     case BinaryOperatorTypes::Biconditional:
         return "biconditional";
-    case BinaryOperatorTypes::None:
-        return "none";
     }
+
+    return "unknown";
 }
 
 const char *JSONSerialiserVisitor::get_operator_symbol(const QuantifierTypes type)
@@ -121,6 +121,8 @@ const char *JSONSerialiserVisitor::get_operator_symbol(const QuantifierTypes typ
     case QuantifierTypes::Existential:
         return "existential";
     }
+
+    return "unknown";
 }
 
 void JSONSerialiserVisitor::print_polarity(const IMutableSentence *node)

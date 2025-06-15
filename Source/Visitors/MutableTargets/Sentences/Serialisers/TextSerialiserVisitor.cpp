@@ -37,7 +37,7 @@ void TextSerialiserVisitor::visit(const MutableBinaryConnected &node)
     output_stream << '(';
 
     node.observe_lhs_operand()->accept(*this);
-    output_stream << get_operator_symbol(node.get_operator_type());
+    output_stream << BinaryConnected::get_operator_symbol(node.get_operator_type());
     node.observe_rhs_operand()->accept(*this);
 
     output_stream << ')';
@@ -77,30 +77,17 @@ std::string TextSerialiserVisitor::extract()
     return str;
 }
 
-const char *TextSerialiserVisitor::get_operator_symbol(BinaryOperatorTypes type)
-{
-    switch (type) {
-    case BinaryOperatorTypes::Conjunction:
-        return " & ";
-    case BinaryOperatorTypes::Disjunction:
-        return " | ";
-    case BinaryOperatorTypes::Implication:
-        return " => ";
-    case BinaryOperatorTypes::Biconditional:
-        return " <=> ";
-    case BinaryOperatorTypes::None:
-        return " ? ";
-    }
-}
-
 const char *TextSerialiserVisitor::get_operator_symbol(QuantifierTypes type)
 {
+    // TODO move into Quantified class.
     switch (type) {
     case QuantifierTypes::Universal:
         return "ForAll ";
     case QuantifierTypes::Existential:
         return "ThereExists ";
     }
+
+    return "? ";
 }
 
 void TextSerialiserVisitor::print_polarity(const IMutableSentence *node)

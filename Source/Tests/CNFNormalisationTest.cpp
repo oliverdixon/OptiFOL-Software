@@ -54,7 +54,7 @@ TEST_F(CNFNormalisationTest, ImplicationElimination_Basic)
         MutableBinaryConnected::build(
             BinaryOperatorTypes::Implication,
             MutablePredicate::build("P"),
-            MutablePredicate::build("A")
+            MutablePredicate::build("Q")
         ),
 
         MutableBinaryConnected::build(

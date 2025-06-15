@@ -25,8 +25,8 @@ namespace optifol
 
 /**
  * @class MutableFunction
- * @brief A MutableFunction presents an owning IR node term consisting of a display name and zero to many arguments, all
- *  of which are owned as stealable @ref std::unique_ptr objects by the node.
+ * @brief A MutableFunction represents an owning IR node term consisting of a display name and zero to many arguments, all
+ *  of which are owned as transferable @ref std::unique_ptr objects by the node.
  * @see Function for the processed, argument-observing dual.
  */
 class MutableFunction :

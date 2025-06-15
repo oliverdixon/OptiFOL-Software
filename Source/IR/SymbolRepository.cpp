@@ -42,8 +42,8 @@ const Predicate *SymbolRepository::add_symbol(std::unique_ptr<Predicate> &&predi
     if (!inserted) {
         const auto existing_it = predicates.find(*given_handle);
         if (existing_it == predicates.cend())
-            throw std::runtime_error("Sentence predicate " + given_handle->get_name() + " could not be inserted or "
-                                     "located in the symbol repository.");
+            throw std::runtime_error("Sentence predicate " + std::string(given_handle->get_name()) +
+                                     " could not be inserted or located in the symbol repository.");
         return existing_it->get();
     }
 

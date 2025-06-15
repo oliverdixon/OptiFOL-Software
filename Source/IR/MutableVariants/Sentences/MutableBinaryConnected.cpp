@@ -15,7 +15,6 @@
 
 #include "../../../Visitors/MutableTargets/Sentences/IObservingSentenceVisitor.hpp"
 #include "../../../Visitors/MutableTargets/Sentences/MutatingSentenceVisitorBase.hpp"
-#include "../../../Visitors/MutableTargets/Sentences/Serialisers/TextSerialiserVisitor.hpp"
 
 namespace optifol
 {
@@ -49,12 +48,12 @@ void MutableBinaryConnected::accept(MutatingSentenceVisitorBase &visitor)
     visitor.visit(*this);
 }
 
-BinaryOperatorTypes MutableBinaryConnected::get_operator_type() const
+BinaryOperatorTypes MutableBinaryConnected::get_operator_type() const noexcept
 {
     return operator_type;
 }
 
-void MutableBinaryConnected::set_operator_type(const BinaryOperatorTypes new_type)
+void MutableBinaryConnected::set_operator_type(const BinaryOperatorTypes new_type) noexcept
 {
     operator_type = new_type;
 }
@@ -69,12 +68,12 @@ std::unique_ptr<IMutableSentence> MutableBinaryConnected::take_rhs_operand()
     return std::move(rhs);
 }
 
-const IMutableSentence * MutableBinaryConnected::observe_lhs_operand() const
+const IMutableSentence * MutableBinaryConnected::observe_lhs_operand() const noexcept
 {
     return lhs.get();
 }
 
-const IMutableSentence * MutableBinaryConnected::observe_rhs_operand() const
+const IMutableSentence * MutableBinaryConnected::observe_rhs_operand() const noexcept
 {
     return rhs.get();
 }
@@ -96,18 +95,13 @@ void MutableBinaryConnected::accept(IObservingSentenceVisitor &visitor) const
 
 std::size_t MutableBinaryConnected::hash() const noexcept
 {
-    return hash_polarity(hash_combine_commutative(lhs->hash(), rhs->hash()), is_negative_polarity());
+    return BinaryConnected::hash_binary_connected(operator_type, lhs.get(), rhs.get(), is_negative_polarity());
 }
 
 std::ostream &MutableBinaryConnected::serialise(std::ostream &ostream) const
 {
-    if (is_negative_polarity())
-        ostream << '~';
-
-    ostream << '(';
-    lhs->serialise(ostream);
-    ostream << TextSerialiserVisitor::get_operator_symbol(operator_type);
-    return rhs->serialise(ostream) << ')';
+    return BinaryConnected::serialise_binary_connected(ostream, operator_type, lhs.get(), rhs.get(),
+        is_negative_polarity());
 }
 
 }

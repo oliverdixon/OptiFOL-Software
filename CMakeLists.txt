@@ -167,6 +167,8 @@ add_library(OptifolCommon OBJECT
         Source/IR/Terms/IProcessedTerm.cpp
         Source/IR/Terms/IProcessedTerm.hpp
         Source/CompositeSerialisationHelpers.hpp
+        Source/IR/Sentences/BinaryConnected.cpp
+        Source/IR/Sentences/BinaryConnected.hpp
 )
 
 target_link_libraries(OptifolCommon PRIVATE nlohmann_json::nlohmann_json simdjson)
