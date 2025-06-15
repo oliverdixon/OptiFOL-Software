@@ -3,6 +3,13 @@
  * 2025 Oliver Dixon <od641@york.ac.uk>
  */
 
+/**
+ * @file
+ * @brief Class implementation for the Function IR node
+ * @author Oliver Dixon
+ * @date 2025-06-15
+ * @version Development
+ */
 
 #include "Variable.hpp"
 

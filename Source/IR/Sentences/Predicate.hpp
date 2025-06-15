@@ -24,7 +24,7 @@ public:
 
     explicit Predicate(std::string name, std::initializer_list<const IProcessedTerm *> arguments = {}, bool is_positive = true);
 
-    std::string get_name() const;
+    [[nodiscard]] std::string get_name() const;
 
     void flip_polarity() noexcept override;
 
@@ -46,7 +46,7 @@ public:
 
     [[nodiscard]] std::size_t hash() const noexcept override;
 
-    const std::vector<const IProcessedTerm *> &observe_arguments() const noexcept;
+    [[nodiscard]] const std::vector<const IProcessedTerm *> &observe_arguments() const noexcept;
 
 private:
     const std::string name;

@@ -5,7 +5,7 @@
 
 /**
  * @file
- * @brief Class specification for the Function Term IR node
+ * @brief Class specification for the mutable Function IR node
  * @author Oliver Dixon
  * @date 2025-05-06
  * @version Development
@@ -23,14 +23,32 @@
 namespace optifol
 {
 
+/**
+ * @class MutableFunction
+ * @brief A MutableFunction presents an owning IR node term consisting of a display name and zero to many arguments, all
+ *  of which are owned as stealable @ref std::unique_ptr objects by the node.
+ * @see Function for the processed, argument-observing dual.
+ */
 class MutableFunction :
         public IMutableTerm,
         public OwningBuildable<MutableFunction>
 {
 public:
-    [[maybe_unused]] explicit MutableFunction(std::string name, std::vector<std::unique_ptr<IMutableTerm>> &&arguments = {});
+    /**
+     * @brief Create an owning unsigned function with an initial set of owned arguments.
+     * @param name Display name of the function
+     * @param arguments A moveable ordered container owning the initial arguments
+     */
+    [[maybe_unused]] explicit MutableFunction(std::string name,
+        std::vector<std::unique_ptr<IMutableTerm>> &&arguments = {});
 
-    [[maybe_unused]] explicit MutableFunction(std::string name, const std::vector<std::unique_ptr<IMutableTerm>> &arguments);
+    /**
+     * @brief Create an owning unsigned function with an initial set of owned arguments.
+     * @param name Display name of the function
+     * @param arguments A referenced ordered container containing the moveable arguments
+     */
+    [[maybe_unused]] explicit MutableFunction(std::string name,
+        const std::vector<std::unique_ptr<IMutableTerm>> &arguments = {});
 
     [[nodiscard]] std::string to_string() const override;
 
@@ -38,13 +56,24 @@ public:
 
     [[nodiscard]] std::string get_disambiguated_name() const override;
 
+    std::ostream &serialise(std::ostream &ostream) const override;
+
+    [[nodiscard]] std::size_t hash() const noexcept override;
+
     void accept(MutatingTermVisitorBase &visitor) override;
 
+    /**
+     * @brief Observe the constant owning ordered argument collection
+     * @return The arguments owned by the function
+     */
     [[nodiscard]] const std::vector<std::unique_ptr<IMutableTerm>> &observe_arguments() const;
 
+    /**
+     * @brief Observe the mutable owning ordered argument collection
+     * @return The arguments owned by the function
+     * @note This non-constant overload is useful for propagation of <code>accept</code> calls on mutating visitors.
+     */
     std::vector<std::unique_ptr<IMutableTerm>> &observe_arguments();
-
-    std::ostream &serialise(std::ostream &ostream) const override;
 
 protected:
     const std::string name;

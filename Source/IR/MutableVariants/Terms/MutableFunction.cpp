@@ -5,7 +5,7 @@
 
 /**
  * @file
- * @brief Class implementation for the Function Term IR node
+ * @brief Class implementation for the mutable Function IR node
  * @author Oliver Dixon
  * @date 2025-05-06
  * @version Development
@@ -13,7 +13,9 @@
 
 #include "MutableFunction.hpp"
 
+#include "../../../CompositeSerialisationHelpers.hpp"
 #include "../../../Visitors/MutableTargets/Terms/MutatingTermVisitorBase.hpp"
+#include "../../Terms/Function.hpp"
 
 namespace optifol
 {
@@ -33,18 +35,7 @@ MutableFunction::MutableFunction(std::string name, const std::vector<std::unique
 
 std::string MutableFunction::to_string() const
 {
-    std::string result = get_disambiguated_name() + '(';
-
-    auto argument_count = arguments.size();
-
-    for (const auto &arg: arguments) {
-        result += arg->to_string();
-        if (--argument_count > 0)
-            result += ", ";
-    }
-
-    result += ')';
-    return result;
+    return CompositeSerialisationHelpers::string_serialise(name, arguments.cbegin(), arguments.cend());
 }
 
 std::unique_ptr<IMutableTerm> MutableFunction::clone() const
@@ -79,20 +70,12 @@ std::vector<std::unique_ptr<IMutableTerm>> &MutableFunction::observe_arguments()
 
 std::ostream &MutableFunction::serialise(std::ostream &ostream) const
 {
-    ostream << '$' << name << '(';
+    return CompositeSerialisationHelpers::stream_serialise(ostream, name, arguments.cbegin(), arguments.cend());
+}
 
-    if (arguments.empty() == false) {
-        const auto argument_count = arguments.size() - 1;
-
-        for (std::size_t argument_idx = 0; argument_idx < argument_count; ++argument_idx) {
-            arguments[argument_idx]->serialise(ostream);
-            ostream << ", ";
-        }
-
-        arguments[argument_count]->serialise(ostream);
-    }
-
-    return ostream << ')';
+std::size_t MutableFunction::hash() const noexcept
+{
+    return composite_hash(name, arguments.cbegin(), arguments.cend());
 }
 
 } // namespace optifol

@@ -3,16 +3,21 @@
  * 2025 Oliver Dixon <od641@york.ac.uk>
  */
 
-//
-// Created by owd on 6/14/25.
-//
+/**
+ * @file
+ * @brief Class specification for the IR Processed Term interface
+ * @author Oliver Dixon
+ * @date 2025-06-14
+ * @version Development
+ */
 
 #ifndef IPROCESSEDTERM_HPP
 #define IPROCESSEDTERM_HPP
 
 #include "ITerm.hpp"
 
-namespace optifol {
+namespace optifol
+{
 
 class IProcessedTerm :
         public ITerm

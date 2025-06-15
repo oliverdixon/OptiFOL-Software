@@ -3,6 +3,14 @@
  * 2025 Oliver Dixon <od641@york.ac.uk>
  */
 
+/**
+ * @file
+ * @brief Class specification for the Variable IR node
+ * @author Oliver Dixon
+ * @date 2025-06-15
+ * @version Development
+ */
+
 #ifndef VARIABLE_HPP
 #define VARIABLE_HPP
 

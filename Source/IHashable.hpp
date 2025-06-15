@@ -20,6 +20,17 @@
 namespace optifol
 {
 
+class IHashable;
+
+template<typename Candidate>
+concept HashableIterator =
+        std::bidirectional_iterator<Candidate> &&
+        std::is_const_v<std::remove_reference_t<decltype(*std::declval<Candidate>())>> &&
+    requires(const Candidate& candidate)
+{
+    { (*candidate)->hash() } -> std::convertible_to<std::size_t>;
+};
+
 /**
  * @class IHashable
  * @brief An IHashable class can be hashed, such that a (relatively) content-dependent numerical hashcode can be
@@ -90,6 +101,28 @@ protected:
         // In the negative case, use MurmurHash3 as the XOR constant, and shift as usual.
         return is_negative ? hash ^ 0x85ebca6b + (hash << 6) + (hash >> 2) : hash;
     }
+
+    /**
+     * @brief Produce a hash value of a composite IR IHashable node by iterative application of
+     *  @ref hash_combine(std::size_t, std::size_t).
+     * @tparam Iterator @ref HashableIterator over the composed (e.g. argument) collection
+     * @param symbol_name Symbol display name
+     * @param composite_begin Beginning iterator of the composed collection
+     * @param composite_end Ending iterator of the composed collection (one past last item)
+     * @param is_negative_polarity Is the symbol instantiated with a negative polarity?
+     * @return Combined hash value unique over the symbol name and all composed arguments
+     */
+    template<HashableIterator Iterator>
+    static std::size_t composite_hash(const std::string& symbol_name, const Iterator composite_begin,
+        const Iterator composite_end, const bool is_negative_polarity = false)
+    {
+        std::size_t hashcode = std::hash<std::string>{}(symbol_name);
+
+        for (auto composite_it = composite_begin; composite_it != composite_end; ++composite_it)
+            hashcode = hash_combine(hashcode, (*composite_it)->hash());
+
+        return hash_polarity(hashcode, is_negative_polarity);
+    }
 };
 
 /**
@@ -108,7 +141,7 @@ protected:
  */
 template<typename BaseType>
 concept TransparentlyHashable =
-    std::derived_from<BaseType, IHashable> &&
+        std::derived_from<BaseType, IHashable> &&
     requires(BaseType value, std::unique_ptr<BaseType> unique_wrapper, std::shared_ptr<BaseType> shared_wrapper)
 {
     { std::hash<BaseType>{}(value) } -> std::convertible_to<std::size_t>;

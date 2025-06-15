@@ -2,6 +2,7 @@
   <dictionary name="project">
     <words>
       <w>despatch</w>
+      <w>serialisable</w>
     </words>
   </dictionary>
 </component>

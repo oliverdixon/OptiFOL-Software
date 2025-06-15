@@ -24,6 +24,10 @@
 namespace optifol
 {
 
+/**
+ * @class MutablePredicate
+ *
+ */
 class MutablePredicate :
         public IMutableSentence,
         public OwningBuildable<MutablePredicate>

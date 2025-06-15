@@ -5,6 +5,7 @@
 
 #include "Predicate.hpp"
 
+#include "../../CompositeSerialisationHelpers.hpp"
 #include "../../Visitors/RegularTargets/Unification/UnificationVisitor.hpp"
 
 namespace optifol
@@ -40,7 +41,8 @@ bool Predicate::is_negative_polarity() const noexcept
 
 std::ostream &Predicate::serialise(std::ostream &ostream) const
 {
-    return ostream; // TODO URGENT
+    return CompositeSerialisationHelpers::stream_serialise(ostream, name, arguments.cbegin(), arguments.cend(),
+        is_negative_polarity());
 }
 
 bool Predicate::accept(UnificationVisitor &visitor, const Predicate &target) const
@@ -50,7 +52,7 @@ bool Predicate::accept(UnificationVisitor &visitor, const Predicate &target) con
 
 std::size_t Predicate::hash() const noexcept
 {
-    return 0; // TODO URGENT
+    return composite_hash(name, arguments.cbegin(), arguments.cend(), is_negative_polarity());
 }
 
 const std::vector<const IProcessedTerm *> &Predicate::observe_arguments() const noexcept

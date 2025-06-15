@@ -166,6 +166,7 @@ add_library(OptifolCommon OBJECT
         Source/IR/Terms/Function.hpp
         Source/IR/Terms/IProcessedTerm.cpp
         Source/IR/Terms/IProcessedTerm.hpp
+        Source/CompositeSerialisationHelpers.hpp
 )
 
 target_link_libraries(OptifolCommon PRIVATE nlohmann_json::nlohmann_json simdjson)

@@ -3,11 +3,17 @@
  * 2025 Oliver Dixon <od641@york.ac.uk>
  */
 
-//
-// Created by owd on 6/14/25.
-//
+/**
+ * @file
+ * @brief Class implementation for the Function IR node
+ * @author Oliver Dixon
+ * @date 2025-06-15
+ * @version Development
+ */
 
 #include "Function.hpp"
+
+#include "../../CompositeSerialisationHelpers.hpp"
 
 namespace optifol
 {
@@ -26,19 +32,7 @@ const std::vector<const IProcessedTerm *> &Function::observe_arguments() const n
 
 std::string Function::to_string() const
 {
-    // TODO URGENT compartmentalise into iterator-based static member function
-    std::string result = get_disambiguated_name() + '(';
-
-    auto argument_count = arguments.size();
-
-    for (const auto &arg: arguments) {
-        result += arg->to_string();
-        if (--argument_count > 0)
-            result += ", ";
-    }
-
-    result += ')';
-    return result;
+    return CompositeSerialisationHelpers::string_serialise(name, arguments.cbegin(), arguments.cend());
 }
 
 std::string Function::get_disambiguated_name() const
@@ -48,21 +42,12 @@ std::string Function::get_disambiguated_name() const
 
 std::ostream &Function::serialise(std::ostream &ostream) const
 {
-    // TODO URGENT compartmentalise into iterator-based static member function
-    ostream << '$' << name << '(';
+    return CompositeSerialisationHelpers::stream_serialise(ostream, name, arguments.cbegin(), arguments.cend());
+}
 
-    if (arguments.empty() == false) {
-        const auto argument_count = arguments.size() - 1;
-
-        for (std::size_t argument_idx = 0; argument_idx < argument_count; ++argument_idx) {
-            arguments[argument_idx]->serialise(ostream);
-            ostream << ", ";
-        }
-
-        arguments[argument_count]->serialise(ostream);
-    }
-
-    return ostream << ')';
+std::size_t Function::hash() const noexcept
+{
+    return composite_hash(name, arguments.cbegin(), arguments.cend());
 }
 
 } // namespace optifol

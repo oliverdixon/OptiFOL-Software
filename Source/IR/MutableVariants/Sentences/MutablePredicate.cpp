@@ -11,11 +11,13 @@
  * @version Development
  */
 
+#include "MutablePredicate.hpp"
+
+#include "../../../CompositeSerialisationHelpers.hpp"
 #include "../../../Visitors/MutableTargets/Sentences/IObservingSentenceVisitor.hpp"
 #include "../../../Visitors/MutableTargets/Sentences/MutatingSentenceVisitorBase.hpp"
 #include "../Terms/IMutableTerm.hpp"
 #include "../Terms/MutableVariable.hpp"
-#include "MutablePredicate.hpp"
 
 namespace optifol
 {
@@ -82,32 +84,13 @@ void MutablePredicate::accept(IObservingSentenceVisitor &visitor) const
 
 std::size_t MutablePredicate::hash() const noexcept
 {
-    auto hash = std::hash<std::string>{}(name);
-    for (const auto &argument: arguments)
-        hash = hash_combine(hash, argument->hash());
-
-    return hash_polarity(hash, is_negative_polarity());
+    return composite_hash(name, arguments.cbegin(), arguments.cend(), is_negative_polarity());
 }
 
 std::ostream &MutablePredicate::serialise(std::ostream &ostream) const
 {
-    if (is_negative_polarity())
-        ostream << '~';
-
-    ostream << name << '(';
-
-    if (arguments.empty() == false) {
-        const auto argument_count = arguments.size() - 1;
-
-        for (std::size_t argument_idx = 0; argument_idx < argument_count; ++argument_idx) {
-            arguments[argument_idx]->serialise(ostream);
-            ostream << ", ";
-        }
-
-        arguments[argument_count]->serialise(ostream);
-    }
-
-    return ostream << ')';
+    return CompositeSerialisationHelpers::stream_serialise(ostream, name, arguments.cbegin(), arguments.cend(),
+        is_negative_polarity());
 }
 
 }
