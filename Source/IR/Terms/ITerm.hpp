@@ -33,10 +33,13 @@ public:
 
     [[nodiscard]] std::size_t hash() const noexcept override
     {
-        return std::hash<std::string>{}(get_disambiguated_name());
+        return std::hash<std::string>{}(to_string());
     }
 
-    virtual std::ostream &serialise(std::ostream &ostream) const = 0;
+    virtual std::ostream &serialise(std::ostream &ostream) const
+    {
+        return ostream << to_string();
+    }
 
     bool operator==(const ITerm &other) const
     {

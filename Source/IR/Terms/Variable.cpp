@@ -27,11 +27,6 @@ Variable::Variable(std::string name, const std::string &disambiguated_name) :
 {
 }
 
-std::ostream &Variable::serialise(std::ostream &ostream) const
-{
-    return ostream << name;
-}
-
 std::string Variable::to_string() const
 {
     return name;

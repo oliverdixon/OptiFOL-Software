@@ -41,11 +41,6 @@ void MutableVariable::accept(MutatingTermVisitorBase &visitor)
     visitor.visit(*this);
 }
 
-std::ostream &MutableVariable::serialise(std::ostream &ostream) const
-{
-    return ostream << name;
-}
-
 std::string MutableVariable::to_string() const
 {
     return name;

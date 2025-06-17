@@ -43,17 +43,17 @@ bool MutableQuantified::is_negative_polarity() const noexcept
     return !is_positive;
 }
 
-void MutableQuantified::set_quantifier_type(const QuantifierTypes quantifier_type)
+void MutableQuantified::set_quantifier_type(const QuantifierTypes quantifier_type) noexcept
 {
     this->quantifier_type = quantifier_type;
 }
 
-QuantifierTypes MutableQuantified::get_quantifier_type() const
+QuantifierTypes MutableQuantified::get_quantifier_type() const noexcept
 {
     return quantifier_type;
 }
 
-const IMutableTerm *MutableQuantified::observe_bound_term() const
+const IMutableTerm *MutableQuantified::observe_bound_term() const noexcept
 {
     return bound_term.get();
 }
@@ -68,7 +68,7 @@ std::unique_ptr<IMutableSentence> MutableQuantified::take_sentence()
     return std::move(sentence);
 }
 
-const IMutableSentence *MutableQuantified::observe_sentence() const
+const IMutableSentence *MutableQuantified::observe_sentence() const noexcept
 {
     return sentence.get();
 }
@@ -90,25 +90,13 @@ void MutableQuantified::accept(IObservingSentenceVisitor &visitor) const
 
 std::size_t MutableQuantified::hash() const noexcept
 {
-    auto hash = std::hash<std::underlying_type_t<QuantifierTypes>>{}(
-        static_cast<std::underlying_type_t<QuantifierTypes>>(quantifier_type));
-
-    hash = hash_combine(hash, bound_term->hash());
-    hash = hash_combine(hash, sentence->hash());
-
-    return hash_polarity(hash, is_negative_polarity());
+    return Quantified::hash_quantified(quantifier_type, bound_term.get(), sentence.get(), is_positive);
 }
 
 std::ostream &MutableQuantified::serialise(std::ostream &ostream) const
 {
-    if (is_negative_polarity())
-        ostream << '~';
-
-    ostream << '(' << TextSerialiserVisitor::get_operator_symbol(quantifier_type);
-    bound_term->serialise(ostream);
-    ostream << '(';
-    sentence->serialise(ostream);
-    return ostream << ')';
+    return Quantified::serialise_quantified(ostream, quantifier_type, bound_term.get(), sentence.get(),
+        is_positive);
 }
 
 void MutableQuantified::put_bound_term(std::unique_ptr<IMutableTerm> &&new_bound_term)

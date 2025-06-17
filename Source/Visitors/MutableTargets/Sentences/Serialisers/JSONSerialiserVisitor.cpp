@@ -71,15 +71,16 @@ void JSONSerialiserVisitor::visit(const MutableIdentity &node)
 
 void JSONSerialiserVisitor::visit(const MutablePredicate &node)
 {
-    nlohmann::json arguments = nlohmann::json::array();
+    nlohmann::json json_arguments = nlohmann::json::array();
+    const auto& arguments = node.observe_arguments();
 
-    for (const auto& argument : node.arguments)
-        arguments.push_back(argument->to_string());
+    for (const auto& argument : arguments)
+        json_arguments.push_back(argument->to_string());
 
     output = {
         { "type", "predicate" },
-        { "name", node.name },
-        { "arguments", std::move(arguments) }
+        { "name", node.get_name() },
+        { "arguments", std::move(json_arguments) }
     };
 
     print_polarity(&node);

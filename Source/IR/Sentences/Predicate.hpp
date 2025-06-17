@@ -85,10 +85,7 @@ public:
      * @return Is the wrapped predicate hash-equal to us?
      * @see GoogleTestable for desired concept
      */
-    bool operator==(const std::unique_ptr<Predicate>& other) const noexcept
-    {
-        return other->hash() == hash();
-    }
+    bool operator==(const std::unique_ptr<Predicate>& other) const noexcept;
 
     /**
      * @brief Compare with another predicate wrapped in a @ref std::shared_ptr
@@ -96,17 +93,12 @@ public:
      * @return Is the wrapped predicate hash-equal to us?
      * @see TransparentlyHashable for rationale
      */
-    bool operator==(const std::shared_ptr<Predicate>& other) const noexcept
-    {
-        return other->hash() == hash();
-    }
+    bool operator==(const std::shared_ptr<Predicate>& other) const noexcept;
 
 private:
     const std::string name;
-
-    std::vector<const IProcessedTerm *> arguments;
-
-    bool is_positive = true;
+    const std::vector<const IProcessedTerm *> arguments;
+    const bool is_positive = true;
 };
 
 }

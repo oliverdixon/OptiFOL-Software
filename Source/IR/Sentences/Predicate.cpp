@@ -19,12 +19,12 @@
 namespace optifol
 {
 
-Predicate::Predicate(std::string name, const bool is_positive, const std::initializer_list<const IProcessedTerm *> arguments) :
-    name(std::move(name)), is_positive(is_positive)
+Predicate::Predicate(std::string name, const bool is_positive,
+        const std::initializer_list<const IProcessedTerm *> arguments) :
+    name(std::move(name)),
+    arguments(arguments),
+    is_positive(is_positive)
 {
-    this->arguments.reserve(arguments.size());
-    for (const auto argument: arguments)
-        this->arguments.push_back(argument);
 }
 
 Predicate::Predicate(std::string name, std::initializer_list<const IProcessedTerm *> arguments, const bool is_positive) :
@@ -46,6 +46,16 @@ std::ostream &Predicate::serialise(std::ostream &ostream) const
 bool Predicate::accept(UnificationVisitor &visitor, const Predicate &target) const
 {
     return visitor.visit(*this, target);
+}
+
+bool Predicate::operator==(const std::unique_ptr<Predicate> &other) const noexcept
+{
+    return other->hash() == hash();
+}
+
+bool Predicate::operator==(const std::shared_ptr<Predicate> &other) const noexcept
+{
+    return other->hash() == hash();
 }
 
 std::size_t Predicate::hash() const noexcept

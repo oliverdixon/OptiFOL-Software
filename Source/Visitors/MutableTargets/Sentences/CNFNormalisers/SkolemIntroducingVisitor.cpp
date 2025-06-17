@@ -74,7 +74,7 @@ void SkolemIntroducingVisitor::visit(MutablePredicate &node)
     if (skolem_replacements.empty())
         return;
 
-    auto &args = node.arguments;
+    auto &args = node.observe_arguments();
     const auto argument_count = args.size();
 
     for (std::remove_const_t<decltype(argument_count)> i = 0; i < argument_count; ++i) {

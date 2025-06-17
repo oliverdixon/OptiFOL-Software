@@ -48,7 +48,7 @@ void SymbolStandardisingVisitor::visit(MutableQuantified &node)
 
 void SymbolStandardisingVisitor::visit(MutablePredicate &node)
 {
-    auto &args = node.arguments;
+    auto &args = node.observe_arguments();
     const auto argument_count = args.size();
 
     // For each term argument, apply any relevant disambiguation rewriting. Then recurse with the term visitor.

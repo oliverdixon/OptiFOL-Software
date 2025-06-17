@@ -169,6 +169,8 @@ add_library(OptifolCommon OBJECT
         Source/CompositeSerialisationHelpers.hpp
         Source/IR/Sentences/BinaryConnected.cpp
         Source/IR/Sentences/BinaryConnected.hpp
+        Source/IR/Sentences/Quantified.cpp
+        Source/IR/Sentences/Quantified.hpp
 )
 
 target_link_libraries(OptifolCommon PRIVATE nlohmann_json::nlohmann_json simdjson)

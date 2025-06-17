@@ -41,8 +41,6 @@ public:
 
     [[nodiscard]] std::string extract();
 
-    [[nodiscard]] static const char *get_operator_symbol(QuantifierTypes type);
-
 private:
     std::ostringstream output_stream;
 

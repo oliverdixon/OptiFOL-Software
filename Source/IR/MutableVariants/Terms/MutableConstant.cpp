@@ -42,9 +42,4 @@ void MutableConstant::accept(MutatingTermVisitorBase &visitor)
     visitor.visit(*this);
 }
 
-std::ostream &MutableConstant::serialise(std::ostream &ostream) const
-{
-    return ostream << name;
-}
-
 } // namespace optifol

@@ -90,7 +90,22 @@ std::size_t MutablePredicate::hash() const noexcept
 std::ostream &MutablePredicate::serialise(std::ostream &ostream) const
 {
     return CompositeSerialisationHelpers::stream_serialise(ostream, name, arguments.cbegin(), arguments.cend(),
-        is_negative_polarity());
+                                                           is_negative_polarity());
 }
 
+std::string_view MutablePredicate::get_name() const noexcept
+{
+    return name;
 }
+
+const std::vector<std::unique_ptr<IMutableTerm>> &MutablePredicate::observe_arguments() const
+{
+    return arguments;
+}
+
+std::vector<std::unique_ptr<IMutableTerm>> &MutablePredicate::observe_arguments()
+{
+    return arguments;
+}
+
+} // namespace optifol

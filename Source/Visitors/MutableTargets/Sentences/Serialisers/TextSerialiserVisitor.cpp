@@ -25,7 +25,7 @@ namespace optifol
 void TextSerialiserVisitor::visit(const MutableQuantified &node)
 {
     print_polarity(&node);
-    output_stream << get_operator_symbol(node.get_quantifier_type())
+    output_stream << Quantified::get_operator_symbol(node.get_quantifier_type())
                   << node.observe_bound_term()->to_string() << ' ';
 
     node.observe_sentence()->accept(*this);
@@ -52,15 +52,16 @@ void TextSerialiserVisitor::visit(const MutableIdentity &node)
 
 void TextSerialiserVisitor::visit(const MutablePredicate &node)
 {
+    const auto& arguments = node.observe_arguments();
     print_polarity(&node);
-    output_stream << node.name << '(';
+    output_stream << node.get_name() << '(';
 
-    const auto argument_count = node.arguments.size();
+    const auto argument_count = arguments.size();
     for (std::remove_const_t<decltype(argument_count)> i = 1; i < argument_count; ++i)
-        output_stream << node.arguments[i - 1]->to_string() << ',' << ' ';
+        output_stream << arguments[i - 1]->to_string() << ',' << ' ';
 
     if (argument_count > 0)
-        output_stream << node.arguments[argument_count - 1]->to_string();
+        output_stream << arguments[argument_count - 1]->to_string();
 
     output_stream << ')';
 }
@@ -75,19 +76,6 @@ std::string TextSerialiserVisitor::extract()
     auto str = output_stream.str();
     std::ostringstream().swap(output_stream);
     return str;
-}
-
-const char *TextSerialiserVisitor::get_operator_symbol(QuantifierTypes type)
-{
-    // TODO move into Quantified class.
-    switch (type) {
-    case QuantifierTypes::Universal:
-        return "ForAll ";
-    case QuantifierTypes::Existential:
-        return "ThereExists ";
-    }
-
-    return "? ";
 }
 
 void TextSerialiserVisitor::print_polarity(const IMutableSentence *node)

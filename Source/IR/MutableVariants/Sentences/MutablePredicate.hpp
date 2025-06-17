@@ -87,10 +87,28 @@ public:
 
     std::ostream &serialise(std::ostream &ostream) const override;
 
-    const std::string name; // TODO move
-    std::vector<std::unique_ptr<IMutableTerm>> arguments; // TODO move
+    /**
+     * @brief Get the display name of the mutable predicate, not including any arguments or metadata
+     * @return A view of the predicate symbol name
+     */
+    std::string_view get_name() const noexcept;
+
+    /**
+     * @brief Observe the constant owning ordered argument collection
+     * @return The arguments owned by the predicate
+     */
+    [[nodiscard]] const std::vector<std::unique_ptr<IMutableTerm>> &observe_arguments() const;
+
+    /**
+     * @brief Observe the mutable owning ordered argument collection
+     * @return The arguments owned by the predicate
+     * @note This non-constant overload is useful for propagation of <code>accept</code> calls on mutating visitors.
+     */
+    std::vector<std::unique_ptr<IMutableTerm>> &observe_arguments();
 
 private:
+    const std::string name;
+    std::vector<std::unique_ptr<IMutableTerm>> arguments;
     bool is_positive = true;
 };
 

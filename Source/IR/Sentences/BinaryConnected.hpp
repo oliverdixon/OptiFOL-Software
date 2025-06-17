@@ -36,7 +36,7 @@ enum class BinaryOperatorTypes
  * @brief A BinaryConnected IR node references two operands semantically joined with an operator. Metadata and operands
  *  are immutable; operands are held centrally in a SymbolRepository.
  * @see BinaryOperatorTypes for modes of connection
- * @see MutableBinaryConnected for owning dual
+ * @see MutableBinaryConnected for the owning dual
  */
 class BinaryConnected :
         public ISentence
@@ -82,7 +82,7 @@ public:
      * @param lhs An observing pointer to the LHS operand
      * @param rhs An observing pointer to the RHS operand
      * @param is_negative_polarity Has the target been instantiated with a negative polarity?
-     * @return The hash of the object described by the given parameters
+     * @return Numeric hash of the binary-connected node described by the given parameters
      */
     [[nodiscard]] static std::size_t hash_binary_connected(BinaryOperatorTypes operator_type, const ISentence *lhs,
                                              const ISentence *rhs, bool is_negative_polarity) noexcept;
