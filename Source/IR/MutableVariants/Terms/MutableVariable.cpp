@@ -19,14 +19,16 @@
 namespace optifol
 {
 
-MutableVariable::MutableVariable(std::string name):
+MutableVariable::MutableVariable(std::string name) :
     name(std::move(name))
-{}
+{
+}
 
 MutableVariable::MutableVariable(std::string name, const std::string &disambiguated_name) :
     name(std::move(name)),
     disambiguated_name(disambiguated_name)
-{}
+{
+}
 
 std::unique_ptr<IMutableTerm> MutableVariable::clone() const
 {
@@ -46,9 +48,12 @@ std::string MutableVariable::to_string() const
     return name;
 }
 
-std::string MutableVariable::get_disambiguated_name() const
+std::string_view MutableVariable::get_disambiguated_name() const
 {
-    return disambiguated_name.value_or(name);
+    if (disambiguated_name.has_value())
+        return *disambiguated_name;
+
+    return name;
 }
 
 } // namespace optifol

@@ -20,7 +20,7 @@ namespace optifol
 {
 
 MutableBinaryConnected::MutableBinaryConnected(const BinaryOperatorTypes operator_type,
-        std::unique_ptr<IMutableSentence>&& lhs, std::unique_ptr<IMutableSentence>&& rhs, const bool is_positive) :
+        std::unique_ptr<IMutableSentence> &&lhs, std::unique_ptr<IMutableSentence> &&rhs, const bool is_positive) :
     operator_type(operator_type),
     lhs(std::move(lhs)),
     rhs(std::move(rhs)),
@@ -68,12 +68,12 @@ std::unique_ptr<IMutableSentence> MutableBinaryConnected::take_rhs_operand()
     return std::move(rhs);
 }
 
-const IMutableSentence * MutableBinaryConnected::observe_lhs_operand() const noexcept
+const IMutableSentence *MutableBinaryConnected::observe_lhs_operand() const noexcept
 {
     return lhs.get();
 }
 
-const IMutableSentence * MutableBinaryConnected::observe_rhs_operand() const noexcept
+const IMutableSentence *MutableBinaryConnected::observe_rhs_operand() const noexcept
 {
     return rhs.get();
 }
@@ -100,8 +100,8 @@ std::size_t MutableBinaryConnected::hash() const noexcept
 
 std::ostream &MutableBinaryConnected::serialise(std::ostream &ostream) const
 {
-    return BinaryConnected::serialise_binary_connected(ostream, operator_type, lhs.get(), rhs.get(),
-        is_negative_polarity());
+    return BinaryConnected::serialise_binary_connected(
+            ostream, operator_type, lhs.get(), rhs.get(), is_negative_polarity());
 }
 
-}
+} // namespace optifol

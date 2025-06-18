@@ -32,7 +32,7 @@ std::string Variable::to_string() const
     return name;
 }
 
-std::string Variable::get_disambiguated_name() const
+std::string_view Variable::get_disambiguated_name() const
 {
     return disambiguated_name.value_or(name);
 }

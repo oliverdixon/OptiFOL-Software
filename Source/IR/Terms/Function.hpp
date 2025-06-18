@@ -40,7 +40,7 @@ public:
 
     [[nodiscard]] std::string to_string() const override;
 
-    [[nodiscard]] std::string get_disambiguated_name() const override;
+    [[nodiscard]] std::string_view get_disambiguated_name() const override;
 
     std::ostream &serialise(std::ostream &ostream) const override;
 

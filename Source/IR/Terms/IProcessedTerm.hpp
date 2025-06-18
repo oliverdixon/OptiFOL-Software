@@ -19,15 +19,34 @@
 namespace optifol
 {
 
-class IProcessedTerm :
-        public ITerm
+/**
+ * @class IProcessedTerm
+ * @brief An IProcessedTerm is an ITerm that has undergone the lexing, parsing, and normalisation pipeline and is now
+ *  held, in its disambiguated form, in a centralised SymbolRepository.
+ * @details Such terms are always immutable and have lifetime guarantees in accordance with their responsible
+ *  SymbolRepository. They are also capable of accepting visits from visitors with immutable (a.k.a. "regular") targets,
+ *  such as the UnificationVisitor.
+ */
+class IProcessedTerm : public ITerm
 {
 public:
+    /**
+     * @brief Accept a UnificationVisitor request for unification with a generic IProcessedTerm
+     * @param visitor The UnificationVisitor instance conducting the unification
+     * @param target The target node with which unification should be attempted
+     * @return Did the UnificationVisitor indicate successful unification?
+     */
     virtual bool accept(UnificationVisitor &visitor, const IProcessedTerm &target) const;
 
+    /**
+     * @brief Accept a UnificationVisitor request for unification with a Function term
+     * @param visitor The UnificationVisitor instance conducting the unification
+     * @param target The target node with which unification should be attempted
+     * @return Did the UnificationVisitor indicate successful unification?
+     */
     virtual bool accept(UnificationVisitor &visitor, const Function &target) const;
 };
 
-} // optifol
+} // namespace optifol
 
-#endif //IPROCESSEDTERM_HPP
+#endif // IPROCESSEDTERM_HPP

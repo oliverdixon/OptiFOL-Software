@@ -22,15 +22,18 @@
 namespace optifol
 {
 
-MutablePredicate::MutablePredicate(std::string name, const bool is_positive,
-                                 std::vector<std::unique_ptr<IMutableTerm>> &&arguments) :
-    name(std::move(name)), arguments(std::move(arguments)), is_positive(is_positive)
+MutablePredicate::MutablePredicate(
+        std::string name, const bool is_positive, std::vector<std::unique_ptr<IMutableTerm>> &&arguments) :
+    name(std::move(name)),
+    arguments(std::move(arguments)),
+    is_positive(is_positive)
 {
 }
 
-MutablePredicate::MutablePredicate(std::string name, const bool is_positive,
-                                 const std::vector<std::unique_ptr<IMutableTerm>> &arguments) :
-    name(std::move(name)), is_positive(is_positive)
+MutablePredicate::MutablePredicate(
+        std::string name, const bool is_positive, const std::vector<std::unique_ptr<IMutableTerm>> &arguments) :
+    name(std::move(name)),
+    is_positive(is_positive)
 {
     this->arguments.reserve(arguments.size());
     for (const auto &arg: arguments)
@@ -56,7 +59,7 @@ std::unique_ptr<IMutableSentence> MutablePredicate::clone() const
 {
     std::vector<std::unique_ptr<IMutableTerm>> cloned_arguments;
     cloned_arguments.reserve(arguments.size());
-    for (const auto& argument : arguments)
+    for (const auto &argument: arguments)
         cloned_arguments.push_back(argument->clone());
 
     return std::make_unique<MutablePredicate>(name, is_positive, std::move(cloned_arguments));
@@ -89,8 +92,8 @@ std::size_t MutablePredicate::hash() const noexcept
 
 std::ostream &MutablePredicate::serialise(std::ostream &ostream) const
 {
-    return CompositeSerialisationHelpers::stream_serialise(ostream, name, arguments.cbegin(), arguments.cend(),
-                                                           is_negative_polarity());
+    return CompositeSerialisationHelpers::stream_serialise(
+            ostream, name, arguments.cbegin(), arguments.cend(), is_negative_polarity());
 }
 
 std::string_view MutablePredicate::get_name() const noexcept

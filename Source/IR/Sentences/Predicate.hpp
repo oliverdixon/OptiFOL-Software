@@ -30,8 +30,7 @@ class UnificationVisitor;
  *  all of which are referenced from the centralised SymbolRepository.
  * @see MutablePredicate for the unprocessed, argument-owning dual.
  */
-class Predicate :
-        public ISentence
+class Predicate : public ISentence
 {
 public:
     /**
@@ -40,8 +39,8 @@ public:
      * @param is_positive Should the predicate be instantiated with a positive polarity?
      * @param arguments Set of non-owning pointers to immutable arguments
      */
-    explicit Predicate(std::string name, bool is_positive = true, std::initializer_list<const IProcessedTerm *>
-        arguments = {});
+    explicit Predicate(
+            std::string name, bool is_positive = true, std::initializer_list<const IProcessedTerm *> arguments = {});
 
     /**
      * @brief Create a signed predicate with an initial set of referenced arguments
@@ -49,8 +48,8 @@ public:
      * @param arguments Set of non-owning pointers to immutable arguments
      * @param is_positive Should the predicate be instantiated with a positive polarity?
      */
-    explicit Predicate(std::string name, std::initializer_list<const IProcessedTerm *> arguments = {},
-        bool is_positive = true);
+    explicit Predicate(
+            std::string name, std::initializer_list<const IProcessedTerm *> arguments = {}, bool is_positive = true);
 
     [[nodiscard]] bool is_negative_polarity() const noexcept override;
 
@@ -85,7 +84,7 @@ public:
      * @return Is the wrapped predicate hash-equal to us?
      * @see GoogleTestable for desired concept
      */
-    bool operator==(const std::unique_ptr<Predicate>& other) const noexcept;
+    bool operator==(const std::unique_ptr<Predicate> &other) const noexcept;
 
     /**
      * @brief Compare with another predicate wrapped in a @ref std::shared_ptr
@@ -93,7 +92,7 @@ public:
      * @return Is the wrapped predicate hash-equal to us?
      * @see TransparentlyHashable for rationale
      */
-    bool operator==(const std::shared_ptr<Predicate>& other) const noexcept;
+    bool operator==(const std::shared_ptr<Predicate> &other) const noexcept;
 
 private:
     const std::string name;
@@ -101,6 +100,6 @@ private:
     const bool is_positive = true;
 };
 
-}
+} // namespace optifol
 
 #endif

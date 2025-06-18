@@ -23,21 +23,18 @@ namespace optifol
 
 class MutableVariable;
 
-class MutableSkolemFunction :
-        public MutableFunction
+class MutableSkolemFunction : public MutableFunction
 {
 public:
-    [[maybe_unused]] explicit MutableSkolemFunction(std::string name,
-        std::vector<std::unique_ptr<IMutableTerm>> &&quantified_variables = {});
+    [[maybe_unused]] explicit MutableSkolemFunction(
+            std::string name, std::vector<std::unique_ptr<IMutableTerm>> &&quantified_variables = {});
 
-    [[maybe_unused]] explicit MutableSkolemFunction(std::string name,
-        const std::vector<std::unique_ptr<IMutableTerm>> &quantified_variables);
+    [[maybe_unused]] explicit MutableSkolemFunction(
+            std::string name, const std::vector<std::unique_ptr<IMutableTerm>> &quantified_variables);
 
     [[nodiscard]] std::unique_ptr<IMutableTerm> clone() const override;
-
-    [[nodiscard]] std::string get_disambiguated_name() const override;
 };
 
-}
+} // namespace optifol
 
 #endif

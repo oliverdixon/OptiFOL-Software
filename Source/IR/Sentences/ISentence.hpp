@@ -24,8 +24,7 @@ namespace optifol
  * @brief A sentence represents a first-order logic sentence node within an IR tree. In most instantiations, it may
  *  consist of a deeply nested structure and always supports a polarity, i.e. positive or negative.
  */
-class ISentence :
-        public IHashable
+class ISentence : public IHashable
 {
 public:
     [[nodiscard]] virtual bool is_negative_polarity() const noexcept = 0;
@@ -42,9 +41,9 @@ public:
      * @brief Serialise a basic representation of the ISentence object on the given output stream
      * @param ostream The destination output stream
      * @param object The sentence to serialise
-    * @note This function is provided for satisfaction of @ref GoogleTestable.
+     * @note This function is provided for satisfaction of @ref GoogleTestable.
      */
-    friend std::ostream& operator<<(std::ostream& ostream, const ISentence& object)
+    friend std::ostream &operator<<(std::ostream &ostream, const ISentence &object)
     {
         return object.serialise(ostream);
     }
@@ -56,12 +55,12 @@ public:
      * @note The metric of equality is hash-based
      * @note This function is provided for satisfaction of @ref GoogleTestable.
      */
-    [[nodiscard]] bool operator==(const ISentence& other) const
+    [[nodiscard]] bool operator==(const ISentence &other) const
     {
         return hash() == other.hash();
     }
 };
 
-}
+} // namespace optifol
 
 #endif

@@ -23,45 +23,98 @@ class UnificationVisitor;
 class Variable;
 class Function;
 
-class ITerm :
-        public IHashable
+/**
+ * @class ITerm
+ * @brief The ITerm interface describes a generic term in first-order logic.
+ * @details
+ *  <p>
+ *      Typical FOL terms include:
+ *      <ul>
+ *          <li>Functions (inc. introduced Skolem functions)</li>
+ *          <li>Bound variables</li>
+ *          <li>Constants</li>
+ *      </ul>
+ *  </p>
+ *  <p>
+ *      All terms contain a display name, which is guaranteed to match the symbol identifier provided by the user. Terms
+ *      also include a disambiguated name, which may or may not be equal to the display name and is resolved internally
+ *      to guarantee uniqueness within the scope of a single sentence. More precisely, the disambiguated name is unique
+ *      up to the outermost IR node, but not necessarily across multiple SentenceRoot or ITerm root objects.
+ *  </p>
+ */
+class ITerm : public IHashable
 {
 public:
-    [[nodiscard]] virtual std::string to_string() const = 0;
-
-    [[nodiscard]] virtual std::string get_disambiguated_name() const = 0;
-
     [[nodiscard]] std::size_t hash() const noexcept override
     {
         return std::hash<std::string>{}(to_string());
     }
 
+    /**
+     * @brief Create a human-readable @ref std::string representing the term, including all child terms.
+     * @return The constructed string representation of the term
+     */
+    [[nodiscard]] virtual std::string to_string() const = 0;
+
+    /**
+     * @brief Create a view of the disambiguated term identifier
+     * @return The observing string view of the disambiguated name
+     */
+    [[nodiscard]] virtual std::string_view get_disambiguated_name() const = 0;
+
+    /**
+     * @brief Serialise the ITerm to a destination output @ref std::ostream stream
+     * @param ostream The destination output stream
+     * @return The populated destination output stream
+     */
     virtual std::ostream &serialise(std::ostream &ostream) const
     {
         return ostream << to_string();
     }
 
+    /**
+     * @brief Test hash-based equality with another ITerm
+     * @param other The ITerm with which equivalence should be tested
+     * @return Are the ITerm objects equal?
+     */
     bool operator==(const ITerm &other) const
     {
         return hash() == other.hash();
     }
 
-    friend std::ostream& operator<<(std::ostream& ostream, const ITerm& object)
+    /**
+     * @brief Non-member function to serialise the ITerm to a destination output stream
+     * @param ostream The destination output stream
+     * @param object The object to serialise
+     * @return The populated destination output stream
+     * @see ITerm::serialise(std::ostream&)
+     */
+    friend std::ostream &operator<<(std::ostream &ostream, const ITerm &object)
     {
         return object.serialise(ostream);
     }
 
-    bool operator==(const std::unique_ptr<ITerm>& other) const
+    /**
+     * @brief Test hash-based equality with another ITerm, wrapped in a @ref std::unique_ptr
+     * @param other The owning container of the ITerm with which equality should be tested
+     * @return Are the ITerm objects equal?
+     */
+    bool operator==(const std::unique_ptr<ITerm> &other) const
     {
         return other->hash() == hash();
     }
 
-    bool operator==(const std::shared_ptr<ITerm>& other) const
+    /**
+     * @brief Test hash-based equality with another ITerm, wrapped in a @ref std::shared_ptr
+     * @param other The owning container of the ITerm with which equality should be tested
+     * @return Are the ITerm objects equal?
+     */
+    bool operator==(const std::shared_ptr<ITerm> &other) const
     {
         return other->hash() == hash();
     }
 };
 
-}
+} // namespace optifol
 
 #endif

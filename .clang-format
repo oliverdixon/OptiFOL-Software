@@ -53,4 +53,10 @@ SpacesInCStyleCastParentheses: false
 SpacesInParentheses: false
 TabWidth: 4
 AllowShortFunctionsOnASingleLine: None
+PackConstructorInitializers: Never
+AlignAfterOpenBracket: DontAlign
+BinPackArguments: true
+BinPackParameters: BinPack
+BreakInheritanceList: AfterComma
+ConstructorInitializerIndentWidth: 4
 ...

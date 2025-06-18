@@ -20,7 +20,8 @@ namespace optifol
 
 MutableConstant::MutableConstant(std::string name) :
     name(std::move(name))
-{}
+{
+}
 
 std::unique_ptr<IMutableTerm> MutableConstant::clone() const
 {
@@ -32,9 +33,9 @@ std::string MutableConstant::to_string() const
     return name;
 }
 
-std::string MutableConstant::get_disambiguated_name() const
+std::string_view MutableConstant::get_disambiguated_name() const
 {
-    return to_string();
+    return name;
 }
 
 void MutableConstant::accept(MutatingTermVisitorBase &visitor)

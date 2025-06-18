@@ -18,11 +18,10 @@
 namespace optifol
 {
 
-Function::Function(std::string name, const std::initializer_list<const IProcessedTerm *> arguments) : name(std::move(name))
+Function::Function(std::string name, const std::initializer_list<const IProcessedTerm *> arguments) :
+    name(std::move(name)),
+    arguments(arguments)
 {
-    this->arguments.reserve(arguments.size());
-    for (const auto argument: arguments)
-        this->arguments.push_back(argument);
 }
 
 const std::vector<const IProcessedTerm *> &Function::observe_arguments() const noexcept
@@ -35,7 +34,7 @@ std::string Function::to_string() const
     return CompositeSerialisationHelpers::string_serialise(name, arguments.cbegin(), arguments.cend());
 }
 
-std::string Function::get_disambiguated_name() const
+std::string_view Function::get_disambiguated_name() const
 {
     return name;
 }

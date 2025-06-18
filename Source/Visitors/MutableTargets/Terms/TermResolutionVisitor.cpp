@@ -18,9 +18,10 @@ namespace optifol
 {
 
 TermResolutionVisitor::TermResolutionVisitor(
-        const std::unordered_map<std::string, std::unique_ptr<IMutableTerm>> & rewriting_rules_hook) :
+        const std::unordered_map<std::string_view, std::unique_ptr<IMutableTerm>> &rewriting_rules_hook) :
     rewriting_rules_hook(rewriting_rules_hook)
-{}
+{
+}
 
 void TermResolutionVisitor::visit(MutableFunction &node)
 {
@@ -28,8 +29,7 @@ void TermResolutionVisitor::visit(MutableFunction &node)
     const auto argument_count = args.size();
 
     for (std::remove_const_t<decltype(argument_count)> i = 0; i < argument_count; ++i) {
-        const auto &rule = rewriting_rules_hook.find(args[i]->
-            get_disambiguated_name());
+        const auto &rule = rewriting_rules_hook.find(args[i]->get_disambiguated_name());
         if (rule != rewriting_rules_hook.end())
             args[i] = rule->second->clone();
 
@@ -37,4 +37,4 @@ void TermResolutionVisitor::visit(MutableFunction &node)
     }
 }
 
-}
+} // namespace optifol

@@ -26,8 +26,8 @@ const ITerm *SymbolRepository::add_symbol(std::unique_ptr<ITerm> &&term)
     if (!inserted) {
         const auto existing_it = terms.find(*given_handle);
         if (existing_it == terms.cend())
-            throw std::runtime_error("Term " + given_handle->get_disambiguated_name() + " could not be inserted or "
-                                        "located in the symbol repository.");
+            throw std::runtime_error("Term " + std::string(given_handle->get_disambiguated_name()) +
+                                     " could not be inserted or located in the symbol repository.");
         return existing_it->get();
     }
 
@@ -68,4 +68,4 @@ std::optional<const Predicate *> SymbolRepository::get_symbol_handle(const Predi
     return it->get();
 }
 
-}
+} // namespace optifol

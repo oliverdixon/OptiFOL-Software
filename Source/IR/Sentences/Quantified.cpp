@@ -13,9 +13,9 @@
 
 #include <utility>
 
-#include "Quantified.hpp"
 #include "../Terms/IProcessedTerm.hpp"
 #include "../Terms/Variable.hpp"
+#include "Quantified.hpp"
 
 namespace optifol
 {
@@ -55,7 +55,7 @@ std::ostream &Quantified::serialise(std::ostream &ostream) const
 }
 
 std::size_t Quantified::hash_quantified(const QuantifierTypes quantifier_type, const ITerm *const bound_term,
-                                        const ISentence *const sentence, const bool is_positive)
+        const ISentence *const sentence, const bool is_positive)
 {
     auto hash = std::hash<std::underlying_type_t<QuantifierTypes>>{}(std::to_underlying(quantifier_type));
 
@@ -65,8 +65,7 @@ std::size_t Quantified::hash_quantified(const QuantifierTypes quantifier_type, c
     return hash_polarity(hash, !is_positive);
 }
 std::ostream &Quantified::serialise_quantified(std::ostream &ostream, const QuantifierTypes quantifier_type,
-                                               const ITerm *const bound_term, const ISentence *const sentence,
-                                               const bool is_positive)
+        const ITerm *const bound_term, const ISentence *const sentence, const bool is_positive)
 {
     if (!is_positive)
         ostream << '~';

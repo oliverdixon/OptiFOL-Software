@@ -21,7 +21,8 @@ namespace optifol
 {
 
 MutableFunction::MutableFunction(std::string name, std::vector<std::unique_ptr<IMutableTerm>> &&arguments) :
-    name(std::move(name)), arguments(std::move(arguments))
+    name(std::move(name)),
+    arguments(std::move(arguments))
 {
 }
 
@@ -48,7 +49,7 @@ std::unique_ptr<IMutableTerm> MutableFunction::clone() const
     return std::make_unique<MutableFunction>(name, std::move(cloned_arguments));
 }
 
-std::string MutableFunction::get_disambiguated_name() const
+std::string_view MutableFunction::get_disambiguated_name() const
 {
     return name;
 }

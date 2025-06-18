@@ -20,9 +20,7 @@
 namespace optifol
 {
 
-class MutableConstant :
-        public IMutableTerm,
-        public OwningBuildable<MutableConstant>
+class MutableConstant : public IMutableTerm, public OwningBuildable<MutableConstant>
 {
 public:
     [[maybe_unused]] explicit MutableConstant(std::string name);
@@ -31,14 +29,14 @@ public:
 
     [[nodiscard]] std::string to_string() const override;
 
-    [[nodiscard]] std::string get_disambiguated_name() const override;
+    [[nodiscard]] std::string_view get_disambiguated_name() const override;
 
-    void accept(MutatingTermVisitorBase& visitor) override;
+    void accept(MutatingTermVisitorBase &visitor) override;
 
 private:
     const std::string name;
 };
 
-}
+} // namespace optifol
 
 #endif

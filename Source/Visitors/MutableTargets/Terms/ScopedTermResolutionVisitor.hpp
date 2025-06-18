@@ -19,14 +19,11 @@
 namespace optifol
 {
 
-class ScopedTermResolutionVisitor :
-        public TermResolutionVisitor
+class ScopedTermResolutionVisitor : public TermResolutionVisitor
 {
 public:
-    ScopedTermResolutionVisitor(
-        const std::unordered_set<std::string> &scope_hook,
-        const std::unordered_map<std::string, std::unique_ptr<IMutableTerm>> &rewriting_rules_hook
-    );
+    ScopedTermResolutionVisitor(const std::unordered_set<std::string> &scope_hook,
+            const std::unordered_map<std::string_view, std::unique_ptr<IMutableTerm>> &rewriting_rules_hook);
 
     void visit(MutableFunction &node) override;
 
@@ -36,6 +33,6 @@ private:
     const std::unordered_set<std::string> &scope_hook;
 };
 
-}
+} // namespace optifol
 
 #endif

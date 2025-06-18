@@ -16,8 +16,8 @@
 
 #include <memory>
 
-#include "../OwningBuildable.hpp"
 #include "../../Sentences/BinaryConnected.hpp"
+#include "../OwningBuildable.hpp"
 #include "IMutableSentence.hpp"
 
 namespace optifol
@@ -30,9 +30,8 @@ namespace optifol
  * @see BinaryOperatorTypes for modes of connection
  * @see BinaryConnected for non-owning dual
  */
-class MutableBinaryConnected :
-        public IMutableSentence,
-        public OwningBuildable<MutableBinaryConnected>
+class MutableBinaryConnected : public IMutableSentence,
+                               public OwningBuildable<MutableBinaryConnected>
 {
 public:
     /**
@@ -42,8 +41,8 @@ public:
      * @param rhs Transferred owning container of the right-hand operand
      * @param is_positive Should the node be instantiated with in a positive polarity?
      */
-    [[maybe_unused]] MutableBinaryConnected(BinaryOperatorTypes operator_type,
-        std::unique_ptr<IMutableSentence>&& lhs, std::unique_ptr<IMutableSentence>&& rhs, bool is_positive = true);
+    [[maybe_unused]] MutableBinaryConnected(BinaryOperatorTypes operator_type, std::unique_ptr<IMutableSentence> &&lhs,
+            std::unique_ptr<IMutableSentence> &&rhs, bool is_positive = true);
 
     [[nodiscard]] std::unique_ptr<IMutableSentence> clone() const override;
 
@@ -51,9 +50,9 @@ public:
 
     [[nodiscard]] bool is_negative_polarity() const noexcept override;
 
-    void accept(MutatingSentenceVisitorBase& visitor) override;
+    void accept(MutatingSentenceVisitorBase &visitor) override;
 
-    void accept(IObservingSentenceVisitor& visitor) const override;
+    void accept(IObservingSentenceVisitor &visitor) const override;
 
     [[nodiscard]] std::size_t hash() const noexcept override;
 
@@ -90,14 +89,14 @@ public:
      * @return The LHS operand observer
      * @see @ref std::unique_ptr::get for semantics of observing getter
      */
-    [[nodiscard]] const IMutableSentence * observe_lhs_operand() const noexcept;
+    [[nodiscard]] const IMutableSentence *observe_lhs_operand() const noexcept;
 
     /**
      * @brief Provides an immutable observing pointer to the owned RHS operand
      * @return The LHS operand observer
      * @see @ref std::unique_ptr::get for semantics of observing getter
      */
-    [[nodiscard]] const IMutableSentence * observe_rhs_operand() const noexcept;
+    [[nodiscard]] const IMutableSentence *observe_rhs_operand() const noexcept;
 
     /**
      * @brief Transfers ownership of a new LHS operand, overwriting any previously held LHS operand
@@ -105,7 +104,7 @@ public:
      * @warning This call transfers ownership inbound
      * @see @ref std::unique_ptr::operator= for semantics of swap
      */
-    void put_lhs_operand(std::unique_ptr<IMutableSentence>&& operand);
+    void put_lhs_operand(std::unique_ptr<IMutableSentence> &&operand);
 
     /**
      * @brief Transfers ownership of a new RHS operand, overwriting any previously held LHS operand
@@ -113,7 +112,7 @@ public:
      * @warning This call transfers ownership inbound
      * @see @ref std::unique_ptr::operator= for semantics of swap
      */
-    void put_rhs_operand(std::unique_ptr<IMutableSentence>&& operand);
+    void put_rhs_operand(std::unique_ptr<IMutableSentence> &&operand);
 
 private:
     BinaryOperatorTypes operator_type;
@@ -125,6 +124,6 @@ private:
     bool is_positive;
 };
 
-}
+} // namespace optifol
 
 #endif

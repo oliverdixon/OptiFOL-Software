@@ -19,16 +19,17 @@
 namespace optifol
 {
 
-Predicate::Predicate(std::string name, const bool is_positive,
-        const std::initializer_list<const IProcessedTerm *> arguments) :
+Predicate::Predicate(
+        std::string name, const bool is_positive, const std::initializer_list<const IProcessedTerm *> arguments) :
     name(std::move(name)),
     arguments(arguments),
     is_positive(is_positive)
 {
 }
 
-Predicate::Predicate(std::string name, std::initializer_list<const IProcessedTerm *> arguments, const bool is_positive) :
-    Predicate(std::move(name), is_positive, std::move(arguments))
+Predicate::Predicate(
+        std::string name, std::initializer_list<const IProcessedTerm *> arguments, const bool is_positive) :
+    Predicate(std::move(name), is_positive, arguments)
 {
 }
 
@@ -39,8 +40,8 @@ bool Predicate::is_negative_polarity() const noexcept
 
 std::ostream &Predicate::serialise(std::ostream &ostream) const
 {
-    return CompositeSerialisationHelpers::stream_serialise(ostream, name, arguments.cbegin(), arguments.cend(),
-        is_negative_polarity());
+    return CompositeSerialisationHelpers::stream_serialise(
+            ostream, name, arguments.cbegin(), arguments.cend(), is_negative_polarity());
 }
 
 bool Predicate::accept(UnificationVisitor &visitor, const Predicate &target) const

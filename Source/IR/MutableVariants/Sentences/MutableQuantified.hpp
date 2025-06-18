@@ -31,15 +31,12 @@ namespace optifol
  *  owned by the instance of the IR node.
  * @see Quantified for the non-owning, immutable dual
  */
-class MutableQuantified :
-        public IMutableSentence,
-        public OwningBuildable<MutableQuantified>
+class MutableQuantified : public IMutableSentence,
+                          public OwningBuildable<MutableQuantified>
 {
 public:
-    [[maybe_unused]] MutableQuantified(QuantifierTypes quantifier_type,
-                                            std::unique_ptr<IMutableTerm>&& bound_term,
-                                            std::unique_ptr<IMutableSentence>&& sentence,
-                                            bool is_positive = true);
+    [[maybe_unused]] MutableQuantified(QuantifierTypes quantifier_type, std::unique_ptr<IMutableTerm> &&bound_term,
+            std::unique_ptr<IMutableSentence> &&sentence, bool is_positive = true);
 
     [[nodiscard]] std::unique_ptr<IMutableSentence> clone() const override;
 
@@ -47,9 +44,9 @@ public:
 
     [[nodiscard]] bool is_negative_polarity() const noexcept override;
 
-    void accept(MutatingSentenceVisitorBase& visitor) override;
+    void accept(MutatingSentenceVisitorBase &visitor) override;
 
-    void accept(IObservingSentenceVisitor& visitor) const override;
+    void accept(IObservingSentenceVisitor &visitor) const override;
 
     [[nodiscard]] std::size_t hash() const noexcept override;
 
@@ -72,7 +69,7 @@ public:
      * @return An immutable pointer to the bound term
      * @see @ref std::unique_ptr::get for semantics of the observing getter
      */
-    [[nodiscard]] const IMutableTerm * observe_bound_term() const noexcept;
+    [[nodiscard]] const IMutableTerm *observe_bound_term() const noexcept;
 
     /**
      * @brief Steals ownership of the bound term from the object to the caller
@@ -93,7 +90,7 @@ public:
      * @return An immutable pointer to the bound sentence
      * @see @ref std::unique_ptr::get for semantics of the observing getter
      */
-    [[nodiscard]] const IMutableSentence * observe_sentence() const noexcept;
+    [[nodiscard]] const IMutableSentence *observe_sentence() const noexcept;
 
     /**
      * @brief Transfers ownership of a new bound sentence, overwriting any previously bound sentence
@@ -101,7 +98,7 @@ public:
      * @warning This call transfers ownership inbound
      * @see @ref std::unique_ptr::operator= for semantics of swap
      */
-    void put_sentence(std::unique_ptr<IMutableSentence>&& sentence);
+    void put_sentence(std::unique_ptr<IMutableSentence> &&sentence);
 
     /**
      * @brief Transfers ownership of a new bound term, overwriting any previously bound term
@@ -109,7 +106,7 @@ public:
      * @warning This call transfers ownership inbound
      * @see @ref std::unique_ptr::operator= for semantics of swap
      */
-    void put_bound_term(std::unique_ptr<IMutableTerm>&& new_bound_term);
+    void put_bound_term(std::unique_ptr<IMutableTerm> &&new_bound_term);
 
 private:
     QuantifierTypes quantifier_type;
@@ -118,6 +115,6 @@ private:
     bool is_positive;
 };
 
-}
+} // namespace optifol
 
 #endif

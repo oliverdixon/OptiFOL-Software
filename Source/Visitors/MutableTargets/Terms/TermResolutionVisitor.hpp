@@ -31,13 +31,13 @@ class TermResolutionVisitor :
 {
 public:
     explicit TermResolutionVisitor(
-            const std::unordered_map<std::string, std::unique_ptr<IMutableTerm>> &rewriting_rules_hook
+            const std::unordered_map<std::string_view, std::unique_ptr<IMutableTerm>> &rewriting_rules_hook
     );
 
     void visit(MutableFunction &node) override;
 
 private:
-    const std::unordered_map<std::string, std::unique_ptr<IMutableTerm>>& rewriting_rules_hook;
+    const std::unordered_map<std::string_view, std::unique_ptr<IMutableTerm>>& rewriting_rules_hook;
 };
 
 }

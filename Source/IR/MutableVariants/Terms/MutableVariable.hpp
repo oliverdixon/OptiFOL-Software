@@ -30,9 +30,7 @@ namespace optifol
  *  of the outermost sentence.
  * @see Variable for the non-owning, immutable dual
  */
-class MutableVariable :
-        public IMutableTerm,
-        public OwningBuildable<MutableVariable>
+class MutableVariable : public IMutableTerm, public OwningBuildable<MutableVariable>
 {
 public:
     /**
@@ -47,21 +45,21 @@ public:
      * @param disambiguated_name The initial disambiguated name for the variable
      * @warning No uniqueness check is done for the disambiguated name upon construction
      */
-    explicit MutableVariable(std::string name, const std::string& disambiguated_name);
+    explicit MutableVariable(std::string name, const std::string &disambiguated_name);
 
     [[nodiscard]] std::unique_ptr<IMutableTerm> clone() const override;
 
-    void accept(MutatingTermVisitorBase& visitor) override;
+    void accept(MutatingTermVisitorBase &visitor) override;
 
     [[nodiscard]] std::string to_string() const override;
 
-    [[nodiscard]] std::string get_disambiguated_name() const override;
+    [[nodiscard]] std::string_view get_disambiguated_name() const override;
 
 private:
     std::string name;
     std::optional<std::string> disambiguated_name;
 };
 
-}
+} // namespace optifol
 
 #endif

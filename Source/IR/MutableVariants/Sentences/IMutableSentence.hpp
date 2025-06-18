@@ -43,8 +43,7 @@ class IObservingSentenceVisitor;
  *      </li>
  *  </ul>
  */
-class IMutableSentence :
-        public ISentence
+class IMutableSentence : public ISentence
 {
 public:
     /**
@@ -72,6 +71,6 @@ public:
     virtual void accept(IObservingSentenceVisitor &visitor) const = 0;
 };
 
-}
+} // namespace optifol
 
 #endif

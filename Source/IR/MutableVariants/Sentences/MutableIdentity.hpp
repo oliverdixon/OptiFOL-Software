@@ -23,13 +23,12 @@
 namespace optifol
 {
 
-class MutableIdentity :
-        public IMutableSentence,
-        public OwningBuildable<MutableIdentity>
+class MutableIdentity : public IMutableSentence,
+                        public OwningBuildable<MutableIdentity>
 {
 public:
-    [[maybe_unused]] MutableIdentity(std::unique_ptr<IMutableTerm>&& lhs, std::unique_ptr<IMutableTerm>&& rhs,
-        bool is_positive = true);
+    [[maybe_unused]] MutableIdentity(
+            std::unique_ptr<IMutableTerm> &&lhs, std::unique_ptr<IMutableTerm> &&rhs, bool is_positive = true);
 
     [[nodiscard]] std::unique_ptr<IMutableSentence> clone() const override;
 
@@ -41,21 +40,21 @@ public:
 
     [[nodiscard]] std::unique_ptr<IMutableTerm> take_rhs_operand();
 
-    [[nodiscard]] const IMutableTerm * observe_lhs_operand() const;
+    [[nodiscard]] const IMutableTerm *observe_lhs_operand() const;
 
-    [[nodiscard]] const IMutableTerm * observe_rhs_operand() const;
+    [[nodiscard]] const IMutableTerm *observe_rhs_operand() const;
 
-    void swap_lhs_operand(std::unique_ptr<IMutableTerm>&& new_lhs);
+    void swap_lhs_operand(std::unique_ptr<IMutableTerm> &&new_lhs);
 
-    void swap_rhs_operand(std::unique_ptr<IMutableTerm>&& new_rhs);
+    void swap_rhs_operand(std::unique_ptr<IMutableTerm> &&new_rhs);
 
-    void put_lhs_operand(std::unique_ptr<IMutableTerm>&& new_lhs);
+    void put_lhs_operand(std::unique_ptr<IMutableTerm> &&new_lhs);
 
-    void put_rhs_operand(std::unique_ptr<IMutableTerm>&& new_rhs);
+    void put_rhs_operand(std::unique_ptr<IMutableTerm> &&new_rhs);
 
-    void accept(MutatingSentenceVisitorBase& visitor) override;
+    void accept(MutatingSentenceVisitorBase &visitor) override;
 
-    void accept(IObservingSentenceVisitor& visitor) const override;
+    void accept(IObservingSentenceVisitor &visitor) const override;
 
     [[nodiscard]] std::size_t hash() const noexcept override;
 
@@ -68,6 +67,6 @@ private:
     bool is_positive;
 };
 
-}
+} // namespace optifol
 
 #endif

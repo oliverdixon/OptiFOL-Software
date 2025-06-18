@@ -3,6 +3,14 @@
  * 2025 Oliver Dixon <od641@york.ac.uk>
  */
 
+/**
+ * @file
+ * @brief Default class implementation for the IR Processed Term interface
+ * @author Oliver Dixon
+ * @date 2025-06-14
+ * @version Development
+ */
+
 #include "IProcessedTerm.hpp"
 #include "../../Visitors/RegularTargets/Unification/UnificationVisitor.hpp"
 
@@ -21,4 +29,4 @@ bool IProcessedTerm::accept(UnificationVisitor &visitor, const Function &target)
     return UnificationVisitor::visit(*this, target);
 }
 
-}
+} // namespace optifol

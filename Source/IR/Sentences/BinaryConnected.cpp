@@ -20,8 +20,8 @@
 namespace optifol
 {
 
-BinaryConnected::BinaryConnected(const BinaryOperatorTypes operator_type, const ISentence * const lhs,
-        const ISentence * const rhs, const bool is_positive) :
+BinaryConnected::BinaryConnected(const BinaryOperatorTypes operator_type, const ISentence *const lhs,
+        const ISentence *const rhs, const bool is_positive) :
     operator_type(operator_type),
     lhs(lhs),
     rhs(rhs),
@@ -60,16 +60,16 @@ const ISentence *BinaryConnected::get_rhs_operand() const noexcept
 }
 
 std::size_t BinaryConnected::hash_binary_connected(const BinaryOperatorTypes operator_type, const ISentence *const lhs,
-                                                   const ISentence *const rhs, const bool is_negative_polarity) noexcept
+        const ISentence *const rhs, const bool is_negative_polarity) noexcept
 {
     return hash_polarity(hash_combine(hash_combine_commutative(lhs->hash(), rhs->hash()),
-        std::hash<std::size_t>{}(std::to_underlying(operator_type))), is_negative_polarity);
+                                 std::hash<std::size_t>{}(std::to_underlying(operator_type))),
+            is_negative_polarity);
 }
 
 std::ostream &BinaryConnected::serialise_binary_connected(std::ostream &ostream,
-                                                          const BinaryOperatorTypes operator_type,
-                                                          const ISentence *const lhs, const ISentence *const rhs,
-                                                          const bool is_negative_polarity)
+        const BinaryOperatorTypes operator_type, const ISentence *const lhs, const ISentence *const rhs,
+        const bool is_negative_polarity)
 {
     if (is_negative_polarity)
         ostream << '~';

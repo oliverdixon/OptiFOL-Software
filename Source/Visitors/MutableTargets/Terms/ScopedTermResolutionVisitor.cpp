@@ -20,10 +20,11 @@ namespace optifol
 {
 
 ScopedTermResolutionVisitor::ScopedTermResolutionVisitor(const std::unordered_set<std::string> &scope_hook,
-        const std::unordered_map<std::string, std::unique_ptr<IMutableTerm>> &rewriting_rules_hook) :
+        const std::unordered_map<std::string_view, std::unique_ptr<IMutableTerm>> &rewriting_rules_hook) :
     TermResolutionVisitor(rewriting_rules_hook),
     scope_hook(scope_hook)
-{}
+{
+}
 
 void ScopedTermResolutionVisitor::visit(MutableFunction &node)
 {
@@ -38,4 +39,4 @@ void ScopedTermResolutionVisitor::visit(MutableVariable &node)
         throw SemanticException("Referenced variable \"" + name + "\" is not defined in the current scope.");
 }
 
-}
+} // namespace optifol

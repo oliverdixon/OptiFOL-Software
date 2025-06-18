@@ -21,7 +21,8 @@ namespace optifol
 
 MutableSentenceRoot::MutableSentenceRoot(std::unique_ptr<IMutableSentence> &&sentence) :
     sentence(std::move(sentence))
-{ }
+{
+}
 
 std::unique_ptr<IMutableSentence> MutableSentenceRoot::clone() const
 {
@@ -43,7 +44,7 @@ std::unique_ptr<IMutableSentence> MutableSentenceRoot::take_sentence()
     return std::move(sentence);
 }
 
-const IMutableSentence * MutableSentenceRoot::observe_sentence() const
+const IMutableSentence *MutableSentenceRoot::observe_sentence() const
 {
     return sentence.get();
 }
@@ -78,4 +79,4 @@ std::ostream &MutableSentenceRoot::serialise(std::ostream &ostream) const
     return ostream << ')';
 }
 
-}
+} // namespace optifol

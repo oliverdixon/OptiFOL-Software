@@ -37,21 +37,22 @@ private:
         using is_transparent = void;
 
         bool operator()(std::reference_wrapper<const Variable> lhs_object,
-                        std::reference_wrapper<const Variable> rhs_object) const noexcept;
+                std::reference_wrapper<const Variable> rhs_object) const noexcept;
     };
 
 public:
     Substitution() = default;
 
-    explicit Substitution(std::initializer_list<std::pair<const Variable&, const IProcessedTerm&>> entries);
+    explicit Substitution(std::initializer_list<std::pair<const Variable &, const IProcessedTerm &>> entries);
 
     // TODO
     std::unordered_map<std::reference_wrapper<const Variable>, std::reference_wrapper<const IProcessedTerm>,
-        KeyRefHashingFunctor, KeyRefEqualityFunctor> bindings;
+            KeyRefHashingFunctor, KeyRefEqualityFunctor>
+            bindings;
 
-    bool operator==(const Substitution& substitution) const;
+    bool operator==(const Substitution &substitution) const;
 };
 
-}
+} // namespace optifol
 
-#endif //SUBSTITUTION_HPP
+#endif // SUBSTITUTION_HPP

@@ -38,13 +38,14 @@ public:
      * @return An instance of the BuildType class, constructed according to the given arguments, wrapped in a unique
      *  pointer containing a pointer to the specified type.
      */
-    template<typename PointerType = BuildType, typename... CtorArgs> requires std::derived_from<BuildType, PointerType>
-    static std::unique_ptr<PointerType> build(CtorArgs&&... args)
+    template<typename PointerType = BuildType, typename... CtorArgs>
+        requires std::derived_from<BuildType, PointerType>
+    static std::unique_ptr<PointerType> build(CtorArgs &&...args)
     {
         return std::make_unique<BuildType>(std::forward<CtorArgs>(args)...);
     }
 };
 
-}
+} // namespace optifol
 
 #endif

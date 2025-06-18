@@ -61,12 +61,12 @@ public:
      */
     std::optional<const ITerm *> get_symbol_handle(const ITerm &term) const;
 
-  /**
-   * @brief Retrieves a handle to an immutable predicate symbol owned by the repository
-   * @param predicate A hash-equal Predicate to the target predicate
-   * @return A constant handle to the predicate, if a suitable match exists in the repository. Otherwise, an empty \ref
-   *  std::optional.
-   */
+    /**
+     * @brief Retrieves a handle to an immutable predicate symbol owned by the repository
+     * @param predicate A hash-equal Predicate to the target predicate
+     * @return A constant handle to the predicate, if a suitable match exists in the repository. Otherwise, an empty
+     * \ref std::optional.
+     */
     std::optional<const Predicate *> get_symbol_handle(const Predicate &predicate) const;
 
 private:
@@ -84,6 +84,6 @@ private:
     std::unordered_set<std::unique_ptr<ITerm>, std::hash<ITerm>, std::equal_to<>> terms;
 };
 
-}
+} // namespace optifol
 
 #endif

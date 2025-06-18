@@ -27,8 +27,7 @@ namespace optifol
  * @see MutableVariable for the owning, mutable dual; MutableVariable also contains more documentation of the semantics
  *  of an Optifol first-order logic variable.
  */
-class Variable :
-        public IProcessedTerm
+class Variable : public IProcessedTerm
 {
 public:
     /**
@@ -43,17 +42,17 @@ public:
      * @param disambiguated_name The fixed disambiguated name for the variable
      * @warning No uniqueness check is done for the disambiguated name upon construction
      */
-    explicit Variable(std::string name, const std::string& disambiguated_name);
+    explicit Variable(std::string name, const std::string &disambiguated_name);
 
     [[nodiscard]] std::string to_string() const override;
 
-    [[nodiscard]] std::string get_disambiguated_name() const override;
+    [[nodiscard]] std::string_view get_disambiguated_name() const override;
 
 private:
     const std::string name;
     const std::optional<std::string> disambiguated_name;
 };
 
-}
+} // namespace optifol
 
 #endif

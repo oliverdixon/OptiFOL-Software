@@ -19,12 +19,13 @@
 namespace optifol
 {
 
-MutableIdentity::MutableIdentity(std::unique_ptr<IMutableTerm>&& lhs, std::unique_ptr<IMutableTerm>&& rhs,
-        const bool is_positive) :
+MutableIdentity::MutableIdentity(
+        std::unique_ptr<IMutableTerm> &&lhs, std::unique_ptr<IMutableTerm> &&rhs, const bool is_positive) :
     lhs(std::move(lhs)),
     rhs(std::move(rhs)),
     is_positive(is_positive)
-{}
+{
+}
 
 std::unique_ptr<IMutableSentence> MutableIdentity::clone() const
 {
@@ -51,12 +52,12 @@ std::unique_ptr<IMutableTerm> MutableIdentity::take_rhs_operand()
     return std::move(rhs);
 }
 
-const IMutableTerm * MutableIdentity::observe_lhs_operand() const
+const IMutableTerm *MutableIdentity::observe_lhs_operand() const
 {
     return lhs.get();
 }
 
-const IMutableTerm * MutableIdentity::observe_rhs_operand() const
+const IMutableTerm *MutableIdentity::observe_rhs_operand() const
 {
     return rhs.get();
 }
@@ -87,12 +88,12 @@ std::ostream &MutableIdentity::serialise(std::ostream &ostream) const
     return rhs->serialise(ostream) << ')';
 }
 
-void MutableIdentity::swap_lhs_operand(std::unique_ptr<IMutableTerm>&& new_lhs)
+void MutableIdentity::swap_lhs_operand(std::unique_ptr<IMutableTerm> &&new_lhs)
 {
     lhs.swap(new_lhs);
 }
 
-void MutableIdentity::swap_rhs_operand(std::unique_ptr<IMutableTerm>&& new_rhs)
+void MutableIdentity::swap_rhs_operand(std::unique_ptr<IMutableTerm> &&new_rhs)
 {
     rhs.swap(new_rhs);
 }
@@ -107,4 +108,4 @@ void MutableIdentity::put_rhs_operand(std::unique_ptr<IMutableTerm> &&new_rhs)
     rhs = std::move(new_rhs);
 }
 
-}
+} // namespace optifol

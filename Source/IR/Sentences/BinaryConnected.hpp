@@ -38,8 +38,7 @@ enum class BinaryOperatorTypes
  * @see BinaryOperatorTypes for modes of connection
  * @see MutableBinaryConnected for the owning dual
  */
-class BinaryConnected :
-        public ISentence
+class BinaryConnected : public ISentence
 {
 public:
     /**
@@ -49,14 +48,14 @@ public:
      * @param rhs The right-hand operand reference in the SymbolRepository
      * @param is_positive Should the node be instantiated with in a positive polarity?
      */
-    explicit BinaryConnected(BinaryOperatorTypes operator_type, const ISentence * lhs, const ISentence * rhs,
-        bool is_positive = true);
+    explicit BinaryConnected(
+            BinaryOperatorTypes operator_type, const ISentence *lhs, const ISentence *rhs, bool is_positive = true);
 
     [[nodiscard]] bool is_negative_polarity() const noexcept override;
 
     [[nodiscard]] std::size_t hash() const noexcept override;
 
-    std::ostream& serialise(std::ostream &ostream) const override;
+    std::ostream &serialise(std::ostream &ostream) const override;
 
     /**
      * @brief Get the fixed operator by which the operands are connected
@@ -68,13 +67,13 @@ public:
      * @brief Provides an immutable observing pointer to the owned LHS operand
      * @return The LHS operand observer
      */
-    [[nodiscard]] const ISentence * get_lhs_operand() const noexcept;
+    [[nodiscard]] const ISentence *get_lhs_operand() const noexcept;
 
     /**
      * @brief Provides an immutable observing pointer to the owned RHS operand
      * @return The RHS operand observer
      */
-    [[nodiscard]] const ISentence * get_rhs_operand() const noexcept;
+    [[nodiscard]] const ISentence *get_rhs_operand() const noexcept;
 
     /**
      * @brief Hash any type of binary-connected IR node from a static context
@@ -85,7 +84,7 @@ public:
      * @return Numeric hash of the binary-connected node described by the given parameters
      */
     [[nodiscard]] static std::size_t hash_binary_connected(BinaryOperatorTypes operator_type, const ISentence *lhs,
-                                             const ISentence *rhs, bool is_negative_polarity) noexcept;
+            const ISentence *rhs, bool is_negative_polarity) noexcept;
 
 
     /**
@@ -97,9 +96,8 @@ public:
      * @param is_negative_polarity Has the target been instantiated with a negative polarity?
      * @return Populated destination output stream
      */
-    static std::ostream& serialise_binary_connected(std::ostream &ostream, BinaryOperatorTypes operator_type,
-                                                    const ISentence *lhs, const ISentence *rhs,
-                                                    bool is_negative_polarity);
+    static std::ostream &serialise_binary_connected(std::ostream &ostream, BinaryOperatorTypes operator_type,
+            const ISentence *lhs, const ISentence *rhs, bool is_negative_polarity);
 
     /**
      * @brief Return the appropriate human-readable symbol for a BinaryOperatorTypes value
@@ -111,13 +109,13 @@ public:
 private:
     const BinaryOperatorTypes operator_type;
 
-    const ISentence * const lhs;
+    const ISentence *const lhs;
 
-    const ISentence * const rhs;
+    const ISentence *const rhs;
 
     const bool is_positive;
 };
 
-}
+} // namespace optifol
 
 #endif

@@ -37,10 +37,8 @@ enum class QuantifierTypes
  * @brief A Quantified IR node references a bound variable/term and a bound sentence ("operands"), and detains the
  *  first-order logic operator by which the sentence is bound by the variable. Metadata and operands are immutable;
  *  operands are held centrally in a SymbolRepository.
- * @see MutableQuantified for the owning, mutable dual
  */
-class Quantified :
-        public ISentence
+class Quantified : public ISentence
 {
 public:
     /**
@@ -50,8 +48,8 @@ public:
      * @param sentence The sentence to bind
      * @param is_positive Is the quantified instantiation positive?
      */
-    Quantified(QuantifierTypes quantifier_type, const Variable * bound_term, const ISentence * sentence,
-        bool is_positive = true);
+    Quantified(QuantifierTypes quantifier_type, const Variable *bound_term, const ISentence *sentence,
+            bool is_positive = true);
 
     [[nodiscard]] std::size_t hash() const noexcept override;
 
@@ -73,7 +71,7 @@ public:
      * @brief Retrieves a pointer to the immutable bound sentence
      * @return An immutable pointer to the bound sentence
      */
-    [[nodiscard]] const ISentence * observe_sentence() const noexcept;
+    [[nodiscard]] const ISentence *observe_sentence() const noexcept;
 
     /**
      * @brief Hash any quantified IR node from a static context
@@ -83,8 +81,8 @@ public:
      * @param is_positive Is the instantiation of the node in a positive polarity?
      * @return Numeric hash of the quantified node described by the given parameters
      */
-    [[nodiscard]] static std::size_t hash_quantified(QuantifierTypes quantifier_type, const ITerm *bound_term,
-        const ISentence *sentence, bool is_positive);
+    [[nodiscard]] static std::size_t hash_quantified(
+            QuantifierTypes quantifier_type, const ITerm *bound_term, const ISentence *sentence, bool is_positive);
 
     /**
      * @brief Serialise any type of quantified IR node from a static context into an output stream
@@ -95,8 +93,8 @@ public:
      * @param is_positive Is the instantiation of the node in a positive polarity?
      * @return The populated destination output stream
      */
-    static std::ostream& serialise_quantified(std::ostream &ostream, QuantifierTypes quantifier_type,
-        const ITerm *bound_term, const ISentence *sentence, bool is_positive);
+    static std::ostream &serialise_quantified(std::ostream &ostream, QuantifierTypes quantifier_type,
+            const ITerm *bound_term, const ISentence *sentence, bool is_positive);
 
     /**
      * @brief Maps a quantifier type to a human-readable string suitable for serialisation
@@ -107,11 +105,11 @@ public:
 
 private:
     const QuantifierTypes quantifier_type;
-    const Variable * const bound_term;
-    const ISentence * const sentence;
+    const Variable *const bound_term;
+    const ISentence *const sentence;
     const bool is_positive;
 };
 
-}
+} // namespace optifol
 
 #endif

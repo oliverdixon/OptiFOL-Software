@@ -20,12 +20,11 @@
 namespace optifol
 {
 
-class MutableSentenceRoot :
-        public IMutableSentence,
-        public OwningBuildable<MutableSentenceRoot>
+class MutableSentenceRoot : public IMutableSentence,
+                            public OwningBuildable<MutableSentenceRoot>
 {
 public:
-    [[maybe_unused]] explicit MutableSentenceRoot(std::unique_ptr<IMutableSentence>&& sentence);
+    [[maybe_unused]] explicit MutableSentenceRoot(std::unique_ptr<IMutableSentence> &&sentence);
 
     [[nodiscard]] std::unique_ptr<IMutableSentence> clone() const override;
 
@@ -35,13 +34,13 @@ public:
 
     [[nodiscard]] std::unique_ptr<IMutableSentence> take_sentence();
 
-    [[nodiscard]] const IMutableSentence * observe_sentence() const;
+    [[nodiscard]] const IMutableSentence *observe_sentence() const;
 
-    void put_sentence(std::unique_ptr<IMutableSentence>&& sentence);
+    void put_sentence(std::unique_ptr<IMutableSentence> &&sentence);
 
-    void accept(MutatingSentenceVisitorBase& visitor) override;
+    void accept(MutatingSentenceVisitorBase &visitor) override;
 
-    void accept(IObservingSentenceVisitor& visitor) const override;
+    void accept(IObservingSentenceVisitor &visitor) const override;
 
     [[nodiscard]] std::size_t hash() const noexcept override;
 
@@ -53,6 +52,6 @@ private:
     bool is_positive = true;
 };
 
-}
+} // namespace optifol
 
 #endif
