@@ -76,14 +76,14 @@ public:
      * @return The stolen container containing the bound term
      * @warning This call transfers ownership outbound
      */
-    [[nodiscard]] std::unique_ptr<IMutableTerm> take_bound_term();
+    [[nodiscard]] std::unique_ptr<IMutableTerm> take_bound_term() noexcept;
 
     /**
      * @brief Steals ownership of the bound sentence from the object to the caller
      * @return The stolen container containing the bound sentence
      * @warning This call transfers ownership outbound
      */
-    [[nodiscard]] std::unique_ptr<IMutableSentence> take_sentence();
+    [[nodiscard]] std::unique_ptr<IMutableSentence> take_sentence() noexcept;
 
     /**
      * @brief Retrieves a pointer to the immutable bound sentence
@@ -98,7 +98,7 @@ public:
      * @warning This call transfers ownership inbound
      * @see @ref std::unique_ptr::operator= for semantics of swap
      */
-    void put_sentence(std::unique_ptr<IMutableSentence> &&sentence);
+    void put_sentence(std::unique_ptr<IMutableSentence> &&sentence) noexcept;
 
     /**
      * @brief Transfers ownership of a new bound term, overwriting any previously bound term
@@ -106,7 +106,7 @@ public:
      * @warning This call transfers ownership inbound
      * @see @ref std::unique_ptr::operator= for semantics of swap
      */
-    void put_bound_term(std::unique_ptr<IMutableTerm> &&new_bound_term);
+    void put_bound_term(std::unique_ptr<IMutableTerm> &&new_bound_term) noexcept;
 
 private:
     QuantifierTypes quantifier_type;

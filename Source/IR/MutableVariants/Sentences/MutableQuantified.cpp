@@ -58,12 +58,12 @@ const IMutableTerm *MutableQuantified::observe_bound_term() const noexcept
     return bound_term.get();
 }
 
-std::unique_ptr<IMutableTerm> MutableQuantified::take_bound_term()
+std::unique_ptr<IMutableTerm> MutableQuantified::take_bound_term() noexcept
 {
     return std::move(bound_term);
 }
 
-std::unique_ptr<IMutableSentence> MutableQuantified::take_sentence()
+std::unique_ptr<IMutableSentence> MutableQuantified::take_sentence() noexcept
 {
     return std::move(sentence);
 }
@@ -73,7 +73,7 @@ const IMutableSentence *MutableQuantified::observe_sentence() const noexcept
     return sentence.get();
 }
 
-void MutableQuantified::put_sentence(std::unique_ptr<IMutableSentence> &&sentence)
+void MutableQuantified::put_sentence(std::unique_ptr<IMutableSentence> &&sentence) noexcept
 {
     this->sentence = std::move(sentence);
 }
@@ -99,7 +99,7 @@ std::ostream &MutableQuantified::serialise(std::ostream &ostream) const
         is_positive);
 }
 
-void MutableQuantified::put_bound_term(std::unique_ptr<IMutableTerm> &&new_bound_term)
+void MutableQuantified::put_bound_term(std::unique_ptr<IMutableTerm> &&new_bound_term) noexcept
 {
     bound_term = std::move(new_bound_term);
 }

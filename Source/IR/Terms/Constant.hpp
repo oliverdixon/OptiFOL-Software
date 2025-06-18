@@ -1,0 +1,47 @@
+/*
+ * Copyright (c) All Rights Reserved
+ * 2025 Oliver Dixon <od641@york.ac.uk>
+ */
+
+/**
+ * @file
+ * @brief Class specification for the Constant Term IR node
+ * @author Oliver Dixon
+ * @date 2025-06-18
+ * @version Development
+ */
+
+#ifndef CONSTANT_HPP
+#define CONSTANT_HPP
+
+#include "IProcessedTerm.hpp"
+
+namespace optifol
+{
+
+/**
+ * @class Constant
+ * @brief A Constant is a first-order logic immutable term denoting a symbol that is not a bound variable and represents
+ *  a ground truth. The immutable variant should be detained by a central SymbolRepository.
+ * @see MutableConstant for the mutable dual
+ */
+class Constant : public IProcessedTerm
+{
+public:
+    /**
+     * @brief Construct a new immutable Constant IR node with a fixed name
+     * @param name The fixed name of the Constant
+     */
+    explicit Constant(std::string name);
+
+    [[nodiscard]] std::string to_string() const override;
+
+    [[nodiscard]] std::string_view get_disambiguated_name() const override;
+
+private:
+    const std::string name;
+};
+
+} // namespace optifol
+
+#endif // CONSTANT_HPP

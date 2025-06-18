@@ -101,12 +101,12 @@ std::string_view MutablePredicate::get_name() const noexcept
     return name;
 }
 
-const std::vector<std::unique_ptr<IMutableTerm>> &MutablePredicate::observe_arguments() const
+const std::vector<std::unique_ptr<IMutableTerm>> &MutablePredicate::observe_arguments() const noexcept
 {
     return arguments;
 }
 
-std::vector<std::unique_ptr<IMutableTerm>> &MutablePredicate::observe_arguments()
+std::vector<std::unique_ptr<IMutableTerm>> &MutablePredicate::observe_arguments() noexcept
 {
     return arguments;
 }

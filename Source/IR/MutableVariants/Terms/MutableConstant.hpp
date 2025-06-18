@@ -20,9 +20,21 @@
 namespace optifol
 {
 
-class MutableConstant : public IMutableTerm, public OwningBuildable<MutableConstant>
+/**
+ * @class MutableConstant
+ * @brief A MutableConstant is a first-order logic mutable term denoting a symbol that is not a bound variable and
+ *  represents a ground truth. The mutable variant should be detained within a @ref std::unique_ptr with explicit
+ *  ownership semantics.
+ * @see Constant for the immutable dual
+ */
+class MutableConstant : public IMutableTerm,
+                        public OwningBuildable<MutableConstant>
 {
 public:
+    /**
+     * @brief Construct a new mutable Constant IR node with an initial name
+     * @param name The initial name of the Constant
+     */
     [[maybe_unused]] explicit MutableConstant(std::string name);
 
     [[nodiscard]] std::unique_ptr<IMutableTerm> clone() const override;
@@ -34,7 +46,7 @@ public:
     void accept(MutatingTermVisitorBase &visitor) override;
 
 private:
-    const std::string name;
+    std::string name;
 };
 
 } // namespace optifol

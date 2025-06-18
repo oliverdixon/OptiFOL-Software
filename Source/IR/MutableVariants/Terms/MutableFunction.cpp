@@ -59,12 +59,12 @@ void MutableFunction::accept(MutatingTermVisitorBase &visitor)
     visitor.visit(*this);
 }
 
-const std::vector<std::unique_ptr<IMutableTerm>> &MutableFunction::observe_arguments() const
+const std::vector<std::unique_ptr<IMutableTerm>> &MutableFunction::observe_arguments() const noexcept
 {
     return arguments;
 }
 
-std::vector<std::unique_ptr<IMutableTerm>> &MutableFunction::observe_arguments()
+std::vector<std::unique_ptr<IMutableTerm>> &MutableFunction::observe_arguments() noexcept
 {
     return arguments;
 }

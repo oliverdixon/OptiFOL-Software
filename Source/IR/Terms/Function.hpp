@@ -54,8 +54,7 @@ public:
 
 private:
     const std::string name;
-
-    std::vector<const IProcessedTerm *> arguments;
+    const std::vector<const IProcessedTerm *> arguments;
 };
 
 }

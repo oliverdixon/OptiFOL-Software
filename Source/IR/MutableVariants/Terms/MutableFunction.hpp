@@ -64,14 +64,14 @@ public:
      * @brief Observe the constant owning ordered argument collection
      * @return The arguments owned by the function
      */
-    [[nodiscard]] const std::vector<std::unique_ptr<IMutableTerm>> &observe_arguments() const;
+    [[nodiscard]] const std::vector<std::unique_ptr<IMutableTerm>> &observe_arguments() const noexcept;
 
     /**
      * @brief Observe the mutable owning ordered argument collection
      * @return The arguments owned by the function
      * @note This non-constant overload is useful for propagation of <code>accept</code> calls on mutating visitors.
      */
-    std::vector<std::unique_ptr<IMutableTerm>> &observe_arguments();
+    [[nodiscard]] std::vector<std::unique_ptr<IMutableTerm>> &observe_arguments() noexcept;
 
 protected:
     std::string name;

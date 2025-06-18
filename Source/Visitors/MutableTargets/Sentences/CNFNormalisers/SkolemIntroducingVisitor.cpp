@@ -95,7 +95,7 @@ void SkolemIntroducingVisitor::visit(MutableIdentity &node)
     const auto& lhs_rule =
         skolem_replacements.find(borrowed_lhs->get_disambiguated_name());
     if (lhs_rule != skolem_replacements.cend())
-        node.swap_lhs_operand(lhs_rule->second->clone());
+        node.put_lhs_operand(lhs_rule->second->clone());
 
     borrowed_lhs->accept(term_visitor);
     node.put_lhs_operand(std::move(borrowed_lhs));
@@ -106,7 +106,7 @@ void SkolemIntroducingVisitor::visit(MutableIdentity &node)
     const auto& rhs_rule =
         skolem_replacements.find(borrowed_rhs->get_disambiguated_name());
     if (rhs_rule != skolem_replacements.cend())
-        node.swap_rhs_operand(rhs_rule->second->clone());
+        node.put_rhs_operand(rhs_rule->second->clone());
 
     borrowed_rhs->accept(term_visitor);
     node.put_rhs_operand(std::move(borrowed_rhs));

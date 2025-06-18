@@ -171,6 +171,10 @@ add_library(OptifolCommon OBJECT
         Source/IR/Sentences/BinaryConnected.hpp
         Source/IR/Sentences/Quantified.cpp
         Source/IR/Sentences/Quantified.hpp
+        Source/IR/Sentences/Identity.cpp
+        Source/IR/Sentences/Identity.hpp
+        Source/IR/Terms/Constant.cpp
+        Source/IR/Terms/Constant.hpp
 )
 
 target_link_libraries(OptifolCommon PRIVATE nlohmann_json::nlohmann_json simdjson)

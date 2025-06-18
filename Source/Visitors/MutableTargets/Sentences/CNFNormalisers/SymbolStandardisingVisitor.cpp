@@ -68,7 +68,7 @@ void SymbolStandardisingVisitor::visit(MutableIdentity &node)
     // Apply any relevant disambiguation rewriting to the LHS operand.
     const auto& lhs_rule = rewriting_rules.find(borrowed_lhs->get_disambiguated_name());
     if (lhs_rule != rewriting_rules.cend())
-        node.swap_lhs_operand(lhs_rule->second->clone());
+        node.put_lhs_operand(lhs_rule->second->clone());
 
     borrowed_lhs->accept(term_visitor);
     node.put_lhs_operand(std::move(borrowed_lhs));
@@ -78,7 +78,7 @@ void SymbolStandardisingVisitor::visit(MutableIdentity &node)
     // Apply any relevant disambiguation rewriting to the RHS operand.
     const auto& rhs_rule = rewriting_rules.find(borrowed_rhs->get_disambiguated_name());
     if (rhs_rule != rewriting_rules.cend())
-        node.swap_rhs_operand(rhs_rule->second->clone());
+        node.put_rhs_operand(rhs_rule->second->clone());
 
     borrowed_rhs->accept(term_visitor);
     node.put_rhs_operand(std::move(borrowed_rhs));

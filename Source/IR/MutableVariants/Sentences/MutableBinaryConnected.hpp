@@ -75,14 +75,14 @@ public:
      * @return The stolen container containing the LHS operand
      * @warning This call transfers ownership outbound
      */
-    [[nodiscard]] std::unique_ptr<IMutableSentence> take_lhs_operand();
+    [[nodiscard]] std::unique_ptr<IMutableSentence> take_lhs_operand() noexcept;
 
     /**
      * @brief Steals ownership of the RHS operand from the object to the caller
      * @return The stolen container containing the RHS operand
      * @warning This call transfers ownership outbound
      */
-    [[nodiscard]] std::unique_ptr<IMutableSentence> take_rhs_operand();
+    [[nodiscard]] std::unique_ptr<IMutableSentence> take_rhs_operand() noexcept;
 
     /**
      * @brief Provides an immutable observing pointer to the owned LHS operand
@@ -104,7 +104,7 @@ public:
      * @warning This call transfers ownership inbound
      * @see @ref std::unique_ptr::operator= for semantics of swap
      */
-    void put_lhs_operand(std::unique_ptr<IMutableSentence> &&operand);
+    void put_lhs_operand(std::unique_ptr<IMutableSentence> &&operand) noexcept;
 
     /**
      * @brief Transfers ownership of a new RHS operand, overwriting any previously held LHS operand
@@ -112,15 +112,12 @@ public:
      * @warning This call transfers ownership inbound
      * @see @ref std::unique_ptr::operator= for semantics of swap
      */
-    void put_rhs_operand(std::unique_ptr<IMutableSentence> &&operand);
+    void put_rhs_operand(std::unique_ptr<IMutableSentence> &&operand) noexcept;
 
 private:
     BinaryOperatorTypes operator_type;
-
     std::unique_ptr<IMutableSentence> lhs;
-
     std::unique_ptr<IMutableSentence> rhs;
-
     bool is_positive;
 };
 

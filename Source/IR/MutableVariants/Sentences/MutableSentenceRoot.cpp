@@ -39,17 +39,17 @@ bool MutableSentenceRoot::is_negative_polarity() const noexcept
     return !is_positive;
 }
 
-std::unique_ptr<IMutableSentence> MutableSentenceRoot::take_sentence()
+std::unique_ptr<IMutableSentence> MutableSentenceRoot::take_sentence() noexcept
 {
     return std::move(sentence);
 }
 
-const IMutableSentence *MutableSentenceRoot::observe_sentence() const
+const IMutableSentence *MutableSentenceRoot::observe_sentence() const noexcept
 {
     return sentence.get();
 }
 
-void MutableSentenceRoot::put_sentence(std::unique_ptr<IMutableSentence> &&sentence)
+void MutableSentenceRoot::put_sentence(std::unique_ptr<IMutableSentence> &&sentence) noexcept
 {
     this->sentence = std::move(sentence);
 }

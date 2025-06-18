@@ -42,22 +42,22 @@ bool MutableIdentity::is_negative_polarity() const noexcept
     return !is_positive;
 }
 
-std::unique_ptr<IMutableTerm> MutableIdentity::take_lhs_operand()
+std::unique_ptr<IMutableTerm> MutableIdentity::take_lhs_operand() noexcept
 {
     return std::move(lhs);
 }
 
-std::unique_ptr<IMutableTerm> MutableIdentity::take_rhs_operand()
+std::unique_ptr<IMutableTerm> MutableIdentity::take_rhs_operand() noexcept
 {
     return std::move(rhs);
 }
 
-const IMutableTerm *MutableIdentity::observe_lhs_operand() const
+const IMutableTerm *MutableIdentity::observe_lhs_operand() const noexcept
 {
     return lhs.get();
 }
 
-const IMutableTerm *MutableIdentity::observe_rhs_operand() const
+const IMutableTerm *MutableIdentity::observe_rhs_operand() const noexcept
 {
     return rhs.get();
 }
@@ -88,22 +88,12 @@ std::ostream &MutableIdentity::serialise(std::ostream &ostream) const
     return rhs->serialise(ostream) << ')';
 }
 
-void MutableIdentity::swap_lhs_operand(std::unique_ptr<IMutableTerm> &&new_lhs)
-{
-    lhs.swap(new_lhs);
-}
-
-void MutableIdentity::swap_rhs_operand(std::unique_ptr<IMutableTerm> &&new_rhs)
-{
-    rhs.swap(new_rhs);
-}
-
-void MutableIdentity::put_lhs_operand(std::unique_ptr<IMutableTerm> &&new_lhs)
+void MutableIdentity::put_lhs_operand(std::unique_ptr<IMutableTerm> &&new_lhs) noexcept
 {
     lhs = std::move(new_lhs);
 }
 
-void MutableIdentity::put_rhs_operand(std::unique_ptr<IMutableTerm> &&new_rhs)
+void MutableIdentity::put_rhs_operand(std::unique_ptr<IMutableTerm> &&new_rhs) noexcept
 {
     rhs = std::move(new_rhs);
 }

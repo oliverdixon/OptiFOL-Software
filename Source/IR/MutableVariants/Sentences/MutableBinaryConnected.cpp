@@ -58,12 +58,12 @@ void MutableBinaryConnected::set_operator_type(const BinaryOperatorTypes new_typ
     operator_type = new_type;
 }
 
-std::unique_ptr<IMutableSentence> MutableBinaryConnected::take_lhs_operand()
+std::unique_ptr<IMutableSentence> MutableBinaryConnected::take_lhs_operand() noexcept
 {
     return std::move(lhs);
 }
 
-std::unique_ptr<IMutableSentence> MutableBinaryConnected::take_rhs_operand()
+std::unique_ptr<IMutableSentence> MutableBinaryConnected::take_rhs_operand() noexcept
 {
     return std::move(rhs);
 }
@@ -78,12 +78,12 @@ const IMutableSentence *MutableBinaryConnected::observe_rhs_operand() const noex
     return rhs.get();
 }
 
-void MutableBinaryConnected::put_lhs_operand(std::unique_ptr<IMutableSentence> &&operand)
+void MutableBinaryConnected::put_lhs_operand(std::unique_ptr<IMutableSentence> &&operand) noexcept
 {
     lhs = std::move(operand);
 }
 
-void MutableBinaryConnected::put_rhs_operand(std::unique_ptr<IMutableSentence> &&operand)
+void MutableBinaryConnected::put_rhs_operand(std::unique_ptr<IMutableSentence> &&operand) noexcept
 {
     rhs = std::move(operand);
 }
