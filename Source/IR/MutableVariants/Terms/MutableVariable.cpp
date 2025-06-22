@@ -13,6 +13,7 @@
 
 #include "MutableVariable.hpp"
 
+#include "../../../Visitors/MutableTargets/RepositoryBuildingVisitor.hpp"
 #include "../../../Visitors/MutableTargets/Terms/MutatingTermVisitorBase.hpp"
 #include "MutableFunction.hpp"
 
@@ -54,6 +55,11 @@ std::string_view MutableVariable::get_disambiguated_name() const
         return *disambiguated_name;
 
     return name;
+}
+
+void MutableVariable::accept(RepositoryBuildingVisitor &visitor)
+{
+    visitor.visit(*this);
 }
 
 } // namespace optifol

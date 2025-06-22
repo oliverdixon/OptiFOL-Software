@@ -175,6 +175,8 @@ add_library(OptifolCommon OBJECT
         Source/IR/Sentences/Identity.hpp
         Source/IR/Terms/Constant.cpp
         Source/IR/Terms/Constant.hpp
+        Source/Visitors/MutableTargets/RepositoryBuildingVisitor.cpp
+        Source/Visitors/MutableTargets/RepositoryBuildingVisitor.hpp
 )
 
 target_link_libraries(OptifolCommon PRIVATE nlohmann_json::nlohmann_json simdjson)

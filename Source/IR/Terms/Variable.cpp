@@ -34,7 +34,10 @@ std::string Variable::to_string() const
 
 std::string_view Variable::get_disambiguated_name() const
 {
-    return disambiguated_name.value_or(name);
+    if (disambiguated_name.has_value())
+        return *disambiguated_name;
+
+    return name;
 }
 
 } // namespace optifol

@@ -45,6 +45,8 @@ public:
 
     void accept(MutatingTermVisitorBase &visitor) override;
 
+    void accept(RepositoryBuildingVisitor &visitor) override;
+
 private:
     std::string name;
 };

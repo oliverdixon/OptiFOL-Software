@@ -13,6 +13,7 @@
 
 #include "MutableConstant.hpp"
 
+#include "../../../Visitors/MutableTargets/RepositoryBuildingVisitor.hpp"
 #include "../../../Visitors/MutableTargets/Terms/MutatingTermVisitorBase.hpp"
 
 namespace optifol
@@ -39,6 +40,11 @@ std::string_view MutableConstant::get_disambiguated_name() const
 }
 
 void MutableConstant::accept(MutatingTermVisitorBase &visitor)
+{
+    visitor.visit(*this);
+}
+
+void MutableConstant::accept(RepositoryBuildingVisitor &visitor)
 {
     visitor.visit(*this);
 }

@@ -13,6 +13,8 @@
 
 #include "Constant.hpp"
 
+#include "../../Visitors/MutableTargets/RepositoryBuildingVisitor.hpp"
+
 namespace optifol
 {
 

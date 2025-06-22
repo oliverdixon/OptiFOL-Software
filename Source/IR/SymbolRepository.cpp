@@ -18,7 +18,7 @@
 namespace optifol
 {
 
-const ITerm *SymbolRepository::add_symbol(std::unique_ptr<ITerm> &&term)
+const IProcessedTerm *SymbolRepository::add_symbol(std::unique_ptr<IProcessedTerm> &&term)
 {
     const auto given_handle = term.get();
     auto [inserted_it, inserted] = terms.insert(std::move(term));
@@ -50,7 +50,7 @@ const Predicate *SymbolRepository::add_symbol(std::unique_ptr<Predicate> &&predi
     return inserted_it->get();
 }
 
-std::optional<const ITerm *> SymbolRepository::get_symbol_handle(const ITerm &term) const
+std::optional<const IProcessedTerm *> SymbolRepository::get_symbol_handle(const IProcessedTerm &term) const
 {
     const auto it = terms.find(term);
     if (it == terms.cend())

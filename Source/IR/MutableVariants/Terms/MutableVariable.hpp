@@ -55,6 +55,8 @@ public:
 
     [[nodiscard]] std::string_view get_disambiguated_name() const override;
 
+    void accept(RepositoryBuildingVisitor &visitor) override;
+
 private:
     std::string name;
     std::optional<std::string> disambiguated_name;

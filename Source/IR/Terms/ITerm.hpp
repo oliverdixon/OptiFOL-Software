@@ -93,26 +93,6 @@ public:
     {
         return object.serialise(ostream);
     }
-
-    /**
-     * @brief Test hash-based equality with another ITerm, wrapped in a @ref std::unique_ptr
-     * @param other The owning container of the ITerm with which equality should be tested
-     * @return Are the ITerm objects equal?
-     */
-    bool operator==(const std::unique_ptr<ITerm> &other) const
-    {
-        return other->hash() == hash();
-    }
-
-    /**
-     * @brief Test hash-based equality with another ITerm, wrapped in a @ref std::shared_ptr
-     * @param other The owning container of the ITerm with which equality should be tested
-     * @return Are the ITerm objects equal?
-     */
-    bool operator==(const std::shared_ptr<ITerm> &other) const
-    {
-        return other->hash() == hash();
-    }
 };
 
 } // namespace optifol

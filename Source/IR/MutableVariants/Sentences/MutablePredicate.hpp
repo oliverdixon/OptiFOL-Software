@@ -24,6 +24,8 @@
 namespace optifol
 {
 
+class RepositoryBuildingVisitor;
+
 /**
  * @class MutablePredicate
  * @brief A MutablePredicate represents an owning IR node sentence consisting of a display name and zero to many
@@ -82,6 +84,8 @@ public:
 
     void accept(IObservingSentenceVisitor &visitor) const override;
 
+    void accept(RepositoryBuildingVisitor& visitor) override;
+
     [[nodiscard]] std::size_t hash() const noexcept override;
 
     std::ostream &serialise(std::ostream &ostream) const override;
@@ -90,7 +94,7 @@ public:
      * @brief Get the display name of the mutable predicate, not including any arguments or metadata
      * @return A view of the predicate symbol name
      */
-    std::string_view get_name() const noexcept;
+    [[nodiscard]] std::string_view get_name() const noexcept;
 
     /**
      * @brief Observe the constant owning ordered argument collection

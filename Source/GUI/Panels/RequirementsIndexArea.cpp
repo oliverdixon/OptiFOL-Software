@@ -152,7 +152,7 @@ void RequirementsIndexArea::deselect_model()
     selection_model->set_model(nullptr);
 }
 
-void RequirementsIndexArea::configure_new_requirement_popover(Gtk::Builder &builder) const
+void RequirementsIndexArea::configure_new_requirement_popover(Gtk::Builder &builder)
 {
     const auto popover = GTKHelpers::get_widget<Gtk::Popover>(area_name, builder, "new_requirement_popover");
     const auto confirm_button = GTKHelpers::get_widget<Gtk::Button>(area_name, builder, "new_requirement_confirm");
@@ -190,7 +190,8 @@ void RequirementsIndexArea::configure_new_requirement_popover(Gtk::Builder &buil
             property_name->get_text(),
             property_sentence->get_text(),
             property_description->get_buffer()->get_text(),
-            property_priority->get_selected()
+            property_priority->get_selected(),
+            symbol_repository
         )));
     });
 }
@@ -285,7 +286,7 @@ void RequirementsIndexArea::configure_delete_requirement_popover(Gtk::Builder &b
     });
 }
 
-void RequirementsIndexArea::configure_duplicate_requirement_popover(Gtk::Builder &builder) const
+void RequirementsIndexArea::configure_duplicate_requirement_popover(Gtk::Builder &builder)
 {
     const auto popover = GTKHelpers::get_widget<Gtk::Popover>(area_name, builder, "duplicate_requirement_popover");
     const auto confirm_button = GTKHelpers::get_widget<Gtk::Button>(area_name, builder,
@@ -322,7 +323,8 @@ void RequirementsIndexArea::configure_duplicate_requirement_popover(Gtk::Builder
                 property_new_name->get_text(),
                 candidate->property_statement().get_value(),
                 candidate->property_description().get_value(),
-                candidate->property_priority().get_value()
+                candidate->property_priority().get_value(),
+                symbol_repository
             )));
     });
 }

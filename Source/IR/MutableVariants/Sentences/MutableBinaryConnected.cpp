@@ -13,6 +13,7 @@
 
 #include "MutableBinaryConnected.hpp"
 
+#include "../../../Visitors/MutableTargets/RepositoryBuildingVisitor.hpp"
 #include "../../../Visitors/MutableTargets/Sentences/IObservingSentenceVisitor.hpp"
 #include "../../../Visitors/MutableTargets/Sentences/MutatingSentenceVisitorBase.hpp"
 
@@ -89,6 +90,11 @@ void MutableBinaryConnected::put_rhs_operand(std::unique_ptr<IMutableSentence> &
 }
 
 void MutableBinaryConnected::accept(IObservingSentenceVisitor &visitor) const
+{
+    visitor.visit(*this);
+}
+
+void MutableBinaryConnected::accept(RepositoryBuildingVisitor &visitor)
 {
     visitor.visit(*this);
 }

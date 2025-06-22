@@ -23,6 +23,7 @@ namespace optifol
 
 class MutatingSentenceVisitorBase;
 class IObservingSentenceVisitor;
+class RepositoryBuildingVisitor;
 
 /**
  * @class IMutableSentence
@@ -69,6 +70,12 @@ public:
      * @param visitor The observing visitor to invoke
      */
     virtual void accept(IObservingSentenceVisitor &visitor) const = 0;
+
+    /**
+     * @brief Accept a visitation from a mutating RepositoryBuildingVisitor on the object
+     * @param visitor The repository-building visitor to invoke
+     */
+    virtual void accept(RepositoryBuildingVisitor& visitor) = 0;
 };
 
 } // namespace optifol

@@ -14,6 +14,7 @@
 #include "MutablePredicate.hpp"
 
 #include "../../../CompositeSerialisationHelpers.hpp"
+#include "../../../Visitors/MutableTargets/RepositoryBuildingVisitor.hpp"
 #include "../../../Visitors/MutableTargets/Sentences/IObservingSentenceVisitor.hpp"
 #include "../../../Visitors/MutableTargets/Sentences/MutatingSentenceVisitorBase.hpp"
 #include "../Terms/IMutableTerm.hpp"
@@ -81,6 +82,11 @@ void MutablePredicate::accept(MutatingSentenceVisitorBase &visitor)
 }
 
 void MutablePredicate::accept(IObservingSentenceVisitor &visitor) const
+{
+    visitor.visit(*this);
+}
+
+void MutablePredicate::accept(RepositoryBuildingVisitor &visitor)
 {
     visitor.visit(*this);
 }

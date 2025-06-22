@@ -13,6 +13,7 @@
 
 #include "MutableIdentity.hpp"
 
+#include "../../../Visitors/MutableTargets/RepositoryBuildingVisitor.hpp"
 #include "../../../Visitors/MutableTargets/Sentences/IObservingSentenceVisitor.hpp"
 #include "../../../Visitors/MutableTargets/Sentences/MutatingSentenceVisitorBase.hpp"
 
@@ -68,6 +69,11 @@ void MutableIdentity::accept(MutatingSentenceVisitorBase &visitor)
 }
 
 void MutableIdentity::accept(IObservingSentenceVisitor &visitor) const
+{
+    visitor.visit(*this);
+}
+
+void MutableIdentity::accept(RepositoryBuildingVisitor &visitor)
 {
     visitor.visit(*this);
 }

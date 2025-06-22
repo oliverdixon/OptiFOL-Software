@@ -13,6 +13,7 @@
 
 #include "MutableSentenceRoot.hpp"
 
+#include "../../../Visitors/MutableTargets/RepositoryBuildingVisitor.hpp"
 #include "../../../Visitors/MutableTargets/Sentences/IObservingSentenceVisitor.hpp"
 #include "../../../Visitors/MutableTargets/Sentences/MutatingSentenceVisitorBase.hpp"
 
@@ -60,6 +61,11 @@ void MutableSentenceRoot::accept(MutatingSentenceVisitorBase &visitor)
 }
 
 void MutableSentenceRoot::accept(IObservingSentenceVisitor &visitor) const
+{
+    visitor.visit(*this);
+}
+
+void MutableSentenceRoot::accept(RepositoryBuildingVisitor &visitor)
 {
     visitor.visit(*this);
 }

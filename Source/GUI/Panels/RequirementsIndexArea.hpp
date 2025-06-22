@@ -81,13 +81,15 @@ private:
 
     ContextButtonCorrespondence context_menu;
 
-    void configure_new_requirement_popover(Gtk::Builder& builder) const;
+    SymbolRepository symbol_repository;
+
+    void configure_new_requirement_popover(Gtk::Builder& builder);
 
     void configure_edit_requirement_popover(Gtk::Builder& builder) const;
 
     void configure_delete_requirement_popover(Gtk::Builder& builder) const;
 
-    void configure_duplicate_requirement_popover(Gtk::Builder& builder) const;
+    void configure_duplicate_requirement_popover(Gtk::Builder& builder);
 };
 
 }

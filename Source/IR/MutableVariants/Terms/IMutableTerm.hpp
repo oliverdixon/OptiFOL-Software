@@ -21,10 +21,8 @@
 namespace optifol
 {
 
-class MutableFunction;
-class MutableVariable;
-class UnificationVisitor;
 class MutatingTermVisitorBase;
+class RepositoryBuildingVisitor;
 
 /**
  * @class IMutableTerm
@@ -39,12 +37,23 @@ class IMutableTerm : public ITerm
 {
 public:
     /**
-     * @brief Recursively
+     * @brief Recursively clone an owning term, making replicas of all children held by the cloned parent, and return
+     *  the root-most node detained by a @ref std::unique_ptr.
      * @return The transferable container holding the recursively cloned term
      */
     [[nodiscard]] virtual std::unique_ptr<IMutableTerm> clone() const = 0;
 
+    /**
+     * @brief Accept a visitation from a MutatingTermVisitorBase-type visitor
+     * @param visitor The instantiation of the mutating term visitor
+     */
     virtual void accept(MutatingTermVisitorBase &visitor) = 0;
+
+    /**
+     * @brief Accept a visitation from a RepositoryBuildingVisitor-type visitor
+     * @param visitor The instantiation of the mutating repository-building visitor
+     */
+    virtual void accept(RepositoryBuildingVisitor& visitor) = 0;
 };
 
 } // namespace optifol

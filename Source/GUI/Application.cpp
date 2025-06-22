@@ -56,7 +56,7 @@ void Application::on_activate()
     // Create dummy instances of derived GObjects to register with the GType system.
     static_cast<void>(Project({}));
     static_cast<void>(Subsystem({}, nullptr));
-    static_cast<void>(Requirement({}, {}, {}, {}));
+    static_cast<void>(Requirement({}, {}, {}, {}, nullptr));
 
     const auto main_window = create_main_window();
     main_window->present();

@@ -12,6 +12,8 @@
  */
 
 #include "MutableQuantified.hpp"
+
+#include "../../../Visitors/MutableTargets/RepositoryBuildingVisitor.hpp"
 #include "../../../Visitors/MutableTargets/Sentences/IObservingSentenceVisitor.hpp"
 #include "../../../Visitors/MutableTargets/Sentences/MutatingSentenceVisitorBase.hpp"
 #include "../../../Visitors/MutableTargets/Sentences/Serialisers/TextSerialiserVisitor.hpp"
@@ -84,6 +86,11 @@ void MutableQuantified::accept(MutatingSentenceVisitorBase &visitor)
 }
 
 void MutableQuantified::accept(IObservingSentenceVisitor &visitor) const
+{
+    visitor.visit(*this);
+}
+
+void MutableQuantified::accept(RepositoryBuildingVisitor &visitor)
 {
     visitor.visit(*this);
 }

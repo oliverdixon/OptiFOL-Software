@@ -40,8 +40,10 @@ FOLParser Requirement::parser{&Requirement::lexer};
 
 log4cxx::LoggerPtr Requirement::cnf_logger = Logging::get_logger({"LogicServices", "CNFNormalisation"});
 log4cxx::LoggerPtr Requirement::parse_logger = Logging::get_logger({"LogicServices", "FormalParsing"});
+log4cxx::LoggerPtr Requirement::integration_logger = Logging::get_logger({"LogicServices", "SystemIntegration"});
 
-Requirement::Requirement(std::string&& name, std::string&& statement, std::string&& description, const guint priority) :
+Requirement::Requirement(std::string &&name, std::string &&statement, std::string &&description, guint priority,
+        std::nullptr_t) :
     Glib::ObjectBase("Requirement"),
     statement(*this, "Requirement-statement"),
     normalised_statement(*this, "Requirement-normalised"),
@@ -52,13 +54,26 @@ Requirement::Requirement(std::string&& name, std::string&& statement, std::strin
 }
 
 Requirement::Requirement(std::string&& name, std::string&& statement, std::string&& description, const guint priority,
-        BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &builder) :
+        SymbolRepository& system_repository) :
+    Glib::ObjectBase("Requirement"),
+    statement(*this, "Requirement-statement"),
+    normalised_statement(*this, "Requirement-normalised"),
+    description(*this, "Requirement-description"),
+    priority(*this, "Requirement-priority"),
+    repository_building_visitor(system_repository)
+{
+    setup_properties(std::move(name), std::move(statement), std::move(description), priority);
+}
+
+Requirement::Requirement(std::string&& name, std::string&& statement, std::string&& description, const guint priority,
+        BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &builder, SymbolRepository& system_repository) :
     Glib::ObjectBase("Requirement"),
     StorageObjectBase(cobject, builder),
     statement(*this, "Requirement-statement"),
     normalised_statement(*this, "Requirement-normalised"),
     description(*this, "Requirement-description"),
-    priority(*this, "Requirement-priority")
+    priority(*this, "Requirement-priority"),
+    repository_building_visitor(system_repository)
 {
     setup_properties(std::move(name), std::move(statement), std::move(description), priority);
 }
@@ -128,6 +143,7 @@ void Requirement::setup_properties(std::string&& requirement_name, std::string&&
             formatted_input_statement = text_serialise(original_ast.get());
             try {
                 cnf_normalise();
+                populate_symbol_repository();
             } catch (const SemanticException&) {
                 cnf_logger->warn("Normalisation process was unsuccessful due to invalid logical semantics; "
                                  "requirements will be missing.");
@@ -156,14 +172,10 @@ void Requirement::cnf_normalise()
     }
 
     const std::array<std::unique_ptr<MutatingSentenceVisitorBase>, 7> visitors{
-        std::make_unique<ImplicationEliminationVisitor>(),
-        std::make_unique<DMLVisitor>(),
-        std::make_unique<SymbolStandardisingVisitor>(),
-        std::make_unique<QuantifierExtractingVisitor>(),
-        std::make_unique<SkolemIntroducingVisitor>(),
-        std::make_unique<UniversalEliminationVisitor>(),
-        std::make_unique<DisjunctionDistributionVisitor>()
-    };
+            std::make_unique<ImplicationEliminationVisitor>(), std::make_unique<DMLVisitor>(),
+            std::make_unique<SymbolStandardisingVisitor>(), std::make_unique<QuantifierExtractingVisitor>(),
+            std::make_unique<SkolemIntroducingVisitor>(), std::make_unique<UniversalEliminationVisitor>(),
+            std::make_unique<DisjunctionDistributionVisitor>()};
 
     if (cnf_logger->isDebugEnabled())
         /*
@@ -171,25 +183,25 @@ void Requirement::cnf_normalise()
          * entire tree for each step in the normalisation pipeline would be a great inefficiency if the strings were not
          * used!
          */
-        for (const auto& visitor : visitors) {
+        for (const auto &visitor: visitors) {
             try {
                 cnf_sentence->accept(*visitor);
-            } catch (const SemanticException& semantic_exception) {
-                Logging::get_logger({cnf_logger->getName(), std::string(visitor->get_visitor_name())})->error(
-                    semantic_exception.what());
+            } catch (const SemanticException &semantic_exception) {
+                Logging::get_logger({cnf_logger->getName(), std::string(visitor->get_visitor_name())})
+                        ->error(semantic_exception.what());
                 throw;
             }
 
-            Logging::get_logger({cnf_logger->getName(), std::string(visitor->get_visitor_name())})->debug(
-                text_serialise(cnf_sentence.get()));
+            Logging::get_logger({cnf_logger->getName(), std::string(visitor->get_visitor_name())})
+                    ->debug(text_serialise(cnf_sentence.get()));
         }
     else
-        for (const auto& visitor : visitors)
+        for (const auto &visitor: visitors)
             try {
                 cnf_sentence->accept(*visitor);
-            } catch (const SemanticException& semantic_exception) {
-                Logging::get_logger({cnf_logger->getName(), std::string(visitor->get_visitor_name())})->error(
-                    semantic_exception.what());
+            } catch (const SemanticException &semantic_exception) {
+                Logging::get_logger({cnf_logger->getName(), std::string(visitor->get_visitor_name())})
+                        ->error(semantic_exception.what());
                 throw;
             }
 
@@ -199,6 +211,22 @@ void Requirement::cnf_normalise()
     }
 
     cnf_ast = std::move(cnf_sentence);
+}
+
+void Requirement::populate_symbol_repository()
+{
+    if (repository_building_visitor.has_value() == false) {
+        integration_logger->error("Requirement has not been exposed to the system-wide symbol repository; formula "
+                                  "cannot be understood within the context of adjacent expressions. Logical analysis "
+                                  "will produce unexpected results.");
+        return;
+    }
+
+    // TODO: info-level integration logging as with CNF normalisation pipeline
+
+    auto sentence = std::move(cnf_ast);
+    sentence->accept(*repository_building_visitor);
+    cnf_ast = std::move(sentence);
 }
 
 std::string Requirement::text_serialise(const IMutableSentence *sentence)

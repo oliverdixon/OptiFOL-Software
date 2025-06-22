@@ -14,6 +14,7 @@
 #include "MutableFunction.hpp"
 
 #include "../../../CompositeSerialisationHelpers.hpp"
+#include "../../../Visitors/MutableTargets/RepositoryBuildingVisitor.hpp"
 #include "../../../Visitors/MutableTargets/Terms/MutatingTermVisitorBase.hpp"
 #include "../../Terms/Function.hpp"
 
@@ -55,6 +56,11 @@ std::string_view MutableFunction::get_disambiguated_name() const
 }
 
 void MutableFunction::accept(MutatingTermVisitorBase &visitor)
+{
+    visitor.visit(*this);
+}
+
+void MutableFunction::accept(RepositoryBuildingVisitor &visitor)
 {
     visitor.visit(*this);
 }

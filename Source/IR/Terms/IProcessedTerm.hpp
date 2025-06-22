@@ -19,6 +19,8 @@
 namespace optifol
 {
 
+class RepositoryBuildingVisitor;
+
 /**
  * @class IProcessedTerm
  * @brief An IProcessedTerm is an ITerm that has undergone the lexing, parsing, and normalisation pipeline and is now
@@ -45,6 +47,26 @@ public:
      * @return Did the UnificationVisitor indicate successful unification?
      */
     virtual bool accept(UnificationVisitor &visitor, const Function &target) const;
+
+    /**
+     * @brief Test hash-based equality with another IProcessedTerm, wrapped in a @ref std::unique_ptr
+     * @param other The owning container of the IProcessedTerm with which equality should be tested
+     * @return Are the IProcessedTerm objects equal?
+     */
+    bool operator==(const std::unique_ptr<IProcessedTerm> &other) const
+    {
+        return other->hash() == hash();
+    }
+
+    /**
+     * @brief Test hash-based equality with another IProcessedTerm, wrapped in a @ref std::shared_ptr
+     * @param other The owning container of the IProcessedTerm with which equality should be tested
+     * @return Are the IProcessedTerm objects equal?
+     */
+    bool operator==(const std::shared_ptr<IProcessedTerm> &other) const
+    {
+        return other->hash() == hash();
+    }
 };
 
 } // namespace optifol

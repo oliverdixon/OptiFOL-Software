@@ -60,6 +60,8 @@ public:
 
     void accept(MutatingTermVisitorBase &visitor) override;
 
+    void accept(RepositoryBuildingVisitor &visitor) override;
+
     /**
      * @brief Observe the constant owning ordered argument collection
      * @return The arguments owned by the function

@@ -17,6 +17,8 @@
 #include <log4cxx/logger.h>
 
 #include "../IR/MutableVariants/Sentences/IMutableSentence.hpp"
+#include "../IR/SymbolRepository.hpp"
+#include "../Visitors/MutableTargets/RepositoryBuildingVisitor.hpp"
 #include "FOLLexer.hpp"
 #include "StorageObjectBase.hpp"
 
@@ -32,13 +34,30 @@ class Requirement :
 {
 public:
     /**
+     * @brief Create a new Requirement with the given name and register in the Glib GType system,
+     *  but no active SymbolRepository.
+     * @param name The initial name of the Requirement
+     * @param statement The initial FOL statement of the Requirement
+     * @param description The initial long-form description of the Requirement
+     * @param priority The initial priority of the Requirement
+     * @param system_repository A null pointer to explicitly signify the lacking SymbolRepository
+     * @warning As no system-wide symbol repository has been provided, this Requirement will not supply its symbols to
+     *  the wider system. Logical analysis will produce unexpected results.
+     */
+    explicit Requirement(std::string&& name, std::string&& statement, std::string&& description, guint priority,
+        std::nullptr_t system_repository);
+
+    /**
      * @brief Create a new Requirement with the given name and register in the Glib GType system
      * @param name The initial name of the Requirement
      * @param statement The initial FOL statement of the Requirement
      * @param description The initial long-form description of the Requirement
      * @param priority The initial priority of the Requirement
+     * @param system_repository The system-wide symbol repository with lifetimes guaranteed to cover that of the
+     *  Requirement
      */
-    explicit Requirement(std::string&& name, std::string&& statement, std::string&& description, guint priority);
+    explicit Requirement(std::string&& name, std::string&& statement, std::string&& description, guint priority,
+        SymbolRepository& system_repository);
 
     /**
      * @brief Create a new Requirement with the given name and register in the Glib GType system
@@ -48,9 +67,11 @@ public:
      * @param priority The initial priority of the Requirement
      * @param cobject The C cast-item used by Glib::Object
      * @param builder Currently unused builder parameter to provide to the Glib::Object instance
+     * @param system_repository The system-wide symbol repository with lifetimes guaranteed to cover that of the
+     *  Requirement
      */
     Requirement(std::string&& name, std::string&& statement, std::string&& description, guint priority,
-        BaseObjectType* cobject, const Glib::RefPtr<Gtk::Builder>& builder);
+        BaseObjectType* cobject, const Glib::RefPtr<Gtk::Builder>& builder, SymbolRepository& system_repository);
 
     /**
      * @brief Get a read-write proxy for the 'statement' property
@@ -105,10 +126,14 @@ public:
 private:
     static log4cxx::LoggerPtr parse_logger;
     static log4cxx::LoggerPtr cnf_logger;
+    static log4cxx::LoggerPtr integration_logger;
 
-    void setup_properties(std::string&& requirement_name, std::string&& requirement_statement, std::string&& requirement_description, guint requirement_priority);
+    void setup_properties(std::string&& requirement_name, std::string&& requirement_statement,
+        std::string&& requirement_description, guint requirement_priority);
 
     void cnf_normalise();
+
+    void populate_symbol_repository();
 
     static std::string text_serialise(const IMutableSentence * sentence);
 
@@ -123,6 +148,8 @@ private:
     std::unique_ptr<IMutableSentence> original_ast;
 
     std::unique_ptr<IMutableSentence> cnf_ast;
+
+    std::optional<RepositoryBuildingVisitor> repository_building_visitor;
 
     std::string formatted_input_statement;
 

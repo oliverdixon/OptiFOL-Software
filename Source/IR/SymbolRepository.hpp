@@ -20,7 +20,7 @@
 
 #include "../IHashable.hpp"
 #include "Sentences/Predicate.hpp"
-#include "Terms/ITerm.hpp"
+#include "Terms/IProcessedTerm.hpp"
 
 namespace optifol
 {
@@ -41,7 +41,7 @@ public:
      * @throws std::runtime_error An equivalent term does not exist in the repository, and could not be added.
      * @note If the supplied term is hash-equal to an existing term held by the repository, the repository is unchanged.
      */
-    const ITerm *add_symbol(std::unique_ptr<ITerm> &&term);
+    const IProcessedTerm *add_symbol(std::unique_ptr<IProcessedTerm> &&term);
 
     /**
      * @brief Add a predicate to the repository
@@ -59,7 +59,7 @@ public:
      * @return A constant handle to the term, if a suitable match exists in the repository. Otherwise, an empty \ref
      *  std::optional.
      */
-    std::optional<const ITerm *> get_symbol_handle(const ITerm &term) const;
+    std::optional<const IProcessedTerm *> get_symbol_handle(const IProcessedTerm &term) const;
 
     /**
      * @brief Retrieves a handle to an immutable predicate symbol owned by the repository
@@ -71,7 +71,7 @@ public:
 
 private:
     /*
-     * Note that we verify the satisfaction of Predicate and ITerms against the TransparentlyHashable concept
+     * Note that we verify the satisfaction of Predicate and IProcessedTerms against the TransparentlyHashable concept
      * here in the class definition to produce readable error messages. If the hasher and equality functor call
      * operators cannot participate in overload resolution for types not trivially convertible to the type of the key
      * (here a std::unique_ptr), 'find' etc. member function calls will produce cryptic compiler diagnostics.
@@ -80,8 +80,8 @@ private:
     static_assert(TransparentlyHashable<Predicate>);
     std::unordered_set<std::unique_ptr<Predicate>, std::hash<Predicate>, std::equal_to<>> predicates;
 
-    static_assert(TransparentlyHashable<ITerm>);
-    std::unordered_set<std::unique_ptr<ITerm>, std::hash<ITerm>, std::equal_to<>> terms;
+    static_assert(TransparentlyHashable<IProcessedTerm>);
+    std::unordered_set<std::unique_ptr<IProcessedTerm>, std::hash<IProcessedTerm>, std::equal_to<>> terms;
 };
 
 } // namespace optifol
