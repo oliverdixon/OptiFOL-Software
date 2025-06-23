@@ -20,6 +20,7 @@ namespace optifol
 {
 
 class IProcessedTerm;
+class ITerm;
 
 /**
  * @class Identity
@@ -40,6 +41,10 @@ public:
 
     [[nodiscard]] bool is_negative_polarity() const noexcept override;
 
+    std::ostream &serialise(std::ostream &ostream) const override;
+
+    [[nodiscard]] std::size_t hash() const noexcept override;
+
     /**
      * @brief Retrieve an observing pointer to the LHS term operand
      * @return An observing pointer to the LHS of the Identity IR node
@@ -51,6 +56,27 @@ public:
      * @return An observing pointer to the RHS of the Identity IR node
      */
     [[nodiscard]] const IProcessedTerm * observe_rhs_operand() const noexcept;
+
+    /**
+     * @brief Hash an identity IR node from a static context
+     * @param lhs An observing pointer to the LHS operand
+     * @param rhs An observing pointer to the RHS operand
+     * @param is_negative_polarity Has the target been instantiated with a negative polarity?
+     * @return Numeric hash of the identity IR node described by the given parameters
+     */
+    [[nodiscard]] static std::size_t hash_identity(
+            const ITerm *lhs, const ITerm *rhs, bool is_negative_polarity) noexcept;
+
+    /**
+     * @brief Serialise an identity IR node from a static context
+     * @param ostream Destination output stream
+     * @param lhs An observing pointer to the LHS operand
+     * @param rhs An observing pointer to the RHS operand
+     * @param is_negative_polarity Has the target been instantiated with a negative polarity?
+     * @return Populated destination output stream
+     */
+    static std::ostream& serialise_identity(
+            std::ostream &ostream, const ITerm *lhs, const ITerm *rhs, bool is_negative_polarity);
 
 private:
     const IProcessedTerm * const lhs;

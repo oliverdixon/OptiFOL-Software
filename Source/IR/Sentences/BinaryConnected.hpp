@@ -86,7 +86,6 @@ public:
     [[nodiscard]] static std::size_t hash_binary_connected(BinaryOperatorTypes operator_type, const ISentence *lhs,
             const ISentence *rhs, bool is_negative_polarity) noexcept;
 
-
     /**
      * @brief Serialise any type of binary-connected IR node from a static context into an output stream
      * @param ostream Destination output stream

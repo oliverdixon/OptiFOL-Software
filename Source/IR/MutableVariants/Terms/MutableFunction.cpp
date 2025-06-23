@@ -60,9 +60,8 @@ void MutableFunction::accept(MutatingTermVisitorBase &visitor)
     visitor.visit(*this);
 }
 
-void MutableFunction::accept(RepositoryBuildingVisitor &visitor)
+const IProcessedTerm *MutableFunction::accept(RepositoryBuildingVisitor &visitor)
 {
-    visitor.visit(*this);
 }
 
 const std::vector<std::unique_ptr<IMutableTerm>> &MutableFunction::observe_arguments() const noexcept

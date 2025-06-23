@@ -48,7 +48,7 @@ public:
 
     void accept(IObservingSentenceVisitor &visitor) const override;
 
-    void accept(RepositoryBuildingVisitor& visitor) override;
+    const ISentence *accept(RepositoryBuildingVisitor &visitor) override;
 
     [[nodiscard]] std::size_t hash() const noexcept override;
 

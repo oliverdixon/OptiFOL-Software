@@ -65,9 +65,10 @@ void MutableSentenceRoot::accept(IObservingSentenceVisitor &visitor) const
     visitor.visit(*this);
 }
 
-void MutableSentenceRoot::accept(RepositoryBuildingVisitor &visitor)
+const ISentence *MutableSentenceRoot::accept(RepositoryBuildingVisitor &visitor)
 {
     visitor.visit(*this);
+    return nullptr;
 }
 
 std::size_t MutableSentenceRoot::hash() const noexcept

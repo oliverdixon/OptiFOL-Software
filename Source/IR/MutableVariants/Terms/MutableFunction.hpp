@@ -60,7 +60,7 @@ public:
 
     void accept(MutatingTermVisitorBase &visitor) override;
 
-    void accept(RepositoryBuildingVisitor &visitor) override;
+    const IProcessedTerm *accept(RepositoryBuildingVisitor &visitor) override;
 
     /**
      * @brief Observe the constant owning ordered argument collection

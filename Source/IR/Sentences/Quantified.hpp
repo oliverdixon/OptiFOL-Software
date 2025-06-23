@@ -48,12 +48,14 @@ public:
      * @param sentence The sentence to bind
      * @param is_positive Is the quantified instantiation positive?
      */
-    Quantified(QuantifierTypes quantifier_type, const Variable *bound_term, const ISentence *sentence,
+    Quantified(QuantifierTypes quantifier_type, const IProcessedTerm *bound_term, const ISentence *sentence,
             bool is_positive = true);
 
     [[nodiscard]] std::size_t hash() const noexcept override;
 
     std::ostream &serialise(std::ostream &ostream) const override;
+
+    [[nodiscard]] bool is_negative_polarity() const noexcept override;
 
     /**
      * @brief Retrieve the quantification operator that binds the variable and the sentence
@@ -65,7 +67,7 @@ public:
      * @brief Retrieves a pointer to the immutable bound term
      * @return An immutable pointer to the bound term
      */
-    [[nodiscard]] const Variable *observe_bound_term() const noexcept;
+    [[nodiscard]] const IProcessedTerm *observe_bound_term() const noexcept;
 
     /**
      * @brief Retrieves a pointer to the immutable bound sentence
@@ -105,7 +107,7 @@ public:
 
 private:
     const QuantifierTypes quantifier_type;
-    const Variable *const bound_term;
+    const IProcessedTerm *const bound_term;
     const ISentence *const sentence;
     const bool is_positive;
 };

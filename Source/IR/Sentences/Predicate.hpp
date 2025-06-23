@@ -34,13 +34,13 @@ class Predicate : public ISentence
 {
 public:
     /**
-     * @brief Create a signed predicate with an initial set of referenced parameters
+     * @brief Create a signed predicate with an initial set of referenced arguments
      * @param name Predicate display name
-     * @param is_positive Should the predicate be instantiated with a positive polarity?
      * @param arguments Set of non-owning pointers to immutable arguments
+     * @param is_positive Should the predicate be instantiated with a positive polarity?
      */
     explicit Predicate(
-            std::string name, bool is_positive = true, std::initializer_list<const IProcessedTerm *> arguments = {});
+            std::string name, std::initializer_list<const IProcessedTerm *> arguments = {}, bool is_positive = true);
 
     /**
      * @brief Create a signed predicate with an initial set of referenced arguments
@@ -49,7 +49,7 @@ public:
      * @param is_positive Should the predicate be instantiated with a positive polarity?
      */
     explicit Predicate(
-            std::string name, std::initializer_list<const IProcessedTerm *> arguments = {}, bool is_positive = true);
+            std::string name, std::vector<const IProcessedTerm *>&& arguments, bool is_positive = true);
 
     [[nodiscard]] bool is_negative_polarity() const noexcept override;
 
@@ -77,22 +77,6 @@ public:
      * @see TransparentlyHashable for rationale
      */
     bool accept(UnificationVisitor &visitor, const Predicate &target) const;
-
-    /**
-     * @brief Compare with another predicate wrapped in a @ref std::unique_ptr
-     * @param other The wrapper containing the predicate against which equality should be determined
-     * @return Is the wrapped predicate hash-equal to us?
-     * @see GoogleTestable for desired concept
-     */
-    bool operator==(const std::unique_ptr<Predicate> &other) const noexcept;
-
-    /**
-     * @brief Compare with another predicate wrapped in a @ref std::shared_ptr
-     * @param other The wrapper containing the predicate against which equality should be determined
-     * @return Is the wrapped predicate hash-equal to us?
-     * @see TransparentlyHashable for rationale
-     */
-    bool operator==(const std::shared_ptr<Predicate> &other) const noexcept;
 
 private:
     const std::string name;

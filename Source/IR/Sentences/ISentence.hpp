@@ -59,6 +59,28 @@ public:
     {
         return hash() == other.hash();
     }
+
+    /**
+     * @brief Compare with another sentence wrapped in a @ref std::unique_ptr
+     * @param other The wrapper containing the sentence against which equality should be determined
+     * @return Is the wrapped sentence hash-equal to us?
+     * @see GoogleTestable for desired concept
+     */
+    bool operator==(const std::unique_ptr<ISentence> &other) const noexcept
+    {
+        return hash() == other->hash();
+    }
+
+    /**
+     * @brief Compare with another sentence wrapped in a @ref std::shared_ptr
+     * @param other The wrapper containing the sentence against which equality should be determined
+     * @return Is the wrapped sentence hash-equal to us?
+     * @see TransparentlyHashable for rationale
+     */
+    bool operator==(const std::shared_ptr<ISentence> &other) const noexcept
+    {
+        return hash() == other->hash();
+    }
 };
 
 } // namespace optifol

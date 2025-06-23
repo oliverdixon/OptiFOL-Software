@@ -55,7 +55,7 @@ public:
 
     [[nodiscard]] std::string_view get_disambiguated_name() const override;
 
-    void accept(RepositoryBuildingVisitor &visitor) override;
+    const IProcessedTerm *accept(RepositoryBuildingVisitor &visitor) override;
 
 private:
     std::string name;

@@ -23,6 +23,7 @@ namespace optifol
 
 class MutatingTermVisitorBase;
 class RepositoryBuildingVisitor;
+class IProcessedTerm;
 
 /**
  * @class IMutableTerm
@@ -35,6 +36,7 @@ class RepositoryBuildingVisitor;
  */
 class IMutableTerm : public ITerm
 {
+
 public:
     /**
      * @brief Recursively clone an owning term, making replicas of all children held by the cloned parent, and return
@@ -53,7 +55,7 @@ public:
      * @brief Accept a visitation from a RepositoryBuildingVisitor-type visitor
      * @param visitor The instantiation of the mutating repository-building visitor
      */
-    virtual void accept(RepositoryBuildingVisitor& visitor) = 0;
+    [[nodiscard]] virtual const IProcessedTerm *accept(RepositoryBuildingVisitor &visitor) = 0;
 };
 
 } // namespace optifol

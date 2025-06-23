@@ -22,11 +22,17 @@ namespace optifol
 {
 
 class MutablePredicate;
+class Predicate;
 class MutableQuantified;
+class Quantified;
 class MutableSentenceRoot;
+class SentenceRoot;
 class MutableBinaryConnected;
+class BinaryConnected;
 class MutableIdentity;
-class IMutableTerm;
+class Identity;
+class MutableVariable;
+class Variable;
 
 /**
  * @class RepositoryBuildingVisitor
@@ -82,7 +88,17 @@ class IMutableTerm;
  *              <td>All argument terms</td>
  *              <td>None</td>
  *          </tr>
+ *          <tr>
+ *              <td>MutableSentenceRoot</td>
+ *              <td>SentenceRoot with ownership responsibility</td>
+ *              <td>None</td>
+ *              <td>Detained sentence</td>
+ *          </tr>
  *      </table>
+ *      Note that the MutableSentenceRoot transformation represents a special case: the generated SentenceRoot is not
+ *      registered in a SymbolRepository but instead passed within an ownership-controlled container, which becomes the
+ *      responsibility of the visitor. Callers may then extract the last-generated sentence root from the visitor
+ *      instance.
  *  </p>
  *  <p>
  *      Term trees are also eligible for transformation by the visitor:
@@ -109,12 +125,9 @@ class IMutableTerm;
  *          </tr>
  *      </table>
  *  </p>
- *  <p>
- *      Note that other visitor/accept pairs are provided, such as for mutable-only types (see MutableSentenceRoot)
- *      solely for consistently on the visitor interface. These member functions are guaranteed to be no-ops and are
- *      marked as such with the <code>static</code> keyword.
- *  </p>
  * @see SymbolRepository
+ * @warning The RepositoryBuildingVisitor is a one-way transformation between mutable and immutable representations.
+ *  Visited nodes are always decomposed and rendered unusable to transfer ownership to the central SymbolRepository.
  */
 class RepositoryBuildingVisitor final
 {
@@ -124,7 +137,7 @@ public:
      * @param symbol_repository A mutable SymbolRepository baseline with a lifetime guaranteed to extend that of the
      *  visitor.
      */
-    explicit RepositoryBuildingVisitor(SymbolRepository& symbol_repository);
+    explicit RepositoryBuildingVisitor(SymbolRepository &symbol_repository);
 
     /**
      * @brief Gets the human-readable visitor name
@@ -132,24 +145,28 @@ public:
      */
     [[nodiscard]] static std::string_view get_visitor_name();
 
-    void visit(MutableQuantified& node);
+    [[nodiscard]] const Quantified *visit(MutableQuantified &node);
 
-    void visit(MutableBinaryConnected& node);
+    [[nodiscard]] const BinaryConnected *visit(MutableBinaryConnected &node);
 
-    void visit(MutableIdentity& node);
+    [[nodiscard]] const Identity *visit(MutableIdentity &node);
 
-    void visit(MutablePredicate& node);
+    [[nodiscard]] const Predicate *visit(MutablePredicate &node);
 
-    void visit(MutableSentenceRoot& node);
+    [[nodiscard]] const Variable *visit(const MutableVariable &node) const;
 
-    void visit(IMutableTerm& node);
+    void visit(MutableSentenceRoot &node);
+
+    std::unique_ptr<SentenceRoot> take_last_root() noexcept;
 
 private:
-    static const char * visitor_name;
+    std::unique_ptr<SentenceRoot> root;
 
-    SymbolRepository& symbol_repository;
+    static const char *visitor_name;
+
+    SymbolRepository &symbol_repository;
 };
 
 } // namespace optifol
 
-#endif // REPOSITORYBUILDINGVISITOR_HPP
+#endif

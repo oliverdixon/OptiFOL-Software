@@ -19,6 +19,7 @@
 #include "../IR/MutableVariants/Sentences/IMutableSentence.hpp"
 #include "../IR/SymbolRepository.hpp"
 #include "../Visitors/MutableTargets/RepositoryBuildingVisitor.hpp"
+#include "../IR/Sentences/SentenceRoot.hpp"
 #include "FOLLexer.hpp"
 #include "StorageObjectBase.hpp"
 
@@ -128,12 +129,12 @@ private:
     static log4cxx::LoggerPtr cnf_logger;
     static log4cxx::LoggerPtr integration_logger;
 
-    void setup_properties(std::string&& requirement_name, std::string&& requirement_statement,
-        std::string&& requirement_description, guint requirement_priority);
+    void setup_properties(std::string &&requirement_name, std::string &&requirement_statement,
+            std::string &&requirement_description, guint requirement_priority);
 
-    void cnf_normalise();
+    static std::unique_ptr<IMutableSentence> cnf_normalise(std::unique_ptr<IMutableSentence> &&sentence);
 
-    void populate_symbol_repository();
+    std::unique_ptr<SentenceRoot> populate_symbol_repository(std::unique_ptr<IMutableSentence> &&mutable_root);
 
     static std::string text_serialise(const IMutableSentence * sentence);
 
@@ -147,7 +148,7 @@ private:
 
     std::unique_ptr<IMutableSentence> original_ast;
 
-    std::unique_ptr<IMutableSentence> cnf_ast;
+    std::unique_ptr<SentenceRoot> prepared_ast;
 
     std::optional<RepositoryBuildingVisitor> repository_building_visitor;
 

@@ -20,7 +20,7 @@
 namespace optifol
 {
 
-Quantified::Quantified(const QuantifierTypes quantifier_type, const Variable *const bound_term,
+Quantified::Quantified(const QuantifierTypes quantifier_type, const IProcessedTerm *const bound_term,
         const ISentence *const sentence, const bool is_positive) :
     quantifier_type(quantifier_type),
     bound_term(bound_term),
@@ -34,7 +34,7 @@ QuantifierTypes Quantified::get_quantifier_type() const noexcept
     return quantifier_type;
 }
 
-const Variable *Quantified::observe_bound_term() const noexcept
+const IProcessedTerm *Quantified::observe_bound_term() const noexcept
 {
     return bound_term;
 }
@@ -52,6 +52,11 @@ std::size_t Quantified::hash() const noexcept
 std::ostream &Quantified::serialise(std::ostream &ostream) const
 {
     return serialise_quantified(ostream, quantifier_type, bound_term, sentence, is_positive);
+}
+
+bool Quantified::is_negative_polarity() const noexcept
+{
+    return !is_positive;
 }
 
 std::size_t Quantified::hash_quantified(const QuantifierTypes quantifier_type, const ITerm *const bound_term,

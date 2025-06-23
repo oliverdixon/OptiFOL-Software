@@ -24,8 +24,7 @@ namespace optifol
  * @class MutableSentenceRoot
  * @brief A MutableSentenceRoot denotes the root node of a mutable IR node tree. It owns a single sub-sentence that may
  *  be mutated and transferred.
- * @note The MutableSentenceRoot does not require a non-owning dual as explicit roots are not used in the post-processed
- *  immutable IR node trees.
+ * @see SentenceRoot for the immutable, non-owning dual
  */
 class MutableSentenceRoot : public IMutableSentence,
                             public OwningBuildable<MutableSentenceRoot>
@@ -47,7 +46,11 @@ public:
 
     void accept(IObservingSentenceVisitor &visitor) const override;
 
-    void accept(RepositoryBuildingVisitor& visitor) override;
+    /**
+     * @copydetails IMutableSentence::accept(RepositoryBuildingVisitor&)
+     * @return A @ref std::nullptr_t value, as roots are not managed by any SymbolRepository.
+     */
+    const ISentence *accept(RepositoryBuildingVisitor &visitor) override;
 
     [[nodiscard]] std::size_t hash() const noexcept override;
 

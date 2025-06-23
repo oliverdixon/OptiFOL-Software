@@ -94,9 +94,9 @@ void MutableBinaryConnected::accept(IObservingSentenceVisitor &visitor) const
     visitor.visit(*this);
 }
 
-void MutableBinaryConnected::accept(RepositoryBuildingVisitor &visitor)
+const ISentence *MutableBinaryConnected::accept(RepositoryBuildingVisitor &visitor)
 {
-    visitor.visit(*this);
+    return visitor.visit(*this);
 }
 
 std::size_t MutableBinaryConnected::hash() const noexcept

@@ -90,9 +90,9 @@ void MutableQuantified::accept(IObservingSentenceVisitor &visitor) const
     visitor.visit(*this);
 }
 
-void MutableQuantified::accept(RepositoryBuildingVisitor &visitor)
+const ISentence *MutableQuantified::accept(RepositoryBuildingVisitor &visitor)
 {
-    visitor.visit(*this);
+    return visitor.visit(*this);
 }
 
 std::size_t MutableQuantified::hash() const noexcept

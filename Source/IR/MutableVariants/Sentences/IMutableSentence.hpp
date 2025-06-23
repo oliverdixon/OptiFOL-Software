@@ -74,8 +74,9 @@ public:
     /**
      * @brief Accept a visitation from a mutating RepositoryBuildingVisitor on the object
      * @param visitor The repository-building visitor to invoke
+     * @return An observing reference to the ISentence node added to a central SymbolRepository object
      */
-    virtual void accept(RepositoryBuildingVisitor& visitor) = 0;
+    [[nodiscard]] virtual const ISentence *accept(RepositoryBuildingVisitor &visitor) = 0;
 };
 
 } // namespace optifol

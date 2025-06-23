@@ -13,6 +13,8 @@
 
 #include "MutableIdentity.hpp"
 
+#include "../../Sentences/Identity.hpp"
+
 #include "../../../Visitors/MutableTargets/RepositoryBuildingVisitor.hpp"
 #include "../../../Visitors/MutableTargets/Sentences/IObservingSentenceVisitor.hpp"
 #include "../../../Visitors/MutableTargets/Sentences/MutatingSentenceVisitorBase.hpp"
@@ -73,25 +75,19 @@ void MutableIdentity::accept(IObservingSentenceVisitor &visitor) const
     visitor.visit(*this);
 }
 
-void MutableIdentity::accept(RepositoryBuildingVisitor &visitor)
+const ISentence *MutableIdentity::accept(RepositoryBuildingVisitor &visitor)
 {
-    visitor.visit(*this);
+    return visitor.visit(*this);
 }
 
 std::size_t MutableIdentity::hash() const noexcept
 {
-    return hash_polarity(hash_combine_commutative(lhs->hash(), rhs->hash()), is_negative_polarity());
+    return Identity::hash_identity(lhs.get(), rhs.get(), is_negative_polarity());
 }
 
 std::ostream &MutableIdentity::serialise(std::ostream &ostream) const
 {
-    if (is_negative_polarity())
-        ostream << '~';
-
-    ostream << '(';
-    lhs->serialise(ostream);
-    ostream << " == ";
-    return rhs->serialise(ostream) << ')';
+    return Identity::serialise_identity(ostream, lhs.get(), rhs.get(), is_negative_polarity());
 }
 
 void MutableIdentity::put_lhs_operand(std::unique_ptr<IMutableTerm> &&new_lhs) noexcept

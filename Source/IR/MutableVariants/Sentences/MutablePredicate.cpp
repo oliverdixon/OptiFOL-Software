@@ -19,6 +19,7 @@
 #include "../../../Visitors/MutableTargets/Sentences/MutatingSentenceVisitorBase.hpp"
 #include "../Terms/IMutableTerm.hpp"
 #include "../Terms/MutableVariable.hpp"
+#include "../../Sentences/Predicate.hpp"
 
 namespace optifol
 {
@@ -86,9 +87,9 @@ void MutablePredicate::accept(IObservingSentenceVisitor &visitor) const
     visitor.visit(*this);
 }
 
-void MutablePredicate::accept(RepositoryBuildingVisitor &visitor)
+const ISentence *MutablePredicate::accept(RepositoryBuildingVisitor &visitor)
 {
-    visitor.visit(*this);
+    return visitor.visit(*this);
 }
 
 std::size_t MutablePredicate::hash() const noexcept
