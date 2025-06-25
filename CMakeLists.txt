@@ -179,6 +179,7 @@ add_library(OptifolCommon OBJECT
         Source/Visitors/MutableTargets/RepositoryBuildingVisitor.hpp
         Source/IR/Sentences/SentenceRoot.cpp
         Source/IR/Sentences/SentenceRoot.hpp
+        Source/HashableEqualityFunctor.hpp
 )
 
 target_link_libraries(OptifolCommon PRIVATE nlohmann_json::nlohmann_json simdjson)

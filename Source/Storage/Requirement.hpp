@@ -132,8 +132,20 @@ private:
     void setup_properties(std::string &&requirement_name, std::string &&requirement_statement,
             std::string &&requirement_description, guint requirement_priority);
 
+    /**
+     * @brief Mutate the given sentence by pushing through the CNF normalisation pipeline
+     * @param sentence An owning container, transferred to the member function, to normalise into conjunctive normal
+     *  form
+     * @return The owning container of the normalised sentence, with ownership transferred back to the caller
+     */
     static std::unique_ptr<IMutableSentence> cnf_normalise(std::unique_ptr<IMutableSentence> &&sentence);
 
+    /**
+     * @brief Transform the given mutable IR node tree into an immutable equivalent, populating the symbol repository in
+     *  the process
+     * @param mutable_root An owning container of the root of the mutable IR node tree
+     * @return The owning container of the root of the immutable IR tree
+     */
     std::unique_ptr<SentenceRoot> populate_symbol_repository(std::unique_ptr<IMutableSentence> &&mutable_root);
 
     static std::string text_serialise(const IMutableSentence * sentence);

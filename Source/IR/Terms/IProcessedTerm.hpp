@@ -53,19 +53,14 @@ public:
      * @param other The owning container of the IProcessedTerm with which equality should be tested
      * @return Are the IProcessedTerm objects equal?
      */
-    bool operator==(const std::unique_ptr<IProcessedTerm> &other) const
+    bool operator==(const std::unique_ptr<IProcessedTerm> &other) const noexcept
     {
         return other->hash() == hash();
     }
 
-    /**
-     * @brief Test hash-based equality with another IProcessedTerm, wrapped in a @ref std::shared_ptr
-     * @param other The owning container of the IProcessedTerm with which equality should be tested
-     * @return Are the IProcessedTerm objects equal?
-     */
-    bool operator==(const std::shared_ptr<IProcessedTerm> &other) const
+    bool operator==(const IProcessedTerm &other) const noexcept
     {
-        return other->hash() == hash();
+        return other.hash() == hash();
     }
 };
 

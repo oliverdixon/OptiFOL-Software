@@ -19,6 +19,7 @@
 #include <unordered_set>
 
 #include "../IHashable.hpp"
+#include "../HashableEqualityFunctor.hpp"
 #include "Sentences/ISentence.hpp"
 #include "Terms/IProcessedTerm.hpp"
 
@@ -42,25 +43,35 @@ public:
      * @throws std::runtime_error An equivalent term does not exist in the repository, and could not be added.
      * @note If the supplied term is hash-equal to an existing term held by the repository, the repository is unchanged.
      */
-    template<typename TermType = IProcessedTerm> requires std::derived_from<TermType, IProcessedTerm>
+    template<typename TermType = IProcessedTerm>
+        requires std::derived_from<TermType, IProcessedTerm>
     const TermType *add_symbol(std::unique_ptr<TermType> &&term)
     {
-        const TermType * given_handle = term.get();
-        auto [inserted_it, inserted] = terms.insert(std::move(term));
-
-        if (!inserted) {
-            const auto existing_it = terms.find(*given_handle);
-            const TermType * downcast_ptr = nullptr;
-
-            if (existing_it == terms.cend() || (downcast_ptr =
-                    dynamic_cast<const TermType *>(existing_it->get())) == nullptr)
-                throw std::runtime_error("Term " + std::string(given_handle->get_disambiguated_name()) +
-                                         " could not be inserted or located in the symbol repository.");
-
+        const auto find_it = terms.find(*term);
+        if (find_it != terms.cend()) {
+            // If a hash-equal element is already in the set, attempt to downcast to the requested type and return.
+            const auto downcast_ptr = dynamic_cast<const TermType *>(find_it->get());
+            if (downcast_ptr == nullptr)
+                throw std::runtime_error("Cannot add term " + std::string(term->get_disambiguated_name()) +
+                                         ": a "
+                                         "matching term of a different type already exists in the repository.");
             return downcast_ptr;
         }
 
-        return given_handle;
+        // Otherwise, add the new element by transferring ownership to the set.
+        const auto [inserted_it, success] = terms.insert(std::move(term));
+        if (!success)
+            throw std::runtime_error(
+                    "Cannot add term " + std::string(term->get_disambiguated_name()) + ": insertion failed.");
+
+        /*
+         * This is a bit dodgy, as the compiler isn't enforcing semantics correctness of the pointer cast, as would be
+         * suggested by use of static_cast. It could equally be cast to any other pointer and be undefined at
+         * dereference. But the STL standard provides this guarantee, as if the insertion is successful, the returned
+         * iterator is defined to detain a type of the key, i.e. std::unique_ptr<IProcessedTerm>. We know from the
+         * function signature that our term holds a pointer of type TermType.
+         */
+        return static_cast<const TermType *>(inserted_it->get());
     }
 
     /**
@@ -72,24 +83,24 @@ public:
      * @note If the supplied sentence is hash-equal to an existing sentence held by the repository, the repository is
      *  unchanged.
      */
-    template<typename SentenceType = ISentence> requires std::derived_from<SentenceType, ISentence>
+    template<typename SentenceType = ISentence>
+        requires std::derived_from<SentenceType, ISentence>
     const SentenceType *add_symbol(std::unique_ptr<SentenceType> &&sentence)
     {
-        const SentenceType * given_handle = sentence.get();
-        auto [inserted_it, inserted] = sentences.insert(std::move(sentence));
-
-        if (!inserted) {
-            const auto existing_it = sentences.find(*given_handle);
-            const SentenceType * downcast_ptr = nullptr;
-
-            if (existing_it == sentences.cend() || (downcast_ptr =
-                    dynamic_cast<const SentenceType *>(existing_it->get())) == nullptr)
-                throw std::runtime_error("Sentence could not be inserted or located in the symbol repository.");
-
+        const auto find_it = sentences.find(*sentence);
+        if (find_it == sentences.cend()) {
+            const auto downcast_ptr = dynamic_cast<const SentenceType *>(find_it->get());
+            if (downcast_ptr == nullptr)
+                throw std::runtime_error("Cannot add sentence: a matching sentence of a different type already exists "
+                                         "in the repository.");
             return downcast_ptr;
         }
 
-        return given_handle;
+        const auto [inserted_it, success] = sentences.insert(std::move(sentence));
+        if (!success)
+            throw std::runtime_error("Cannot add sentence: insertion failed.");
+
+        return static_cast<const SentenceType *>(inserted_it->get());
     }
 
     /**
@@ -108,18 +119,10 @@ public:
      */
     std::optional<const ISentence *> get_symbol_handle(const ISentence &sentence) const;
 
-    /*
-     * Note that we verify the satisfaction of sentence and IProcessedTerms against the TransparentlyHashable concept
-     * here in the class definition to produce readable error messages. If the hasher and equality functor call
-     * operators cannot participate in overload resolution for types not trivially convertible to the type of the key
-     * (here a std::unique_ptr), 'find' etc. member function calls will produce cryptic compiler diagnostics.
-     */
-
-    static_assert(TransparentlyHashable<ISentence>);
-    std::unordered_set<std::unique_ptr<ISentence>, std::hash<ISentence>, std::equal_to<>> sentences;
-
-    static_assert(TransparentlyHashable<IProcessedTerm>);
-    std::unordered_set<std::unique_ptr<IProcessedTerm>, std::hash<IProcessedTerm>, std::equal_to<>> terms;
+private:
+    std::unordered_set<std::unique_ptr<ISentence>, std::hash<ISentence>, HashableEqualityFunctor<ISentence>> sentences;
+    std::unordered_set<std::unique_ptr<IProcessedTerm>, std::hash<IProcessedTerm>,
+            HashableEqualityFunctor<IProcessedTerm>> terms;
 };
 
 } // namespace optifol
