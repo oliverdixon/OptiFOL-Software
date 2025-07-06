@@ -2,19 +2,29 @@
 \usepackage[
 	a4paper,
 	landscape,
-	total={10in, 8in},
-	includehead,
-	includefoot,
-	heightrounded,
-	headheight=12pt
+	total={10in, 7.5in},
+	includeheadfoot
 ]{geometry}
-\usepackage{fancyhdr, datetime2, pgfplotstable, booktabs, xltabular}
-
-\pgfplotsset{compat=1.18}
+\usepackage{fancyhdr, datetime2, booktabs, xltabular}
 
 \title{Project Subsystem Requirements Report}
 \author{Optifol User}
-\date{Generated \DTMNow}
+\date{Generated on \DTMNow}
+
+\DTMnewstyle{tabulardate}
+    {%
+        \renewcommand\DTMdisplaydate[4]{\DTMtwodigits{##3}-\DTMtwodigits{##2}-##1}%
+        \renewcommand\DTMDisplaydate{\DTMdisplaydate}%
+    }%
+    {%
+        \renewcommand\DTMdisplaytime[3]{\DTMtwodigits{##1}:\DTMtwodigits{##2}:\DTMtwodigits{##3}}%
+        \newcommand\DTMDisplaytime{\DTMdisplaytime}%
+    }%
+    {%
+        \renewcommand\DTMdisplayzone[2]{}%
+        \newcommand\DTMDisplayzone{\DTMdisplayzone}%
+    }%
+    {}
 
 \fancypagestyle{front}{
 	\fancyhf{}
@@ -42,17 +52,27 @@
 	\section{Index of Requirements}
 	\begingroup
 	\obeylines%
-	\catcode`\,=4 %
+	\catcode`\,=4%
 	\def^^M{\\}%
 	\makeatletter%
-	\begin{xltabular}{\linewidth}{llllllll}%
-		\toprule\textbf{Name}&\textbf{Description}&\textbf{Statement}&\textbf{Priority}&\textbf{Test}&\textbf{Stakeholder}&\textbf{Created}&\textbf{Modified}\\\midrule\endhead%
+    \DTMsetstyle{tabulardate}%
+	\begin{xltabular}{\linewidth}{>{\ttfamily}lXXlllll}%
+		\toprule\normalfont%
+            \textbf{Name}&%
+            \textbf{Description}&%
+            \textbf{Statement}&%
+            \textbf{Priority}&%
+            \textbf{Test}&%
+            \textbf{Stakeholder}&%
+            \textbf{Created}&%
+            \textbf{Modified}%
+        \\\midrule\endhead%
 		\bottomrule\endfoot%
-		\@@input data.csv %
+		\@@input index.csv%
 	\end{xltabular}%
 	\endgroup%
-
+    \clearpage
 	\section{Results of Logical Analysis}
-	
+	\clearpage
 	\section{Automated Tests}
 \end{document}

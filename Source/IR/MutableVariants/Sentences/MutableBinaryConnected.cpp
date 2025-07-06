@@ -13,8 +13,8 @@
 
 #include "MutableBinaryConnected.hpp"
 
+#include "../../../Visitors/MutableTargets/Observers/IObservingNodeVisitor.hpp"
 #include "../../../Visitors/MutableTargets/RepositoryBuildingVisitor.hpp"
-#include "../../../Visitors/MutableTargets/Sentences/IObservingSentenceVisitor.hpp"
 #include "../../../Visitors/MutableTargets/Sentences/MutatingSentenceVisitorBase.hpp"
 
 namespace optifol
@@ -89,12 +89,12 @@ void MutableBinaryConnected::put_rhs_operand(std::unique_ptr<IMutableSentence> &
     rhs = std::move(operand);
 }
 
-void MutableBinaryConnected::accept(IObservingSentenceVisitor &visitor) const
+void MutableBinaryConnected::accept(IObservingNodeVisitor &visitor) const
 {
     visitor.visit(*this);
 }
 
-const ISentence *MutableBinaryConnected::accept(RepositoryBuildingVisitor &visitor)
+const IProcessedSentence *MutableBinaryConnected::accept(RepositoryBuildingVisitor &visitor)
 {
     return visitor.visit(*this);
 }

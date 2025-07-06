@@ -13,11 +13,14 @@
 
 #include "TextSerialiserVisitor.hpp"
 
-#include "../../../../IR/MutableVariants/Sentences/MutableBinaryConnected.hpp"
-#include "../../../../IR/MutableVariants/Sentences/MutableIdentity.hpp"
-#include "../../../../IR/MutableVariants/Sentences/MutablePredicate.hpp"
-#include "../../../../IR/MutableVariants/Sentences/MutableQuantified.hpp"
-#include "../../../../IR/MutableVariants/Sentences/MutableSentenceRoot.hpp"
+#include "../../../IR/MutableVariants/Sentences/MutableBinaryConnected.hpp"
+#include "../../../IR/MutableVariants/Sentences/MutableIdentity.hpp"
+#include "../../../IR/MutableVariants/Sentences/MutablePredicate.hpp"
+#include "../../../IR/MutableVariants/Sentences/MutableQuantified.hpp"
+#include "../../../IR/MutableVariants/Sentences/MutableSentenceRoot.hpp"
+#include "../../../IR/MutableVariants/Terms/MutableConstant.hpp"
+#include "../../../IR/MutableVariants/Terms/MutableVariable.hpp"
+#include "../../../IR/MutableVariants/Terms/MutableFunction.hpp"
 
 namespace optifol
 {
@@ -69,6 +72,31 @@ void TextSerialiserVisitor::visit(const MutablePredicate &node)
 void TextSerialiserVisitor::visit(const MutableSentenceRoot &node)
 {
     node.observe_sentence()->accept(*this);
+}
+
+void TextSerialiserVisitor::visit(const MutableConstant &node)
+{
+    output_stream << node.to_string();
+}
+
+void TextSerialiserVisitor::visit(const MutableFunction &node)
+{
+    const auto& arguments = node.observe_arguments();
+    output_stream << node.get_disambiguated_name() << '(';
+
+    const auto argument_count = arguments.size();
+    for (std::remove_const_t<decltype(argument_count)> i = 1; i < argument_count; ++i)
+        output_stream << arguments[i - 1]->to_string() << ',' << ' ';
+
+    if (argument_count > 0)
+        output_stream << arguments[argument_count - 1]->to_string();
+
+    output_stream << ')';
+}
+
+void TextSerialiserVisitor::visit(const MutableVariable &node)
+{
+    output_stream << node.to_string();
 }
 
 std::string TextSerialiserVisitor::extract()

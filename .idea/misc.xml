@@ -11,6 +11,7 @@
     <excludeRoots>
       <file path="$PROJECT_DIR$/Data" />
       <file path="$PROJECT_DIR$/GeneratedDocumentation" />
+      <file path="$PROJECT_DIR$/GeneratedReports" />
       <file path="$PROJECT_DIR$/Secret" />
       <file path="$PROJECT_DIR$/cmake-build-debug" />
       <file path="$PROJECT_DIR$/cmake-build-debugiwyu" />
@@ -19,5 +20,5 @@
       <file path="$PROJECT_DIR$/cmake-build-relwithdebinfo" />
     </excludeRoots>
   </component>
-  <component name="WestSettings"><![CDATA[{}]]></component>
+  <component name="WestSettings">{}</component>
 </project>

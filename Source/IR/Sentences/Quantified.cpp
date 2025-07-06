@@ -17,11 +17,13 @@
 #include "../Terms/Variable.hpp"
 #include "Quantified.hpp"
 
+#include "../../Visitors/MutableTargets/Observers/LaTeXSerialisationVisitor.hpp"
+
 namespace optifol
 {
 
 Quantified::Quantified(const QuantifierTypes quantifier_type, const IProcessedTerm *const bound_term,
-        const ISentence *const sentence, const bool is_positive) :
+        const IProcessedSentence *const sentence, const bool is_positive) :
     quantifier_type(quantifier_type),
     bound_term(bound_term),
     sentence(sentence),
@@ -39,7 +41,7 @@ const IProcessedTerm *Quantified::observe_bound_term() const noexcept
     return bound_term;
 }
 
-const ISentence *Quantified::observe_sentence() const noexcept
+const IProcessedSentence *Quantified::observe_sentence() const noexcept
 {
     return sentence;
 }

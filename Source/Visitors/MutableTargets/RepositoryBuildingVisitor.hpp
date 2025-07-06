@@ -33,6 +33,8 @@ class MutableIdentity;
 class Identity;
 class MutableVariable;
 class Variable;
+class MutableFunction;
+class Function;
 
 /**
  * @class RepositoryBuildingVisitor
@@ -154,6 +156,8 @@ public:
     [[nodiscard]] const Predicate *visit(MutablePredicate &node);
 
     [[nodiscard]] const Variable *visit(const MutableVariable &node) const;
+
+    [[nodiscard]] const Function *visit(MutableFunction& node);
 
     void visit(MutableSentenceRoot &node);
 

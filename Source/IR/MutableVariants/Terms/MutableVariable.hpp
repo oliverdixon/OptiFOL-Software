@@ -57,6 +57,8 @@ public:
 
     const IProcessedTerm *accept(RepositoryBuildingVisitor &visitor) override;
 
+    void accept(IObservingNodeVisitor &visitor) const override;
+
 private:
     std::string name;
     std::optional<std::string> disambiguated_name;

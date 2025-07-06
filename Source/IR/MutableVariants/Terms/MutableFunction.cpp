@@ -14,6 +14,7 @@
 #include "MutableFunction.hpp"
 
 #include "../../../CompositeSerialisationHelpers.hpp"
+#include "../../../Visitors/MutableTargets/Observers/IObservingNodeVisitor.hpp"
 #include "../../../Visitors/MutableTargets/RepositoryBuildingVisitor.hpp"
 #include "../../../Visitors/MutableTargets/Terms/MutatingTermVisitorBase.hpp"
 #include "../../Terms/Function.hpp"
@@ -62,6 +63,12 @@ void MutableFunction::accept(MutatingTermVisitorBase &visitor)
 
 const IProcessedTerm *MutableFunction::accept(RepositoryBuildingVisitor &visitor)
 {
+    return visitor.visit(*this);
+}
+
+void MutableFunction::accept(IObservingNodeVisitor &visitor) const
+{
+    visitor.visit(*this);
 }
 
 const std::vector<std::unique_ptr<IMutableTerm>> &MutableFunction::observe_arguments() const noexcept

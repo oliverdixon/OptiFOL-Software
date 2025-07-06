@@ -14,7 +14,7 @@
 #ifndef QUANTIFIED_HPP
 #define QUANTIFIED_HPP
 
-#include "ISentence.hpp"
+#include "IProcessedSentence.hpp"
 
 namespace optifol
 {
@@ -38,7 +38,7 @@ enum class QuantifierTypes
  *  first-order logic operator by which the sentence is bound by the variable. Metadata and operands are immutable;
  *  operands are held centrally in a SymbolRepository.
  */
-class Quantified : public ISentence
+class Quantified : public IProcessedSentence
 {
 public:
     /**
@@ -48,7 +48,7 @@ public:
      * @param sentence The sentence to bind
      * @param is_positive Is the quantified instantiation positive?
      */
-    Quantified(QuantifierTypes quantifier_type, const IProcessedTerm *bound_term, const ISentence *sentence,
+    Quantified(QuantifierTypes quantifier_type, const IProcessedTerm *bound_term, const IProcessedSentence *sentence,
             bool is_positive = true);
 
     [[nodiscard]] std::size_t hash() const noexcept override;
@@ -73,7 +73,7 @@ public:
      * @brief Retrieves a pointer to the immutable bound sentence
      * @return An immutable pointer to the bound sentence
      */
-    [[nodiscard]] const ISentence *observe_sentence() const noexcept;
+    [[nodiscard]] const IProcessedSentence *observe_sentence() const noexcept;
 
     /**
      * @brief Hash any quantified IR node from a static context
@@ -108,7 +108,7 @@ public:
 private:
     const QuantifierTypes quantifier_type;
     const IProcessedTerm *const bound_term;
-    const ISentence *const sentence;
+    const IProcessedSentence *const sentence;
     const bool is_positive;
 };
 

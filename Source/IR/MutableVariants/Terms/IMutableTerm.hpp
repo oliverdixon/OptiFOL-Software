@@ -24,6 +24,7 @@ namespace optifol
 class MutatingTermVisitorBase;
 class RepositoryBuildingVisitor;
 class IProcessedTerm;
+class IObservingNodeVisitor;
 
 /**
  * @class IMutableTerm
@@ -50,6 +51,12 @@ public:
      * @param visitor The instantiation of the mutating term visitor
      */
     virtual void accept(MutatingTermVisitorBase &visitor) = 0;
+
+    /**
+     * @brief Accept a visitation from an observing (non-mutating) term visitor on the object
+     * @param visitor The observing visitor to invoke
+     */
+    virtual void accept(IObservingNodeVisitor &visitor) const = 0;
 
     /**
      * @brief Accept a visitation from a RepositoryBuildingVisitor-type visitor

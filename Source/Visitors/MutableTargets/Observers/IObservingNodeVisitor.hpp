@@ -5,14 +5,14 @@
 
 /**
  * @file
- * @brief Interface specification for the sentence-observing visitor.
+ * @brief Interface specification for the node-observing visitor.
  * @author Oliver Dixon
  * @date 2024-11-29
  * @version Development
  */
 
-#ifndef IOBSERVINGSENTENCEVISITOR_HPP
-#define IOBSERVINGSENTENCEVISITOR_HPP
+#ifndef IOBSERVINGNODEVISITOR_HPP
+#define IOBSERVINGNODEVISITOR_HPP
 
 namespace optifol
 {
@@ -23,10 +23,15 @@ class MutableIdentity;
 class MutablePredicate;
 class MutableSentenceRoot;
 
-class IObservingSentenceVisitor
+class MutableConstant;
+class MutableFunction;
+class MutableSkolemFunction;
+class MutableVariable;
+
+class IObservingNodeVisitor
 {
 public:
-    virtual ~IObservingSentenceVisitor() = default;
+    virtual ~IObservingNodeVisitor() = default;
 
     virtual void visit(const MutableQuantified& node) = 0;
 
@@ -37,6 +42,12 @@ public:
     virtual void visit(const MutablePredicate& node) = 0;
 
     virtual void visit(const MutableSentenceRoot& node) = 0;
+
+    virtual void visit(const MutableConstant& node) = 0;
+
+    virtual void visit(const MutableFunction& node) = 0;
+
+    virtual void visit(const MutableVariable& node) = 0;
 };
 
 }

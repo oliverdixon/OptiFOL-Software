@@ -116,11 +116,9 @@ add_library(OptifolCommon OBJECT
         Source/Visitors/MutableTargets/Sentences/CNFNormalisers/UniversalEliminationVisitor.cpp
         Source/Visitors/MutableTargets/Sentences/CNFNormalisers/ImplicationEliminationVisitor.cpp
         Source/Visitors/MutableTargets/Sentences/CNFNormalisers/DMLVisitor.cpp
-        Source/Visitors/MutableTargets/Sentences/Serialisers/TextSerialiserVisitor.cpp
-        Source/Visitors/MutableTargets/Sentences/Serialisers/TextSerialiserVisitor.hpp
-        Source/Visitors/MutableTargets/Sentences/Serialisers/JSONSerialiserVisitor.cpp
-        Source/Visitors/MutableTargets/Sentences/Serialisers/JSONSerialiserVisitor.hpp
-        Source/Visitors/MutableTargets/Sentences/IObservingSentenceVisitor.hpp
+        Source/Visitors/MutableTargets/Observers/TextSerialiserVisitor.cpp
+        Source/Visitors/MutableTargets/Observers/TextSerialiserVisitor.hpp
+        Source/Visitors/MutableTargets/Observers/IObservingNodeVisitor.hpp
         Source/Visitors/MutableTargets/Sentences/CNFNormalisers/SymbolStandardisingVisitor.cpp
         Source/Visitors/MutableTargets/Sentences/CNFNormalisers/SymbolStandardisingVisitor.hpp
         Source/Exceptions/SemanticException.hpp
@@ -180,6 +178,9 @@ add_library(OptifolCommon OBJECT
         Source/IR/Sentences/SentenceRoot.cpp
         Source/IR/Sentences/SentenceRoot.hpp
         Source/HashableEqualityFunctor.hpp
+        Source/Visitors/MutableTargets/Observers/LaTeXSerialisationVisitor.cpp
+        Source/Visitors/MutableTargets/Observers/LaTeXSerialisationVisitor.hpp
+        Source/IR/Sentences/IProcessedSentence.hpp
 )
 
 target_link_libraries(OptifolCommon PRIVATE nlohmann_json::nlohmann_json simdjson)
@@ -226,6 +227,8 @@ set(MAINWINDOW_RESOURCE_COMPONENTS
         ${RESOURCE_DIR}/UI/MainWindow/AnalysisArea/DeleteAnalysisGroupPopover.ui
 
         ${RESOURCE_DIR}/UI/MainWindow/TestingArea/TestingView.ui
+
+        ${RESOURCE_DIR}/UI/MainWindow/ReportsArea/ReportsArea.ui
 
         ${RESOURCE_DIR}/UI/MainWindow/replacements.txt
 )
@@ -307,6 +310,13 @@ add_executable(OptifolGUI
         Source/GUI/Panels/AnalysisArea.hpp
         Source/Storage/AnalysisGroup.cpp
         Source/Storage/AnalysisGroup.hpp
+        Source/GUI/Panels/ReportsArea.cpp
+        Source/GUI/Panels/ReportsArea.hpp
+        Source/DocumentGeneration/IDocumentGenerator.hpp
+        Source/DocumentGeneration/HTMLReporter.cpp
+        Source/DocumentGeneration/HTMLReporter.hpp
+        Source/DocumentGeneration/LaTeXReporter.hpp
+        Source/DocumentGeneration/LaTeXReporter.cpp
 )
 
 set(COMMON_COMPILER_OPTIONS

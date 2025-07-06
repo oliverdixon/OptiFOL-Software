@@ -14,7 +14,7 @@
 #ifndef IDENTITY_HPP
 #define IDENTITY_HPP
 
-#include "ISentence.hpp"
+#include "IProcessedSentence.hpp"
 
 namespace optifol
 {
@@ -28,7 +28,7 @@ class ITerm;
  *  Metadata and operands are immutable; operands are expected to be centrally managed by a SymbolRepository.
  * @see MutableIdentity for the owning, mutable dual
  */
-class Identity : public ISentence
+class Identity : public IProcessedSentence
 {
 public:
     /**

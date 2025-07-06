@@ -14,7 +14,7 @@
 #ifndef SENTENCEROOT_HPP
 #define SENTENCEROOT_HPP
 
-#include "ISentence.hpp"
+#include "IProcessedSentence.hpp"
 
 namespace optifol
 {
@@ -25,7 +25,7 @@ namespace optifol
  *  SymbolRepository that may not be mutated following construction.
  * @see MutableSentenceRoot for the mutable, owning dual
  */
-class SentenceRoot : public ISentence
+class SentenceRoot : public IProcessedSentence
 {
 public:
     /**
@@ -33,7 +33,7 @@ public:
      * @param sentence The sentence to hold immediately under the root
      * @param is_positive Should the root node be instantiated in a positive polarity?
      */
-    explicit SentenceRoot(const ISentence * sentence, bool is_positive = true);
+    explicit SentenceRoot(const IProcessedSentence * sentence, bool is_positive = true);
 
     [[nodiscard]] bool is_negative_polarity() const noexcept override;
 
@@ -45,10 +45,10 @@ public:
      * @brief Retrieves an observing pointer to the detained sentence
      * @return An observing pointer to the sentence
      */
-    [[nodiscard]] const ISentence * observe_sentence() const noexcept;
+    [[nodiscard]] const IProcessedSentence *observe_sentence() const noexcept;
 
 private:
-    const ISentence * const sentence;
+    const IProcessedSentence * const sentence;
     bool is_positive;
 };
 

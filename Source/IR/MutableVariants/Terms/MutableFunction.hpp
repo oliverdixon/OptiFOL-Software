@@ -62,6 +62,8 @@ public:
 
     const IProcessedTerm *accept(RepositoryBuildingVisitor &visitor) override;
 
+    void accept(IObservingNodeVisitor &visitor) const override;
+
     /**
      * @brief Observe the constant owning ordered argument collection
      * @return The arguments owned by the function

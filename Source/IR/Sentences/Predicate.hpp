@@ -16,7 +16,7 @@
 
 #include <vector>
 
-#include "ISentence.hpp"
+#include "IProcessedSentence.hpp"
 
 namespace optifol
 {
@@ -30,7 +30,7 @@ class UnificationVisitor;
  *  all of which are referenced from the centralised SymbolRepository.
  * @see MutablePredicate for the unprocessed, argument-owning dual.
  */
-class Predicate : public ISentence
+class Predicate : public IProcessedSentence
 {
 public:
     /**
@@ -61,7 +61,7 @@ public:
      * @brief Get the display name of the predicate, not including any arguments or metadata
      * @return A view of the predicate symbol name
      */
-    std::string_view get_name() const noexcept;
+    [[nodiscard]] std::string_view get_name() const noexcept;
 
     /**
      * @brief Observe the non-owning ordered argument collection

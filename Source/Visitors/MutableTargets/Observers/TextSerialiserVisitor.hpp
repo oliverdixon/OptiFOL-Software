@@ -16,8 +16,8 @@
 
 #include <sstream>
 
-#include "../../../../IR/MutableVariants/Sentences/IMutableSentence.hpp"
-#include "../IObservingSentenceVisitor.hpp"
+#include "../../../IR/MutableVariants/Sentences/IMutableSentence.hpp"
+#include "IObservingNodeVisitor.hpp"
 
 namespace optifol
 {
@@ -26,7 +26,7 @@ enum class BinaryOperatorTypes;
 enum class QuantifierTypes;
 
 class TextSerialiserVisitor :
-        public IObservingSentenceVisitor
+        public IObservingNodeVisitor
 {
 public:
     void visit(const MutableQuantified& node) override;
@@ -38,6 +38,12 @@ public:
     void visit(const MutablePredicate& node) override;
 
     void visit(const MutableSentenceRoot& node) override;
+
+    void visit(const MutableConstant &node) override;
+
+    void visit(const MutableFunction &node) override;
+
+    void visit(const MutableVariable &node) override;
 
     [[nodiscard]] std::string extract();
 

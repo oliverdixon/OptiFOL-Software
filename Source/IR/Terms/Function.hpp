@@ -38,6 +38,8 @@ public:
      */
     [[maybe_unused]] explicit Function(std::string name, std::initializer_list<const IProcessedTerm *> arguments = {});
 
+    explicit Function(std::string name, std::vector<const IProcessedTerm *>&& arguments);
+
     [[nodiscard]] std::string to_string() const override;
 
     [[nodiscard]] std::string_view get_disambiguated_name() const override;

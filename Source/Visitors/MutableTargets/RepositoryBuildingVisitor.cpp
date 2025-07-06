@@ -13,7 +13,7 @@
 
 #include "RepositoryBuildingVisitor.hpp"
 
-#include <assert.h>
+#include <cassert>
 #include <iostream>
 
 #include "../../IR/MutableVariants/Sentences/MutableBinaryConnected.hpp"
@@ -21,11 +21,13 @@
 #include "../../IR/MutableVariants/Sentences/MutablePredicate.hpp"
 #include "../../IR/MutableVariants/Sentences/MutableQuantified.hpp"
 #include "../../IR/MutableVariants/Sentences/MutableSentenceRoot.hpp"
+#include "../../IR/MutableVariants/Terms/MutableFunction.hpp"
 #include "../../IR/MutableVariants/Terms/MutableVariable.hpp"
 #include "../../IR/Sentences/Identity.hpp"
 #include "../../IR/Sentences/Predicate.hpp"
 #include "../../IR/Sentences/Quantified.hpp"
 #include "../../IR/Sentences/SentenceRoot.hpp"
+#include "../../IR/Terms/Function.hpp"
 #include "../../IR/Terms/Variable.hpp"
 
 namespace optifol
@@ -51,8 +53,8 @@ const Quantified *RepositoryBuildingVisitor::visit(MutableQuantified &node)
     const auto bound_sentence = node.take_sentence();
     const auto repo_sentence = bound_sentence->accept(*this);
 
-    return symbol_repository.add_symbol<Quantified>(std::make_unique<Quantified>(node.get_quantifier_type(), repo_term,
-        repo_sentence, !node.is_negative_polarity()));
+    return symbol_repository.add_symbol<Quantified>(std::make_unique<Quantified>(
+            node.get_quantifier_type(), repo_term, repo_sentence, !node.is_negative_polarity()));
 }
 
 const BinaryConnected *RepositoryBuildingVisitor::visit(MutableBinaryConnected &node)
@@ -63,8 +65,8 @@ const BinaryConnected *RepositoryBuildingVisitor::visit(MutableBinaryConnected &
     const auto bound_rhs = node.take_rhs_operand();
     const auto repo_rhs = bound_rhs->accept(*this);
 
-    return symbol_repository.add_symbol<BinaryConnected>(std::make_unique<BinaryConnected>(node.get_operator_type(),
-        repo_lhs, repo_rhs));
+    return symbol_repository.add_symbol<BinaryConnected>(
+            std::make_unique<BinaryConnected>(node.get_operator_type(), repo_lhs, repo_rhs));
 }
 
 const Identity *RepositoryBuildingVisitor::visit(MutableIdentity &node)
@@ -78,17 +80,17 @@ const Identity *RepositoryBuildingVisitor::visit(MutableIdentity &node)
     return symbol_repository.add_symbol<Identity>(std::make_unique<Identity>(repo_lhs, repo_rhs));
 }
 
-const Predicate *RepositoryBuildingVisitor::visit(MutablePredicate &predicate)
+const Predicate *RepositoryBuildingVisitor::visit(MutablePredicate &node)
 {
-    const auto &owned_arguments = predicate.observe_arguments();
-    std::vector<const IProcessedTerm *> processed_arguments;
-    processed_arguments.reserve(owned_arguments.size());
+    const auto &owned_terms = node.observe_arguments();
+    std::vector<const IProcessedTerm *> processed_terms;
+    processed_terms.reserve(owned_terms.size());
 
-    for (const auto &argument: owned_arguments)
-        processed_arguments.push_back(argument->accept(*this));
+    for (const auto &term: owned_terms)
+        processed_terms.push_back(term->accept(*this));
 
     return symbol_repository.add_symbol<Predicate>(std::make_unique<Predicate>(
-            std::string(predicate.get_name()), std::move(processed_arguments), !predicate.is_negative_polarity()));
+            std::string(node.get_name()), std::move(processed_terms), !node.is_negative_polarity()));
 }
 
 void RepositoryBuildingVisitor::visit(MutableSentenceRoot &node)
@@ -106,8 +108,21 @@ std::unique_ptr<SentenceRoot> RepositoryBuildingVisitor::take_last_root() noexce
 
 const Variable *RepositoryBuildingVisitor::visit(const MutableVariable &node) const
 {
-    return symbol_repository.add_symbol<Variable>(std::make_unique<Variable>(node.to_string(),
-        std::string(node.get_disambiguated_name())));
+    return symbol_repository.add_symbol<Variable>(
+            std::make_unique<Variable>(node.to_string(), std::string(node.get_disambiguated_name())));
+}
+
+const Function *RepositoryBuildingVisitor::visit(MutableFunction &node)
+{
+    const auto &owned_terms = node.observe_arguments();
+    std::vector<const IProcessedTerm *> processed_terms;
+    processed_terms.reserve(owned_terms.size());
+
+    for (const auto &term: owned_terms)
+        processed_terms.push_back(term->accept(*this));
+
+    return symbol_repository.add_symbol<Function>(
+            std::make_unique<Function>(std::string(node.get_disambiguated_name()), std::move(processed_terms)));
 }
 
 } // namespace optifol

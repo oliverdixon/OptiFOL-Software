@@ -50,9 +50,9 @@ public:
 
     void accept(MutatingSentenceVisitorBase &visitor) override;
 
-    void accept(IObservingSentenceVisitor &visitor) const override;
+    void accept(IObservingNodeVisitor &visitor) const override;
 
-    const ISentence *accept(RepositoryBuildingVisitor &visitor) override;
+    const IProcessedSentence *accept(RepositoryBuildingVisitor &visitor) override;
 
     [[nodiscard]] std::size_t hash() const noexcept override;
 

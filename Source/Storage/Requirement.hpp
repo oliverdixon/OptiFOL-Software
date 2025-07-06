@@ -124,6 +124,8 @@ public:
 
     [[nodiscard]] std::string get_formatted_statement() const;
 
+    [[nodiscard]] std::string_view observe_latex_statement() const;
+
 private:
     static log4cxx::LoggerPtr parse_logger;
     static log4cxx::LoggerPtr cnf_logger;
@@ -150,6 +152,8 @@ private:
 
     static std::string text_serialise(const IMutableSentence * sentence);
 
+    static std::string latex_serialise(const IMutableSentence *sentence);
+
     Glib::Property<Glib::ustring> statement;
 
     Glib::Property<Glib::ustring> normalised_statement;
@@ -165,6 +169,7 @@ private:
     std::optional<RepositoryBuildingVisitor> repository_building_visitor;
 
     std::string formatted_input_statement;
+    std::string latex_input_statement;
 
     static std::istringstream lexer_input_stream;
     static FOLLexer lexer;

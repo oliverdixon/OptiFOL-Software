@@ -15,6 +15,7 @@
 
 #include <cassert>
 
+#include "../DocumentGeneration/LaTeXReporter.hpp"
 #include "../Exceptions/SemanticException.hpp"
 #include "../Logging.hpp"
 #include "../Visitors/MutableTargets/Sentences/CNFNormalisers/DMLVisitor.hpp"
@@ -24,7 +25,8 @@
 #include "../Visitors/MutableTargets/Sentences/CNFNormalisers/SkolemIntroducingVisitor.hpp"
 #include "../Visitors/MutableTargets/Sentences/CNFNormalisers/SymbolStandardisingVisitor.hpp"
 #include "../Visitors/MutableTargets/Sentences/CNFNormalisers/UniversalEliminationVisitor.hpp"
-#include "../Visitors/MutableTargets/Sentences/Serialisers/TextSerialiserVisitor.hpp"
+#include "../Visitors/MutableTargets/Observers/LaTeXSerialisationVisitor.hpp"
+#include "../Visitors/MutableTargets/Observers/TextSerialiserVisitor.hpp"
 
 namespace optifol
 {
@@ -123,6 +125,11 @@ std::string Requirement::get_formatted_statement() const
     return formatted_input_statement;
 }
 
+std::string_view Requirement::observe_latex_statement() const
+{
+    return latex_input_statement;
+}
+
 void Requirement::setup_properties(std::string &&requirement_name, std::string &&requirement_statement,
         std::string &&requirement_description, const guint requirement_priority)
 {
@@ -142,6 +149,7 @@ void Requirement::setup_properties(std::string &&requirement_name, std::string &
 
                     original_ast = parser.retrieve_sentence();
                     formatted_input_statement = text_serialise(original_ast.get());
+                    latex_input_statement = latex_serialise(original_ast.get());
 
                     try {
                         // Perform CNF normalisation followed by population of the symbol repository
@@ -155,6 +163,10 @@ void Requirement::setup_properties(std::string &&requirement_name, std::string &
                     std::ostringstream serialiser_stream;
                     prepared_ast->serialise(serialiser_stream);
                     property_normalised().set_value(serialiser_stream.str());
+
+                    LaTeXReporter reporter("GeneratedReports/test"); // TODO testing only
+                    reporter.add_requirement(*this);
+                    reporter.generate();
                 }
             });
 
@@ -228,9 +240,16 @@ std::unique_ptr<SentenceRoot> Requirement::populate_symbol_repository(std::uniqu
 
 std::string Requirement::text_serialise(const IMutableSentence *sentence)
 {
-    static TextSerialiserVisitor text_serialiser_visitor;
+    TextSerialiserVisitor text_serialiser_visitor;
     sentence->accept(text_serialiser_visitor);
     return text_serialiser_visitor.extract();
+}
+
+std::string Requirement::latex_serialise(const IMutableSentence *sentence)
+{
+    LaTeXSerialisationVisitor latex_serialisation_visitor;
+    sentence->accept(latex_serialisation_visitor);
+    return latex_serialisation_visitor.extract();
 }
 
 } // namespace optifol

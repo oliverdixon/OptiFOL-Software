@@ -11,17 +11,16 @@
  * @version Development
  */
 
-#include "BinaryConnected.hpp"
-
 #include <utility>
 
-#include "../../Visitors/MutableTargets/Sentences/Serialisers/TextSerialiserVisitor.hpp"
+#include "../../Visitors/MutableTargets/Observers/LaTeXSerialisationVisitor.hpp"
+#include "BinaryConnected.hpp"
 
 namespace optifol
 {
 
-BinaryConnected::BinaryConnected(const BinaryOperatorTypes operator_type, const ISentence *const lhs,
-        const ISentence *const rhs, const bool is_positive) :
+BinaryConnected::BinaryConnected(const BinaryOperatorTypes operator_type, const IProcessedSentence *const lhs,
+        const IProcessedSentence *const rhs, const bool is_positive) :
     operator_type(operator_type),
     lhs(lhs),
     rhs(rhs),
@@ -49,12 +48,12 @@ BinaryOperatorTypes BinaryConnected::get_operator_type() const noexcept
     return operator_type;
 }
 
-const ISentence *BinaryConnected::get_lhs_operand() const noexcept
+const IProcessedSentence *BinaryConnected::observe_lhs_operand() const noexcept
 {
     return lhs;
 }
 
-const ISentence *BinaryConnected::get_rhs_operand() const noexcept
+const IProcessedSentence *BinaryConnected::observe_rhs_operand() const noexcept
 {
     return rhs;
 }

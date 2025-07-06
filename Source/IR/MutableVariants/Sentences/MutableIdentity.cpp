@@ -15,8 +15,8 @@
 
 #include "../../Sentences/Identity.hpp"
 
+#include "../../../Visitors/MutableTargets/Observers/IObservingNodeVisitor.hpp"
 #include "../../../Visitors/MutableTargets/RepositoryBuildingVisitor.hpp"
-#include "../../../Visitors/MutableTargets/Sentences/IObservingSentenceVisitor.hpp"
 #include "../../../Visitors/MutableTargets/Sentences/MutatingSentenceVisitorBase.hpp"
 
 namespace optifol
@@ -70,12 +70,12 @@ void MutableIdentity::accept(MutatingSentenceVisitorBase &visitor)
     visitor.visit(*this);
 }
 
-void MutableIdentity::accept(IObservingSentenceVisitor &visitor) const
+void MutableIdentity::accept(IObservingNodeVisitor &visitor) const
 {
     visitor.visit(*this);
 }
 
-const ISentence *MutableIdentity::accept(RepositoryBuildingVisitor &visitor)
+const IProcessedSentence *MutableIdentity::accept(RepositoryBuildingVisitor &visitor)
 {
     return visitor.visit(*this);
 }

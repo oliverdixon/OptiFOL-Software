@@ -44,13 +44,13 @@ public:
 
     void accept(MutatingSentenceVisitorBase &visitor) override;
 
-    void accept(IObservingSentenceVisitor &visitor) const override;
+    void accept(IObservingNodeVisitor &visitor) const override;
 
     /**
      * @copydetails IMutableSentence::accept(RepositoryBuildingVisitor&)
      * @return A @ref std::nullptr_t value, as roots are not managed by any SymbolRepository.
      */
-    const ISentence *accept(RepositoryBuildingVisitor &visitor) override;
+    const IProcessedSentence *accept(RepositoryBuildingVisitor &visitor) override;
 
     [[nodiscard]] std::size_t hash() const noexcept override;
 

@@ -13,8 +13,8 @@
 
 #include "MutableSentenceRoot.hpp"
 
+#include "../../../Visitors/MutableTargets/Observers/IObservingNodeVisitor.hpp"
 #include "../../../Visitors/MutableTargets/RepositoryBuildingVisitor.hpp"
-#include "../../../Visitors/MutableTargets/Sentences/IObservingSentenceVisitor.hpp"
 #include "../../../Visitors/MutableTargets/Sentences/MutatingSentenceVisitorBase.hpp"
 
 namespace optifol
@@ -60,12 +60,12 @@ void MutableSentenceRoot::accept(MutatingSentenceVisitorBase &visitor)
     visitor.visit(*this);
 }
 
-void MutableSentenceRoot::accept(IObservingSentenceVisitor &visitor) const
+void MutableSentenceRoot::accept(IObservingNodeVisitor &visitor) const
 {
     visitor.visit(*this);
 }
 
-const ISentence *MutableSentenceRoot::accept(RepositoryBuildingVisitor &visitor)
+const IProcessedSentence *MutableSentenceRoot::accept(RepositoryBuildingVisitor &visitor)
 {
     visitor.visit(*this);
     return nullptr;

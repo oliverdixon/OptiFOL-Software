@@ -139,9 +139,7 @@
                                     <object class="GtkStackPage">
                                         <property name="title">Reporting and Compliance</property>
                                         <property name="child">
-                                            <object class="GtkLabel">
-                                                <property name="label">Reporting and Compliance Content</property>
-                                            </object>
+                                            ${REPORTS_VIEW}
                                         </property>
                                     </object>
                                 </child>
@@ -164,18 +162,5 @@
                 </child>
             </object>
         </child>
-    </object>
-
-    <!--
-      - The modal database alert dialog to inform users of "backend database errors", whatever they are.
-      - TODO:
-      -     This should be replaced with a separate window containing icons, further info, etc. Strings copied directly
-      -     from a third-party application such as libpqxx should be formatted in monospace and placed in a read-only
-      -     editor container with a control to copy verbatim to the clipboard, as it may be poorly formatted or be
-      -     debugging information, which we don't want to expose to the user as a first-class UI label.
-      -->
-    <object class="GtkAlertDialog" id="database_alert">
-        <property name="message">Backend Database Error</property>
-        <property name="modal">TRUE</property>
     </object>
 </interface>

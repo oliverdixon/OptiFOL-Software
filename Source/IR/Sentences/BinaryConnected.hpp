@@ -14,7 +14,7 @@
 #ifndef BINARYCONNECTED_HPP
 #define BINARYCONNECTED_HPP
 
-#include "ISentence.hpp"
+#include "IProcessedSentence.hpp"
 
 namespace optifol
 {
@@ -38,7 +38,7 @@ enum class BinaryOperatorTypes
  * @see BinaryOperatorTypes for modes of connection
  * @see MutableBinaryConnected for the owning dual
  */
-class BinaryConnected : public ISentence
+class BinaryConnected : public IProcessedSentence
 {
 public:
     /**
@@ -49,7 +49,8 @@ public:
      * @param is_positive Should the node be instantiated with in a positive polarity?
      */
     explicit BinaryConnected(
-            BinaryOperatorTypes operator_type, const ISentence *lhs, const ISentence *rhs, bool is_positive = true);
+            BinaryOperatorTypes operator_type, const IProcessedSentence *lhs, const IProcessedSentence *rhs,
+            bool is_positive = true);
 
     [[nodiscard]] bool is_negative_polarity() const noexcept override;
 
@@ -67,13 +68,13 @@ public:
      * @brief Provides an immutable observing pointer to the owned LHS operand
      * @return The LHS operand observer
      */
-    [[nodiscard]] const ISentence *get_lhs_operand() const noexcept;
+    [[nodiscard]] const IProcessedSentence *observe_lhs_operand() const noexcept;
 
     /**
      * @brief Provides an immutable observing pointer to the owned RHS operand
      * @return The RHS operand observer
      */
-    [[nodiscard]] const ISentence *get_rhs_operand() const noexcept;
+    [[nodiscard]] const IProcessedSentence *observe_rhs_operand() const noexcept;
 
     /**
      * @brief Hash any type of binary-connected IR node from a static context
@@ -108,9 +109,9 @@ public:
 private:
     const BinaryOperatorTypes operator_type;
 
-    const ISentence *const lhs;
+    const IProcessedSentence *const lhs;
 
-    const ISentence *const rhs;
+    const IProcessedSentence *const rhs;
 
     const bool is_positive;
 };

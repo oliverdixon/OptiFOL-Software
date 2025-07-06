@@ -88,7 +88,7 @@ public:
     const SentenceType *add_symbol(std::unique_ptr<SentenceType> &&sentence)
     {
         const auto find_it = sentences.find(*sentence);
-        if (find_it == sentences.cend()) {
+        if (find_it != sentences.cend()) {
             const auto downcast_ptr = dynamic_cast<const SentenceType *>(find_it->get());
             if (downcast_ptr == nullptr)
                 throw std::runtime_error("Cannot add sentence: a matching sentence of a different type already exists "

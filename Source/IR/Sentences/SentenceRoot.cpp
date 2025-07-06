@@ -16,7 +16,7 @@
 namespace optifol
 {
 
-SentenceRoot::SentenceRoot(const ISentence * const sentence, const bool is_positive) :
+SentenceRoot::SentenceRoot(const IProcessedSentence * const sentence, const bool is_positive) :
     sentence(sentence),
     is_positive(is_positive)
 {
@@ -37,7 +37,7 @@ std::size_t SentenceRoot::hash() const noexcept
     return sentence->hash();
 }
 
-const ISentence *SentenceRoot::observe_sentence() const noexcept
+const IProcessedSentence *SentenceRoot::observe_sentence() const noexcept
 {
     return sentence;
 }

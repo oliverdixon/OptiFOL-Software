@@ -47,6 +47,8 @@ public:
 
     const IProcessedTerm *accept(RepositoryBuildingVisitor &visitor) override;
 
+    void accept(IObservingNodeVisitor &visitor) const override;
+
 private:
     std::string name;
 };

@@ -22,8 +22,9 @@ namespace optifol
 {
 
 class MutatingSentenceVisitorBase;
-class IObservingSentenceVisitor;
+class IObservingNodeVisitor;
 class RepositoryBuildingVisitor;
+class IProcessedSentence;
 
 /**
  * @class IMutableSentence
@@ -69,14 +70,14 @@ public:
      * @brief Accept a visitation from an observing (non-mutating) sentence visitor on the object
      * @param visitor The observing visitor to invoke
      */
-    virtual void accept(IObservingSentenceVisitor &visitor) const = 0;
+    virtual void accept(IObservingNodeVisitor &visitor) const = 0;
 
     /**
      * @brief Accept a visitation from a mutating RepositoryBuildingVisitor on the object
      * @param visitor The repository-building visitor to invoke
      * @return An observing reference to the ISentence node added to a central SymbolRepository object
      */
-    [[nodiscard]] virtual const ISentence *accept(RepositoryBuildingVisitor &visitor) = 0;
+    [[nodiscard]] virtual const IProcessedSentence *accept(RepositoryBuildingVisitor &visitor) = 0;
 };
 
 } // namespace optifol

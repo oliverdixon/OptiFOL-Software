@@ -14,6 +14,7 @@
 #include "MutableConstant.hpp"
 #include "../../Terms/IProcessedTerm.hpp"
 
+#include "../../../Visitors/MutableTargets/Observers/IObservingNodeVisitor.hpp"
 #include "../../../Visitors/MutableTargets/RepositoryBuildingVisitor.hpp"
 #include "../../../Visitors/MutableTargets/Terms/MutatingTermVisitorBase.hpp"
 
@@ -47,6 +48,11 @@ void MutableConstant::accept(MutatingTermVisitorBase &visitor)
 
 const IProcessedTerm *MutableConstant::accept(RepositoryBuildingVisitor &visitor)
 {
+}
+
+void MutableConstant::accept(IObservingNodeVisitor &visitor) const
+{
+    visitor.visit(*this);
 }
 
 } // namespace optifol

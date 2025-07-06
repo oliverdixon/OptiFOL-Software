@@ -1,0 +1,59 @@
+<!--
+  - Copyright (c) All Rights Reserved
+  - 2025 Oliver Dixon <od641@york.ac.uk>
+  -->
+
+<object class="GtkBox">
+    <child>
+        <object class="GtkLabel" id="reports_advice_unselected">
+            <style>
+                <class name="optifol_advisory"/>
+                <class name="optifol_boxed"/>
+            </style>
+            <property name="use-markup">TRUE</property>
+            <property name="justify">GTK_JUSTIFY_CENTER</property>
+            <property name="halign">GTK_ALIGN_CENTER</property>
+            <property name="valign">GTK_ALIGN_CENTER</property>
+            <property name="hexpand">TRUE</property>
+            <property name="vexpand">TRUE</property>
+            <property name="max-width-chars">80</property>
+            <property name="wrap">TRUE</property>
+            <property name="label">
+                <![CDATA[<b>The Reporting and Compliance View is not applicable to Project-level scopes.</b>
+
+The <i>Reporting and Compliance View</i> allows automatic generation of HTML and LaTeX/PDF reports based on the Requirements and related Analysis of a Subsystem.
+
+The content of exported Reports can be cherry-picked, and formatting can be extensively customised.
+
+To prepare a Report, select a Subsystem from the left-hand <i>Project Explorer</i> pane and define some Requirements in the <i>Requirements Index</i> view.]]>
+            </property>
+        </object>
+    </child>
+    <child>
+        <object class="GtkBox" id="reports_content">
+            <property name="visible">FALSE</property>
+            <property name="orientation">vertical</property>
+            <child>
+                <object class="GtkBox">
+                    <property name="halign">GTK_ALIGN_FILL</property>
+                    <style>
+                        <class name="toolbar"/>
+                        <class name="optifol_boxed"/>
+                    </style>
+                    <child>
+                        <object class="GtkMenuButton" id="reports_modify_metadata">
+                            <property name="icon-name">document-edit-symbolic</property>
+                            <property name="tooltip-text">Edit Report Metadata</property>
+                        </object>
+                    </child>
+                    <child>
+                        <object class="GtkMenuButton" id="reports_reset_metadata">
+                            <property name="icon-name">edit-clear-all-symbolic</property>
+                            <property name="tooltip-text">Reset Report Metadata</property>
+                        </object>
+                    </child>
+                </object>
+            </child>
+        </object>
+    </child>
+</object>

@@ -14,12 +14,12 @@
 #include "MutablePredicate.hpp"
 
 #include "../../../CompositeSerialisationHelpers.hpp"
+#include "../../../Visitors/MutableTargets/Observers/IObservingNodeVisitor.hpp"
 #include "../../../Visitors/MutableTargets/RepositoryBuildingVisitor.hpp"
-#include "../../../Visitors/MutableTargets/Sentences/IObservingSentenceVisitor.hpp"
 #include "../../../Visitors/MutableTargets/Sentences/MutatingSentenceVisitorBase.hpp"
+#include "../../Sentences/Predicate.hpp"
 #include "../Terms/IMutableTerm.hpp"
 #include "../Terms/MutableVariable.hpp"
-#include "../../Sentences/Predicate.hpp"
 
 namespace optifol
 {
@@ -82,12 +82,12 @@ void MutablePredicate::accept(MutatingSentenceVisitorBase &visitor)
     visitor.visit(*this);
 }
 
-void MutablePredicate::accept(IObservingSentenceVisitor &visitor) const
+void MutablePredicate::accept(IObservingNodeVisitor &visitor) const
 {
     visitor.visit(*this);
 }
 
-const ISentence *MutablePredicate::accept(RepositoryBuildingVisitor &visitor)
+const IProcessedSentence *MutablePredicate::accept(RepositoryBuildingVisitor &visitor)
 {
     return visitor.visit(*this);
 }

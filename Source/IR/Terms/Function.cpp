@@ -24,6 +24,12 @@ Function::Function(std::string name, const std::initializer_list<const IProcesse
 {
 }
 
+Function::Function(std::string name, std::vector<const IProcessedTerm *> &&arguments) :
+    name(std::move(name)),
+    arguments(std::move(arguments))
+{
+}
+
 const std::vector<const IProcessedTerm *> &Function::observe_arguments() const noexcept
 {
     return arguments;

@@ -13,10 +13,9 @@
 
 #include "MutableQuantified.hpp"
 
+#include "../../../Visitors/MutableTargets/Observers/IObservingNodeVisitor.hpp"
 #include "../../../Visitors/MutableTargets/RepositoryBuildingVisitor.hpp"
-#include "../../../Visitors/MutableTargets/Sentences/IObservingSentenceVisitor.hpp"
 #include "../../../Visitors/MutableTargets/Sentences/MutatingSentenceVisitorBase.hpp"
-#include "../../../Visitors/MutableTargets/Sentences/Serialisers/TextSerialiserVisitor.hpp"
 
 namespace optifol
 {
@@ -85,12 +84,12 @@ void MutableQuantified::accept(MutatingSentenceVisitorBase &visitor)
     visitor.visit(*this);
 }
 
-void MutableQuantified::accept(IObservingSentenceVisitor &visitor) const
+void MutableQuantified::accept(IObservingNodeVisitor &visitor) const
 {
     visitor.visit(*this);
 }
 
-const ISentence *MutableQuantified::accept(RepositoryBuildingVisitor &visitor)
+const IProcessedSentence *MutableQuantified::accept(RepositoryBuildingVisitor &visitor)
 {
     return visitor.visit(*this);
 }
