@@ -10,3 +10,8 @@
 
 /Database/.idea/dataSources
 /Database/.idea/dataSources.local.xml
+
+/Resources/ReportTemplates/LaTeX/*.aux
+/Resources/ReportTemplates/LaTeX/*.log
+/Resources/ReportTemplates/LaTeX/*.pdf
+/Resources/ReportTemplates/LaTeX/*.synctex*
