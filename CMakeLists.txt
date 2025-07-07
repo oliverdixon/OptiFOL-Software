@@ -229,6 +229,7 @@ set(MAINWINDOW_RESOURCE_COMPONENTS
         ${RESOURCE_DIR}/UI/MainWindow/TestingArea/TestingView.ui
 
         ${RESOURCE_DIR}/UI/MainWindow/ReportsArea/ReportsArea.ui
+        ${RESOURCE_DIR}/UI/MainWindow/ReportsArea/GenerateLaTeXPopover.ui
 
         ${RESOURCE_DIR}/UI/MainWindow/replacements.txt
 )
@@ -312,11 +313,8 @@ add_executable(OptifolGUI
         Source/Storage/AnalysisGroup.hpp
         Source/GUI/Panels/ReportsArea.cpp
         Source/GUI/Panels/ReportsArea.hpp
-        Source/DocumentGeneration/IDocumentGenerator.hpp
-        Source/DocumentGeneration/HTMLReporter.cpp
-        Source/DocumentGeneration/HTMLReporter.hpp
-        Source/DocumentGeneration/LaTeXReporter.hpp
-        Source/DocumentGeneration/LaTeXReporter.cpp
+        Source/GUI/DocumentGeneration/LaTeXGeneratorManager.cpp
+        Source/GUI/DocumentGeneration/LaTeXGeneratorManager.hpp
 )
 
 set(COMMON_COMPILER_OPTIONS

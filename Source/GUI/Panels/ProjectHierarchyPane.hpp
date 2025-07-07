@@ -17,10 +17,11 @@
 #include <gtkmm.h>
 #include <log4cxx/logger.h>
 
-#include "../ContextButtonCorrespondence.hpp"
 #include "../../Storage/AnalysisGroup.hpp"
 #include "../../Storage/Project.hpp"
 #include "../../Storage/Requirement.hpp"
+#include "../ContextButtonCorrespondence.hpp"
+#include "AnalysisArea.hpp"
 
 namespace optifol
 {
@@ -57,6 +58,9 @@ public:
      */
     void replace_analysis_listener(sigc::slot<void(const Glib::RefPtr<Gio::ListStore<AnalysisGroup>>&)>&& selected,
         sigc::slot<void()>&& deselected, bool onboard = true);
+
+    void replace_reports_listener(sigc::slot<void(const Glib::RefPtr<const Subsystem> &)> &&selected,
+            sigc::slot<void()> &&deselected, bool onboard = true);
 
 private:
     enum class ProjectStackSwitcherIdx
@@ -133,6 +137,8 @@ private:
 
     std::pair<sigc::signal<void(const Glib::RefPtr<Gio::ListStore<AnalysisGroup>>&)>, sigc::signal<void()>>
         analysis_callbacks;
+
+    std::pair<sigc::signal<void(const Glib::RefPtr<const Subsystem>&)>, sigc::signal<void()>> reports_callbacks;
 
     Gtk::DropDown * const stack_switcher;
     Gtk::Stack * const stack;

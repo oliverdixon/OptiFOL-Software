@@ -47,9 +47,56 @@ To prepare a Report, select a Subsystem from the left-hand <i>Project Explorer</
                         </object>
                     </child>
                     <child>
-                        <object class="GtkMenuButton" id="reports_reset_metadata">
-                            <property name="icon-name">edit-clear-all-symbolic</property>
-                            <property name="tooltip-text">Reset Report Metadata</property>
+                        <object class="GtkSeparator" />
+                    </child>
+                    <child>
+                        <object class="GtkMenuButton" id="reports_include_element">
+                            <property name="icon-name">tab-new-symbolic</property>
+                            <property name="tooltip-text">Include Selected Element</property>
+                        </object>
+                    </child>
+                    <child>
+                        <object class="GtkMenuButton" id="reports_exclude_element">
+                            <property name="icon-name">list-remove-symbolic</property>
+                            <property name="tooltip-text">Exclude Selected Element</property>
+                        </object>
+                    </child>
+                    <child>
+                        <object class="GtkSeparator" />
+                    </child>
+                    <child>
+                        <object class="GtkMenuButton" id="reports_generate_latex">
+                            <property name="icon-name">emblem-documents-symbolic</property>
+                            <property name="tooltip-text">Generate LaTeX/PDF Report</property>
+                        </object>
+                    </child>
+                    <child>
+                        <object class="GtkMenuButton" id="reports_generate_html">
+                            <property name="icon-name">emblem-documents-symbolic</property>
+                            <property name="tooltip-text">Generate HTML Report</property>
+                        </object>
+                    </child>
+                </object>
+            </child>
+            <child>
+                <object class="GtkScrolledWindow">
+                    <property name="vexpand">TRUE</property>
+                    <child>
+                        <object class="GtkColumnView" id="reports_elements_view">
+                            <child>
+                                <object class="GtkColumnViewColumn">
+                                    <property name="id">reports_element_name</property>
+                                    <property name="title">Element</property>
+                                    <property name="resizable">TRUE</property>
+                                </object>
+                            </child>
+                            <child>
+                                <object class="GtkColumnViewColumn">
+                                    <property name="id">reports_item_count</property>
+                                    <property name="title">Item Count</property>
+                                    <property name="resizable">TRUE</property>
+                                </object>
+                            </child>
                         </object>
                     </child>
                 </object>

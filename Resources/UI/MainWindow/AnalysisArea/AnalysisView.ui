@@ -83,8 +83,7 @@ To prepare Analysis Groups, select a Subsystem from the left-hand <i>Project Exp
                             <child>
                                 <object class="GtkMenuButton">
                                     <property name="icon-name">list-remove-symbolic</property>
-                                    <property name="tooltip-text">Remove Selected Requirement from Analysis Group
-                                    </property>
+                                    <property name="tooltip-text">Remove Selected Requirement from Analysis Group</property>
                                     <property name="sensitive">FALSE</property>
                                 </object>
                             </child>
@@ -94,8 +93,7 @@ To prepare Analysis Groups, select a Subsystem from the left-hand <i>Project Exp
                             <child>
                                 <object class="GtkMenuButton">
                                     <property name="icon-name">object-select-symbolic</property>
-                                    <property name="tooltip-text">Check Consistency of Selected Analysis Group
-                                    </property>
+                                    <property name="tooltip-text">Check Consistency of Selected Analysis Group</property>
                                 </object>
                             </child>
                             <child>

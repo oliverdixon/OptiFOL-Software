@@ -15,7 +15,6 @@
 
 #include <cassert>
 
-#include "../DocumentGeneration/LaTeXReporter.hpp"
 #include "../Exceptions/SemanticException.hpp"
 #include "../Logging.hpp"
 #include "../Visitors/MutableTargets/Sentences/CNFNormalisers/DMLVisitor.hpp"
@@ -163,10 +162,6 @@ void Requirement::setup_properties(std::string &&requirement_name, std::string &
                     std::ostringstream serialiser_stream;
                     prepared_ast->serialise(serialiser_stream);
                     property_normalised().set_value(serialiser_stream.str());
-
-                    LaTeXReporter reporter("GeneratedReports/test"); // TODO testing only
-                    reporter.add_requirement(*this);
-                    reporter.generate();
                 }
             });
 

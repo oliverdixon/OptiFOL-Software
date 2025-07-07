@@ -125,11 +125,24 @@ void ProjectHierarchyPane::replace_requirement_listener(
 }
 
 void ProjectHierarchyPane::replace_analysis_listener(
-    sigc::slot<void(const Glib::RefPtr<Gio::ListStore<AnalysisGroup>> &)> &&selected, sigc::slot<void()> &&deselected,
-    const bool onboard)
+        sigc::slot<void(const Glib::RefPtr<Gio::ListStore<AnalysisGroup>> &)> &&selected,
+        sigc::slot<void()> &&deselected, const bool onboard)
 {
     analysis_callbacks.first.connect(std::move(selected));
     analysis_callbacks.second.connect(std::move(deselected));
+
+    if (onboard) {
+        const auto selected_idx = selection_model->get_selected();
+        if (selected_idx != GTK_INVALID_LIST_POSITION)
+            switch_selection(selected_idx);
+    }
+}
+
+void ProjectHierarchyPane::replace_reports_listener(sigc::slot<void(const Glib::RefPtr<const Subsystem> &)> &&selected,
+        sigc::slot<void()> &&deselected, const bool onboard)
+{
+    reports_callbacks.first.connect(std::move(selected));
+    reports_callbacks.second.connect(std::move(deselected));
 
     if (onboard) {
         const auto selected_idx = selection_model->get_selected();
@@ -324,12 +337,14 @@ void ProjectHierarchyPane::emit_selected(const Glib::RefPtr<const Subsystem>& ne
 {
     requirements_callbacks.first.emit(new_subsystem->requirements);
     analysis_callbacks.first.emit(new_subsystem->analysis_groups);
+    reports_callbacks.first.emit(new_subsystem);
 }
 
 void ProjectHierarchyPane::emit_deselected() const
 {
     requirements_callbacks.second.emit();
     analysis_callbacks.second.emit();
+    reports_callbacks.second.emit();
 }
 
 void ProjectHierarchyPane::switch_selection(guint) const

@@ -64,6 +64,19 @@
         </section>
     </menu>
 
+    <menu id="reports_context_menu">
+        <section>
+            <item>
+                <attribute name="label">Generate LaTeX/PDF</attribute>
+                <attribute name="action">win.reports_generate_latex</attribute>
+            </item>
+            <item>
+                <attribute name="label">Generate HTML</attribute>
+                <attribute name="action">win.reports_generate_html</attribute>
+            </item>
+        </section>
+    </menu>
+
     <!-- Project pane popovers -->
     ${NEW_PROJECT_POPOVER}
     ${NEW_SUBSYSTEM_POPOVER}
@@ -80,6 +93,9 @@
     ${NEW_ANALYSIS_GROUP_POPOVER}
     ${EDIT_ANALYSIS_GROUP_POPOVER}
     ${DELETE_ANALYSIS_GROUP_POPOVER}
+
+    <!-- Reporting and compliance popovers -->
+    ${GENERATE_LATEX_POPOVER}
 
     <object class="GtkBox" id="root_grid">
         <property name="orientation">vertical</property>

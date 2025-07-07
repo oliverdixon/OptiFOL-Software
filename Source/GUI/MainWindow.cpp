@@ -29,15 +29,21 @@ MainWindow::MainWindow():
 
     requirements_index_area = std::make_unique<RequirementsIndexArea>(*builder);
     analysis_area = std::make_unique<AnalysisArea>(*builder);
+    reports_area = std::make_unique<ReportsArea>(*builder);
 
     project_hierarchy_pane = std::make_unique<ProjectHierarchyPane>(*builder,
         Gio::ListStore<Project>::create());
+
     project_hierarchy_pane->replace_requirement_listener(
         sigc::mem_fun(*requirements_index_area, &RequirementsIndexArea::select_model),
         sigc::mem_fun(*requirements_index_area, &RequirementsIndexArea::deselect_model));
+
     project_hierarchy_pane->replace_analysis_listener(
         sigc::mem_fun(*analysis_area, &AnalysisArea::select_model),
         sigc::mem_fun(*analysis_area, &AnalysisArea::deselect_model));
+
+    project_hierarchy_pane->replace_reports_listener(sigc::mem_fun(*reports_area, &ReportsArea::select_model),
+            sigc::mem_fun(*reports_area, &ReportsArea::deselect_model));
 
     const auto css_provider = Gtk::CssProvider::create();
     Gtk::StyleProvider::add_provider_for_display(get_display(), css_provider, GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);

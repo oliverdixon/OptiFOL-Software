@@ -20,6 +20,7 @@
 
 #include "Panels/AnalysisArea.hpp"
 #include "Panels/ProjectHierarchyPane.hpp"
+#include "Panels/ReportsArea.hpp"
 #include "Panels/RequirementsIndexArea.hpp"
 
 namespace optifol
@@ -40,6 +41,7 @@ private:
     std::unique_ptr<ProjectHierarchyPane> project_hierarchy_pane;
     std::unique_ptr<RequirementsIndexArea> requirements_index_area;
     std::unique_ptr<AnalysisArea> analysis_area;
+    std::unique_ptr<ReportsArea> reports_area;
 };
 
 }

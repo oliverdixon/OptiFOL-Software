@@ -18,3 +18,4 @@ DELETE_ANALYSIS_GROUP_POPOVER=./AnalysisArea/DeleteAnalysisGroupPopover.ui
 TESTING_VIEW=./TestingArea/TestingView.ui
 
 REPORTS_VIEW=./ReportsArea/ReportsArea.ui
+GENERATE_LATEX_POPOVER=./ReportsArea/GenerateLaTeXPopover.ui
