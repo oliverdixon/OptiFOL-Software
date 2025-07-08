@@ -157,16 +157,11 @@ void RequirementsIndexArea::configure_new_requirement_popover(Gtk::Builder &buil
     const auto popover = GTKHelpers::get_widget<Gtk::Popover>(area_name, builder, "new_requirement_popover");
     const auto confirm_button = GTKHelpers::get_widget<Gtk::Button>(area_name, builder, "new_requirement_confirm");
     const auto cancel_button = GTKHelpers::get_widget<Gtk::Button>(area_name, builder, "new_requirement_cancel");
-    const auto property_name = GTKHelpers::get_widget<Gtk::Entry>(area_name, builder,
-        "new_requirement_property_name");
-    const auto property_description = GTKHelpers::get_widget<Gtk::TextView>(area_name,
-        builder, "new_requirement_property_description");
-    const auto property_sentence = GTKHelpers::get_widget<Gtk::Entry>(area_name, builder,
-        "new_requirement_property_sentence");
-    const auto property_test = GTKHelpers::get_widget<Gtk::Entry>(area_name, builder,
-        "new_requirement_property_test");
-    const auto property_priority = GTKHelpers::get_widget<Gtk::DropDown>(area_name, builder,
-        "new_requirement_property_priority");
+    const auto property_name = GTKHelpers::get_widget<Gtk::Entry>(area_name, builder, "new_requirement_property_name");
+    const auto property_description = GTKHelpers::get_widget<Gtk::TextView>(area_name, builder, "new_requirement_property_description");
+    const auto property_sentence = GTKHelpers::get_widget<Gtk::Entry>(area_name, builder, "new_requirement_property_sentence");
+    const auto property_test = GTKHelpers::get_widget<Gtk::Entry>(area_name, builder, "new_requirement_property_test");
+    const auto property_priority = GTKHelpers::get_widget<Gtk::DropDown>(area_name, builder, "new_requirement_property_priority");
 
     cancel_button->signal_clicked().connect([popover]
     {
@@ -201,16 +196,11 @@ void RequirementsIndexArea::configure_edit_requirement_popover(Gtk::Builder &bui
     const auto popover = GTKHelpers::get_widget<Gtk::Popover>(area_name, builder, "edit_requirement_popover");
     const auto confirm_button = GTKHelpers::get_widget<Gtk::Button>(area_name, builder, "edit_requirement_confirm");
     const auto cancel_button = GTKHelpers::get_widget<Gtk::Button>(area_name, builder, "edit_requirement_cancel");
-    const auto property_name = GTKHelpers::get_widget<Gtk::Entry>(area_name, builder,
-        "edit_requirement_property_name");
-    const auto property_description = GTKHelpers::get_widget<Gtk::TextView>(area_name,
-        builder, "edit_requirement_property_description");
-    const auto property_sentence = GTKHelpers::get_widget<Gtk::Entry>(area_name, builder,
-        "edit_requirement_property_sentence");
-    const auto property_test = GTKHelpers::get_widget<Gtk::Entry>(area_name, builder,
-        "edit_requirement_property_test");
-    const auto property_priority = GTKHelpers::get_widget<Gtk::DropDown>(area_name, builder,
-        "edit_requirement_property_priority");
+    const auto property_name = GTKHelpers::get_widget<Gtk::Entry>(area_name, builder, "edit_requirement_property_name");
+    const auto property_description = GTKHelpers::get_widget<Gtk::TextView>(area_name, builder, "edit_requirement_property_description");
+    const auto property_sentence = GTKHelpers::get_widget<Gtk::Entry>(area_name, builder, "edit_requirement_property_sentence");
+    const auto property_test = GTKHelpers::get_widget<Gtk::Entry>(area_name, builder, "edit_requirement_property_test");
+    const auto property_priority = GTKHelpers::get_widget<Gtk::DropDown>(area_name, builder, "edit_requirement_property_priority");
 
     cancel_button->signal_clicked().connect([popover]
     {
@@ -259,12 +249,9 @@ void RequirementsIndexArea::configure_edit_requirement_popover(Gtk::Builder &bui
 void RequirementsIndexArea::configure_delete_requirement_popover(Gtk::Builder &builder) const
 {
     const auto popover = GTKHelpers::get_widget<Gtk::Popover>(area_name, builder, "delete_requirement_popover");
-    const auto confirm_button = GTKHelpers::get_widget<Gtk::Button>(area_name, builder,
-        "delete_requirement_confirm");
-    const auto cancel_button = GTKHelpers::get_widget<Gtk::Button>(area_name, builder,
-        "delete_requirement_cancel");
-    const auto property_name = GTKHelpers::get_widget<Gtk::Entry>(area_name, builder,
-        "delete_requirement_property_name");
+    const auto confirm_button = GTKHelpers::get_widget<Gtk::Button>(area_name, builder, "delete_requirement_confirm");
+    const auto cancel_button = GTKHelpers::get_widget<Gtk::Button>(area_name, builder, "delete_requirement_cancel");
+    const auto property_name = GTKHelpers::get_widget<Gtk::Entry>(area_name, builder, "delete_requirement_property_name");
 
     cancel_button->signal_clicked().connect([popover]
     {
@@ -289,14 +276,10 @@ void RequirementsIndexArea::configure_delete_requirement_popover(Gtk::Builder &b
 void RequirementsIndexArea::configure_duplicate_requirement_popover(Gtk::Builder &builder)
 {
     const auto popover = GTKHelpers::get_widget<Gtk::Popover>(area_name, builder, "duplicate_requirement_popover");
-    const auto confirm_button = GTKHelpers::get_widget<Gtk::Button>(area_name, builder,
-        "duplicate_requirement_confirm");
-    const auto cancel_button = GTKHelpers::get_widget<Gtk::Button>(area_name, builder,
-        "duplicate_requirement_cancel");
-    const auto property_old_name = GTKHelpers::get_widget<Gtk::Entry>(area_name, builder,
-        "duplicate_requirement_property_old_name");
-    const auto property_new_name = GTKHelpers::get_widget<Gtk::Entry>(area_name, builder,
-        "duplicate_requirement_property_new_name");
+    const auto confirm_button = GTKHelpers::get_widget<Gtk::Button>(area_name, builder, "duplicate_requirement_confirm");
+    const auto cancel_button = GTKHelpers::get_widget<Gtk::Button>(area_name, builder, "duplicate_requirement_cancel");
+    const auto property_old_name = GTKHelpers::get_widget<Gtk::Entry>(area_name, builder, "duplicate_requirement_property_old_name");
+    const auto property_new_name = GTKHelpers::get_widget<Gtk::Entry>(area_name, builder, "duplicate_requirement_property_new_name");
 
     cancel_button->signal_clicked().connect([popover]
     {

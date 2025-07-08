@@ -311,10 +311,10 @@ add_executable(OptifolGUI
         Source/GUI/Panels/AnalysisArea.hpp
         Source/Storage/AnalysisGroup.cpp
         Source/Storage/AnalysisGroup.hpp
-        Source/GUI/Panels/ReportsArea.cpp
-        Source/GUI/Panels/ReportsArea.hpp
-        Source/GUI/DocumentGeneration/LaTeXGeneratorManager.cpp
-        Source/GUI/DocumentGeneration/LaTeXGeneratorManager.hpp
+        Source/GUI/ReportsArea/ReportsArea.cpp
+        Source/GUI/ReportsArea/ReportsArea.hpp
+        Source/GUI/ReportsArea/ReportsAreaGenerateLaTeXPopover.cpp
+        Source/GUI/ReportsArea/ReportsAreaGenerateLaTeXPopover.hpp
 )
 
 set(COMMON_COMPILER_OPTIONS

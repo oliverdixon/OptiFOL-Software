@@ -20,8 +20,8 @@
 
 #include "Panels/AnalysisArea.hpp"
 #include "Panels/ProjectHierarchyPane.hpp"
-#include "Panels/ReportsArea.hpp"
 #include "Panels/RequirementsIndexArea.hpp"
+#include "ReportsArea/ReportsArea.hpp"
 
 namespace optifol
 {

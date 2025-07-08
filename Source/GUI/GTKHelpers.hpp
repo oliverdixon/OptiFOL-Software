@@ -103,41 +103,40 @@ public:
     /**
      * @brief Retrieve a GTK object as a Glib-wrapped ref-counted pointer from a GTK builder
      * @tparam ObjectType The expected concrete GTK object return type from the builder
-     * @param segment_name The name of the context requesting the item; used for enhanced error logging.
+     * @param segment_name A view of the name of the context requesting the item; used for enhanced error logging.
      * @param builder The builder with an expected reference to the item
      * @param object_name The ID of the target GTK object
      * @return A Glib-wrapped instance of the GTK object typed according to the template parameter
      * @throws std::runtime_error The named object could not be built according to the given type and name
      */
     template<mp_helpers::GTKObject ObjectType>
-    static Glib::RefPtr<ObjectType> get_object(const std::string &segment_name, Gtk::Builder& builder,
-        const std::string &object_name)
+    static Glib::RefPtr<ObjectType> get_object(
+            const std::string_view segment_name, Gtk::Builder &builder, const std::string &object_name)
     {
         const auto object = builder.get_object<ObjectType>(object_name);
         if (!object)
-            throw std::runtime_error("Could not build \"" + segment_name + "\": GTK object \"" + object_name + "\" "
-                "was not found");
+            throw std::runtime_error("Could not build \"" + std::string(segment_name) + "\": GTK object \"" +
+                object_name + "\" was not found");
         return object;
     }
 
     /**
      * @brief Retrieve a GTK widget as a raw pointer (ultimately managed by the GTK object system) from a GTK builder
      * @tparam WidgetType The expected concrete GTK widget return type from the builder
-     * @param segment_name The name of the context requesting the item; used for enhanced error logging.
+     * @param segment_name A view of the name of the context requesting the item; used for enhanced error logging.
      * @param builder The builder with an expected reference to the item
      * @param widget_name The ID of the target GTK widget
      * @return A Glib-wrapped instance of the GTK widget typed according to the template parameter
      * @throws std::runtime_error The named widget could not be built according to the given type and name
      */
     template<mp_helpers::GTKWidget WidgetType>
-    static WidgetType *get_widget(const std::string &segment_name,
-                                  Gtk::Builder& builder,
-                                  const std::string &widget_name)
+    static WidgetType *get_widget(
+            const std::string_view segment_name, Gtk::Builder &builder, const std::string &widget_name)
     {
         const auto widget = builder.get_widget<WidgetType>(widget_name);
         if (!widget)
-            throw std::runtime_error("Could not build \"" + segment_name + "\": GTK widget \"" + widget_name + "\" "
-                "was not found");
+            throw std::runtime_error("Could not build \"" + std::string(segment_name) + "\": GTK widget \"" +
+                widget_name + "\" was not found");
 
         return widget;
     }
