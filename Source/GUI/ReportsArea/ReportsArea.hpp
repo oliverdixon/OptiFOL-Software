@@ -34,6 +34,8 @@ public:
 
     void deselect_model();
 
+    const Subsystem * observe_active_subsystem() const noexcept;
+
 private:
     static const char * const area_name;
 
@@ -42,6 +44,8 @@ private:
     Gtk::ColumnView * view;
 
     ContextButtonCorrespondence context_menu;
+
+    Glib::RefPtr<const Subsystem> active_subsystem;
 
     ReportsAreaGenerateLaTeXPopover generate_latex_popover;
 };

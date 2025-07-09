@@ -30,6 +30,8 @@ std::string_view QuantifierExtractingVisitor::get_visitor_name() const
 
 void QuantifierExtractingVisitor::visit(MutableBinaryConnected &node)
 {
+    // TODO URGENT: assertion fails on valid sentence
+    // TODO URGENT: ThereExists x ForAll y (P(x, y) <=> ForAll z Q(z))
     assert(!transformation_metadata.has_value()); // Ensure there is no pending transformation.
 
     // Recurse down the LHS

@@ -5,7 +5,7 @@
 	total={10in, 7.5in},
 	includeheadfoot
 ]{geometry}
-\usepackage{fancyhdr, datetime2, booktabs, xltabular}
+\usepackage{fancyhdr, datetime2, booktabs, xltabular, csvsimple-l3, amssymb}
 
 \title{Project Subsystem Requirements Report}
 \author{Optifol User}
@@ -50,11 +50,6 @@
 	\maketitle
 	\thispagestyle{front}
 	\section{Index of Requirements}
-	\begingroup
-	\obeylines%
-	\catcode`\,=4%
-	\def^^M{\\}%
-	\makeatletter%
     \DTMsetstyle{tabulardate}%
 	\begin{xltabular}{\linewidth}{>{\ttfamily}lXXlllll}%
 		\toprule\normalfont%
@@ -68,9 +63,16 @@
             \textbf{Modified}%
         \\\midrule\endhead%
 		\bottomrule\endfoot%
-		\@@input index.csv%
+        \csvreader[
+            late after line=\\,
+            head=false,
+            respect none
+        ]{index.csv}%
+        {1=\Name, 2=\Description, 3=\Statement}%
+        {%
+            \Name & \Description & \Statement
+        }%
 	\end{xltabular}%
-	\endgroup%
     \clearpage
 	\section{Results of Logical Analysis}
 	\clearpage

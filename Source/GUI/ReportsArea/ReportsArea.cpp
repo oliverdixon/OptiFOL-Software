@@ -37,7 +37,7 @@ ReportsArea::ReportsArea(Gtk::Builder &builder) :
             }
         }
     ),
-    generate_latex_popover(builder)
+    generate_latex_popover(builder, this)
 {
 }
 
@@ -45,12 +45,19 @@ void ReportsArea::select_model(const Glib::RefPtr<const Subsystem> &subsystem)
 {
     on_off_widgets.first->set_visible(false);
     on_off_widgets.second->set_visible(true);
+    active_subsystem = subsystem;
 }
 
 void ReportsArea::deselect_model()
 {
     on_off_widgets.second->set_visible(false);
     on_off_widgets.first->set_visible(true);
+    active_subsystem = nullptr;
+}
+
+const Subsystem *ReportsArea::observe_active_subsystem() const noexcept
+{
+    return active_subsystem.get();
 }
 
 } // namespace optifol

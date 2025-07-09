@@ -11,34 +11,50 @@
  * @version Development
  */
 
-#include "ReportsAreaGenerateLaTeXPopover.hpp"
+#include <fstream>
 
-#include "../Logging.hpp"
+#include "ReportsAreaGenerateLaTeXPopover.hpp"
 #include "../GTKHelpers.hpp"
+#include "../Logging.hpp"
+#include "ReportsArea.hpp"
 
 namespace optifol
 {
 
 const char *const ReportsAreaGenerateLaTeXPopover::popover_name = "Generate LaTeX Report Popover";
-log4cxx::LoggerPtr ReportsAreaGenerateLaTeXPopover::popover_logger = Logging::get_logger({"ReportingCompliance",
-    "GenerateLaTeX"});
+const log4cxx::LoggerPtr ReportsAreaGenerateLaTeXPopover::popover_logger =
+        Logging::get_logger({"ReportingCompliance", "GenerateLaTeX"});
 
-ReportsAreaGenerateLaTeXPopover::ReportsAreaGenerateLaTeXPopover(Gtk::Builder &builder) :
+ReportsAreaGenerateLaTeXPopover::ReportsAreaGenerateLaTeXPopover(
+        Gtk::Builder &builder, const ReportsArea *reports_area) :
+    reports_area(reports_area),
     buffer(GTKHelpers::get_widget<Gtk::TextView>(popover_name, builder, "generate_latex_output")->get_buffer()),
+    my_popover(GTKHelpers::get_widget<Gtk::Popover>(popover_name, builder, "reports_generate_latex_popover")),
+    details_container(GTKHelpers::get_widget<Gtk::Box>(popover_name, builder, "generate_latex_details_container")),
+    output_directory_entry(GTKHelpers::get_widget<Gtk::Entry>(popover_name, builder, "generate_latex_output_path")),
     confirm_button(GTKHelpers::get_widget<Gtk::Button>(popover_name, builder, "generate_latex_confirm")),
     cancel_button(GTKHelpers::get_widget<Gtk::Button>(popover_name, builder, "generate_latex_cancel")),
+    open_dialog(GTKHelpers::get_object<Gtk::FileDialog>(
+            popover_name, builder, "generate_latex_output_path_chooser_dialog")),
+    show_details_check(GTKHelpers::get_widget<Gtk::CheckButton>(popover_name, builder, "generate_latex_show_details")),
     process_stdout(buffer->create_tag("stdout_tag")),
     process_stderr(buffer->create_tag("stderr_tag"))
 {
     process_stdout.formatting_tag->property_foreground().set_value("black");
     process_stderr.formatting_tag->property_foreground().set_value("red");
 
-    confirm_button->signal_clicked().connect(sigc::mem_fun(*this,
-        &ReportsAreaGenerateLaTeXPopover::confirm_button_callback));
+    show_details_check->signal_toggled().connect(
+            sigc::mem_fun(*this, &ReportsAreaGenerateLaTeXPopover::show_details_toggled));
+    confirm_button->signal_clicked().connect(
+            sigc::mem_fun(*this, &ReportsAreaGenerateLaTeXPopover::confirm_button_clicked));
+
+    const auto open_directory_button =
+            GTKHelpers::get_widget<Gtk::Button>(popover_name, builder, "generate_latex_output_path_chooser_button");
+    open_directory_button->signal_clicked().connect(
+            sigc::mem_fun(*this, &ReportsAreaGenerateLaTeXPopover::open_directory_button_clicked));
 }
 
-ReportsAreaGenerateLaTeXPopover::ConsoleStream::ConsoleStream(
-        const Glib::RefPtr<Gtk::TextTag> &formatting_tag) :
+ReportsAreaGenerateLaTeXPopover::ConsoleStream::ConsoleStream(const Glib::RefPtr<Gtk::TextTag> &formatting_tag) :
     formatting_tag(formatting_tag)
 {
 }
@@ -52,16 +68,16 @@ void ReportsAreaGenerateLaTeXPopover::ConsoleStream::connect(
         const int source_fd, const sigc::slot<bool(Glib::IOCondition)> &callback_slot)
 {
     popover_logger->debug("Latexmk subprocess: attaching to process output buffer with descriptor " +
-        std::to_string(source_fd) + '.');
+            std::to_string(source_fd) + '.');
 
     channel = Glib::IOChannel::create_from_fd(source_fd);
-    watch = Glib::signal_io().connect(callback_slot, channel, Glib::IOCondition::IO_IN | Glib::IOCondition::IO_HUP |
-        Glib::IOCondition::IO_ERR);
+    watch = Glib::signal_io().connect(
+            callback_slot, channel, Glib::IOCondition::IO_IN | Glib::IOCondition::IO_HUP | Glib::IOCondition::IO_ERR);
 }
 
 void ReportsAreaGenerateLaTeXPopover::ConsoleStream::disconnect()
 {
-    popover_logger->debug("Latexmk subprocess: disconnecting from subprocess channel");
+    popover_logger->debug("Latexmk subprocess: disconnecting from subprocess channel.");
 
     channel->close();
     watch.disconnect();
@@ -79,8 +95,11 @@ void ReportsAreaGenerateLaTeXPopover::ConsoleStream::append_line_to_buffer(
         target_buffer->insert_with_tag(target_buffer->end(), line, formatting_tag);
 }
 
-void ReportsAreaGenerateLaTeXPopover::confirm_button_callback()
+void ReportsAreaGenerateLaTeXPopover::confirm_button_clicked()
 {
+    // TODO: disable confirm button during compilation. Not sure how?
+
+    update_requirements_csv();
     buffer->erase(buffer->begin(), buffer->end());
 
     Glib::Pid pid;
@@ -93,7 +112,7 @@ void ReportsAreaGenerateLaTeXPopover::confirm_button_callback()
      *   - Do not change process working directory, as all further paths are assumed relative to Optifol's CWD;
      *
      *   - Run latexmk in non-interactive mode to generate a PDF from the Resources TeX template in the user-specified
-     *     output directory. This includes the output PDF and all intermediary files (aux, synctex, etc);
+     *     output directory. This includes the output PDF and all intermediary files (aux, fls, etc);
      *
      *   - Inherit the PATH from Optifol's environment, such that the latexmk and pdflatex executables can be located on
      *     the system, and append the TEXINPUTS to include the generated CSV containing subsystem information.
@@ -110,18 +129,18 @@ void ReportsAreaGenerateLaTeXPopover::confirm_button_callback()
      *  It remains to be seen how/if platform-independent this approach is. It's definitely better than using POSIX or
      *  system calls.
      */
-    Glib::spawn_async_with_pipes(
-        "",
+    // clang-format off
+    Glib::spawn_async_with_pipes("",
         {
             "latexmk",
             "-pdf",
             "-interaction=nonstopmode",
-            "-outdir=GeneratedReports/test/",
+            "-outdir=" + output_directory->get_path(),
             "Resources/ReportTemplates/LaTeX/report.tex"
         },
         {
             "PATH=" + Glib::getenv("PATH"),
-            "TEXINPUTS=.:GeneratedReports/test:"
+            "TEXINPUTS=.:" + output_directory->get_path() + ":"
         },
         Glib::SpawnFlags::SEARCH_PATH,
         {},
@@ -130,6 +149,7 @@ void ReportsAreaGenerateLaTeXPopover::confirm_button_callback()
         &stdout_fd,
         &stderr_fd
     );
+    // clang-format on
 
     popover_logger->info("Spawned asynchronous latexmk invocation with PID " + std::to_string(pid) + '.');
 
@@ -137,10 +157,63 @@ void ReportsAreaGenerateLaTeXPopover::confirm_button_callback()
      * Connect to the stdout and stderr streams so we can report verbatim output from latexmk. Just for vanity, any
      * lines from stderr are formatted in red by the Gtk::TextView by way of Gtk::TextTag.
      */
-    process_stdout.connect(stdout_fd, sigc::bind(sigc::mem_fun(*this,
-        &ReportsAreaGenerateLaTeXPopover::console_stream_callback), &process_stdout));
-    process_stderr.connect(stderr_fd, sigc::bind(sigc::mem_fun(*this,
-        &ReportsAreaGenerateLaTeXPopover::console_stream_callback), &process_stderr));
+    // clang-format off
+    process_stdout.connect(stdout_fd, sigc::bind(
+                sigc::mem_fun(*this, &ReportsAreaGenerateLaTeXPopover::console_stream_callback), &process_stdout));
+    process_stderr.connect(stderr_fd, sigc::bind(
+                sigc::mem_fun(*this, &ReportsAreaGenerateLaTeXPopover::console_stream_callback), &process_stderr));
+    // clang-format on
+}
+
+void ReportsAreaGenerateLaTeXPopover::open_directory_button_clicked()
+{
+    // Hide the popover whilst the dialog is active, otherwise it may have z-index priority over the dialog.
+    my_popover->popdown();
+    open_dialog->select_folder(sigc::mem_fun(*this, &ReportsAreaGenerateLaTeXPopover::open_directory_finished));
+}
+
+void ReportsAreaGenerateLaTeXPopover::open_directory_finished(const Glib::RefPtr<Gio::AsyncResult> &result)
+{
+    try {
+        output_directory = open_dialog->select_folder_finish(result);
+    } catch (const Gtk::DialogError &dialog_error) {
+        popover_logger->info("Directory selection dialog closed without feedback; state unchanged: " +
+                std::string(dialog_error.what()));
+    } catch (const Glib::Error &library_error) {
+        popover_logger->error("Unexpected error from directory selection dialog; state unchanged: " +
+                std::string(library_error.what()));
+    }
+
+    // Restore the temporarily hidden popover
+    my_popover->popup();
+
+    // Always update the read-only text entry with the up-to-date output directory path
+    output_directory_entry->set_text(output_directory == nullptr ? "" : output_directory->get_path());
+}
+
+// ReSharper disable once CppDFAUnreachableFunctionCall - False positive; function called by button callback.
+void ReportsAreaGenerateLaTeXPopover::update_requirements_csv() const
+{
+    const auto csv_path = output_directory->get_path() + "/index.csv";
+    popover_logger->info("Writing CSV requirements index for consumption by LaTeX template at " + csv_path + '.');
+
+    std::ofstream file_stream(csv_path);
+    const auto observed_requirements = reports_area->observe_active_subsystem()->requirements.get();
+    const auto requirement_count = observed_requirements->get_n_items();
+
+    for (guint requirement_idx = 0; requirement_idx < requirement_count; ++requirement_idx) {
+        const auto &requirement = observed_requirements->get_item(requirement_idx);
+        file_stream << requirement->property_name().get_value() << ','
+                    << requirement->property_description().get_value() << ',' << '$'
+                    << requirement->observe_latex_statement() << '$' << '\n';
+    }
+
+    file_stream.flush();
+}
+
+void ReportsAreaGenerateLaTeXPopover::show_details_toggled() const
+{
+    details_container->set_visible(show_details_check->get_active());
 }
 
 bool ReportsAreaGenerateLaTeXPopover::console_stream_callback(

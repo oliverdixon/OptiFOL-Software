@@ -16,13 +16,20 @@
 
 #include <glibmm/iochannel.h>
 #include <glibmm/refptr.h>
+#include <gtkmm/box.h>
 #include <gtkmm/builder.h>
 #include <gtkmm/button.h>
+#include <gtkmm/checkbutton.h>
+#include <gtkmm/entry.h>
+#include <gtkmm/filedialog.h>
+#include <gtkmm/popover.h>
 #include <gtkmm/textbuffer.h>
 #include <log4cxx/logger.h>
 
 namespace optifol
 {
+
+class ReportsArea;
 
 /**
  * @class ReportsAreaGenerateLaTeXPopover
@@ -40,18 +47,52 @@ namespace optifol
  *          <tr>
  *              <th>GTK C++ Class</th>
  *              <th>Unique Identifier</th>
+ *              <th>Purpose</th>
+ *          </tr>
+ *          <tr>
+ *              <td>Gtk::Popover</td>
+ *              <td><code>reports_generate_latex_popover</code></td>
+ *              <td>Managed popover</td>
  *          </tr>
  *          <tr>
  *              <td>Gtk::TextView</td>
  *              <td><code>generate_latex_output</code></td>
+ *              <td>Output view of latexmk command</td>
  *          </tr>
  *          <tr>
  *              <td>Gtk::Button</td>
  *              <td><code>generate_latex_confirm</code></td>
+ *              <td><i>Confirm</i> button to generate LaTeX and PDF</td>
  *          </tr>
  *          <tr>
  *              <td>Gtk::Button</td>
  *              <td><code>generate_latex_cancel</code></td>
+ *              <td><i>Cancel</i> button to discard process</td>
+ *          </tr>
+ *          <tr>
+ *              <td>Gtk::Entry</td>
+ *              <td><code>generate_latex_output_path</code></td>
+ *              <td>Entry field to display destination directory for LaTeX artefacts and produced PDF</td>
+ *          </tr>
+ *          <tr>
+ *              <td>Gtk::Button</td>
+ *              <td><code>generate_latex_output_path_chooser_button</code></td>
+ *              <td>Button to launch directory/file chooser for output destination</td>
+ *          </tr>
+ *          <tr>
+ *              <td>Gtk::CheckButton</td>
+ *              <td><code>generate_latex_show_details</code></td>
+ *              <td>Checkbox to enable or disable display of latexmk compiler output</td>
+ *          </tr>
+ *          <tr>
+ *              <td>Gtk::FileDialog</td>
+ *              <td><code>generate_latex_output_path_chooser_dialog</code></td>
+ *              <td>File/directory chooser dialog for selecting output destination</td>
+ *          </tr>
+ *          <tr>
+ *              <td>Gtk::Box</td>
+ *              <td><code>generate_latex_details_container</code></td>
+ *              <td>Container including compiler output and some visual separators</td>
  *          </tr>
  *      </table>
  *      A @ref std::runtime_error will be thrown by ReportsAreaGenerateLaTeXPopover(Gtk::Builder&) if any of these are
@@ -72,9 +113,10 @@ public:
     /**
      * @brief Construct a new popover manager, registering callbacks on elements loaded by the given builder
      * @param builder A GTK builder containing popover UI elements
+     * @param reports_area An observing pointer to the view of which the popover is a member
      * @throws std::runtime_error A required GTK element/widget could not be loaded from the given builder
      */
-    explicit ReportsAreaGenerateLaTeXPopover(Gtk::Builder& builder);
+    explicit ReportsAreaGenerateLaTeXPopover(Gtk::Builder& builder, const ReportsArea * reports_area);
 
 private:
     /**
@@ -129,6 +171,11 @@ private:
          * @brief Write the latest line from the stream to the end of the given Gtk::TextBuffer with the stream's
          *  formatting tag
          * @param target_buffer The target buffer to which data should be appended
+         * @warning There is a known issue involving multiple ChannelStream objects being used to post to the same
+         *  Gtk::TextBuffer. In particular, as they are asynchronous, output lines can become unordered during the data
+         *  race. Where streams are formatted differently, this is very noticeable by a user. The solution is to push
+         *  all incoming lines into a shared queue, preserving the order, that is periodically flushed to the
+         *  Gtk::TextBuffer/Gtk::TextView, but this is a relatively low priority fix.
          */
         void append_line_to_buffer(const Glib::RefPtr<Gtk::TextBuffer>& target_buffer) const;
 
@@ -143,9 +190,40 @@ private:
     };
 
     /**
-     * @brief Handle a press of the "Confirm" button by generating LaTeX with latexmk and providing real-time feedback
+     * @brief Handle a click of the "Confirm" button by generating LaTeX with latexmk and providing real-time feedback
      */
-    void confirm_button_callback();
+    void confirm_button_clicked();
+
+    /**
+     * @brief Handle a click of the "Open Output Directory" button by temporarily hiding the popover and raising a
+     *  native Gtk::FileDialog file-chooser.
+     * @details A callback is registered on the error-tolerant
+     *  @ref open_directory_finished(const Glib::RefPtr<Gio::AsyncResult>&) to handle the completion of the dialog.
+     *  Until the dialog is closed/completed, the entire popover will remain hidden and inoperable.
+     */
+    void open_directory_button_clicked();
+
+    /**
+     * @brief Handle a completed session of the directory-chooser dialog and update any changes in the popover state
+     * @param result The asynchronously produced result of the Gtk::FileDialog session
+     */
+    void open_directory_finished(const Glib::RefPtr<Gio::AsyncResult> &result);
+
+    /**
+     * @brief Produce a CSV in the output directory detaining the requirements index, for consumption by the LaTeX
+     *  template
+     * @warning The fields written to the CSV are unescaped and will probably be interpreted by the LaTeX compiler in
+     *  verbatim, i.e. as executable candidates. This is a known issue and needs to be fixed with moderate urgency.
+     * @todo Only regenerate where necessary (hashing and timestamping?), as these could be huge
+     * @todo Use Glib file interface, not @ref std::ofstream
+     * @todo As above, escape CSV fields or modify TeX template to not interpret as "normal" (command) characters
+     */
+    void update_requirements_csv() const;
+
+    /**
+     * @brief Handle a toggle of the "Show Details" button by showing or hiding the latexmk/pdflatex output
+     */
+    void show_details_toggled() const;
 
     /**
      * @brief Handle new data appearing on a subprocess output stream by appending to the popover output
@@ -156,11 +234,20 @@ private:
     bool console_stream_callback(Glib::IOCondition condition, ConsoleStream *stream_metadata) const;
 
     static const char * const popover_name;
-    static log4cxx::LoggerPtr popover_logger;
+    static const log4cxx::LoggerPtr popover_logger;
 
+    const ReportsArea * const reports_area;
     const Glib::RefPtr<Gtk::TextBuffer> buffer;
+    Gtk::Popover * const my_popover;
+    Gtk::Box * const details_container;
+    Gtk::Entry * const output_directory_entry;
     Gtk::Button * const confirm_button;
     Gtk::Button * const cancel_button;
+    const Glib::RefPtr<Gtk::FileDialog> open_dialog;
+    Gtk::CheckButton * const show_details_check;
+
+    Glib::RefPtr<Gio::File> index_csv;
+    Glib::RefPtr<Gio::File> output_directory;
 
     ConsoleStream process_stdout;
     ConsoleStream process_stderr;

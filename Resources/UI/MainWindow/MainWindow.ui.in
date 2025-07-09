@@ -179,4 +179,10 @@
             </object>
         </child>
     </object>
+
+    <object class="GtkFileDialog" id="generate_latex_output_path_chooser_dialog">
+        <property name="accept-label" translatable="yes">Select Directory</property>
+        <property name="modal">true</property>
+        <property name="title">Select LaTeX/PDF Output Directory</property>
+    </object>
 </interface>

@@ -399,6 +399,9 @@ gtest_discover_tests(OptifolTesting)
 ##  - wget                          ##
 ######################################
 
+# TODO 1: wrap external tagfile support into a function
+# TODO 2: i.a.w. the above, use to get tags for cppreference.com and externally GTKmm Doxygen, plus anything else of use
+
 set(DOXYGEN_OUTPUT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/GeneratedDocumentation)
 set(CPPREFERENCE_DOXYGEN_WEB_TAG ${DOXYGEN_OUTPUT_DIR}/cppreference-doxygen-web.tag.xml)
 set(DOXYGEN_SENTINEL ${DOXYGEN_OUTPUT_DIR}/.doxygen_cmake_sentinel)
