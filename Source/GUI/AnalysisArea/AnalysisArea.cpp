@@ -13,8 +13,9 @@
 
 #include "AnalysisArea.hpp"
 
-#include "RequirementsIndexArea.hpp"
+#include "../../Storage/Subsystem.hpp"
 #include "../GTKHelpers.hpp"
+#include "../RequirementsIndexArea/RequirementsIndexArea.hpp"
 
 namespace optifol
 {
@@ -118,12 +119,12 @@ AnalysisArea::AnalysisArea(Gtk::Builder &builder) :
     configure_delete_analysis_group_popover(builder);
 }
 
-void AnalysisArea::select_model(const Glib::RefPtr<Gio::ListStore<AnalysisGroup>> &new_model)
+void AnalysisArea::select_model(const Glib::RefPtr<const Subsystem> &subsystem_model)
 {
     on_off_widgets.first->set_visible(false);
     on_off_widgets.second->set_visible(true);
 
-    data_model = new_model;
+    data_model = subsystem_model->analysis_groups;
     tree_model = Gtk::TreeListModel::create(data_model, sigc::ptr_fun(&AnalysisArea::analysis_group_expand), true,
         true);
     selection_model->set_model(tree_model);

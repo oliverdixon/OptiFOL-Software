@@ -3,108 +3,155 @@
   - 2025 Oliver Dixon <od641@york.ac.uk>
   -->
 
-<object class="GtkPaned">
+<object class="GtkBox">
+    <!--
     <child>
-        <object class="GtkBox">
-            <property name="orientation">vertical</property>
-            <child>
-                <object class="GtkBox">
-                    <property name="halign">GTK_ALIGN_FILL</property>
-                    <style>
-                        <class name="toolbar"/>
-                        <class name="optifol_boxed"/>
-                    </style>
-                    <!-- TODO: toolbar buttons here -->
-                    <child>
-                        <object class="GtkBox">
-                            <property name="hexpand">TRUE</property>
-                            <property name="halign">GTK_ALIGN_END</property>
-                            <child>
-                                <object class="GtkEntry">
-                                    <property name="sensitive">FALSE</property>
-                                    <property name="placeholder-text">Search by Name</property>
-                                </object>
-                            </child>
-                            <child>
-                                <object class="GtkButton">
-                                    <property name="sensitive">FALSE</property>
-                                    <property name="icon-name">edit-find-symbolic</property>
-                                    <property name="tooltip-text">Search Requirements</property>
-                                </object>
-                            </child>
-                            <child>
-                                <object class="GtkButton">
-                                    <property name="sensitive">FALSE</property>
-                                    <property name="icon-name">edit-clear-all-symbolic</property>
-                                    <property name="tooltip-text">Clear Search</property>
-                                </object>
-                            </child>
-                        </object>
-                    </child>
-                </object>
-            </child>
-            <child>
-                <object class="GtkScrolledWindow">
-                    <property name="vexpand">TRUE</property>
-                    <child>
-                        <object class="GtkColumnView">
-                            <child>
-                                <object class="GtkColumnViewColumn">
-                                    <property name="title">Test Group</property>
-                                    <property name="resizable">TRUE</property>
-                                </object>
-                            </child>
-                            <child>
-                                <object class="GtkColumnViewColumn">
-                                    <property name="title">Requirement Name</property>
-                                    <property name="resizable">TRUE</property>
-                                </object>
-                            </child>
-                            <child>
-                                <object class="GtkColumnViewColumn">
-                                    <property name="title">Test Name</property>
-                                    <property name="resizable">TRUE</property>
-                                </object>
-                            </child>
-                        </object>
-                    </child>
-                </object>
-            </child>
+        <object class="GtkLabel" id="testing_advice_unselected">
+            <style>
+                <class name="optifol_advisory"/>
+                <class name="optifol_boxed"/>
+            </style>
+            <property name="use-markup">TRUE</property>
+            <property name="justify">GTK_JUSTIFY_CENTER</property>
+            <property name="halign">GTK_ALIGN_CENTER</property>
+            <property name="valign">GTK_ALIGN_CENTER</property>
+            <property name="hexpand">TRUE</property>
+            <property name="vexpand">TRUE</property>
+            <property name="max-width-chars">80</property>
+            <property name="wrap">TRUE</property>
+            <property name="label">
+                <![CDATA[<b>The Analysis View is not applicable to Project-level scopes.</b>
+
+The <i>Analysis View</i> allows organisation of Requirements defined in the selected Subsystem into <i>Analysis Groups</i>.
+
+Analysis Groups can be individually checked for logical consistency and scanned for redundant entries.
+
+To prepare Analysis Groups, select a Subsystem from the left-hand <i>Project Explorer</i> pane and define some Requirements in the <i>Requirements Index</i> view.]]>
+            </property>
         </object>
     </child>
+    -->
     <child>
-        <object class="GtkBox">
+        <object class="GtkPaned" id="testing_index_content">
+            <property name="visible">TRUE</property>
             <property name="orientation">vertical</property>
             <child>
                 <object class="GtkBox">
-                    <property name="halign">GTK_ALIGN_FILL</property>
-                    <style>
-                        <class name="toolbar"/>
-                        <class name="optifol_boxed"/>
-                    </style>
-                    <!-- TODO: toolbar buttons here -->
+                    <property name="orientation">vertical</property>
                     <child>
                         <object class="GtkBox">
-                            <property name="hexpand">TRUE</property>
-                            <property name="halign">GTK_ALIGN_END</property>
+                            <property name="halign">GTK_ALIGN_FILL</property>
+                            <style>
+                                <class name="toolbar"/>
+                                <class name="optifol_boxed"/>
+                            </style>
                             <child>
-                                <object class="GtkEntry">
-                                    <property name="sensitive">FALSE</property>
-                                    <property name="placeholder-text">Search by Name</property>
+                                <object class="GtkMenuButton" id="new_test_group">
+                                    <property name="icon-name">folder-new-symbolic</property>
+                                    <property name="tooltip-text">New Test Group</property>
                                 </object>
                             </child>
                             <child>
-                                <object class="GtkButton">
+                                <object class="GtkMenuButton" id="edit_test_group">
+                                    <property name="icon-name">document-edit-symbolic</property>
+                                    <property name="tooltip-text">Edit Test Group</property>
                                     <property name="sensitive">FALSE</property>
-                                    <property name="icon-name">edit-find-symbolic</property>
-                                    <property name="tooltip-text">Search Requirements</property>
                                 </object>
                             </child>
                             <child>
-                                <object class="GtkButton">
+                                <object class="GtkMenuButton" id="delete_test_group">
+                                    <property name="icon-name">edit-delete-symbolic</property>
+                                    <property name="tooltip-text">Delete Test Group</property>
                                     <property name="sensitive">FALSE</property>
-                                    <property name="icon-name">edit-clear-all-symbolic</property>
-                                    <property name="tooltip-text">Clear Search</property>
+                                </object>
+                            </child>
+                            <child>
+                                <object class="GtkSeparator"/>
+                            </child>
+                            <child>
+                                <object class="GtkMenuButton">
+                                    <property name="icon-name">edit-copy-symbolic</property>
+                                    <property name="tooltip-text">Copy Selected Requirement to Test Group</property>
+                                    <property name="sensitive">FALSE</property>
+                                </object>
+                            </child>
+                            <child>
+                                <object class="GtkMenuButton">
+                                    <property name="icon-name">go-bottom-symbolic</property>
+                                    <property name="tooltip-text">Move Selected Requirement to Test Group</property>
+                                    <property name="sensitive">FALSE</property>
+                                </object>
+                            </child>
+                            <child>
+                                <object class="GtkMenuButton">
+                                    <property name="icon-name">list-remove-symbolic</property>
+                                    <property name="tooltip-text">Remove Selected Requirement from Test Group</property>
+                                    <property name="sensitive">FALSE</property>
+                                </object>
+                            </child>
+                            <child>
+                                <object class="GtkSeparator"/>
+                            </child>
+                            <child>
+                                <object class="GtkMenuButton">
+                                    <property name="icon-name">object-select-symbolic</property>
+                                    <property name="tooltip-text">Re-Run Selected Test Group</property>
+                                </object>
+                            </child>
+                            <child>
+                                <object class="GtkBox">
+                                    <property name="hexpand">TRUE</property>
+                                    <property name="halign">GTK_ALIGN_END</property>
+                                    <child>
+                                        <object class="GtkEntry">
+                                            <property name="sensitive">FALSE</property>
+                                            <property name="placeholder-text">Search by Name</property>
+                                        </object>
+                                    </child>
+                                    <child>
+                                        <object class="GtkButton">
+                                            <property name="sensitive">FALSE</property>
+                                            <property name="icon-name">edit-find-symbolic</property>
+                                            <property name="tooltip-text">Search Requirements</property>
+                                        </object>
+                                    </child>
+                                    <child>
+                                        <object class="GtkButton">
+                                            <property name="sensitive">FALSE</property>
+                                            <property name="icon-name">edit-clear-all-symbolic</property>
+                                            <property name="tooltip-text">Clear Search</property>
+                                        </object>
+                                    </child>
+                                </object>
+                            </child>
+                        </object>
+                    </child>
+                    <child>
+                        <object class="GtkScrolledWindow">
+                            <property name="vexpand">TRUE</property>
+                            <child>
+                                <object class="GtkColumnView" id="test_groups_view">
+                                    <child>
+                                        <object class="GtkColumnViewColumn">
+                                            <property name="id">test_requirement_name</property>
+                                            <property name="title">Requirement</property>
+                                            <property name="resizable">TRUE</property>
+                                        </object>
+                                    </child>
+                                    <child>
+                                        <object class="GtkColumnViewColumn">
+                                            <property name="id">test_identifier</property>
+                                            <property name="title">Test Identifier</property>
+                                            <property name="resizable">TRUE</property>
+                                        </object>
+                                    </child>
+                                    <child>
+                                        <object class="GtkColumnViewColumn">
+                                            <property name="id">test_status</property>
+                                            <property name="title">Test Status</property>
+                                            <property name="resizable">TRUE</property>
+                                        </object>
+                                    </child>
                                 </object>
                             </child>
                         </object>
@@ -112,28 +159,25 @@
                 </object>
             </child>
             <child>
-                <object class="GtkScrolledWindow">
-                    <property name="vexpand">TRUE</property>
+                <object class="GtkNotebook">
                     <child>
-                        <object class="GtkColumnView">
-                            <child>
-                                <object class="GtkColumnViewColumn">
-                                    <property name="title">Test Group</property>
-                                    <property name="resizable">TRUE</property>
-                                </object>
-                            </child>
-                            <child>
-                                <object class="GtkColumnViewColumn">
-                                    <property name="title">Requirement Name</property>
-                                    <property name="resizable">TRUE</property>
-                                </object>
-                            </child>
-                            <child>
-                                <object class="GtkColumnViewColumn">
-                                    <property name="title">Test Name</property>
-                                    <property name="resizable">TRUE</property>
-                                </object>
-                            </child>
+                        <object class="GtkLabel">
+                            <property name="label">Content: Group A Test Report</property>
+                        </object>
+                    </child>
+                    <child type="tab">
+                        <object class="GtkLabel">
+                            <property name="label">Group A: Group A Test Report</property>
+                        </object>
+                    </child>
+                    <child>
+                        <object class="GtkLabel">
+                            <property name="label">Content: Group B Test Report</property>
+                        </object>
+                    </child>
+                    <child type="tab">
+                        <object class="GtkLabel">
+                            <property name="label">Group B Test Report</property>
                         </object>
                     </child>
                 </object>

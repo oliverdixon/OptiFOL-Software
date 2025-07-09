@@ -26,6 +26,8 @@
 #include <gtkmm/textbuffer.h>
 #include <log4cxx/logger.h>
 
+#include "../ProcessStream.hpp"
+
 namespace optifol
 {
 
@@ -120,76 +122,6 @@ public:
 
 private:
     /**
-     * @class ConsoleStream
-     * @brief RAII wrapper for a connection to the streaming data buffer (nominally a pipe or socket) of an external
-     *  process, with support for writing formatted data to a Gtk::TextBuffer.
-     */
-    struct ConsoleStream
-    {
-        /**
-         * @brief Create a new empty ConsoleStream
-         * @param formatting_tag The constant formatting tag to use for line formatting of the stream data in
-         *  Gtk::TextView windows.
-         */
-        explicit ConsoleStream(const Glib::RefPtr<Gtk::TextTag>& formatting_tag);
-
-        /**
-         * @brief RAII-destruct the ConsoleStream by disconnecting any system/subprocess references.
-         */
-        ~ConsoleStream();
-
-        /**
-         * @brief Prevent copying as it causes unnecessary complexity and is not semantically necessary.
-         */
-        ConsoleStream(const ConsoleStream&) = delete;
-
-        /**
-         * @brief Prevent moving as it causes unnecessary complexity and is not semantically necessary.
-         * @see @ref disconnect()
-         */
-        ConsoleStream(ConsoleStream&&) = delete;
-
-        /**
-         * @brief Connect a new FD to the ConsoleStream slot
-         * @param source_fd The numerical file descriptor of the stream to watch
-         * @param callback_slot The callback for events on the stream identified by the given descriptor
-         */
-        void connect(int source_fd, const sigc::slot<bool(Glib::IOCondition)> &callback_slot);
-
-        /**
-         * @brief Disconnect the stream, releasing all held resources except the formatting tag shared reference.
-         */
-        void disconnect();
-
-        /**
-         * @brief Query the connection state of the ConsoleStream slot
-         * @return Does the ConsoleStream hold an active connection?
-         */
-        [[nodiscard]] bool is_connected() const noexcept;
-
-        /**
-         * @brief Write the latest line from the stream to the end of the given Gtk::TextBuffer with the stream's
-         *  formatting tag
-         * @param target_buffer The target buffer to which data should be appended
-         * @warning There is a known issue involving multiple ChannelStream objects being used to post to the same
-         *  Gtk::TextBuffer. In particular, as they are asynchronous, output lines can become unordered during the data
-         *  race. Where streams are formatted differently, this is very noticeable by a user. The solution is to push
-         *  all incoming lines into a shared queue, preserving the order, that is periodically flushed to the
-         *  Gtk::TextBuffer/Gtk::TextView, but this is a relatively low priority fix.
-         */
-        void append_line_to_buffer(const Glib::RefPtr<Gtk::TextBuffer>& target_buffer) const;
-
-        const Glib::RefPtr<Gtk::TextTag> formatting_tag;
-
-    private:
-        static log4cxx::LoggerPtr logger;
-
-        sigc::connection watch;
-        Glib::RefPtr<Glib::IOChannel> channel;
-        int fd = -1;
-    };
-
-    /**
      * @brief Handle a click of the "Confirm" button by generating LaTeX with latexmk and providing real-time feedback
      */
     void confirm_button_clicked();
@@ -228,10 +160,10 @@ private:
     /**
      * @brief Handle new data appearing on a subprocess output stream by appending to the popover output
      * @param condition The condition(s) responsible for invoking the callback
-     * @param stream_metadata The ConsoleStream slot of the origin subprocess stream
+     * @param stream_metadata The ProcessStream slot of the origin subprocess stream
      * @return <code>true</code> if data was successfully copied to the console output; <code>false</code> otherwise.
      */
-    bool console_stream_callback(Glib::IOCondition condition, ConsoleStream *stream_metadata) const;
+    bool console_stream_callback(Glib::IOCondition condition, ProcessStream *stream_metadata) const;
 
     static const char * const popover_name;
     static const log4cxx::LoggerPtr popover_logger;
@@ -249,8 +181,8 @@ private:
     Glib::RefPtr<Gio::File> index_csv;
     Glib::RefPtr<Gio::File> output_directory;
 
-    ConsoleStream process_stdout;
-    ConsoleStream process_stderr;
+    ProcessStream process_stdout;
+    ProcessStream process_stderr;
 };
 
 } // namespace optifol

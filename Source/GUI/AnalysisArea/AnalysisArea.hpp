@@ -19,14 +19,15 @@
 #include <gtkmm/singleselection.h>
 #include <gtkmm/treelistmodel.h>
 
-#include "../ContextButtonCorrespondence.hpp"
 #include "../../Storage/AnalysisGroup.hpp"
+#include "../ContextButtonCorrespondence.hpp"
+#include "../IWindowArea.hpp"
 
 namespace optifol
 {
 
 class AnalysisArea :
-        public sigc::trackable
+        public IWindowArea
 {
 public:
     /**
@@ -35,9 +36,9 @@ public:
       */
     explicit AnalysisArea(Gtk::Builder& builder);
 
-    void select_model(const Glib::RefPtr<Gio::ListStore<AnalysisGroup>>& new_model);
+    void select_model(const Glib::RefPtr<const Subsystem> &subsystem_model) override;
 
-    void deselect_model();
+    void deselect_model() override;
 
 private:
     Glib::RefPtr<Gio::ListStore<AnalysisGroup>> data_model;

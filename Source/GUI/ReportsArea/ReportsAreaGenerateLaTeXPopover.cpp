@@ -54,47 +54,6 @@ ReportsAreaGenerateLaTeXPopover::ReportsAreaGenerateLaTeXPopover(
             sigc::mem_fun(*this, &ReportsAreaGenerateLaTeXPopover::open_directory_button_clicked));
 }
 
-ReportsAreaGenerateLaTeXPopover::ConsoleStream::ConsoleStream(const Glib::RefPtr<Gtk::TextTag> &formatting_tag) :
-    formatting_tag(formatting_tag)
-{
-}
-
-ReportsAreaGenerateLaTeXPopover::ConsoleStream::~ConsoleStream()
-{
-    disconnect();
-}
-
-void ReportsAreaGenerateLaTeXPopover::ConsoleStream::connect(
-        const int source_fd, const sigc::slot<bool(Glib::IOCondition)> &callback_slot)
-{
-    popover_logger->debug("Latexmk subprocess: attaching to process output buffer with descriptor " +
-            std::to_string(source_fd) + '.');
-
-    channel = Glib::IOChannel::create_from_fd(source_fd);
-    watch = Glib::signal_io().connect(
-            callback_slot, channel, Glib::IOCondition::IO_IN | Glib::IOCondition::IO_HUP | Glib::IOCondition::IO_ERR);
-}
-
-void ReportsAreaGenerateLaTeXPopover::ConsoleStream::disconnect()
-{
-    popover_logger->debug("Latexmk subprocess: disconnecting from subprocess channel.");
-
-    channel->close();
-    watch.disconnect();
-}
-
-bool ReportsAreaGenerateLaTeXPopover::ConsoleStream::is_connected() const noexcept
-{
-    return watch.connected() || fd != -1;
-}
-void ReportsAreaGenerateLaTeXPopover::ConsoleStream::append_line_to_buffer(
-        const Glib::RefPtr<Gtk::TextBuffer> &target_buffer) const
-{
-    Glib::ustring line;
-    if (channel->read_line(line) == Glib::IOStatus::NORMAL)
-        target_buffer->insert_with_tag(target_buffer->end(), line, formatting_tag);
-}
-
 void ReportsAreaGenerateLaTeXPopover::confirm_button_clicked()
 {
     // TODO: disable confirm button during compilation. Not sure how?
@@ -215,9 +174,8 @@ void ReportsAreaGenerateLaTeXPopover::show_details_toggled() const
 {
     details_container->set_visible(show_details_check->get_active());
 }
-
 bool ReportsAreaGenerateLaTeXPopover::console_stream_callback(
-        const Glib::IOCondition condition, ConsoleStream *stream_metadata) const
+        Glib::IOCondition condition, struct ProcessStream *stream_metadata) const
 {
     if ((condition & Glib::IOCondition::IO_IN) == Glib::IOCondition::IO_IN) {
         stream_metadata->append_line_to_buffer(buffer);

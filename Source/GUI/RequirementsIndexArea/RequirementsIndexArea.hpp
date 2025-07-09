@@ -20,8 +20,9 @@
 #include <gtkmm/listitem.h>
 #include <gtkmm/singleselection.h>
 
-#include "../ContextButtonCorrespondence.hpp"
 #include "../../Storage/Requirement.hpp"
+#include "../ContextButtonCorrespondence.hpp"
+#include "../IWindowArea.hpp"
 
 namespace optifol
 {
@@ -32,7 +33,7 @@ namespace optifol
  *  a single set of Requirement objects, grouped by the Project and Subsystem.
  */
 class RequirementsIndexArea :
-        public sigc::trackable
+        public IWindowArea
 {
 public:
     /**
@@ -41,9 +42,9 @@ public:
      */
     explicit RequirementsIndexArea(Gtk::Builder& builder);
 
-    void select_model(const Glib::RefPtr<Gio::ListStore<Requirement>>& new_model);
+    void select_model(const Glib::RefPtr<const Subsystem> &subsystem_model) override;
 
-    void deselect_model();
+    void deselect_model() override;
 
     /**
      * @brief Bind a Requirement description attribute to a label

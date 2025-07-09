@@ -18,10 +18,11 @@
 #include <gtkmm/box.h>
 #include <gtkmm/builder.h>
 
-#include "Panels/AnalysisArea.hpp"
-#include "Panels/ProjectHierarchyPane.hpp"
-#include "Panels/RequirementsIndexArea.hpp"
+#include "AnalysisArea/AnalysisArea.hpp"
+#include "ProjectHierarchyPane/ProjectHierarchyPane.hpp"
 #include "ReportsArea/ReportsArea.hpp"
+#include "RequirementsIndexArea/RequirementsIndexArea.hpp"
+#include "TestingArea/TestingArea.hpp"
 
 namespace optifol
 {
@@ -39,8 +40,10 @@ private:
     Gtk::Box * const root_grid;
 
     std::unique_ptr<ProjectHierarchyPane> project_hierarchy_pane;
+
     std::unique_ptr<RequirementsIndexArea> requirements_index_area;
     std::unique_ptr<AnalysisArea> analysis_area;
+    std::unique_ptr<TestingArea> testing_area;
     std::unique_ptr<ReportsArea> reports_area;
 };
 

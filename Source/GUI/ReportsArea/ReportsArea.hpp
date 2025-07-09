@@ -19,20 +19,21 @@
 
 #include "../../Storage/Subsystem.hpp"
 #include "../ContextButtonCorrespondence.hpp"
+#include "../IWindowArea.hpp"
 #include "ReportsAreaGenerateLaTeXPopover.hpp"
 
 namespace optifol
 {
 
 class ReportsArea :
-        public sigc::trackable
+        public IWindowArea
 {
 public:
     explicit ReportsArea(Gtk::Builder& builder);
 
-    void select_model(const Glib::RefPtr<const Subsystem>& subsystem);
+    void select_model(const Glib::RefPtr<const Subsystem> &subsystem) override;
 
-    void deselect_model();
+    void deselect_model() override;
 
     const Subsystem * observe_active_subsystem() const noexcept;
 

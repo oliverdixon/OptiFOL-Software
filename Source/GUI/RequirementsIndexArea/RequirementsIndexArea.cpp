@@ -13,6 +13,7 @@
 
 #include "RequirementsIndexArea.hpp"
 
+#include "../../Storage/Subsystem.hpp"
 #include "../GTKHelpers.hpp"
 
 namespace optifol
@@ -134,13 +135,13 @@ RequirementsIndexArea::RequirementsIndexArea(Gtk::Builder& builder) :
     configure_duplicate_requirement_popover(builder);
 }
 
-void RequirementsIndexArea::select_model(const Glib::RefPtr<Gio::ListStore<Requirement>> &new_model)
+void RequirementsIndexArea::select_model(const Glib::RefPtr<const Subsystem> &subsystem_model)
 {
     on_off_widgets.first->set_visible(false);
     on_off_widgets.second->set_visible(true);
 
-    data_model = new_model;
-    selection_model->set_model(new_model);
+    data_model = subsystem_model->requirements;
+    selection_model->set_model(data_model);
 }
 
 void RequirementsIndexArea::deselect_model()

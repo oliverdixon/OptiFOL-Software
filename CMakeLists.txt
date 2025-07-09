@@ -298,23 +298,28 @@ add_executable(OptifolGUI
         Source/Storage/Subsystem.cpp
         Source/Storage/Subsystem.hpp
         Source/Storage/StorageObjectBase.hpp
-        Source/GUI/Panels/ProjectHierarchyPane.cpp
-        Source/GUI/Panels/ProjectHierarchyPane.hpp
-        Source/GUI/Panels/RequirementsIndexArea.cpp
-        Source/GUI/Panels/RequirementsIndexArea.hpp
+        Source/GUI/ProjectHierarchyPane/ProjectHierarchyPane.cpp
+        Source/GUI/ProjectHierarchyPane/ProjectHierarchyPane.hpp
+        Source/GUI/RequirementsIndexArea/RequirementsIndexArea.cpp
+        Source/GUI/RequirementsIndexArea/RequirementsIndexArea.hpp
         Source/GUI/ContextButtonCorrespondence.cpp
         Source/GUI/ContextButtonCorrespondence.hpp
         Source/Storage/Requirement.cpp
         Source/Storage/Requirement.hpp
         Source/Storage/StorageObjectBase.cpp
-        Source/GUI/Panels/AnalysisArea.cpp
-        Source/GUI/Panels/AnalysisArea.hpp
+        Source/GUI/AnalysisArea/AnalysisArea.cpp
+        Source/GUI/AnalysisArea/AnalysisArea.hpp
         Source/Storage/AnalysisGroup.cpp
         Source/Storage/AnalysisGroup.hpp
         Source/GUI/ReportsArea/ReportsArea.cpp
         Source/GUI/ReportsArea/ReportsArea.hpp
         Source/GUI/ReportsArea/ReportsAreaGenerateLaTeXPopover.cpp
         Source/GUI/ReportsArea/ReportsAreaGenerateLaTeXPopover.hpp
+        Source/GUI/TestingArea/TestingArea.cpp
+        Source/GUI/TestingArea/TestingArea.hpp
+        Source/GUI/ProcessStream.cpp
+        Source/GUI/ProcessStream.hpp
+        Source/GUI/IWindowArea.hpp
 )
 
 set(COMMON_COMPILER_OPTIONS

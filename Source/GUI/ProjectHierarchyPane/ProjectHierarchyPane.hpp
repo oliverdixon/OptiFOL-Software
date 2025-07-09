@@ -19,9 +19,8 @@
 
 #include "../../Storage/AnalysisGroup.hpp"
 #include "../../Storage/Project.hpp"
-#include "../../Storage/Requirement.hpp"
+#include "../AnalysisArea/AnalysisArea.hpp"
 #include "../ContextButtonCorrespondence.hpp"
-#include "AnalysisArea.hpp"
 
 namespace optifol
 {
@@ -39,27 +38,18 @@ public:
      * @param builder The GTK builder attached to the main window
      * @param initial_model The backend storage model used to populate the model and stream data updates
      */
-    ProjectHierarchyPane(Gtk::Builder& builder, const Glib::RefPtr<Gio::ListStore<Project>> &initial_model);
+    ProjectHierarchyPane(Gtk::Builder &builder, const Glib::RefPtr<Gio::ListStore<Project>> &initial_model);
 
     /**
-     * @brief Replace any current 'requirement listener' with a new pair of selected-deselected callbacks.
-     * @param selected The callback to execute when the requirements model is replaced in the current scope
-     * @param deselected The callback to execute when the requirements model is removed from the current scope
-     * @param onboard Should an emit signal be immediately issued to the new listener?
+     * @brief Add a new listener whose callback routine should be called when a new Subsystem is selected, or the
+     *  previously selected one is deselected.
+     * @param selected The callback to handle the changing of the active selection to a new Subsystem
+     * @param deselected The callback to handle the deselection of the currently selected Subsystem
+     * @param onboard Should the newly added callback be invoked immediately to "onboard" the listener as to the current
+     *  state of the selection? The deselection callback is called during onboarding if and only if the present
+     *  selection is invalid or not a Subsystem.
      */
-    void replace_requirement_listener(sigc::slot<void(const Glib::RefPtr<Gio::ListStore<Requirement>>&)>&& selected,
-        sigc::slot<void()>&& deselected, bool onboard = true);
-
-    /**
-     * @brief Replace any current 'analysis listener' with a new pair of selected-deselected callbacks.
-     * @param selected The callback to execute when the analysis groups model is replaced in the current scope
-     * @param deselected The callback to execute when the analysis groups model is removed from the current scope
-     * @param onboard Should an emit signal be immediately issued to the new listener?
-     */
-    void replace_analysis_listener(sigc::slot<void(const Glib::RefPtr<Gio::ListStore<AnalysisGroup>>&)>&& selected,
-        sigc::slot<void()>&& deselected, bool onboard = true);
-
-    void replace_reports_listener(sigc::slot<void(const Glib::RefPtr<const Subsystem> &)> &&selected,
+    void add_subsystem_change_callback(sigc::slot<void(const Glib::RefPtr<const Subsystem> &)> &&selected,
             sigc::slot<void()> &&deselected, bool onboard = true);
 
 private:
@@ -116,7 +106,7 @@ private:
     /**
      * @brief Emits a notification to all listeners that a new subsystem has been selected
      */
-    void emit_selected(const Glib::RefPtr<const Subsystem>& new_subsystem) const;
+    void emit_selected(const Glib::RefPtr<const Subsystem> &new_subsystem) const;
 
     /**
      * @brief Emits a notification to all listeners that the previously selected subsystem has been deselected.
@@ -129,20 +119,15 @@ private:
      */
     void switch_selection(guint) const;
 
-    static const char * const area_name;
+    static const char *const area_name;
     static std::shared_ptr<log4cxx::Logger> logger;
 
-    std::pair<sigc::signal<void(const Glib::RefPtr<Gio::ListStore<Requirement>>&)>, sigc::signal<void()>>
-        requirements_callbacks;
+    std::vector<std::pair<sigc::signal<void(const Glib::RefPtr<const Subsystem> &)>, sigc::signal<void()>>>
+            subsystem_change_callbacks;
 
-    std::pair<sigc::signal<void(const Glib::RefPtr<Gio::ListStore<AnalysisGroup>>&)>, sigc::signal<void()>>
-        analysis_callbacks;
-
-    std::pair<sigc::signal<void(const Glib::RefPtr<const Subsystem>&)>, sigc::signal<void()>> reports_callbacks;
-
-    Gtk::DropDown * const stack_switcher;
-    Gtk::Stack * const stack;
-    Gtk::ListView * const view;
+    Gtk::DropDown *const stack_switcher;
+    Gtk::Stack *const stack;
+    Gtk::ListView *const view;
 
     Glib::RefPtr<Gio::ListStore<Project>> data_model;
     Glib::RefPtr<Gtk::SingleSelection> selection_model;
@@ -151,6 +136,6 @@ private:
     ContextButtonCorrespondence context_menu;
 };
 
-}
+} // namespace optifol
 
 #endif
