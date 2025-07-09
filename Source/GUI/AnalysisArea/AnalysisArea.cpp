@@ -51,7 +51,8 @@ AnalysisArea::AnalysisArea(Gtk::Builder &builder) :
                 false
             }
         }
-    )
+    ),
+    new_analysis_group_popover(builder, *this)
 {
     selection_model->set_autoselect(false);
     selection_model->set_can_unselect(true);
@@ -114,9 +115,6 @@ AnalysisArea::AnalysisArea(Gtk::Builder &builder) :
             ++processed_columns;
         }
     }
-
-    configure_new_analysis_group_popover(builder);
-    configure_delete_analysis_group_popover(builder);
 }
 
 void AnalysisArea::select_model(const Glib::RefPtr<const Subsystem> &subsystem_model)
@@ -124,7 +122,8 @@ void AnalysisArea::select_model(const Glib::RefPtr<const Subsystem> &subsystem_m
     on_off_widgets.first->set_visible(false);
     on_off_widgets.second->set_visible(true);
 
-    data_model = subsystem_model->analysis_groups;
+    active_subsystem = subsystem_model;
+    data_model = active_subsystem->analysis_groups;
     tree_model = Gtk::TreeListModel::create(data_model, sigc::ptr_fun(&AnalysisArea::analysis_group_expand), true,
         true);
     selection_model->set_model(tree_model);
@@ -135,36 +134,15 @@ void AnalysisArea::deselect_model()
     on_off_widgets.second->set_visible(false);
     on_off_widgets.first->set_visible(true);
 
+    active_subsystem = nullptr;
     tree_model = nullptr;
     data_model = nullptr;
     selection_model->set_model(nullptr);
 }
 
-void AnalysisArea::configure_new_analysis_group_popover(Gtk::Builder &builder) const
+const Subsystem *AnalysisArea::observe_active_subsystem() const noexcept
 {
-    const auto popover = GTKHelpers::get_widget<Gtk::Popover>(area_name, builder, "new_analysis_group_popover");
-    const auto confirm_button = GTKHelpers::get_widget<Gtk::Button>(area_name, builder,
-        "new_analysis_group_confirm");
-    const auto cancel_button = GTKHelpers::get_widget<Gtk::Button>(area_name, builder, "new_analysis_group_cancel");
-    const auto property_name = GTKHelpers::get_widget<Gtk::Entry>(area_name, builder,
-        "new_analysis_group_property_name");
-
-    cancel_button->signal_clicked().connect([popover, property_name]
-    {
-        popover->popdown();
-        property_name->set_text("");
-    });
-
-    confirm_button->signal_clicked().connect([this, popover, property_name]
-    {
-        popover->popdown();
-        data_model->append(Glib::make_refptr_for_instance(new AnalysisGroup(property_name->get_text())));
-    });
-}
-
-void AnalysisArea::configure_delete_analysis_group_popover(Gtk::Builder &builder) const
-{
-    // TODO
+    return active_subsystem.get();
 }
 
 Glib::RefPtr<Gio::ListModel> AnalysisArea::analysis_group_expand(const Glib::RefPtr<Glib::ObjectBase> &item)

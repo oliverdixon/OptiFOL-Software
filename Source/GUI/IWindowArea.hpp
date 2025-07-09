@@ -31,6 +31,11 @@ class Subsystem;
 class IWindowArea : public sigc::trackable
 {
 public:
+    /**
+     * @brief Create a new window area
+     */
+    IWindowArea() = default;
+
     // ReSharper disable once CppHidingFunction
     /*
      * A well-document and understood sigc++ constraint prevents deletions through sigc::trackable pointers. Hiding the
@@ -53,6 +58,23 @@ public:
      * @see ProjectHierarchyPane::add_subsystem_change_callback
      */
     virtual void deselect_model() = 0;
+
+    /**
+     * @brief Retrieves an observing raw pointer to the active Subsystem loaded into the area
+     * @return The observing pointer, designed to be use for transitory single-threaded use only due to lack of
+     *  documented lifetime guarantees.
+     */
+    virtual const Subsystem * observe_active_subsystem() const noexcept = 0;
+
+    /**
+     * @brief Disallow copying of entire areas, as semantically invalid and presumed to be singleton.
+     */
+    IWindowArea(const IWindowArea&) = delete;
+
+    /**
+     * @brief Disallow moving of entire areas, as semantically invalid and presumed to be singleton.
+     */
+    IWindowArea(IWindowArea&&) = delete;
 };
 
 } // namespace optifol

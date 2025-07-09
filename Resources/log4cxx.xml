@@ -13,7 +13,7 @@
         </layout>
     </appender>
 
-    <logger name="ReportingCompliance" additivity="false">
+    <logger name="GUI" additivity="false">
         <priority value="debug"/>
         <appender-ref ref="ConsoleAppender"/>
     </logger>

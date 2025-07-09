@@ -28,4 +28,9 @@ void TestingArea::deselect_model()
 {
 }
 
+const Subsystem *TestingArea::observe_active_subsystem() const noexcept
+{
+    return nullptr; // TODO
+}
+
 } // namespace optifol

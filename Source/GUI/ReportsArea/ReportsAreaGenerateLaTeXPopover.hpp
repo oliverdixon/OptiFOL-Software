@@ -35,7 +35,7 @@ class ReportsArea;
 
 /**
  * @class ReportsAreaGenerateLaTeXPopover
- * @brief Manage the "Generate LaTeX" popover for the Reporting and Compliance Area
+ * @brief Manage the "Generate LaTeX" popover for the Releases and Reports Area
  * @note Instantiations of this class mutate the graphical environment via the given Gtk::Builder. As such, it should be
  *  regarded an effective singleton as multiple instantiations will cause conflicts with the GTK+ runtime due to
  *  multiply registered callbacks.
@@ -115,19 +115,30 @@ public:
     /**
      * @brief Construct a new popover manager, registering callbacks on elements loaded by the given builder
      * @param builder A GTK builder containing popover UI elements
-     * @param reports_area An observing pointer to the view of which the popover is a member
+     * @param reports_area An observing reference to the view of which the popover is a member
      * @throws std::runtime_error A required GTK element/widget could not be loaded from the given builder
      */
-    explicit ReportsAreaGenerateLaTeXPopover(Gtk::Builder& builder, const ReportsArea * reports_area);
+    ReportsAreaGenerateLaTeXPopover(Gtk::Builder& builder, const ReportsArea& reports_area);
 
 private:
     /**
-     * @brief Handle a click of the "Confirm" button by generating LaTeX with latexmk and providing real-time feedback
+     * @brief Handle a click of the <i>Confirm</i> button by generating LaTeX with latexmk and providing real-time
+     *  feedback
      */
     void confirm_button_clicked();
 
     /**
-     * @brief Handle a click of the "Open Output Directory" button by temporarily hiding the popover and raising a
+     * @brief Handle a click of the <i>Cancel</i> button by disregarding any existing user input
+     */
+    void cancel_button_clicked();
+
+    /**
+     * @brief Resets all visible UI elements to their original state
+     */
+    void clear_inputs();
+
+    /**
+     * @brief Handle a click of the <i>Open Output Directory</i> button by temporarily hiding the popover and raising a
      *  native Gtk::FileDialog file-chooser.
      * @details A callback is registered on the error-tolerant
      *  @ref open_directory_finished(const Glib::RefPtr<Gio::AsyncResult>&) to handle the completion of the dialog.
@@ -153,7 +164,7 @@ private:
     void update_requirements_csv() const;
 
     /**
-     * @brief Handle a toggle of the "Show Details" button by showing or hiding the latexmk/pdflatex output
+     * @brief Handle a toggle of the <i>Show Details</i> button by showing or hiding the latexmk/pdflatex output
      */
     void show_details_toggled() const;
 
@@ -168,7 +179,7 @@ private:
     static const char * const popover_name;
     static const log4cxx::LoggerPtr popover_logger;
 
-    const ReportsArea * const reports_area;
+    const ReportsArea& reports_area;
     const Glib::RefPtr<Gtk::TextBuffer> buffer;
     Gtk::Popover * const my_popover;
     Gtk::Box * const details_container;

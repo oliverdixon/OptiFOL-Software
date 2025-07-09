@@ -31,6 +31,8 @@ public:
     void select_model(const Glib::RefPtr<const Subsystem> &subsystem) override;
 
     void deselect_model() override;
+
+    const Subsystem *observe_active_subsystem() const noexcept override;
 };
 
 } // namespace optifol

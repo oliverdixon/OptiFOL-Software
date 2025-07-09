@@ -19,9 +19,9 @@
             <property name="max-width-chars">80</property>
             <property name="wrap">TRUE</property>
             <property name="label">
-                <![CDATA[<b>The Reporting and Compliance View is not applicable to Project-level scopes.</b>
+                <![CDATA[<b>The Releases and Reports View is not applicable to Project-level scopes.</b>
 
-The <i>Reporting and Compliance View</i> allows automatic generation of HTML and LaTeX/PDF reports based on the Requirements and related Analysis of a Subsystem.
+The <i>Releases and Reports View</i> allows automatic generation of HTML and LaTeX/PDF reports based on the Requirements and related Analysis of a Subsystem.
 
 The content of exported Reports can be cherry-picked, and formatting can be extensively customised.
 

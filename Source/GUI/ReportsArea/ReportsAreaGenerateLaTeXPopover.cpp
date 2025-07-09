@@ -21,12 +21,12 @@
 namespace optifol
 {
 
-const char *const ReportsAreaGenerateLaTeXPopover::popover_name = "Generate LaTeX Report Popover";
+const char * const ReportsAreaGenerateLaTeXPopover::popover_name = "Generate LaTeX Report Popover";
 const log4cxx::LoggerPtr ReportsAreaGenerateLaTeXPopover::popover_logger =
-        Logging::get_logger({"ReportingCompliance", "GenerateLaTeX"});
+        Logging::get_logger({"GUI", "ReleasesReports", "GenerateLaTeX"});
 
 ReportsAreaGenerateLaTeXPopover::ReportsAreaGenerateLaTeXPopover(
-        Gtk::Builder &builder, const ReportsArea *reports_area) :
+        Gtk::Builder &builder, const ReportsArea& reports_area) :
     reports_area(reports_area),
     buffer(GTKHelpers::get_widget<Gtk::TextView>(popover_name, builder, "generate_latex_output")->get_buffer()),
     my_popover(GTKHelpers::get_widget<Gtk::Popover>(popover_name, builder, "reports_generate_latex_popover")),
@@ -124,6 +124,21 @@ void ReportsAreaGenerateLaTeXPopover::confirm_button_clicked()
     // clang-format on
 }
 
+void ReportsAreaGenerateLaTeXPopover::cancel_button_clicked()
+{
+    my_popover->popdown();
+    clear_inputs();
+}
+
+// ReSharper disable once CppDFAUnreachableFunctionCall - False positive: called from button-click callback.
+void ReportsAreaGenerateLaTeXPopover::clear_inputs()
+{
+    output_directory_entry->set_text("");
+    buffer->set_text("");
+    index_csv = nullptr;
+    output_directory = nullptr;
+}
+
 void ReportsAreaGenerateLaTeXPopover::open_directory_button_clicked()
 {
     // Hide the popover whilst the dialog is active, otherwise it may have z-index priority over the dialog.
@@ -157,7 +172,7 @@ void ReportsAreaGenerateLaTeXPopover::update_requirements_csv() const
     popover_logger->info("Writing CSV requirements index for consumption by LaTeX template at " + csv_path + '.');
 
     std::ofstream file_stream(csv_path);
-    const auto observed_requirements = reports_area->observe_active_subsystem()->requirements.get();
+    const auto observed_requirements = reports_area.observe_active_subsystem()->requirements.get();
     const auto requirement_count = observed_requirements->get_n_items();
 
     for (guint requirement_idx = 0; requirement_idx < requirement_count; ++requirement_idx) {
@@ -174,8 +189,9 @@ void ReportsAreaGenerateLaTeXPopover::show_details_toggled() const
 {
     details_container->set_visible(show_details_check->get_active());
 }
+
 bool ReportsAreaGenerateLaTeXPopover::console_stream_callback(
-        Glib::IOCondition condition, struct ProcessStream *stream_metadata) const
+        const Glib::IOCondition condition, struct ProcessStream *stream_metadata) const
 {
     if ((condition & Glib::IOCondition::IO_IN) == Glib::IOCondition::IO_IN) {
         stream_metadata->append_line_to_buffer(buffer);

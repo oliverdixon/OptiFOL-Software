@@ -46,6 +46,8 @@ public:
 
     void deselect_model() override;
 
+    const Subsystem *observe_active_subsystem() const noexcept override;
+
     /**
      * @brief Bind a Requirement description attribute to a label
      * @param list_item The container in which the destination label exists
@@ -71,6 +73,7 @@ public:
     static void on_bind_property_normalised(const Glib::RefPtr<Gtk::ListItem> &list_item);
 
 private:
+    Glib::RefPtr<const Subsystem> active_subsystem;
     Glib::RefPtr<Gio::ListStore<Requirement>> data_model;
     Glib::RefPtr<Gtk::SingleSelection> selection_model = Gtk::SingleSelection::create();
 

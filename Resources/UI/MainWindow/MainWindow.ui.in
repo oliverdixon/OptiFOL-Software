@@ -94,7 +94,7 @@
     ${EDIT_ANALYSIS_GROUP_POPOVER}
     ${DELETE_ANALYSIS_GROUP_POPOVER}
 
-    <!-- Reporting and compliance popovers -->
+    <!-- Releases and reports popovers -->
     ${GENERATE_LATEX_POPOVER}
 
     <object class="GtkBox" id="root_grid">

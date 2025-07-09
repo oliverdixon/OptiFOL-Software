@@ -5,7 +5,7 @@
 
 /**
  * @file
- * @brief Class specification for the Main Window's Reporting and Compliance area
+ * @brief Class specification for the Main Window's Releases and Reports area
  * @author Oliver Dixon
  * @date 2025-07-08
  * @version Development
@@ -25,6 +25,62 @@
 namespace optifol
 {
 
+/**
+ * @class ReportsArea
+ * @brief Manage the <i>Releases and Reports</i> area
+ * @details
+ *  <p>
+ *      The <i>Releases and Reports</i> area provides controls for reviewing baselined releases of the project with a
+ *      frozen set of Requirement objects, and also enables the automatic generation of reports to document baselines.
+ *      The following GTK elements are expected from the given Gtk::Builder:
+ *      <table>
+ *          <tr>
+ *              <th>GTK C++ Class</th>
+ *              <th>Unique Identifier</th>
+ *              <th>Purpose</th>
+ *          </tr>
+*           <tr>
+ *              <td>Gtk::Widget (abstract)</td>
+ *              <td><code>reports_advice_unselected</code></td>
+ *              <td>Advice to display when the area is unavailable</td>
+ *          </tr>
+ *          <tr>
+ *              <td>Gtk::Widget (abstract)</td>
+ *              <td><code>reports_content</code></td>
+ *              <td>Replacement to <code>reports_advice_unselected</code>, containing all active content</td>
+ *          </tr>
+ *          <tr>
+ *              <td>Gtk::ColumnView</td>
+ *              <td><code>reports_elements_view</code></td>
+ *              <td>Table containing baselines and previously generated reports</td>
+ *          </tr>
+ *          <tr>
+ *              <td>Gio::Menu</td>
+ *              <td><code>reports_context_menu</code></td>
+ *              <td>Area-wide context menu</td>
+ *          </tr>
+ *          <tr>
+ *              <td>Gtk::MenuButton</td>
+ *              <td><code>reports_generate_latex</code></td>
+ *              <td>Button for the LaTeX generation popover</td>
+ *          </tr>
+ *          <tr>
+ *              <td>Gtk::Popover</td>
+ *              <td><code>reports_generate_latex_popover</code></td>
+ *              <td>Popover for the LaTeX generation facility</td>
+ *          </tr>
+ *      </table>
+ *      A @ref std::runtime_error will be thrown by ReportsArea(Gtk::Builder&) if any of these are inaccessible in the
+ *      expected type instantiations.
+ *  </p>
+ *  <p>
+ *      In addition to the stated required GTK elements, constituent popovers of this view will require their own,
+ *      possibly distinct, set of elements:
+ *      <ul>
+ *          <li>@ref ReportsAreaGenerateLaTeXPopover</li>
+ *      </ul>
+ *  </p>
+ */
 class ReportsArea :
         public IWindowArea
 {
@@ -35,7 +91,7 @@ public:
 
     void deselect_model() override;
 
-    const Subsystem * observe_active_subsystem() const noexcept;
+    const Subsystem *observe_active_subsystem() const noexcept override;
 
 private:
     static const char * const area_name;

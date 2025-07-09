@@ -320,6 +320,8 @@ add_executable(OptifolGUI
         Source/GUI/ProcessStream.cpp
         Source/GUI/ProcessStream.hpp
         Source/GUI/IWindowArea.hpp
+        Source/GUI/AnalysisArea/AnalysisAreaNewAnalysisGroupPopover.cpp
+        Source/GUI/AnalysisArea/AnalysisAreaNewAnalysisGroupPopover.hpp
 )
 
 set(COMMON_COMPILER_OPTIONS

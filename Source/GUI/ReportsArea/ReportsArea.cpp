@@ -5,7 +5,7 @@
 
 /**
  * @file
- * @brief Class implementation for the Main Window's Reporting and Compliance area
+ * @brief Class implementation for the Main Window's Releases and Reports area
  * @author Oliver Dixon
  * @date 2025-07-08
  * @version Development
@@ -17,7 +17,7 @@
 namespace optifol
 {
 
-const char * const ReportsArea::area_name = "Reporting and Compliance Area";
+const char * const ReportsArea::area_name = "Releases and Reports Area";
 
 ReportsArea::ReportsArea(Gtk::Builder &builder) :
     on_off_widgets(
@@ -37,7 +37,7 @@ ReportsArea::ReportsArea(Gtk::Builder &builder) :
             }
         }
     ),
-    generate_latex_popover(builder, this)
+    generate_latex_popover(builder, *this)
 {
 }
 

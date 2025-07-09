@@ -140,7 +140,8 @@ void RequirementsIndexArea::select_model(const Glib::RefPtr<const Subsystem> &su
     on_off_widgets.first->set_visible(false);
     on_off_widgets.second->set_visible(true);
 
-    data_model = subsystem_model->requirements;
+    active_subsystem = subsystem_model;
+    data_model = active_subsystem->requirements;
     selection_model->set_model(data_model);
 }
 
@@ -149,8 +150,14 @@ void RequirementsIndexArea::deselect_model()
     on_off_widgets.second->set_visible(false);
     on_off_widgets.first->set_visible(true);
 
+    active_subsystem = nullptr;
     data_model = nullptr;
     selection_model->set_model(nullptr);
+}
+
+const Subsystem *RequirementsIndexArea::observe_active_subsystem() const noexcept
+{
+    return active_subsystem.get();
 }
 
 void RequirementsIndexArea::configure_new_requirement_popover(Gtk::Builder &builder)
