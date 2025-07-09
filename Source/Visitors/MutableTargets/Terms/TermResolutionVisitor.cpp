@@ -30,7 +30,15 @@ void TermResolutionVisitor::visit(MutableFunction &node)
 
     for (std::remove_const_t<decltype(argument_count)> i = 0; i < argument_count; ++i) {
         const auto &rule = rewriting_rules_hook.find(args[i]->get_disambiguated_name());
-        if (rule != rewriting_rules_hook.end())
+        if (rule != rewriting_rules_hook.end() && node != *rule->second.get())
+            /*
+             * Rewrite the argument according to the rule if and only if:
+             *
+             *  - A suitable rule is available, such that the disambiguated name of the argument has been identified as
+             *    rewritable; and
+             *  - The rewriting would change the argument. If this check is not done, an infinite loop would be caused
+             *    by the following accept call.
+             */
             args[i] = rule->second->clone();
 
         args[i]->accept(*this);

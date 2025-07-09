@@ -21,7 +21,7 @@
 namespace optifol
 {
 
-const char * QuantifierExtractingVisitor::visitor_name = "QuantifierExtraction";
+const char *QuantifierExtractingVisitor::visitor_name = "QuantifierExtraction";
 
 std::string_view QuantifierExtractingVisitor::get_visitor_name() const
 {
@@ -30,28 +30,29 @@ std::string_view QuantifierExtractingVisitor::get_visitor_name() const
 
 void QuantifierExtractingVisitor::visit(MutableBinaryConnected &node)
 {
-    // TODO URGENT: assertion fails on valid sentence
-    // TODO URGENT: ThereExists x ForAll y (P(x, y) <=> ForAll z Q(z))
-    assert(!transformation_metadata.has_value()); // Ensure there is no pending transformation.
+    assert(!transformation.has_value()); // Ensure there is no pending transformation.
 
-    // Recurse down the LHS
+    // Recurse down the LHS and apply any applicable transforms generated during the visit.
     tracking_mode = TrackingMode::LeftMajor;
     auto borrowed_operand_lhs = node.take_lhs_operand();
     borrowed_operand_lhs->accept(*this);
+    borrowed_operand_lhs = apply_transform(std::move(borrowed_operand_lhs));
 
     if (!quant_lhs_data.has_value())
         // If no quantifier, just return the borrowed LHS.
         node.put_lhs_operand(std::move(borrowed_operand_lhs));
 
-    // Recurse down the RHS
+    // Recurse down the RHS and apply any applicable transforms generated during the visit.
     tracking_mode = TrackingMode::RightMajor;
     auto borrowed_operand_rhs = node.take_rhs_operand();
     borrowed_operand_rhs->accept(*this);
+    borrowed_operand_rhs = apply_transform(std::move(borrowed_operand_rhs));
 
     if (!quant_rhs_data.has_value())
         // If no quantifier, just return the borrowed RHS.
         node.put_rhs_operand(std::move(borrowed_operand_rhs));
 
+    assert(!transformation.has_value()); // Ensure there is still no pending transformation.
     tracking_mode = TrackingMode::NotTracking;
 
     /*
@@ -71,7 +72,7 @@ void QuantifierExtractingVisitor::visit(MutableBinaryConnected &node)
         if (!quant_rhs_data.has_value()) {
             // If the LHS only is a quantifier, set our LHS as its sentence.
             node.put_lhs_operand(std::move(quant_lhs_data->sentence));
-            transformation_metadata.emplace(quant_lhs_data->type, std::move(quant_lhs_data->bound_term));
+            transformation.emplace(quant_lhs_data->type, std::move(quant_lhs_data->bound_term));
         } else {
             // If both operands were quantifiers, there's no transformation to do. Return operands to our node.
             node.put_lhs_operand(std::move(borrowed_operand_lhs));
@@ -87,7 +88,7 @@ void QuantifierExtractingVisitor::visit(MutableBinaryConnected &node)
     } else if (quant_rhs_data.has_value()) {
         // If the RHS only is a quantifier, set our RHS as its sentence.
         node.put_rhs_operand(std::move(quant_rhs_data->sentence));
-        transformation_metadata.emplace(quant_rhs_data->type, std::move(quant_rhs_data->bound_term));
+        transformation.emplace(quant_rhs_data->type, std::move(quant_rhs_data->bound_term));
         quant_rhs_data.reset();
     }
 
@@ -105,19 +106,7 @@ void QuantifierExtractingVisitor::visit(MutableQuantified &node)
 
     auto borrowed_sentence = node.take_sentence();
     borrowed_sentence->accept(*this);
-
-    /*
-     * If there's a pending transformation, as occurs in the case of nested quantified sentence nodes, do the
-     * transformation now.
-     */
-    if (transformation_metadata.has_value()) {
-        borrowed_sentence = std::make_unique<MutableQuantified>(transformation_metadata->first,
-            std::move(transformation_metadata->second), std::move(borrowed_sentence));
-        transformation_metadata.reset();
-
-        // The introduction of a new quantified sentence may open new opportunities for reduction, to an arbitrary depth
-        borrowed_sentence->accept(*this);
-    }
+    borrowed_sentence = apply_transform(std::move(borrowed_sentence));
 
     switch (was_tracking) {
     case TrackingMode::NotTracking:
@@ -138,17 +127,22 @@ void QuantifierExtractingVisitor::visit(MutableSentenceRoot &node)
 {
     auto borrowed_sentence = node.take_sentence();
     borrowed_sentence->accept(*this);
+    node.put_sentence(apply_transform(std::move(borrowed_sentence)));
+}
 
-    if (transformation_metadata.has_value()) {
-        borrowed_sentence = std::make_unique<MutableQuantified>(transformation_metadata->first,
-            std::move(transformation_metadata->second), std::move(borrowed_sentence));
-        transformation_metadata.reset();
+std::unique_ptr<IMutableSentence> QuantifierExtractingVisitor::apply_transform(
+        std::unique_ptr<IMutableSentence> &&transform_target)
+{
+    if (transformation.has_value()) {
+        transform_target = std::make_unique<MutableQuantified>(
+                transformation->first, std::move(transformation->second), std::move(transform_target));
+        transformation.reset();
 
         // The introduction of a new quantified sentence may open new opportunities for reduction, to an arbitrary depth
-        borrowed_sentence->accept(*this);
+        transform_target->accept(*this);
     }
 
-    node.put_sentence(std::move(borrowed_sentence));
+    return transform_target;
 }
 
-}
+} // namespace optifol
