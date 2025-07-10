@@ -81,7 +81,6 @@ AnalysisArea::AnalysisArea(Gtk::Builder &builder) :
 
     const auto columns = groups_view->get_columns();
     const auto column_count = columns->get_n_items();
-    guint processed_columns = 0;
 
     for (guint position = 0; position < column_count; ++position) {
         Glib::RefPtr<Gtk::ColumnViewColumn> column = nullptr;
@@ -112,7 +111,6 @@ AnalysisArea::AnalysisArea(Gtk::Builder &builder) :
                 continue;
 
             column->set_factory(factory);
-            ++processed_columns;
         }
     }
 }
@@ -143,6 +141,11 @@ void AnalysisArea::deselect_model()
 const Subsystem *AnalysisArea::observe_active_subsystem() const noexcept
 {
     return active_subsystem.get();
+}
+
+guint AnalysisArea::get_selected_index() const
+{
+    return selection_model->get_selected();
 }
 
 Glib::RefPtr<Gio::ListModel> AnalysisArea::analysis_group_expand(const Glib::RefPtr<Glib::ObjectBase> &item)

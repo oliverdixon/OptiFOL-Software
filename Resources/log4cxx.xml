@@ -13,6 +13,16 @@
         </layout>
     </appender>
 
+    <logger name="SubprocessControl" additivity="false">
+        <priority value="warn"/>
+        <appender-ref ref="ConsoleAppender"/>
+    </logger>
+
+    <logger name="Network" additivity="false">
+        <priority value="debug"/>
+        <appender-ref ref="ConsoleAppender"/>
+    </logger>
+
     <logger name="GUI" additivity="false">
         <priority value="debug"/>
         <appender-ref ref="ConsoleAppender"/>

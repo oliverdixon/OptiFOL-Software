@@ -33,4 +33,10 @@ const Subsystem *TestingArea::observe_active_subsystem() const noexcept
     return nullptr; // TODO
 }
 
+guint TestingArea::get_selected_index() const
+{
+    // TODO
+    return GTK_INVALID_LIST_POSITION;
+}
+
 } // namespace optifol

@@ -140,8 +140,22 @@ To prepare Analysis Groups, select a Subsystem from the left-hand <i>Project Exp
                                     </child>
                                     <child>
                                         <object class="GtkColumnViewColumn">
-                                            <property name="id">test_identifier</property>
-                                            <property name="title">Test Identifier</property>
+                                            <property name="id">test_target_executable</property>
+                                            <property name="title">Target Executable</property>
+                                            <property name="resizable">TRUE</property>
+                                        </object>
+                                    </child>
+                                    <child>
+                                        <object class="GtkColumnViewColumn">
+                                            <property name="id">test_suite</property>
+                                            <property name="title">Test Suite</property>
+                                            <property name="resizable">TRUE</property>
+                                        </object>
+                                    </child>
+                                    <child>
+                                        <object class="GtkColumnViewColumn">
+                                            <property name="id">test_name</property>
+                                            <property name="title">Test Name</property>
                                             <property name="resizable">TRUE</property>
                                         </object>
                                     </child>
@@ -167,7 +181,7 @@ To prepare Analysis Groups, select a Subsystem from the left-hand <i>Project Exp
                     </child>
                     <child type="tab">
                         <object class="GtkLabel">
-                            <property name="label">Group A: Group A Test Report</property>
+                            <property name="label">Group A Test Report</property>
                         </object>
                     </child>
                     <child>

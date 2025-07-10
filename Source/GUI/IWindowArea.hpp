@@ -47,6 +47,16 @@ public:
     virtual ~IWindowArea() = default;
 
     /**
+     * @brief Disallow copying of entire areas, as semantically invalid and presumed to be singleton.
+     */
+    IWindowArea(const IWindowArea&) = delete;
+
+    /**
+     * @brief Disallow moving of entire areas, as semantically invalid and presumed to be singleton.
+     */
+    IWindowArea(IWindowArea&&) = delete;
+
+    /**
      * @brief Handle a change in the present selection to a new Subsystem model
      * @param subsystem_model The newly selected Subsystem model
      * @see ProjectHierarchyPane::add_subsystem_change_callback
@@ -67,14 +77,12 @@ public:
     virtual const Subsystem * observe_active_subsystem() const noexcept = 0;
 
     /**
-     * @brief Disallow copying of entire areas, as semantically invalid and presumed to be singleton.
+     * @brief Retrieves the index of the selected model-dependent item
+     * @return The index of the item selected within the area's data model, or @ref GTK_INVALID_LIST_POSITION if no item
+     *  is selected
+     * @example RequirementsIndexArea.hpp
      */
-    IWindowArea(const IWindowArea&) = delete;
-
-    /**
-     * @brief Disallow moving of entire areas, as semantically invalid and presumed to be singleton.
-     */
-    IWindowArea(IWindowArea&&) = delete;
+    virtual guint get_selected_index() const = 0;
 };
 
 } // namespace optifol

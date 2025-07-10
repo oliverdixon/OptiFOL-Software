@@ -60,4 +60,10 @@ const Subsystem *ReportsArea::observe_active_subsystem() const noexcept
     return active_subsystem.get();
 }
 
+guint ReportsArea::get_selected_index() const
+{
+    // TODO
+    return GTK_INVALID_LIST_POSITION;
+}
+
 } // namespace optifol

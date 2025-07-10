@@ -159,6 +159,11 @@ const Subsystem *RequirementsIndexArea::observe_active_subsystem() const noexcep
     return active_subsystem.get();
 }
 
+guint RequirementsIndexArea::get_selected_index() const
+{
+    return selection_model->get_selected();
+}
+
 void RequirementsIndexArea::on_bind_property_description(const Glib::RefPtr<Gtk::ListItem> &list_item)
 {
     const auto label = dynamic_cast<Gtk::Label *>(list_item->get_child());

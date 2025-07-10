@@ -136,6 +136,8 @@ public:
 
     const Subsystem *observe_active_subsystem() const noexcept override;
 
+    guint get_selected_index() const override;
+
 private:
     static Glib::RefPtr<Gio::ListModel> analysis_group_expand(const Glib::RefPtr<Glib::ObjectBase> &item);
 

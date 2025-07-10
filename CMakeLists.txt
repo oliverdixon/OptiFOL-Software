@@ -330,6 +330,9 @@ add_executable(OptifolGUI
         Source/GUI/RequirementsIndexArea/IndexDuplicateRequirementPopover.hpp
         Source/GUI/RequirementsIndexArea/IndexDeleteRequirementPopover.cpp
         Source/GUI/RequirementsIndexArea/IndexDeleteRequirementPopover.hpp
+        Source/Network/ITestListener.hpp
+        Source/Network/GoogleTestListener.cpp
+        Source/Network/GoogleTestListener.hpp
 )
 
 set(COMMON_COMPILER_OPTIONS

@@ -94,6 +94,8 @@ public:
 
     const Subsystem *observe_active_subsystem() const noexcept override;
 
+    guint get_selected_index() const override;
+
 private:
     static const char * const area_name;
 

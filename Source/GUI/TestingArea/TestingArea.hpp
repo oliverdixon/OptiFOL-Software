@@ -16,6 +16,7 @@
 
 #include <glibmm/refptr.h>
 
+#include "../../Network/GoogleTestListener.hpp"
 #include "../../Storage/Subsystem.hpp"
 #include "../IWindowArea.hpp"
 
@@ -33,6 +34,11 @@ public:
     void deselect_model() override;
 
     const Subsystem *observe_active_subsystem() const noexcept override;
+
+    guint get_selected_index() const override;
+
+private:
+    std::unique_ptr<ITestListener> test_listener = std::make_unique<GoogleTestListener>();
 };
 
 } // namespace optifol

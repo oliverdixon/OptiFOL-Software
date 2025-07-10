@@ -164,6 +164,8 @@ public:
 
     const Subsystem *observe_active_subsystem() const noexcept override;
 
+    guint get_selected_index() const override;
+
     /**
      * @brief Construct and add a Requirement in the internal data model for the associated Subsystem
      * @tparam CtorArgs Argument type vector to forward to the Requirement constructor
