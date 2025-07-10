@@ -40,6 +40,7 @@ class ReportsArea;
  *  regarded an effective singleton as multiple instantiations will cause conflicts with the GTK+ runtime due to
  *  multiply registered callbacks.
  * @see ReportsArea for parent area
+ *
  * @details
  *  <p>
  *      The "Generate LaTeX" popover provides controls for setting LaTeX-specific options in the automated report-
@@ -97,8 +98,8 @@ class ReportsArea;
  *              <td>Container including compiler output and some visual separators</td>
  *          </tr>
  *      </table>
- *      A @ref std::runtime_error will be thrown by ReportsAreaGenerateLaTeXPopover(Gtk::Builder&) if any of these are
- *      inaccessible in the expected type instantiations.
+ *      A @ref std::runtime_error will be thrown by the class constructor if any of these are inaccessible in the
+ *      expected type instantiations.
  *  </p>
  *  <p>
  *      The implementation and state machine of this class is complicated by the process of despatching and watching the

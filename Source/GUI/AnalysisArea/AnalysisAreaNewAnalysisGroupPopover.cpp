@@ -14,7 +14,6 @@
 #include <cassert>
 
 #include "AnalysisAreaNewAnalysisGroupPopover.hpp"
-
 #include "../GTKHelpers.hpp"
 #include "../Logging.hpp"
 #include "../Storage/AnalysisGroup.hpp"

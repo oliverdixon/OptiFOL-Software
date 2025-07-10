@@ -27,10 +27,11 @@ class AnalysisArea;
 
 /**
  * @class AnalysisAreaNewAnalysisGroupPopover
- * @brief Manage the "New Analysis Group" popover for the Analysis area
+ * @brief Manage the <i>New Analysis Group</i> popover for the Analysis area
  * @see AnalysisArea for the parent area
+ * 
  * @details
- *  The "New Analysis Group" popover provides controls for creating a new AnalysisGroup, consisting of one or more
+ *  The <i>New Analysis Group</i> popover provides controls for creating a new AnalysisGroup, consisting of one or more
  *  Requirement objects from the active Subsystem, to be subject to mathematical analysis. The following GTK elements
  *  are expected from the given Gtk::Builder:
  *  <table>
@@ -47,21 +48,21 @@ class AnalysisArea;
  *      <tr>
  *          <td>Gtk::Button</td>
  *          <td><code>new_analysis_group_confirm</code></td>
- *          <td>Confirm creation of a new analysis group</td>
+ *          <td>Confirm creation of a new AnalysisGroup</td>
  *      </tr>
  *      <tr>
  *          <td>Gtk::Button</td>
  *          <td><code>new_analysis_group_cancel</code></td>
- *          <td>Cancels creation of a new analysis group</td>
+ *          <td>Cancels creation of a new AnalysisGroup</td>
  *      </tr>
  *      <tr>
  *          <td>Gtk::Entry</td>
  *          <td><code>new_analysis_group_property_name</code></td>
- *          <td>Text entry area for the name of the new analysis group</td>
+ *          <td>Text entry area for the name of the new AnalysisGroup</td>
  *      </tr>
  *  </table>
- *  A @ref std::runtime_error will be thrown by AnalysisAreaNewAnalysisGroupPopover(Gtk::Builder&) if any of these are
- *  inaccessible in the expected type instantiations.
+ *  A @ref std::runtime_error will be thrown by the class constructor if any of these are inaccessible in the expected
+ *  type instantiations.
  */
 class AnalysisAreaNewAnalysisGroupPopover
 {
@@ -72,16 +73,22 @@ public:
      * @param analysis_area An observing reference to the view of which the popover is a member
      * @throws std::runtime_error A required GTK element/widget could not be loaded from the given builder
      */
-    explicit AnalysisAreaNewAnalysisGroupPopover(Gtk::Builder& builder, const AnalysisArea& analysis_area);
+    AnalysisAreaNewAnalysisGroupPopover(Gtk::Builder& builder, const AnalysisArea& analysis_area);
 
 private:
     /**
-     * @brief Handle a click of the <i>Confirm</i>
+     * @brief Handle a click of the <i>Confirm</i> by attempting to create the named AnalysisGroup.
      */
     void confirm_button_clicked() const;
 
+    /**
+     * @brief Handle a click of the <i>Cancel</i> button by discarding all input and closing the popover.
+     */
     void cancel_button_clicked() const;
 
+    /**
+     * @brief Clear all user fields in the popover
+     */
     void clear_inputs() const;
 
     static const char * const popover_name;

@@ -28,6 +28,7 @@ namespace optifol
 /**
  * @class ReportsArea
  * @brief Manage the <i>Releases and Reports</i> area
+ *
  * @details
  *  <p>
  *      The <i>Releases and Reports</i> area provides controls for reviewing baselined releases of the project with a
@@ -39,7 +40,7 @@ namespace optifol
  *              <th>Unique Identifier</th>
  *              <th>Purpose</th>
  *          </tr>
-*           <tr>
+ *          <tr>
  *              <td>Gtk::Widget (abstract)</td>
  *              <td><code>reports_advice_unselected</code></td>
  *              <td>Advice to display when the area is unavailable</td>
@@ -70,7 +71,7 @@ namespace optifol
  *              <td>Popover for the LaTeX generation facility</td>
  *          </tr>
  *      </table>
- *      A @ref std::runtime_error will be thrown by ReportsArea(Gtk::Builder&) if any of these are inaccessible in the
+ *      A @ref std::runtime_error will be thrown by the class constructor if any of these are inaccessible in the
  *      expected type instantiations.
  *  </p>
  *  <p>

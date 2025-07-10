@@ -30,6 +30,7 @@ namespace optifol
 /**
  * @class AnalysisArea
  * @brief Manage the <i>Analysis and Optimisation</i> area
+ *
  * @details
  *  <p>
  *      The <i>Analysis and Optimisation</i> area provides controls for categorising Requirement objects from the
@@ -108,7 +109,7 @@ namespace optifol
  *              <td>Table column for the Requirement statement in normalised CNF</td>
  *          </tr>
  *      </table>
- *      A @ref std::runtime_error will be thrown by AnalysisArea(Gtk::Builder&) if any of these are inaccessible in the
+ *      A @ref std::runtime_error will be thrown by the class constructor if any of these are inaccessible in the
  *      expected type instantiations.
  *  </p>
  *  <p>

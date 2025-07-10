@@ -165,7 +165,7 @@ void ReportsAreaGenerateLaTeXPopover::open_directory_finished(const Glib::RefPtr
     output_directory_entry->set_text(output_directory == nullptr ? "" : output_directory->get_path());
 }
 
-// ReSharper disable once CppDFAUnreachableFunctionCall - False positive; function called by button callback.
+// ReSharper disable once CppDFAUnreachableFunctionCall - False positive: called from button-click callback.
 void ReportsAreaGenerateLaTeXPopover::update_requirements_csv() const
 {
     const auto csv_path = output_directory->get_path() + "/index.csv";

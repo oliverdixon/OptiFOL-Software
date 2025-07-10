@@ -1,0 +1,74 @@
+/*
+ * Copyright (c) All Rights Reserved
+ * 2025 Oliver Dixon <od641@york.ac.uk>
+ */
+
+/**
+ * @file
+ * @brief Class implementation for the New Requirement UI popover
+ * @author Oliver Dixon
+ * @date 2025-07-10
+ * @version Development
+ */
+
+#include "IndexNewRequirementPopover.hpp"
+#include "../GTKHelpers.hpp"
+#include "../Logging.hpp"
+#include "../../Storage/Subsystem.hpp"
+#include "RequirementsIndexArea.hpp"
+
+namespace optifol
+{
+
+const char *const IndexNewRequirementPopover::popover_name = "New Requirement Popover";
+const log4cxx::LoggerPtr IndexNewRequirementPopover::popover_logger =
+        Logging::get_logger({"GUI", "RequirementsIndex", "NewRequirement"});
+
+IndexNewRequirementPopover::IndexNewRequirementPopover(Gtk::Builder &builder, RequirementsIndexArea &index_area) :
+    index_area(index_area),
+    my_popover(GTKHelpers::get_widget<Gtk::Popover>(popover_name, builder, "new_requirement_popover")),
+    confirm_button(GTKHelpers::get_widget<Gtk::Button>(popover_name, builder, "new_requirement_confirm")),
+    cancel_button(GTKHelpers::get_widget<Gtk::Button>(popover_name, builder, "new_requirement_cancel")),
+    name_entry(GTKHelpers::get_widget<Gtk::Entry>(popover_name, builder, "new_requirement_property_name")),
+    description_entry(
+            GTKHelpers::get_widget<Gtk::TextView>(popover_name, builder, "new_requirement_property_description")),
+    statement_entry(GTKHelpers::get_widget<Gtk::Entry>(popover_name, builder, "new_requirement_property_sentence")),
+    test_entry(GTKHelpers::get_widget<Gtk::Entry>(popover_name, builder, "new_requirement_property_test")),
+    priority_entry(GTKHelpers::get_widget<Gtk::DropDown>(popover_name, builder, "new_requirement_property_priority"))
+{
+    confirm_button->signal_clicked().connect(sigc::mem_fun(*this, &IndexNewRequirementPopover::confirm_button_clicked));
+    cancel_button->signal_clicked().connect(sigc::mem_fun(*this, &IndexNewRequirementPopover::cancel_button_clicked));
+}
+
+void IndexNewRequirementPopover::confirm_button_clicked() const
+{
+    my_popover->popdown();
+
+    // TODO associated test field?
+    index_area.construct_and_add_requirement(
+        name_entry->get_text(),
+        statement_entry->get_text(),
+        description_entry->get_buffer()->get_text(),
+        priority_entry->get_selected());
+
+    popover_logger->debug("Created new subsystem requirement with name \"" + name_entry->get_text() + "\".");
+    clear_inputs();
+}
+
+void IndexNewRequirementPopover::cancel_button_clicked() const
+{
+    my_popover->popdown();
+    clear_inputs();
+}
+
+// ReSharper disable once CppDFAUnreachableFunctionCall - False positive: called from button-click callback.
+void IndexNewRequirementPopover::clear_inputs() const
+{
+    name_entry->set_text("");
+    description_entry->get_buffer()->set_text("");
+    statement_entry->set_text("");
+    test_entry->set_text("");
+    priority_entry->set_selected(0);
+}
+
+} // namespace optifol

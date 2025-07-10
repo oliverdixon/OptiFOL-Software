@@ -56,7 +56,11 @@ RequirementsIndexArea::RequirementsIndexArea(Gtk::Builder& builder) :
                 false
             }
         }
-    )
+    ),
+    new_requirement_popover(builder, *this),
+    edit_requirement_popover(builder, *this),
+    duplicate_requirement_popover(builder, *this),
+    delete_requirement_popover(builder, *this)
 {
     selection_model->set_autoselect(false);
     selection_model->set_can_unselect(true);
@@ -128,11 +132,6 @@ RequirementsIndexArea::RequirementsIndexArea(Gtk::Builder& builder) :
     if (processed_columns < column_count)
         assert(0);
 #endif
-
-    configure_new_requirement_popover(builder);
-    configure_delete_requirement_popover(builder);
-    configure_edit_requirement_popover(builder);
-    configure_duplicate_requirement_popover(builder);
 }
 
 void RequirementsIndexArea::select_model(const Glib::RefPtr<const Subsystem> &subsystem_model)
@@ -158,166 +157,6 @@ void RequirementsIndexArea::deselect_model()
 const Subsystem *RequirementsIndexArea::observe_active_subsystem() const noexcept
 {
     return active_subsystem.get();
-}
-
-void RequirementsIndexArea::configure_new_requirement_popover(Gtk::Builder &builder)
-{
-    const auto popover = GTKHelpers::get_widget<Gtk::Popover>(area_name, builder, "new_requirement_popover");
-    const auto confirm_button = GTKHelpers::get_widget<Gtk::Button>(area_name, builder, "new_requirement_confirm");
-    const auto cancel_button = GTKHelpers::get_widget<Gtk::Button>(area_name, builder, "new_requirement_cancel");
-    const auto property_name = GTKHelpers::get_widget<Gtk::Entry>(area_name, builder, "new_requirement_property_name");
-    const auto property_description = GTKHelpers::get_widget<Gtk::TextView>(area_name, builder, "new_requirement_property_description");
-    const auto property_sentence = GTKHelpers::get_widget<Gtk::Entry>(area_name, builder, "new_requirement_property_sentence");
-    const auto property_test = GTKHelpers::get_widget<Gtk::Entry>(area_name, builder, "new_requirement_property_test");
-    const auto property_priority = GTKHelpers::get_widget<Gtk::DropDown>(area_name, builder, "new_requirement_property_priority");
-
-    cancel_button->signal_clicked().connect([popover]
-    {
-        popover->popdown();
-    });
-
-    confirm_button->signal_clicked().connect([this, popover, property_name, property_description, property_sentence,
-        property_test, property_priority]
-    {
-        popover->popdown();
-
-        std::optional<std::size_t> test_id; // TODO
-        if (property_test->get_text_length() > 0) {
-            std::stringstream stream(property_test->get_text());
-            std::size_t candidate;
-            stream >> candidate;
-            test_id.emplace(candidate);
-        }
-
-        data_model->append(Glib::make_refptr_for_instance(new Requirement(
-            property_name->get_text(),
-            property_sentence->get_text(),
-            property_description->get_buffer()->get_text(),
-            property_priority->get_selected(),
-            symbol_repository
-        )));
-    });
-}
-
-void RequirementsIndexArea::configure_edit_requirement_popover(Gtk::Builder &builder) const
-{
-    const auto popover = GTKHelpers::get_widget<Gtk::Popover>(area_name, builder, "edit_requirement_popover");
-    const auto confirm_button = GTKHelpers::get_widget<Gtk::Button>(area_name, builder, "edit_requirement_confirm");
-    const auto cancel_button = GTKHelpers::get_widget<Gtk::Button>(area_name, builder, "edit_requirement_cancel");
-    const auto property_name = GTKHelpers::get_widget<Gtk::Entry>(area_name, builder, "edit_requirement_property_name");
-    const auto property_description = GTKHelpers::get_widget<Gtk::TextView>(area_name, builder, "edit_requirement_property_description");
-    const auto property_sentence = GTKHelpers::get_widget<Gtk::Entry>(area_name, builder, "edit_requirement_property_sentence");
-    const auto property_test = GTKHelpers::get_widget<Gtk::Entry>(area_name, builder, "edit_requirement_property_test");
-    const auto property_priority = GTKHelpers::get_widget<Gtk::DropDown>(area_name, builder, "edit_requirement_property_priority");
-
-    cancel_button->signal_clicked().connect([popover]
-    {
-        popover->popdown();
-    });
-
-    popover->signal_show().connect([this, property_name, property_description, property_sentence, property_test,
-        property_priority]
-    {
-        const auto candidate = std::dynamic_pointer_cast<Requirement>(
-            selection_model->get_selected_item());
-
-        if (candidate != nullptr) {
-            property_name->set_text(candidate->property_name().get_value());
-            property_description->get_buffer()->set_text(candidate->property_description().get_value());
-            property_sentence->set_text(candidate->property_statement().get_value());
-            property_priority->set_selected(candidate->property_priority().get_value());
-        }
-    });
-
-    confirm_button->signal_clicked().connect([this, popover, property_name, property_description, property_sentence,
-        property_test, property_priority]
-    {
-        popover->popdown();
-
-        std::optional<std::size_t> test_id; // TODO
-        if (property_test->get_text_length() > 0) {
-            std::stringstream stream(property_test->get_text());
-            std::size_t candidate;
-            stream >> candidate;
-            test_id.emplace(candidate);
-        }
-
-        const auto candidate = std::dynamic_pointer_cast<Requirement>(
-            selection_model->get_selected_item());
-
-        if (candidate != nullptr) {
-            candidate->property_name().set_value(property_name->get_text());
-            candidate->property_description().set_value(property_description->get_buffer()->get_text());
-            candidate->property_statement().set_value(property_sentence->get_text());
-            candidate->property_priority().set_value(property_priority->get_selected());
-        }
-    });
-}
-
-void RequirementsIndexArea::configure_delete_requirement_popover(Gtk::Builder &builder) const
-{
-    const auto popover = GTKHelpers::get_widget<Gtk::Popover>(area_name, builder, "delete_requirement_popover");
-    const auto confirm_button = GTKHelpers::get_widget<Gtk::Button>(area_name, builder, "delete_requirement_confirm");
-    const auto cancel_button = GTKHelpers::get_widget<Gtk::Button>(area_name, builder, "delete_requirement_cancel");
-    const auto property_name = GTKHelpers::get_widget<Gtk::Entry>(area_name, builder, "delete_requirement_property_name");
-
-    cancel_button->signal_clicked().connect([popover]
-    {
-        popover->popdown();
-    });
-
-    popover->signal_show().connect([this, property_name]
-    {
-        const auto candidate = std::dynamic_pointer_cast<const Requirement>(
-            selection_model->get_selected_item());
-        if (candidate != nullptr)
-            property_name->set_text(candidate->property_name().get_value());
-    });
-
-    confirm_button->signal_clicked().connect([this, popover]
-    {
-        popover->popdown();
-        data_model->remove(selection_model->get_selected());
-    });
-}
-
-void RequirementsIndexArea::configure_duplicate_requirement_popover(Gtk::Builder &builder)
-{
-    const auto popover = GTKHelpers::get_widget<Gtk::Popover>(area_name, builder, "duplicate_requirement_popover");
-    const auto confirm_button = GTKHelpers::get_widget<Gtk::Button>(area_name, builder, "duplicate_requirement_confirm");
-    const auto cancel_button = GTKHelpers::get_widget<Gtk::Button>(area_name, builder, "duplicate_requirement_cancel");
-    const auto property_old_name = GTKHelpers::get_widget<Gtk::Entry>(area_name, builder, "duplicate_requirement_property_old_name");
-    const auto property_new_name = GTKHelpers::get_widget<Gtk::Entry>(area_name, builder, "duplicate_requirement_property_new_name");
-
-    cancel_button->signal_clicked().connect([popover]
-    {
-        popover->popdown();
-    });
-
-    popover->signal_show().connect([this, property_old_name]
-    {
-        const auto candidate = std::dynamic_pointer_cast<const Requirement>(
-            selection_model->get_selected_item());
-        if (candidate != nullptr)
-            property_old_name->set_text(candidate->property_name().get_value());
-    });
-
-    confirm_button->signal_clicked().connect([this, popover, property_new_name]
-    {
-        popover->popdown();
-
-        const auto candidate = std::dynamic_pointer_cast<const Requirement>(
-            selection_model->get_selected_item());
-
-        if (candidate != nullptr)
-            data_model->append(Glib::make_refptr_for_instance(new Requirement(
-                property_new_name->get_text(),
-                candidate->property_statement().get_value(),
-                candidate->property_description().get_value(),
-                candidate->property_priority().get_value(),
-                symbol_repository
-            )));
-    });
 }
 
 void RequirementsIndexArea::on_bind_property_description(const Glib::RefPtr<Gtk::ListItem> &list_item)
