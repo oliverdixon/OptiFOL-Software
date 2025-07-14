@@ -45,7 +45,7 @@ file(MAKE_DIRECTORY ${GENERATED_SRC_DIR})
 
 bison_target(FOLParser
         Source/Interpreter/FOLParser.y
-        ${GENERATED_SRC_DIR}/BaseParser.cpp
+        ${GENERATED_SRC_DIR}/BaseFOLParser.cpp
         COMPILE_FLAGS "-t -Wcounterexamples"
 )
 
@@ -54,42 +54,47 @@ flex_target(FOLLexer
         ${GENERATED_SRC_DIR}/FOLLexer.cpp
 )
 
+bison_target(GoogleTestParser
+        Source/UserTesting/Google/GoogleTestParser.y
+        ${GENERATED_SRC_DIR}/BaseGoogleTestParser.cpp
+        COMPILE_FLAGS "-t -Wcounterexamples"
+)
+
+flex_target(GoogleTestLexer
+        Source/UserTesting/Google/GoogleTestLexer.l
+        ${GENERATED_SRC_DIR}/BaseGoogleTestLexer.cpp
+)
+
 add_flex_bison_dependency(FOLLexer FOLParser)
+add_flex_bison_dependency(GoogleTestLexer GoogleTestParser)
 
 add_library(OptifolGenerated OBJECT
         ${BISON_FOLParser_OUTPUTS}
         ${FLEX_FOLLexer_OUTPUTS}
+        ${BISON_GoogleTestParser_OUTPUTS}
+        ${FLEX_GoogleTextLexer_OUTPUTS}
 )
 
 # Flex and Bison generate all sorts of suspect melting pots of C and C++. It is assumed safe and correct to suppress all
 # compiler warnings produced by these programs, hence the grouping of all generated code into a distinct CMake target.
 target_compile_options(OptifolGenerated PRIVATE -Wno-everything)
-target_include_directories(OptifolGenerated PRIVATE Source/Interpreter ${GENERATED_INCLUDE_DIR})
+target_include_directories(OptifolGenerated PRIVATE
+        Source/Interpreter
+        Source/UserTesting/Google/
+        ${GENERATED_INCLUDE_DIR}
+)
 
 set_source_files_properties(
         ${BISON_FOLParser_OUTPUTS}
         ${FLEX_FOLLexer_OUTPUTS}
+        ${BISON_GoogleTestParser_OUTPUTS}
+        ${FLEX_GoogleTextLexer_OUTPUTS}
         PROPERTIES GENERATED TRUE
 )
 
 ###################################
 ## Optifol Common Object Library ##
-##                               ##
-## Requires:                     ##
-##  - nlohmann::json >= 3.11.3   ##
-##  - simdjson >= 3 (acquired)   ##
 ###################################
-
-find_package(nlohmann_json 3.11.3 REQUIRED)
-FetchContent_Declare(
-        simdjson
-        GIT_REPOSITORY https://github.com/simdjson/simdjson.git
-        GIT_TAG tags/v3.12.2
-        GIT_SHALLOW TRUE
-)
-
-FetchContent_MakeAvailable(simdjson)
-get_target_property(SIMDJSON_INCLUDE_DIR simdjson INTERFACE_INCLUDE_DIRECTORIES)
 
 add_library(OptifolCommon OBJECT
         Source/Interpreter/FOLLexer.hpp
@@ -181,10 +186,9 @@ add_library(OptifolCommon OBJECT
         Source/Visitors/MutableTargets/Observers/LaTeXSerialisationVisitor.cpp
         Source/Visitors/MutableTargets/Observers/LaTeXSerialisationVisitor.hpp
         Source/IR/Sentences/IProcessedSentence.hpp
+        Source/UserTesting/Google/GoogleTestLexer.hpp
+        Source/UserTesting/Google/GoogleTestParser.hpp
 )
-
-target_link_libraries(OptifolCommon PRIVATE nlohmann_json::nlohmann_json simdjson)
-target_include_directories(OptifolCommon SYSTEM PRIVATE ${SIMDJSON_INCLUDE_DIR})
 
 ########################################
 ## Optifol GUI Application Executable ##
@@ -330,9 +334,9 @@ add_executable(OptifolGUI
         Source/GUI/RequirementsIndexArea/IndexDuplicateRequirementPopover.hpp
         Source/GUI/RequirementsIndexArea/IndexDeleteRequirementPopover.cpp
         Source/GUI/RequirementsIndexArea/IndexDeleteRequirementPopover.hpp
-        Source/Network/ITestListener.hpp
-        Source/Network/GoogleTestListener.cpp
-        Source/Network/GoogleTestListener.hpp
+        Source/UserTesting/ITestListener.hpp
+        Source/UserTesting/Google/GoogleTestListener.cpp
+        Source/UserTesting/Google/GoogleTestListener.hpp
 )
 
 set(COMMON_COMPILER_OPTIONS
@@ -347,6 +351,7 @@ set(COMMON_COMPILER_OPTIONS
         -Wno-weak-vtables
         -Wno-shadow-field
         -Wno-global-constructors
+        -fsafe-buffer-usage-suggestions
 )
 
 target_compile_options(OptifolGUI PRIVATE ${COMMON_COMPILER_OPTIONS})
@@ -366,7 +371,6 @@ target_include_directories(OptifolGUI PRIVATE
 
 target_include_directories(OptifolGUI SYSTEM PRIVATE
         ${GTKMM_INCLUDE_DIRS}
-        ${SIMDJSON_INCLUDE_DIR}
 )
 
 utils_strip(OptifolGUI)

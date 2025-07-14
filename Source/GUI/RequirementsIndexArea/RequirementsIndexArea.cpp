@@ -13,6 +13,8 @@
 
 #include "RequirementsIndexArea.hpp"
 
+#include <cassert>
+
 #include "../../Storage/Subsystem.hpp"
 #include "../GTKHelpers.hpp"
 
@@ -204,8 +206,18 @@ void RequirementsIndexArea::on_bind_property_normalised(const Glib::RefPtr<Gtk::
     const auto item = std::dynamic_pointer_cast<Requirement>(list_item->get_item());
 
     if (label != nullptr && item != nullptr)
-        Glib::Binding::bind_property(item->property_normalised(), label->property_label(),
-            Glib::Binding::Flags::SYNC_CREATE);
+        Glib::Binding::bind_property(
+                item->property_normalised(), label->property_label(), Glib::Binding::Flags::SYNC_CREATE);
 }
 
+void RequirementsIndexArea::update_with_selected_name(Gtk::Entry &target) const
+{
+    const auto active_data_model = active_subsystem->requirements;
+    assert(active_data_model != nullptr);
+
+    const auto candidate = std::dynamic_pointer_cast<const Requirement>(selection_model->get_selected_item());
+    if (candidate != nullptr)
+        target.set_text(candidate->property_name().get_value());
 }
+
+} // namespace optifol

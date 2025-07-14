@@ -16,8 +16,8 @@
 
 #include <glibmm/refptr.h>
 
-#include "../../Network/GoogleTestListener.hpp"
 #include "../../Storage/Subsystem.hpp"
+#include "../../UserTesting/Google/GoogleTestListener.hpp"
 #include "../IWindowArea.hpp"
 
 namespace optifol

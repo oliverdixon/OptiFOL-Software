@@ -13,7 +13,7 @@
 #include <giomm/socketlistener.h>
 #include <log4cxx/logger.h>
 
-#include "ITestListener.hpp"
+#include "../ITestListener.hpp"
 
 namespace optifol
 {
@@ -26,7 +26,11 @@ public:
 private:
     void connection_callback(const Glib::RefPtr<Gio::AsyncResult> &result) override;
 
+    static void read_line(std::string_view line);
+
     static const log4cxx::LoggerPtr logger;
+
+    static constexpr float gtest_protocol_version = 1.0f;
 
     Glib::RefPtr<Gio::SocketListener> listener = Gio::SocketListener::create();
 };

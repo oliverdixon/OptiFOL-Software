@@ -31,7 +31,7 @@ class RequirementsIndexArea;
  * @see RequirementsIndexArea
  *
  * @details
- *  The <i>Delete Requirements</i> popover provides controls for deleting an existing requirement from the requirements
+ *  The <i>Delete Requirements</i> popover provides controls for deleting an existing Requirement from the requirements
  *  index for the currently selected Subsystem. The following GTK elements are expected to be available from the given
  *  Gtk::Builder:
  *  <table>
@@ -89,6 +89,9 @@ private:
      */
     void clear_inputs() const;
 
+    /**
+     * @brief Populate all fields given the parental area's selection context and show the popover.
+     */
     void show_popover() const;
 
     static const char * const popover_name;

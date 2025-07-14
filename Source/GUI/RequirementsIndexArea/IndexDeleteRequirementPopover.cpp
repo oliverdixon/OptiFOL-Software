@@ -66,16 +66,7 @@ void IndexDeleteRequirementPopover::clear_inputs() const
 }
 void IndexDeleteRequirementPopover::show_popover() const
 {
-    const auto active_subsystem = index_area.observe_active_subsystem();
-    assert(active_subsystem != nullptr);
-
-    const auto active_data_model = active_subsystem->requirements;
-    assert(active_data_model != nullptr);
-
-    const auto candidate = std::dynamic_pointer_cast<const Requirement>(
-        active_data_model->get_item(index_area.get_selected_index()));
-    if (candidate != nullptr)
-        name_entry->set_text(candidate->property_name().get_value());
+    index_area.update_with_selected_name(*name_entry);
 }
 
 } // namespace optifol

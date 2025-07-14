@@ -9,8 +9,10 @@
 
 #include <giomm/inetsocketaddress.h>
 #include <giomm/socketlistener.h>
+#include <iostream>
+#include <ranges>
 
-#include "../Logging.hpp"
+#include "../../Logging.hpp"
 #include "GoogleTestListener.hpp"
 
 namespace optifol
@@ -50,8 +52,7 @@ void GoogleTestListener::connection_callback(const Glib::RefPtr<Gio::AsyncResult
         gssize bytes_read = 0; // TODO use read_async
         while ((bytes_read = input_stream->read(buffer, sizeof(buffer) - 1)) > 0) {
             buffer[bytes_read] = '\0';
-            logger->info("Read " + std::to_string(bytes_read) + " from input stream of last connection.");
-            logger->debug(buffer);
+            read_line(buffer);
         }
 
         listener->accept_async(sigc::mem_fun(*this, &GoogleTestListener::connection_callback));
@@ -59,6 +60,16 @@ void GoogleTestListener::connection_callback(const Glib::RefPtr<Gio::AsyncResult
         logger->error("Cannot accept or read from client on TCP socket.");
         logger->error(exception.what());
     }
+}
+
+void GoogleTestListener::read_line(std::string_view line)
+{
+    logger->info("Read " + std::to_string(line.size()) + " from input stream of last connection.");
+
+    // ReSharper disable once CppLocalVariableMayBeConst - Iterated ranges cannot be constant.
+    auto delimeted_range = line | std::ranges::views::split('&');
+    for (const auto component : delimeted_range)
+        std::cout << std::string_view(component) << std::endl;
 }
 
 } // namespace optifol

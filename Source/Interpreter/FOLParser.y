@@ -6,7 +6,7 @@
 %require "3.7.4"
 %language "C++"
 
-%define api.parser.class {BaseParser}
+%define api.parser.class {BaseFOLParser}
 %define api.namespace {optifol::impl}
 %define api.value.type variant
 %define parse.error detailed
@@ -195,7 +195,7 @@ term :
 
 %%
 
-void optifol::impl::BaseParser::error(const std::string& msg)
+void optifol::impl::BaseFOLParser::error(const std::string& msg)
 {
     static_cast<FOLParser *>(this)->error(msg);
 }
