@@ -62,9 +62,11 @@ bison_target(GoogleTestParser
 
 flex_target(GoogleTestLexer
         Source/UserTesting/Google/GoogleTestLexer.l
-        ${GENERATED_SRC_DIR}/BaseGoogleTestLexer.cpp
+        ${GENERATED_SRC_DIR}/GoogleTestLexer.cpp
 )
 
+# Note that a very useful quality example of using CMake to generate multiple subclassed C++ lexers and parsers is
+# OpenSTA from Parallax Software: https://github.com/parallaxsw/OpenSTA.
 add_flex_bison_dependency(FOLLexer FOLParser)
 add_flex_bison_dependency(GoogleTestLexer GoogleTestParser)
 
@@ -72,7 +74,7 @@ add_library(OptifolGenerated OBJECT
         ${BISON_FOLParser_OUTPUTS}
         ${FLEX_FOLLexer_OUTPUTS}
         ${BISON_GoogleTestParser_OUTPUTS}
-        ${FLEX_GoogleTextLexer_OUTPUTS}
+        ${FLEX_GoogleTestLexer_OUTPUTS}
 )
 
 # Flex and Bison generate all sorts of suspect melting pots of C and C++. It is assumed safe and correct to suppress all
@@ -88,7 +90,7 @@ set_source_files_properties(
         ${BISON_FOLParser_OUTPUTS}
         ${FLEX_FOLLexer_OUTPUTS}
         ${BISON_GoogleTestParser_OUTPUTS}
-        ${FLEX_GoogleTextLexer_OUTPUTS}
+        ${FLEX_GoogleTestLexer_OUTPUTS}
         PROPERTIES GENERATED TRUE
 )
 
@@ -337,6 +339,8 @@ add_executable(OptifolGUI
         Source/UserTesting/ITestListener.hpp
         Source/UserTesting/Google/GoogleTestListener.cpp
         Source/UserTesting/Google/GoogleTestListener.hpp
+        Source/Storage/Test.cpp
+        Source/Storage/Test.hpp
 )
 
 set(COMMON_COMPILER_OPTIONS
@@ -366,6 +370,7 @@ target_link_libraries(OptifolGUI PRIVATE
 
 target_include_directories(OptifolGUI PRIVATE
         Source/Interpreter/
+        Source/UserTesting/Google/
         ${GENERATED_INCLUDE_DIR}
 )
 
@@ -403,7 +408,10 @@ add_executable(OptifolTesting
         Source/Tests/GoogleTestSupport.hpp
 )
 
-target_include_directories(OptifolTesting PRIVATE Source/Interpreter/)
+target_include_directories(OptifolTesting PRIVATE
+        Source/Interpreter/
+        Source/UserTesting/Google/
+)
 target_include_directories(OptifolTesting SYSTEM PRIVATE ${GENERATED_INCLUDE_DIR})
 target_link_libraries(OptifolTesting PRIVATE OptifolCommon OptifolGenerated log4cxx GTest::gtest_main)
 target_compile_options(OptifolTesting PRIVATE

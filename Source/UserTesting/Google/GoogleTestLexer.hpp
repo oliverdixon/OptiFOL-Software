@@ -11,12 +11,13 @@
 #pragma ide diagnostic ignored "NotImplementedFunctions"
 #pragma ide diagnostic ignored "OCUnusedGlobalDeclarationInspection"
 
+#include "GoogleTestParser.hpp"
+
 #ifndef __FLEX_LEXER_H
-// Note that the yyFlexLexer definition is not suitably guarded by some versions of Flex.
+#undef yyFlexLexer
+#define yyFlexLexer GoogleTestFlexLexer
 #include <FlexLexer.h>
 #endif
-
-#include "GoogleTestParser.hpp"
 
 namespace optifol
 {

@@ -11,12 +11,13 @@
 #pragma ide diagnostic ignored "NotImplementedFunctions"
 #pragma ide diagnostic ignored "OCUnusedGlobalDeclarationInspection"
 
+#include "FOLParser.hpp"
+
 #ifndef __FLEX_LEXER_H
-// Note that the yyFlexLexer definition is not suitably guarded by some versions of Flex.
+#undef yyFlexLexer
+#define yyFlexLexer FOLFlexLexer
 #include <FlexLexer.h>
 #endif
-
-#include "FOLParser.hpp"
 
 namespace optifol
 {

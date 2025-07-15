@@ -8,6 +8,7 @@
 
 %define api.parser.class {BaseFOLParser}
 %define api.namespace {optifol::impl}
+%define api.prefix {FOL}
 %define api.value.type variant
 %define parse.error detailed
 %defines

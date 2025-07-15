@@ -20,6 +20,10 @@ namespace optifol
 
 const log4cxx::LoggerPtr GoogleTestListener::logger = Logging::get_logger({"Network", "GoogleTestListener"});
 
+std::istringstream GoogleTestListener::lexer_input_stream;
+GoogleTestLexer GoogleTestListener::lexer{GoogleTestListener::lexer_input_stream, std::cerr}; // TODO
+GoogleTestParser GoogleTestListener::parser{&GoogleTestListener::lexer};
+
 GoogleTestListener::GoogleTestListener()
 {
     try {
@@ -52,6 +56,7 @@ void GoogleTestListener::connection_callback(const Glib::RefPtr<Gio::AsyncResult
         gssize bytes_read = 0; // TODO use read_async
         while ((bytes_read = input_stream->read(buffer, sizeof(buffer) - 1)) > 0) {
             buffer[bytes_read] = '\0';
+            logger->info("Read " + std::to_string(bytes_read) + " from input stream of last connection.");
             read_line(buffer);
         }
 
@@ -62,14 +67,10 @@ void GoogleTestListener::connection_callback(const Glib::RefPtr<Gio::AsyncResult
     }
 }
 
-void GoogleTestListener::read_line(std::string_view line)
+void GoogleTestListener::read_line(const char *line)
 {
-    logger->info("Read " + std::to_string(line.size()) + " from input stream of last connection.");
-
-    // ReSharper disable once CppLocalVariableMayBeConst - Iterated ranges cannot be constant.
-    auto delimeted_range = line | std::ranges::views::split('&');
-    for (const auto component : delimeted_range)
-        std::cout << std::string_view(component) << std::endl;
+    lexer_input_stream.str(line);
+    parser.parse();
 }
 
 } // namespace optifol

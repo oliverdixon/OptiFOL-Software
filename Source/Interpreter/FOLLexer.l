@@ -7,11 +7,13 @@
 #include "FOLParser.hpp"
 #include "FOLLexer.hpp"
 
+#undef YY_DECL
 #define YY_DECL int optifol::FOLLexer::lex(optifol::FOLParser::semantic_type *yylval)
-#define yypanic(X) (void)(X)
 %}
 
 %option c++ interactive noyywrap noyylineno
+%option yyclass="FOLLexer"
+%option prefix="FOL"
 
 lowercase_sequence ([a-z]+)
 uppercase_sequence ([A-Z]+)
@@ -47,8 +49,3 @@ character_sequence ([a-zA-Z]+)
 {whitespace} /* Ignore whitespace */
 
 %%
-
-int yyFlexLexer::yylex()
-{
-    throw std::runtime_error("Bad call to yyFlexLexer::yylex()");
-}

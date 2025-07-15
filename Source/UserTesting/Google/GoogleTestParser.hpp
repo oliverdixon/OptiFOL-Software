@@ -11,10 +11,8 @@
  * @note This file depends on build-time generated source from Flex and Bison.
  */
 
-#ifndef FOLPARSER_HPP
-#define FOLPARSER_HPP
-
-#include <memory>
+#ifndef GOOGLETESTPARSER_HPP
+#define GOOGLETESTPARSER_HPP
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Weverything"
