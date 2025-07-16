@@ -71,128 +71,133 @@
 %%
 
 line :
-     sentence End
-     {
-         static_cast<FOLParser *>(this)->register_sentence(
-             MutableSentenceRoot::build(std::unique_ptr<IMutableSentence>($1))
-         );
+    sentence End
+    {
+        static_cast<FOLParser *>(this)->register_sentence(
+            MutableSentenceRoot::build(std::unique_ptr<IMutableSentence>($1))
+        );
 
-         return 0;
-     }
-     |
-     error
-     {
-         return -1;
-     }
-     ;
+        return 0;
+    }
+    |
+    error
+    {
+        return -1;
+    }
+    ;
 
 sentence :
-         Universal Variable LeftParenthesis sentence RightParenthesis
-         {
-             $$ = new MutableQuantified(
-                 QuantifierTypes::Universal,
-                 MutableVariable::build($2),
-                 std::unique_ptr<IMutableSentence>($4)
-             );
-         }
-         |
-         Existential Variable LeftParenthesis sentence RightParenthesis
-         {
-             $$ = new MutableQuantified(
-                 QuantifierTypes::Existential,
-                 MutableVariable::build($2),
-                 std::unique_ptr<IMutableSentence>($4)
-             );
-         }
-         |
-         Predicate LeftParenthesis term_vector RightParenthesis
-         {
-             $$ = new MutablePredicate($1, std::move($3));
-         }
-         |
-         term Identity term
-         {
-             $$ = new MutableIdentity(std::unique_ptr<IMutableTerm>($1), std::unique_ptr<IMutableTerm>($3));
-         }
-         |
-         Negation sentence
-         {
-             $2->flip_polarity();
-             $$ = $2;
-         }
-         |
-         sentence Conjunction sentence
-         {
-             $$ = new MutableBinaryConnected(
-                 BinaryOperatorTypes::Conjunction,
-                 std::unique_ptr<IMutableSentence>($1),
-                 std::unique_ptr<IMutableSentence>($3)
-             );
-         }
-         |
-         sentence Disjunction sentence
-         {
-             $$ = new MutableBinaryConnected(
-                 BinaryOperatorTypes::Disjunction,
-                 std::unique_ptr<IMutableSentence>($1),
-                 std::unique_ptr<IMutableSentence>($3)
-             );
-         }
-         |
-         sentence Implication sentence
-         {
-             $$ = new MutableBinaryConnected(
-                 BinaryOperatorTypes::Implication,
-                 std::unique_ptr<IMutableSentence>($1),
-                 std::unique_ptr<IMutableSentence>($3)
-             );
-         }
-         |
-         sentence Biconditional sentence
-         {
-             $$ = new MutableBinaryConnected(
-                 BinaryOperatorTypes::Biconditional,
-                 std::unique_ptr<IMutableSentence>($1),
-                 std::unique_ptr<IMutableSentence>($3)
-             );
-         }
-         |
-         LeftParenthesis sentence RightParenthesis
-         {
-             $$ = $2;
-         }
-         ;
+    Universal Variable LeftParenthesis sentence RightParenthesis
+    {
+        $$ = new MutableQuantified(
+            QuantifierTypes::Universal,
+            MutableVariable::build($2),
+            std::unique_ptr<IMutableSentence>($4)
+        );
+    }
+    |
+    Existential Variable LeftParenthesis sentence RightParenthesis
+    {
+        $$ = new MutableQuantified(
+            QuantifierTypes::Existential,
+            MutableVariable::build($2),
+            std::unique_ptr<IMutableSentence>($4)
+        );
+    }
+    |
+    Predicate LeftParenthesis term_vector RightParenthesis
+    {
+        $$ = new MutablePredicate($1, std::move($3));
+    }
+    |
+    term Identity term
+    {
+        $$ = new MutableIdentity(std::unique_ptr<IMutableTerm>($1), std::unique_ptr<IMutableTerm>($3));
+    }
+    |
+    Negation sentence
+    {
+        $2->flip_polarity();
+        $$ = $2;
+    }
+    |
+    sentence Conjunction sentence
+    {
+        $$ = new MutableBinaryConnected(
+            BinaryOperatorTypes::Conjunction,
+            std::unique_ptr<IMutableSentence>($1),
+            std::unique_ptr<IMutableSentence>($3)
+        );
+    }
+    |
+    sentence Disjunction sentence
+    {
+        $$ = new MutableBinaryConnected(
+            BinaryOperatorTypes::Disjunction,
+            std::unique_ptr<IMutableSentence>($1),
+            std::unique_ptr<IMutableSentence>($3)
+        );
+    }
+    |
+    sentence Implication sentence
+    {
+        $$ = new MutableBinaryConnected(
+            BinaryOperatorTypes::Implication,
+            std::unique_ptr<IMutableSentence>($1),
+            std::unique_ptr<IMutableSentence>($3)
+        );
+    }
+    |
+    sentence Biconditional sentence
+    {
+        $$ = new MutableBinaryConnected(
+            BinaryOperatorTypes::Biconditional,
+            std::unique_ptr<IMutableSentence>($1),
+            std::unique_ptr<IMutableSentence>($3)
+            );
+        }
+    |
+    LeftParenthesis sentence RightParenthesis
+    {
+        $$ = $2;
+    }
+    ;
 
 term_vector :
-            term
-            {
-                $$ = std::vector<std::unique_ptr<IMutableTerm>>();
-                $$.push_back(std::unique_ptr<IMutableTerm>($1));
-            }
-            |
-            term_vector Comma term
-            {
-                $$ = std::move($1);
-                $$.push_back(std::unique_ptr<IMutableTerm>($3));
-            }
-            ;
+    %empty
+    {
+        $$ = std::vector<std::unique_ptr<IMutableTerm>>();
+    }
+    |
+    term
+    {
+        $$ = std::vector<std::unique_ptr<IMutableTerm>>();
+        $$.push_back(std::unique_ptr<IMutableTerm>($1));
+    }
+    |
+    term_vector Comma term
+    {
+        $$ = std::move($1);
+        $$.push_back(std::unique_ptr<IMutableTerm>($3));
+    }
+    ;
 
 term :
-     Function LeftParenthesis term_vector RightParenthesis
-     {
-         $$ = new MutableFunction($1, std::move($3));
-     }
-     |
-     Constant
-     {
-         $$ = new MutableConstant($1);
-     }
-     |
-     Variable
-     {
-         $$ = new MutableVariable($1);
-     }
-     ;
+    Function LeftParenthesis term_vector RightParenthesis
+    {
+        $$ = new MutableFunction($1, std::move($3));
+    }
+    |
+    Constant
+    {
+        $$ = new MutableConstant($1);
+    }
+    |
+    Variable
+    {
+        $$ = new MutableVariable($1);
+    }
+    ;
 
 %%
 

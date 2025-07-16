@@ -53,16 +53,19 @@ void LaTeXSerialisationVisitor::visit(const MutableQuantified &node)
 void LaTeXSerialisationVisitor::visit(const MutablePredicate &node)
 {
     latex << node.get_name() << "\\left(";
-
     const auto &arguments = node.observe_arguments();
-    const auto argument_count = arguments.size() - 1;
 
-    for (std::size_t argument_idx = 0; argument_idx < argument_count; ++argument_idx) {
-        arguments[argument_idx]->accept(*this);
-        latex << ',';
+    if (!arguments.empty()) {
+        const auto argument_count = arguments.size() - 1;
+
+        for (std::size_t argument_idx = 0; argument_idx < argument_count; ++argument_idx) {
+            arguments[argument_idx]->accept(*this);
+            latex << ',';
+        }
+
+        arguments[argument_count]->accept(*this);
     }
 
-    arguments[argument_count]->accept(*this);
     latex << "\\right)";
 }
 
@@ -74,16 +77,19 @@ void LaTeXSerialisationVisitor::visit(const MutableConstant &node)
 void LaTeXSerialisationVisitor::visit(const MutableFunction &node)
 {
     latex << node.get_disambiguated_name() << "\\left(";
-
     const auto &arguments = node.observe_arguments();
-    const auto argument_count = arguments.size() - 1;
 
-    for (std::size_t argument_idx = 0; argument_idx < argument_count; ++argument_idx) {
-        arguments[argument_idx]->accept(*this);
-        latex << ',';
+    if (!arguments.empty()) {
+        const auto argument_count = arguments.size() - 1;
+
+        for (std::size_t argument_idx = 0; argument_idx < argument_count; ++argument_idx) {
+            arguments[argument_idx]->accept(*this);
+            latex << ',';
+        }
+
+        arguments[argument_count]->accept(*this);
     }
 
-    arguments[argument_count]->accept(*this);
     latex << "\\right)";
 }
 

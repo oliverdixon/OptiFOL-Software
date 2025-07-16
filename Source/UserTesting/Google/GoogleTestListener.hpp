@@ -27,8 +27,6 @@ public:
 private:
     void connection_callback(const Glib::RefPtr<Gio::AsyncResult> &result) override;
 
-    static void read_line(const char *line);
-
     static const log4cxx::LoggerPtr logger;
 
     static constexpr float gtest_protocol_version = 1.0f;

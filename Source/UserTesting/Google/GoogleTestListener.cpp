@@ -51,26 +51,25 @@ void GoogleTestListener::connection_callback(const Glib::RefPtr<Gio::AsyncResult
         logger->info("Accepted TCP connection from " + connection->get_remote_address()->to_string());
 
         const auto input_stream = connection->get_input_stream();
+
+        std::string results_string;
         char buffer[1024];
 
         gssize bytes_read = 0; // TODO use read_async
         while ((bytes_read = input_stream->read(buffer, sizeof(buffer) - 1)) > 0) {
             buffer[bytes_read] = '\0';
             logger->info("Read " + std::to_string(bytes_read) + " from input stream of last connection.");
-            read_line(buffer);
+            results_string += buffer;
         }
+
+        lexer_input_stream.str(results_string);
+        parser.parse();
 
         listener->accept_async(sigc::mem_fun(*this, &GoogleTestListener::connection_callback));
     } catch (const Glib::Error &exception) {
         logger->error("Cannot accept or read from client on TCP socket.");
         logger->error(exception.what());
     }
-}
-
-void GoogleTestListener::read_line(const char *line)
-{
-    lexer_input_stream.str(line);
-    parser.parse();
 }
 
 } // namespace optifol

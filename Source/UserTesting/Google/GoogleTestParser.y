@@ -17,9 +17,14 @@
 
 %code requires
 {
+    #include <cmath>
+
+    #include "../Exceptions/SemanticException.hpp"
+    #include "../Exceptions/ParseError.hpp"
+
     namespace optifol
     {
-        class GoogleTestLexer;
+       class GoogleTestLexer;
     }
 }
 
@@ -29,49 +34,127 @@
     #define yylex(x) scanner->lex(x)
 }
 
-%token EventMarker
 %token ProtocolVersion
+%token End
+%token Passed
+%token ElapsedTime
+%token Name
+
 %token ProgramStart
 %token ProgramEnd
+
 %token IterationStart
+%token IterationCount
 %token IterationEnd
+
 %token TestCaseStart
 %token TestCaseEnd
-%token TestStart
-%token TestEnd
-%token TestPartial
-%token ParameterDelimeter
-%token KeyValueDelimeter
-%token End
 
-%token <std::string> Decimal
+%token TestStart
+%token TestPartial
+%token File
+%token Line
+%token Message
+%token TestEnd
+
+%token <std::string> Literal
 
 %start program_entry
 
 %%
 
 program_entry :
-     protocol_line ProgramStart ProgramEnd End
-     {
-         std::cout << "Valid!" << std::endl;
-         return 0;
-     }
-     |
-     error
-     {
-         return -1;
-     }
-     ;
-
-/* TODO: we need to determine a good AST for storing test results. They'll be immediately assigned to existing GLib
- *  test objects, so how heavy of a middle layer do we need? Could we just have a TestResult class composed by Test? */
+    protocol_line ProgramStart iteration_list ProgramEnd Passed Literal End
+    {
+        std::cout << "Valid. Resulted in " << $6 << std::endl;
+        return 0;
+    }
+    |
+    error
+    {
+        return -1;
+    }
+    ;
 
 protocol_line :
-     ProtocolVersion KeyValueDelimeter Decimal
-     {
-         std::cout << "Google Test, TCP protocol " << $3 << std::endl;
-     }
-     ;
+    ProtocolVersion Literal
+    {
+        constexpr float supported_version = 1.0f;
+
+        try {
+            const float version = std::stof($2);
+            if (fabsf(version - supported_version) >= std::numeric_limits<double>::epsilon())
+                throw SemanticException("Unsupported Google Test protocol version " + $2);
+        } catch (const std::logic_error& parsing_exception) {
+            throw ParseError("Could not parse Google Test protocol version number \"" + $2 + '"', 0); // TODO column number
+        }
+    }
+    ;
+    
+iteration_list :
+    %empty
+    {
+    }
+    |
+    iteration_list iteration
+    {
+    }
+    ;
+
+iteration :
+    IterationStart IterationCount Literal case_list IterationEnd Passed Literal ElapsedTime Literal
+    {
+        std::cout << "Iteration #" << $3 << " resulted in " << $7 << " executed in " << $9 << std::endl;
+    }
+    ;
+
+case :
+    TestCaseStart Name Literal test_list TestCaseEnd Passed Literal ElapsedTime Literal
+    {
+        std::cout << "Test case " << $3 << " resulted in " << $7 << " executed in " << $9 << std::endl;
+    }
+    ;
+
+case_list :
+    %empty
+    {
+    }
+    |
+    case_list case
+    {
+    }
+    ;
+
+test :
+    TestStart Name Literal partial_test_list TestEnd Passed Literal ElapsedTime Literal
+    {
+        std::cout << "Test " << $3 << " resulted in " << $7 << " executed in " << $9 << std::endl;
+    }
+
+test_list:
+    %empty
+    {
+    }
+    |
+    test_list test
+    {
+    }
+    ;
+
+partial_test :
+    TestPartial File Literal Line Literal Message Literal
+    {
+    }
+
+partial_test_list :
+    %empty
+    {
+    }
+    |
+    partial_test_list partial_test
+    {
+    }
+    ;
 
 %%
 

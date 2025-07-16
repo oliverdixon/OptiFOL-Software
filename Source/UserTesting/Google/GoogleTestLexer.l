@@ -16,25 +16,35 @@
 %option prefix="GoogleTest"
 
 whitespace ([ \t\n]+)
-numeric_sequence ([0-9]+)
-decimal_sequence ([0-9.]+)
 
 %%
 
-"&" return GoogleTestParser::token::ParameterDelimeter;
-"=" return GoogleTestParser::token::KeyValueDelimeter;
+[^\t\n=&]+ {
+    yylval->emplace<std::string>(YYText());
+    return GoogleTestParser::token::Literal;
+}
 
-"gtest_streaming_protocol_version" return GoogleTestParser::token::ProtocolVersion;
+"gtest_streaming_protocol_version=" return GoogleTestParser::token::ProtocolVersion;
+"&elapsed_time=" return GoogleTestParser::token::ElapsedTime;
+"&passed=" return GoogleTestParser::token::Passed;
+"&name=" return GoogleTestParser::token::Name;
 
 "event=TestProgramStart" return GoogleTestParser::token::ProgramStart;
 "event=TestProgramEnd" return GoogleTestParser::token::ProgramEnd;
 
 "event=TestIterationStart" return GoogleTestParser::token::IterationStart;
+"&iteration=" return GoogleTestParser::token::IterationCount;
 "event=TestIterationEnd" return GoogleTestParser::token::IterationEnd;
 
-{decimal_sequence} yylval->emplace<std::string>(YYText()); return GoogleTestParser::token::Decimal;
+"event=TestCaseStart" return GoogleTestParser::token::TestCaseStart;
+"event=TestCaseEnd" return GoogleTestParser::token::TestCaseEnd;
 
-version_number
+"event=TestStart" return GoogleTestParser::token::TestStart;
+"event=TestPartResult" return GoogleTestParser::token::TestPartial;
+"&file=" return GoogleTestParser::token::File;
+"&line=" return GoogleTestParser::token::Line;
+"&message=" return GoogleTestParser::token::Message;
+"event=TestEnd" return GoogleTestParser::token::TestEnd;
 
 <<EOF>> return GoogleTestParser::token::End;
 {whitespace} /* Ignore whitespace */

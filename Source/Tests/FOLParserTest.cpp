@@ -127,4 +127,18 @@ TEST_F(FOLParserTest, Identity_Constants)
     );
 }
 
+TEST_F(FOLParserTest, TermBuilder_NoArguments)
+{
+    // clang-format off
+    equality_on_input(
+        "%Ux(P())",
+
+        MutableQuantified::build(
+            QuantifierTypes::Universal,
+            MutableVariable::build("x"),
+            MutablePredicate::build("P", true)
+        )
+    );
+}
+
 }
