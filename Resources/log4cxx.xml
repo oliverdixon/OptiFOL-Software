@@ -18,7 +18,7 @@
         <appender-ref ref="ConsoleAppender"/>
     </logger>
 
-    <logger name="Network" additivity="false">
+    <logger name="UserTesting" additivity="false">
         <priority value="debug"/>
         <appender-ref ref="ConsoleAppender"/>
     </logger>

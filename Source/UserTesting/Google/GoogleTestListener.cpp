@@ -18,11 +18,7 @@
 namespace optifol
 {
 
-const log4cxx::LoggerPtr GoogleTestListener::logger = Logging::get_logger({"Network", "GoogleTestListener"});
-
-std::istringstream GoogleTestListener::lexer_input_stream;
-GoogleTestLexer GoogleTestListener::lexer{GoogleTestListener::lexer_input_stream, std::cerr}; // TODO
-GoogleTestParser GoogleTestListener::parser{&GoogleTestListener::lexer};
+const log4cxx::LoggerPtr GoogleTestListener::logger = Logging::get_logger({"UserTesting", "GoogleTestListener"});
 
 GoogleTestListener::GoogleTestListener()
 {
@@ -58,17 +54,28 @@ void GoogleTestListener::connection_callback(const Glib::RefPtr<Gio::AsyncResult
         gssize bytes_read = 0; // TODO use read_async
         while ((bytes_read = input_stream->read(buffer, sizeof(buffer) - 1)) > 0) {
             buffer[bytes_read] = '\0';
-            logger->info("Read " + std::to_string(bytes_read) + " from input stream of last connection.");
+            logger->debug("Read " + std::to_string(bytes_read) + " from input stream of last connection.");
             results_string += buffer;
         }
 
+        listener->accept_async(sigc::mem_fun(*this, &GoogleTestListener::connection_callback));
+
+        std::istringstream lexer_input_stream;
+        GoogleTestLexer lexer{lexer_input_stream, std::cerr};
+        GoogleTestParser parser{&lexer};
+
         lexer_input_stream.str(results_string);
         parser.parse();
-
-        listener->accept_async(sigc::mem_fun(*this, &GoogleTestListener::connection_callback));
+        auto test_results = parser.steal_test_results();
+        // TODO do something with results
     } catch (const Glib::Error &exception) {
         logger->error("Cannot accept or read from client on TCP socket.");
         logger->error(exception.what());
+    } catch (const SemanticException&) {
+        logger->error("Semantic error during parse: the packets were received and complied with the protocol schema, "
+                      "but were meaningless.");
+    } catch (const ParseError&) {
+        logger->error("Parse error during reception: the packets were received, but did not comply with the schema.");
     }
 }
 

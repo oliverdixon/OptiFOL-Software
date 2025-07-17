@@ -28,8 +28,9 @@ endfunction()
 ## Optifol Generated Object Library ##
 ##                                  ##
 ## Requires:                        ##
-##  - flex                          ##
-##  - bison                         ##
+##  - flex executable               ##
+##  - bison executable              ##
+##  - gtkmm headers >= 4.0          ##
 ######################################
 
 # The "generated" object library controls the invocation of all non-GTK code-generators required for Optifol. Namely:
@@ -38,6 +39,7 @@ endfunction()
 
 find_package(FLEX REQUIRED)
 find_package(BISON REQUIRED)
+pkg_check_modules(GTKMM REQUIRED gtkmm-4.0)
 
 set(GENERATED_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/include)
 set(GENERATED_SRC_DIR ${GENERATED_INCLUDE_DIR}/generated)
@@ -80,10 +82,15 @@ add_library(OptifolGenerated OBJECT
 # Flex and Bison generate all sorts of suspect melting pots of C and C++. It is assumed safe and correct to suppress all
 # compiler warnings produced by these programs, hence the grouping of all generated code into a distinct CMake target.
 target_compile_options(OptifolGenerated PRIVATE -Wno-everything)
+
 target_include_directories(OptifolGenerated PRIVATE
         Source/Interpreter
         Source/UserTesting/Google/
         ${GENERATED_INCLUDE_DIR}
+)
+
+target_include_directories(OptifolGenerated SYSTEM PRIVATE
+        ${GTKMM_INCLUDE_DIRS}
 )
 
 set_source_files_properties(
@@ -96,6 +103,9 @@ set_source_files_properties(
 
 ###################################
 ## Optifol Common Object Library ##
+##                               ##
+## Requires:                     ##
+##  - gtkmm headers >= 4.0       ##
 ###################################
 
 add_library(OptifolCommon OBJECT
@@ -190,6 +200,16 @@ add_library(OptifolCommon OBJECT
         Source/IR/Sentences/IProcessedSentence.hpp
         Source/UserTesting/Google/GoogleTestLexer.hpp
         Source/UserTesting/Google/GoogleTestParser.hpp
+        Source/Storage/TestResult.cpp
+        Source/Storage/TestResult.hpp
+)
+
+target_include_directories(OptifolCommon PRIVATE
+        ${GENERATED_INCLUDE_DIR}
+)
+
+target_include_directories(OptifolCommon SYSTEM PRIVATE
+        ${GTKMM_INCLUDE_DIRS}
 )
 
 ########################################
@@ -202,7 +222,6 @@ add_library(OptifolCommon OBJECT
 ########################################
 
 find_program(GLIB_COMPILE_RESOURCES NAMES glib-compile-resources REQUIRED)
-pkg_check_modules(GTKMM REQUIRED gtkmm-4.0)
 find_package(log4cxx REQUIRED)
 
 set(RESOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Resources)
@@ -385,6 +404,7 @@ utils_strip(OptifolGUI)
 ##                                      ##
 ## Requires:                            ##
 ##  - Google Test (acquired)            ##
+##  - gtkmm >= 4.0                      ##
 ##########################################
 
 include(GoogleTest)
@@ -412,8 +432,18 @@ target_include_directories(OptifolTesting PRIVATE
         Source/Interpreter/
         Source/UserTesting/Google/
 )
-target_include_directories(OptifolTesting SYSTEM PRIVATE ${GENERATED_INCLUDE_DIR})
-target_link_libraries(OptifolTesting PRIVATE OptifolCommon OptifolGenerated log4cxx GTest::gtest_main)
+target_include_directories(OptifolTesting SYSTEM PRIVATE
+        ${GENERATED_INCLUDE_DIR}
+)
+
+target_link_libraries(OptifolTesting PRIVATE
+        OptifolCommon
+        OptifolGenerated
+        log4cxx
+        GTest::gtest_main
+        ${GTKMM_LIBRARIES}
+)
+
 target_compile_options(OptifolTesting PRIVATE
         ${COMMON_COMPILER_OPTIONS}
         -Wno-global-constructors # GTest is known to generate declarations which require global constructors
