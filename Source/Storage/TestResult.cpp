@@ -19,22 +19,48 @@ TestResult::Partial::Partial(const std::string &file, std::size_t line, const st
 {
 }
 
-TestResult::TestResult(const bool passed, const std::size_t execution_time, std::vector<Partial> &&partial_results) :
+TestResult::TestResult(const std::string& test_suite, const std::string& test_name, const bool passed,
+        const std::size_t execution_time, std::vector<Partial> &&partial_results) :
     Glib::ObjectBase("TestResult"),
+    test_suite(*this, "TestResult-test-suite", test_suite),
+    test_name(*this, "TestResult-test-name", test_name),
     passed(*this, "TestResult-passed", passed),
     execution_time(*this, "TestResult-execution-time", execution_time),
     partial_results(*this, "TestResult-partial-results", std::move(partial_results))
 {
 }
 
-TestResult::TestResult(const bool passed, const std::size_t execution_time, std::vector<Partial> &&partial_results,
-        BaseObjectType *const cobject, const Glib::RefPtr<Gtk::Builder> &) :
+TestResult::TestResult(const std::string& test_suite, const std::string& test_name, const bool passed,
+        const std::size_t execution_time, std::vector<Partial> &&partial_results, BaseObjectType *const cobject,
+        const Glib::RefPtr<Gtk::Builder> &) :
     Glib::ObjectBase("TestResult"),
     Glib::Object(cobject),
+    test_suite(*this, "TestResult-test-suite", test_suite),
+    test_name(*this, "TestResult-test-name", test_name),
     passed(*this, "TestResult-passed", passed),
     execution_time(*this, "TestResult-execution-time", execution_time),
     partial_results(*this, "TestResult-partial-results", std::move(partial_results))
 {
+}
+
+Glib::PropertyProxy<Glib::ustring> TestResult::property_test_suite()
+{
+    return test_suite.get_proxy();
+}
+
+Glib::PropertyProxy<Glib::ustring> TestResult::property_test_name()
+{
+    return test_name.get_proxy();
+}
+
+Glib::PropertyProxy_ReadOnly<Glib::ustring> TestResult::property_test_suite() const
+{
+    return test_suite.get_proxy();
+}
+
+Glib::PropertyProxy_ReadOnly<Glib::ustring> TestResult::property_test_name() const
+{
+    return test_suite.get_proxy();
 }
 
 Glib::PropertyProxy<bool> TestResult::property_passed()

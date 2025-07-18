@@ -62,6 +62,7 @@ public:
 
 private:
     std::vector<std::unique_ptr<TestResult>> test_results;
+    std::string test_suite;
 };
 
 }

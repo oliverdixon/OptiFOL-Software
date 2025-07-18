@@ -25,6 +25,7 @@ Subsystem::Subsystem(std::string &&name, TreeNode *parent) :
 {
     assert(analysis_groups->get_n_items() == 0);
 
+    // TODO there is no set_value(PropertyType&&), so may as well pass l-value reference in c'tor. Check for others.
     property_name().set_value(std::move(name));
     analysis_groups->append(Glib::make_refptr_for_instance(new AnalysisGroup("Unassigned Requirements")));
 

@@ -14,6 +14,7 @@
 
 #include "../../Logging.hpp"
 #include "GoogleTestListener.hpp"
+#include "GoogleTestLexer.hpp"
 
 namespace optifol
 {

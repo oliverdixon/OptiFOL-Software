@@ -44,10 +44,19 @@ public:
         std::string message;
     };
 
-    TestResult(bool passed, std::size_t execution_time, std::vector<Partial>&& partial_results = {});
+    TestResult(const std::string& test_suite, const std::string& test_name, bool passed, std::size_t execution_time,
+        std::vector<Partial>&& partial_results = {});
 
-    TestResult(bool passed, std::size_t execution_time, std::vector<Partial>&& partial_results,
-        BaseObjectType* cobject, const Glib::RefPtr<Gtk::Builder>& builder);
+    TestResult(const std::string& test_suite, const std::string& test_name, bool passed, std::size_t execution_time,
+        std::vector<Partial>&& partial_results, BaseObjectType* cobject, const Glib::RefPtr<Gtk::Builder>& builder);
+
+    [[nodiscard]] Glib::PropertyProxy<Glib::ustring> property_test_suite();
+
+    [[nodiscard]] Glib::PropertyProxy<Glib::ustring> property_test_name();
+
+    [[nodiscard]] Glib::PropertyProxy_ReadOnly<Glib::ustring> property_test_suite() const;
+
+    [[nodiscard]] Glib::PropertyProxy_ReadOnly<Glib::ustring> property_test_name() const;
 
     [[nodiscard]] Glib::PropertyProxy<bool> property_passed();
 
@@ -62,10 +71,10 @@ public:
     [[nodiscard]] Glib::PropertyProxy_ReadOnly<std::vector<Partial>> property_partial_results() const;
 
 private:
+    Glib::Property<Glib::ustring> test_suite;
+    Glib::Property<Glib::ustring> test_name;
     Glib::Property<bool> passed;
-
     Glib::Property<std::size_t> execution_time;
-
     Glib::Property<std::vector<Partial>> partial_results;
 };
 

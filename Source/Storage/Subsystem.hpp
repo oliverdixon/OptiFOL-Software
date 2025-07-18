@@ -5,7 +5,7 @@
 
 /**
  * @file
- * @brief Class specification for the subsystem-level storage object
+ * @brief Class specification for the Subsystem-level storage object
  * @author Oliver Dixon
  * @date 2025-02-22
  * @version Development

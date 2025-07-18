@@ -150,7 +150,7 @@ test :
             if (passed_result != 0 && passed_result != 1)
                 throw SemanticException("Invalid test result; should be '0' or '1', but received " + $7);
 
-            auto result = std::make_unique<TestResult>(passed_result, std::stoi($9), std::move($4));
+            auto result = std::make_unique<TestResult>("to-do", $3, passed_result, std::stoi($9), std::move($4));
             dynamic_cast<GoogleTestParser&>(*this).add_result(std::move(result));
 
             if (logger->isDebugEnabled())
