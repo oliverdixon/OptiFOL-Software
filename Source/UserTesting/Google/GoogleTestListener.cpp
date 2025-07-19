@@ -9,19 +9,19 @@
 
 #include <giomm/inetsocketaddress.h>
 #include <giomm/socketlistener.h>
-#include <iostream>
-#include <ranges>
 
 #include "../../Logging.hpp"
 #include "GoogleTestListener.hpp"
-#include "GoogleTestLexer.hpp"
 
 namespace optifol
 {
 
 const log4cxx::LoggerPtr GoogleTestListener::logger = Logging::get_logger({"UserTesting", "GoogleTestListener"});
 
-GoogleTestListener::GoogleTestListener()
+GoogleTestListener::GoogleTestListener(sigc::slot<void(std::unique_ptr<TestResult>&&)>&& push_callback,
+        sigc::slot<void()>&& close_callback) :
+    close_callback(close_callback),
+    parser(&lexer, std::move(push_callback))
 {
     try {
         const auto address = Gio::InetAddress::create_loopback(Gio::SocketFamily::IPV4);
@@ -56,19 +56,18 @@ void GoogleTestListener::connection_callback(const Glib::RefPtr<Gio::AsyncResult
         while ((bytes_read = input_stream->read(buffer, sizeof(buffer) - 1)) > 0) {
             buffer[bytes_read] = '\0';
             logger->debug("Read " + std::to_string(bytes_read) + " from input stream of last connection.");
-            results_string += buffer;
+            results_string += buffer; // TODO need a better way of doing this...
         }
 
         listener->accept_async(sigc::mem_fun(*this, &GoogleTestListener::connection_callback));
 
-        std::istringstream lexer_input_stream;
-        GoogleTestLexer lexer{lexer_input_stream, std::cerr};
-        GoogleTestParser parser{&lexer};
-
+        /*
+         * Push the collated input into a lexer stream, lex and parse, and execute the closed callback to indicate that
+         * the client stopped sending data and the connection was closed.
+         */
         lexer_input_stream.str(results_string);
         parser.parse();
-        auto test_results = parser.steal_test_results();
-        // TODO do something with results
+        close_callback();
     } catch (const Glib::Error &exception) {
         logger->error("Cannot accept or read from client on TCP socket.");
         logger->error(exception.what());

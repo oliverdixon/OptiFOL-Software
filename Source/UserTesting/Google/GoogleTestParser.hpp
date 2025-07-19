@@ -20,39 +20,40 @@
 #pragma clang diagnostic pop
 
 #include <log4cxx/logger.h>
+#include <sigc++/slot.h>
 #include "../../Exceptions/ParseError.hpp"
+#include "../../DereferencingEqualityFunctor.hpp"
+#include "../TestResult.hpp"
 
 namespace optifol
 {
-class TestResult;
 
-class GoogleTestParser:
-    public impl::BaseGoogleTestParser
+class GoogleTestParser : public impl::BaseGoogleTestParser
 {
-    std::unordered_map<TestResult *, std::unique_ptr<TestResult>> test_results;
-    std::vector<std::unique_ptr<TestResult>> pending_test_results;
-
 public:
     /**
      * @brief Instantiate a new Google Test results protocol parser, to be supplied by the given lexer
      * @param lexer The Flex-created lexer with which the parser should be acquainted
+     * @param push_callback The callback to which newly parsed TestResult objects should be sent
      */
-    explicit GoogleTestParser(GoogleTestLexer * lexer):
-        BaseGoogleTestParser(lexer)
-    { }
+    explicit GoogleTestParser(GoogleTestLexer *lexer, sigc::slot<void(std::unique_ptr<TestResult>&&)>&& push_callback) :
+        BaseGoogleTestParser(lexer),
+        push_callback(std::move(push_callback))
+    {
+    }
 
-    void error(const std::string& msg) override
+    void error(const std::string &msg) override
     {
         Logging::get_logger({"UserTesting", "GoogleTestResultsParser"})->error(msg);
         throw ParseError(msg, 0); // TODO get bad column number
     }
 
-    void add_result(std::unique_ptr<TestResult>&& test_result)
+    void push_result(std::unique_ptr<TestResult> &&test_result) const
     {
-        test_results.emplace(test_result.get(), std::move(test_result));
+        push_callback(std::move(test_result));
     }
 
-    void add_pending_test_result(std::unique_ptr<TestResult>&& test_result)
+    void add_pending_test_result(std::unique_ptr<TestResult> &&test_result)
     {
         pending_test_results.push_back(std::move(test_result));
     }
@@ -64,15 +65,15 @@ public:
 
         auto borrowed_result = std::move(pending_test_results.back());
         pending_test_results.pop_back();
-        return std::move(borrowed_result);
+        return borrowed_result;
     }
 
-    std::unique_ptr<TestResult> steal_test_result(const std::string_view fixture_name, const std::string_view test_name)
-    {
+private:
+    std::vector<std::unique_ptr<TestResult>> pending_test_results;
 
-    }
+    sigc::slot<void(std::unique_ptr<TestResult>&&)> push_callback;
 };
 
-}
+} // namespace optifol
 
 #endif

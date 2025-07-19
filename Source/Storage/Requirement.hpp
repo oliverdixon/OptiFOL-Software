@@ -17,11 +17,13 @@
 #include <log4cxx/logger.h>
 
 #include "../IR/MutableVariants/Sentences/IMutableSentence.hpp"
+#include "../IR/Sentences/SentenceRoot.hpp"
 #include "../IR/SymbolRepository.hpp"
 #include "../Visitors/MutableTargets/RepositoryBuildingVisitor.hpp"
-#include "../IR/Sentences/SentenceRoot.hpp"
 #include "FOLLexer.hpp"
+#include "GoogleTestListener.hpp"
 #include "StorageObjectBase.hpp"
+#include "Test.hpp"
 
 namespace optifol
 {
@@ -92,6 +94,8 @@ public:
      */
     [[nodiscard]] Glib::PropertyProxy<guint> property_priority();
 
+    [[nodiscard]] Glib::PropertyProxy<Glib::ustring> property_test_input();
+
     /**
      * @brief Get a read-write proxy for the 'normalised statement' property
      * @return The read-write 'normalised statement' proxy
@@ -116,6 +120,8 @@ public:
      */
     [[nodiscard]] Glib::PropertyProxy_ReadOnly<guint> property_priority() const;
 
+    [[nodiscard]] Glib::PropertyProxy_ReadOnly<Glib::ustring> property_test_input() const;
+
     /**
      * @brief Get a read-only proxy for the 'normalised statement' property
      * @return The read-only 'normalised statement' proxy
@@ -124,7 +130,11 @@ public:
 
     [[nodiscard]] std::string get_formatted_statement() const;
 
-    [[nodiscard]] std::string_view observe_latex_statement() const;
+    [[nodiscard]] std::string_view observe_latex_statement() const noexcept;
+
+    void emplace_test_result(std::unique_ptr<TestResult>&& test_result);
+
+    [[nodiscard]] const std::optional<Test>& observe_test() const noexcept;
 
 private:
     static log4cxx::LoggerPtr parse_logger;
@@ -161,6 +171,10 @@ private:
     Glib::Property<Glib::ustring> description;
 
     Glib::Property<guint> priority;
+
+    Glib::Property<Glib::ustring> test_input;
+
+    std::optional<Test> test;
 
     std::unique_ptr<IMutableSentence> original_ast;
 

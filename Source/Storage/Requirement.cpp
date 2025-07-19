@@ -17,6 +17,8 @@
 
 #include "../Exceptions/SemanticException.hpp"
 #include "../Logging.hpp"
+#include "../Visitors/MutableTargets/Observers/LaTeXSerialisationVisitor.hpp"
+#include "../Visitors/MutableTargets/Observers/TextSerialiserVisitor.hpp"
 #include "../Visitors/MutableTargets/Sentences/CNFNormalisers/DMLVisitor.hpp"
 #include "../Visitors/MutableTargets/Sentences/CNFNormalisers/DisjunctionDistributionVisitor.hpp"
 #include "../Visitors/MutableTargets/Sentences/CNFNormalisers/ImplicationEliminationVisitor.hpp"
@@ -24,8 +26,6 @@
 #include "../Visitors/MutableTargets/Sentences/CNFNormalisers/SkolemIntroducingVisitor.hpp"
 #include "../Visitors/MutableTargets/Sentences/CNFNormalisers/SymbolStandardisingVisitor.hpp"
 #include "../Visitors/MutableTargets/Sentences/CNFNormalisers/UniversalEliminationVisitor.hpp"
-#include "../Visitors/MutableTargets/Observers/LaTeXSerialisationVisitor.hpp"
-#include "../Visitors/MutableTargets/Observers/TextSerialiserVisitor.hpp"
 
 namespace optifol
 {
@@ -49,7 +49,8 @@ Requirement::Requirement(
     statement(*this, "Requirement-statement"),
     normalised_statement(*this, "Requirement-normalised"),
     description(*this, "Requirement-description"),
-    priority(*this, "Requirement-priority")
+    priority(*this, "Requirement-priority"),
+    test_input(*this, "Requirement-test-input")
 {
     setup_properties(std::move(name), std::move(statement), std::move(description), priority);
 }
@@ -61,6 +62,7 @@ Requirement::Requirement(std::string &&name, std::string &&statement, std::strin
     normalised_statement(*this, "Requirement-normalised"),
     description(*this, "Requirement-description"),
     priority(*this, "Requirement-priority"),
+    test_input(*this, "Requirement-test-input"),
     repository_building_visitor(system_repository)
 {
     setup_properties(std::move(name), std::move(statement), std::move(description), priority);
@@ -74,6 +76,7 @@ Requirement::Requirement(std::string &&name, std::string &&statement, std::strin
     normalised_statement(*this, "Requirement-normalised"),
     description(*this, "Requirement-description"),
     priority(*this, "Requirement-priority"),
+    test_input(*this, "Requirement-test-input"),
     repository_building_visitor(system_repository)
 {
     setup_properties(std::move(name), std::move(statement), std::move(description), priority);
@@ -92,6 +95,11 @@ Glib::PropertyProxy<Glib::ustring> Requirement::property_description()
 Glib::PropertyProxy<guint> Requirement::property_priority()
 {
     return priority.get_proxy();
+}
+
+Glib::PropertyProxy<Glib::ustring> Requirement::property_test_input()
+{
+    return test_input.get_proxy();
 }
 
 Glib::PropertyProxy<Glib::ustring> Requirement::property_normalised()
@@ -114,6 +122,11 @@ Glib::PropertyProxy_ReadOnly<guint> Requirement::property_priority() const
     return priority.get_proxy();
 }
 
+Glib::PropertyProxy_ReadOnly<Glib::ustring> Requirement::property_test_input() const
+{
+    return test_input.get_proxy();
+}
+
 Glib::PropertyProxy_ReadOnly<Glib::ustring> Requirement::property_normalised() const
 {
     return normalised_statement.get_proxy();
@@ -124,9 +137,19 @@ std::string Requirement::get_formatted_statement() const
     return formatted_input_statement;
 }
 
-std::string_view Requirement::observe_latex_statement() const
+std::string_view Requirement::observe_latex_statement() const noexcept
 {
     return latex_input_statement;
+}
+
+void Requirement::emplace_test_result(std::unique_ptr<TestResult> &&test_result)
+{
+    test->emplace_result(std::move(test_result));
+}
+
+const std::optional<Test> &Requirement::observe_test() const noexcept
+{
+    return test;
 }
 
 void Requirement::setup_properties(std::string &&requirement_name, std::string &&requirement_statement,
@@ -136,8 +159,9 @@ void Requirement::setup_properties(std::string &&requirement_name, std::string &
             [this]
             {
                 // If the statement has changed, pass it through the parser and normaliser.
-                if (!property_statement().get_value().empty()) {
-                    lexer_input_stream.str(property_statement().get_value());
+                const auto& typed_statement = property_statement().get_value();
+                if (typed_statement.empty() == false) {
+                    lexer_input_stream.str(typed_statement);
 
                     try {
                         parser.parse();
@@ -155,7 +179,7 @@ void Requirement::setup_properties(std::string &&requirement_name, std::string &
                         prepared_ast = populate_symbol_repository(cnf_normalise(original_ast->clone()));
                     } catch (const SemanticException &) {
                         cnf_logger->error("Preparation process was unsuccessful due to invalid logical semantics; "
-                                         "requirements will be missing.");
+                                          "requirements will be missing.");
                         return;
                     }
 
@@ -169,6 +193,9 @@ void Requirement::setup_properties(std::string &&requirement_name, std::string &
     property_statement().set_value(std::move(requirement_statement));
     property_description().set_value(std::move(requirement_description));
     property_priority().set_value(requirement_priority);
+
+    // TODO fixed values for testing. Should have a signal_changed here like with the statement.
+    test.emplace("cmake-build-debug/OptifolTesting", "FOLParserTest", "Quantifier_Universal");
 }
 
 std::unique_ptr<IMutableSentence> Requirement::cnf_normalise(std::unique_ptr<IMutableSentence> &&sentence)

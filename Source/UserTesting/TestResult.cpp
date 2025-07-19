@@ -15,12 +15,13 @@
 namespace optifol
 {
 
-TestResult::Partial::Partial(std::string file, const std::size_t line, std::string message) :
-    file(std::move(file)),
+TestResult::Partial::Partial(const std::string &file, const std::size_t line, const std::string &message) :
+    file(file),
     line(line),
-    message(std::move(message))
+    message(message)
 {
 }
+
 TestResult::TestResult(std::string test_name, const bool passed, const std::size_t execution_time,
         std::vector<Partial> &&partial_results) :
     test_name(std::move(test_name)),
@@ -33,7 +34,7 @@ TestResult::TestResult(std::string test_name, const bool passed, const std::size
 std::size_t TestResult::hash() const noexcept
 {
     assert(suite_name.has_value());
-    return hash_combine(std::hash<std::string>{}(test_name), std::hash<std::string>{}(*suite_name));
+    return hash_combine(std::hash<std::string>{}(*suite_name), std::hash<std::string>{}(test_name));
 }
 
 void TestResult::populate_test_suite_name(std::string suite_name)
@@ -64,6 +65,24 @@ std::vector<TestResult::Partial> &&TestResult::steal_partial_results() noexcept
 std::optional<std::string> TestResult::get_test_suite_name() const noexcept
 {
     return suite_name;
+}
+
+bool TestResult::operator==(const TestResult &other) const noexcept
+{
+    return test_name == other.test_name && suite_name == other.suite_name;
+}
+
+bool TestResult::operator==(const TestResult *other) const noexcept
+{
+    return *this == *other;
+}
+
+bool TestResult::operator==(const std::pair<std::string_view, std::string_view>& names) const noexcept
+{
+    if (suite_name.has_value() == false)
+        return names.first.empty() && names.second == test_name;
+
+    return names.first == *suite_name && names.second == test_name;
 }
 
 } // namespace optifol

@@ -49,7 +49,6 @@ public:
      */
     [[nodiscard]] virtual std::size_t hash() const noexcept = 0;
 
-protected:
     /**
      * @brief Combine two hashes using sensible constants, inspired by boost::hash_combine.
      * @param lhs The LHS hash value
@@ -69,6 +68,7 @@ protected:
         return lhs;
     }
 
+protected:
     /**
      * @brief Commutatively combine two hashes using sensible constants, inspired by boost::hash_combine.
      * @param lhs The LHS hash value

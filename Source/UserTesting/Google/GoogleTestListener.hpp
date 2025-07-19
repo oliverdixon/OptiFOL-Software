@@ -14,14 +14,18 @@
 #include <log4cxx/logger.h>
 
 #include "../ITestListener.hpp"
+#include "GoogleTestLexer.hpp"
 
 namespace optifol
 {
 
+class TestResult;
+
 class GoogleTestListener : public ITestListener
 {
 public:
-    GoogleTestListener();
+    explicit GoogleTestListener(sigc::slot<void(std::unique_ptr<TestResult>&&)>&& push_callback,
+        sigc::slot<void()>&& close_callback);
 
 private:
     void connection_callback(const Glib::RefPtr<Gio::AsyncResult> &result) override;
@@ -29,6 +33,12 @@ private:
     static const log4cxx::LoggerPtr logger;
 
     Glib::RefPtr<Gio::SocketListener> listener = Gio::SocketListener::create();
+
+    sigc::slot<void()> close_callback;
+
+    std::istringstream lexer_input_stream;
+    GoogleTestLexer lexer{lexer_input_stream, std::cerr};
+    GoogleTestParser parser;
 };
 
 } // namespace optifol

@@ -10,24 +10,11 @@
 #ifndef TESTRESULT_HPP
 #define TESTRESULT_HPP
 
-#include <cstddef>
-#include <glibmm/object.h>
-#include <glibmm/property.h>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "../IHashable.hpp"
-
-namespace Gtk
-{
-
-/*
- * <gtk/builder.h> introduces symbols into the global namespace that clash with Bison-generated code. So we forward-
- * declare it instead, as it is only used as an (unused) parameter l-value reference.
- */
-class Builder;
-
-}
 
 namespace optifol
 {
@@ -39,7 +26,7 @@ public:
     struct Partial
     {
         Partial() = default;
-        Partial(std::string file, std::size_t line, std::string message);
+        Partial(const std::string &file, std::size_t line, const std::string &message);
 
         std::string file;
         std::size_t line = 0;
@@ -59,9 +46,15 @@ public:
 
     [[nodiscard]] std::size_t get_execution_time() const noexcept;
 
-    [[nodiscard]] std::vector<TestResult::Partial> &&steal_partial_results() noexcept;
+    [[nodiscard]] std::vector<Partial> &&steal_partial_results() noexcept;
 
     [[nodiscard]] std::optional<std::string> get_test_suite_name() const noexcept;
+
+    bool operator==(const TestResult & other) const noexcept;
+
+    bool operator==(const TestResult * other) const noexcept;
+
+    bool operator==(const std::pair<std::string_view, std::string_view>& names) const noexcept;
 
 private:
     const std::string test_name;
@@ -73,5 +66,27 @@ private:
 };
 
 } // namespace optifol
+
+template<>
+struct std::hash<optifol::TestResult>
+{
+    using is_transparent = void;
+
+    std::size_t operator()(const optifol::TestResult * object) const noexcept
+    {
+        return object->hash();
+    }
+
+    std::size_t operator()(const std::pair<std::string_view, std::string_view>& names) const noexcept
+    {
+        return optifol::IHashable::hash_combine(std::hash<std::string_view>{}(names.first),
+            std::hash<std::string_view>{}(names.second));
+    }
+
+    std::size_t operator()(const optifol::TestResult & object) const noexcept
+    {
+        return object.hash();
+    }
+};
 
 #endif // TESTRESULT_HPP

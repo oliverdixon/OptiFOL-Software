@@ -22,7 +22,7 @@
 
     #include "../Exceptions/SemanticException.hpp"
     #include "../Exceptions/ParseError.hpp"
-    #include "../Storage/TestResult.hpp"
+    #include "../TestResult.hpp"
     #include "../Logging.hpp"
 
     namespace optifol
@@ -133,7 +133,7 @@ case :
 
         while ((borrowed_result = self.steal_next_pending_result()) != nullptr) {
             borrowed_result->populate_test_suite_name($3);
-            self.add_result(std::move(borrowed_result));
+            self.push_result(std::move(borrowed_result));
         }
     }
     ;

@@ -15,7 +15,9 @@
 #define TESTINGAREA_HPP
 
 #include <glibmm/refptr.h>
+#include <gtkmm/singleselection.h>
 
+#include "../../DereferencingEqualityFunctor.hpp"
 #include "../../Storage/Subsystem.hpp"
 #include "../../UserTesting/Google/GoogleTestListener.hpp"
 #include "../IWindowArea.hpp"
@@ -29,7 +31,7 @@ class TestingArea :
 public:
     explicit TestingArea(Gtk::Builder& builder);
 
-    void select_model(const Glib::RefPtr<const Subsystem> &subsystem) override;
+    void select_model(const Glib::RefPtr<const Subsystem> &new_subsystem) override;
 
     void deselect_model() override;
 
@@ -37,8 +39,19 @@ public:
 
     guint get_selected_index() const override;
 
+    void accept_new_result(std::unique_ptr<TestResult>&& test_result);
+
+    void propagate_pending_results();
+
 private:
-    std::unique_ptr<ITestListener> test_listener = std::make_unique<GoogleTestListener>();
+    Glib::RefPtr<const Subsystem> active_subsystem;
+    Glib::RefPtr<Gio::ListStore<Requirement>> data_model;
+    Glib::RefPtr<Gtk::SingleSelection> selection_model = Gtk::SingleSelection::create();
+
+    std::unique_ptr<ITestListener> test_listener;
+
+    std::unordered_map<TestResult *, std::unique_ptr<TestResult>, std::hash<TestResult>,
+        DereferencingEqualityFunctor<const TestResult *, const TestResult>> pending_test_results;
 };
 
 } // namespace optifol

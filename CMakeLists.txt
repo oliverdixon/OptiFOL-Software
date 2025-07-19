@@ -200,8 +200,9 @@ add_library(OptifolCommon OBJECT
         Source/IR/Sentences/IProcessedSentence.hpp
         Source/UserTesting/Google/GoogleTestLexer.hpp
         Source/UserTesting/Google/GoogleTestParser.hpp
-        Source/Storage/TestResult.cpp
-        Source/Storage/TestResult.hpp
+        Source/UserTesting/TestResult.cpp
+        Source/UserTesting/TestResult.hpp
+        Source/DereferencingEqualityFunctor.hpp
 )
 
 target_include_directories(OptifolCommon PRIVATE

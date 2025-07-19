@@ -158,7 +158,7 @@ public:
      */
     explicit RequirementsIndexArea(Gtk::Builder& builder);
 
-    void select_model(const Glib::RefPtr<const Subsystem> &subsystem_model) override;
+    void select_model(const Glib::RefPtr<const Subsystem> &new_subsystem) override;
 
     void deselect_model() override;
 
@@ -199,6 +199,8 @@ public:
      * @param list_item The container in which the destination label exists
      */
     static void on_bind_property_priority(const Glib::RefPtr<Gtk::ListItem> &list_item);
+
+    static void on_bind_property_test_input(const Glib::RefPtr<Gtk::ListItem> &list_item);
 
     /**
      * @brief Bind a Requirement CNF-normalised attribute to a label

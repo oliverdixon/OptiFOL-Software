@@ -14,6 +14,7 @@
 #ifndef TEST_HPP
 #define TEST_HPP
 
+#include "../UserTesting/TestResult.hpp"
 #include "StorageObjectBase.hpp"
 
 namespace optifol
@@ -23,20 +24,44 @@ namespace optifol
  * @class Test
  * @brief The Test storage object denotes a single unit test to be executed against a testable target executable.
  */
-class Test :
-        public StorageObjectBase
+class Test : public StorageObjectBase
 {
 public:
-    explicit Test(const std::string& target_executable);
+    Test(const std::string &target_executable, const std::string &test_suite, const std::string &test_name);
 
-    Test(const std::string& target_executable, BaseObjectType* cobject, const Glib::RefPtr<Gtk::Builder>&);
+    Test(const std::string &target_executable, const std::string &test_suite, const std::string &test_name,
+            BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &);
+
+    void emplace_result(std::unique_ptr<TestResult>&& test_result);
 
     [[nodiscard]] Glib::PropertyProxy<Glib::ustring> property_target_executable();
 
     [[nodiscard]] Glib::PropertyProxy_ReadOnly<Glib::ustring> property_target_executable() const;
 
+    [[nodiscard]] Glib::PropertyProxy<std::optional<Glib::ustring>> property_test_suite();
+
+    [[nodiscard]] Glib::PropertyProxy<Glib::ustring> property_test_name();
+
+    [[nodiscard]] Glib::PropertyProxy<std::size_t> property_execution_time_ms();
+
+    [[nodiscard]] Glib::PropertyProxy<std::vector<TestResult::Partial>> property_partial_results();
+
+    [[nodiscard]] Glib::PropertyProxy_ReadOnly<std::optional<Glib::ustring>> property_test_suite() const;
+
+    [[nodiscard]] Glib::PropertyProxy_ReadOnly<Glib::ustring> property_test_name() const;
+
+    [[nodiscard]] Glib::PropertyProxy_ReadOnly<std::size_t> property_execution_time_ms() const;
+
+    [[nodiscard]] Glib::PropertyProxy_ReadOnly<std::vector<TestResult::Partial>>
+    property_partial_results() const;
+
 private:
     Glib::Property<Glib::ustring> target_executable;
+    Glib::Property<std::optional<Glib::ustring>> test_suite;
+    Glib::Property<Glib::ustring> test_name;
+    Glib::Property<bool> passed;
+    Glib::Property<std::size_t> execution_time_ms;
+    Glib::Property<std::vector<TestResult::Partial>> partial_results;
 };
 
 } // namespace optifol

@@ -115,6 +115,9 @@ RequirementsIndexArea::RequirementsIndexArea(Gtk::Builder& builder) :
             } else if (gtk_id == "requirement_priority") {
                 factory->signal_setup().connect(sigc::bind(&GTKHelpers::on_setup_flat_label, false));
                 factory->signal_bind().connect(sigc::ptr_fun(&RequirementsIndexArea::on_bind_property_priority));
+            } else if (gtk_id == "requirement_test") {
+                factory->signal_setup().connect(sigc::bind(&GTKHelpers::on_setup_flat_label, false));
+                factory->signal_bind().connect(sigc::ptr_fun(&RequirementsIndexArea::on_bind_property_test_input));
             } else if (gtk_id == "requirement_created") {
                 factory->signal_setup().connect(sigc::bind(&GTKHelpers::on_setup_flat_label, false));
                 factory->signal_bind().connect(sigc::ptr_fun(&GTKHelpers::on_bind_flat_creation_time));
@@ -136,12 +139,12 @@ RequirementsIndexArea::RequirementsIndexArea(Gtk::Builder& builder) :
 #endif
 }
 
-void RequirementsIndexArea::select_model(const Glib::RefPtr<const Subsystem> &subsystem_model)
+void RequirementsIndexArea::select_model(const Glib::RefPtr<const Subsystem> &new_subsystem)
 {
     on_off_widgets.first->set_visible(false);
     on_off_widgets.second->set_visible(true);
 
-    active_subsystem = subsystem_model;
+    active_subsystem = new_subsystem;
     data_model = active_subsystem->requirements;
     selection_model->set_model(data_model);
 }
@@ -196,8 +199,18 @@ void RequirementsIndexArea::on_bind_property_priority(const Glib::RefPtr<Gtk::Li
     const auto item = std::dynamic_pointer_cast<Requirement>(list_item->get_item());
 
     if (label != nullptr && item != nullptr)
-        Glib::Binding::bind_property(item->property_priority(), label->property_label(),
-            Glib::Binding::Flags::SYNC_CREATE);
+        Glib::Binding::bind_property(
+                item->property_priority(), label->property_label(), Glib::Binding::Flags::SYNC_CREATE);
+}
+
+void RequirementsIndexArea::on_bind_property_test_input(const Glib::RefPtr<Gtk::ListItem> &list_item)
+{
+    const auto label = dynamic_cast<Gtk::Label *>(list_item->get_child());
+    const auto item = std::dynamic_pointer_cast<Requirement>(list_item->get_item());
+
+    if (label != nullptr && item != nullptr)
+        Glib::Binding::bind_property(
+                item->property_test_input(), label->property_label(), Glib::Binding::Flags::SYNC_CREATE);
 }
 
 void RequirementsIndexArea::on_bind_property_normalised(const Glib::RefPtr<Gtk::ListItem> &list_item)
