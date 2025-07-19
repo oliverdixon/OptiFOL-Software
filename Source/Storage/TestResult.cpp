@@ -9,88 +9,61 @@
 
 #include "TestResult.hpp"
 
+#include <cassert>
+#include <utility>
+
 namespace optifol
 {
 
-TestResult::Partial::Partial(const std::string &file, std::size_t line, const std::string &message) :
-    file(file),
+TestResult::Partial::Partial(std::string file, const std::size_t line, std::string message) :
+    file(std::move(file)),
     line(line),
-    message(message)
+    message(std::move(message))
+{
+}
+TestResult::TestResult(std::string test_name, const bool passed, const std::size_t execution_time,
+        std::vector<Partial> &&partial_results) :
+    test_name(std::move(test_name)),
+    passed(passed),
+    execution_time(execution_time),
+    partial_results(std::move(partial_results))
 {
 }
 
-TestResult::TestResult(const std::string& test_suite, const std::string& test_name, const bool passed,
-        const std::size_t execution_time, std::vector<Partial> &&partial_results) :
-    Glib::ObjectBase("TestResult"),
-    test_suite(*this, "TestResult-test-suite", test_suite),
-    test_name(*this, "TestResult-test-name", test_name),
-    passed(*this, "TestResult-passed", passed),
-    execution_time(*this, "TestResult-execution-time", execution_time),
-    partial_results(*this, "TestResult-partial-results", std::move(partial_results))
+std::size_t TestResult::hash() const noexcept
 {
+    assert(suite_name.has_value());
+    return hash_combine(std::hash<std::string>{}(test_name), std::hash<std::string>{}(*suite_name));
 }
 
-TestResult::TestResult(const std::string& test_suite, const std::string& test_name, const bool passed,
-        const std::size_t execution_time, std::vector<Partial> &&partial_results, BaseObjectType *const cobject,
-        const Glib::RefPtr<Gtk::Builder> &) :
-    Glib::ObjectBase("TestResult"),
-    Glib::Object(cobject),
-    test_suite(*this, "TestResult-test-suite", test_suite),
-    test_name(*this, "TestResult-test-name", test_name),
-    passed(*this, "TestResult-passed", passed),
-    execution_time(*this, "TestResult-execution-time", execution_time),
-    partial_results(*this, "TestResult-partial-results", std::move(partial_results))
+void TestResult::populate_test_suite_name(std::string suite_name)
 {
+    this->suite_name.emplace(std::move(suite_name));
 }
 
-Glib::PropertyProxy<Glib::ustring> TestResult::property_test_suite()
+std::string TestResult::get_test_name() const noexcept
 {
-    return test_suite.get_proxy();
+    return test_name;
 }
 
-Glib::PropertyProxy<Glib::ustring> TestResult::property_test_name()
+bool TestResult::has_passed() const noexcept
 {
-    return test_name.get_proxy();
+    return passed;
 }
 
-Glib::PropertyProxy_ReadOnly<Glib::ustring> TestResult::property_test_suite() const
+std::size_t TestResult::get_execution_time() const noexcept
 {
-    return test_suite.get_proxy();
+    return execution_time;
 }
 
-Glib::PropertyProxy_ReadOnly<Glib::ustring> TestResult::property_test_name() const
+std::vector<TestResult::Partial> &&TestResult::steal_partial_results() noexcept
 {
-    return test_suite.get_proxy();
+    return std::move(partial_results);
 }
 
-Glib::PropertyProxy<bool> TestResult::property_passed()
+std::optional<std::string> TestResult::get_test_suite_name() const noexcept
 {
-    return passed.get_proxy();
-}
-
-Glib::PropertyProxy_ReadOnly<bool> TestResult::property_passed() const
-{
-    return passed.get_proxy();
-}
-
-Glib::PropertyProxy<std::size_t> TestResult::property_execution_time()
-{
-    return execution_time.get_proxy();
-}
-
-Glib::PropertyProxy_ReadOnly<std::size_t> TestResult::property_execution_time() const
-{
-    return execution_time.get_proxy();
-}
-
-Glib::PropertyProxy<std::vector<TestResult::Partial>> TestResult::property_partial_results()
-{
-    return partial_results.get_proxy();
-}
-
-Glib::PropertyProxy_ReadOnly<std::vector<TestResult::Partial>> TestResult::property_partial_results() const
-{
-    return partial_results.get_proxy();
+    return suite_name;
 }
 
 } // namespace optifol

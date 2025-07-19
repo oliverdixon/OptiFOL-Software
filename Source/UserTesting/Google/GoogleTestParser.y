@@ -74,8 +74,6 @@
 program_entry :
     protocol_line ProgramStart iteration_list ProgramEnd Passed Literal End
     {
-        const auto& results = dynamic_cast<GoogleTestParser&>(*this).observe_test_results();
-        std::cout << "Ran " << std::to_string(results.size()) << " tests with result " << $6 << std::endl;
         return 0;
     }
     |
@@ -129,6 +127,14 @@ case :
         // Collapse test case sets
         if (logger->isDebugEnabled())
             logger->debug("Parsed test case \"" + $3 + "\", taking " + $9 + " with an overall result of " + $7 + '.');
+
+        auto& self = dynamic_cast<GoogleTestParser&>(*this);
+        std::unique_ptr<TestResult> borrowed_result;
+
+        while ((borrowed_result = self.steal_next_pending_result()) != nullptr) {
+            borrowed_result->populate_test_suite_name($3);
+            self.add_result(std::move(borrowed_result));
+        }
     }
     ;
 
@@ -150,8 +156,13 @@ test :
             if (passed_result != 0 && passed_result != 1)
                 throw SemanticException("Invalid test result; should be '0' or '1', but received " + $7);
 
-            auto result = std::make_unique<TestResult>("to-do", $3, passed_result, std::stoi($9), std::move($4));
-            dynamic_cast<GoogleTestParser&>(*this).add_result(std::move(result));
+            /*
+             * Construct the test without a test case name, and add it to a specially designated 'pending' results
+             * vector. Once the innermost test case has been parsed, all pending results are populated with the case
+             * name and moved to the 'populated' results vector.
+             */
+            dynamic_cast<GoogleTestParser&>(*this).add_pending_test_result(std::move(
+                std::make_unique<TestResult>($3, passed_result, std::stoi($9), std::move($4))));
 
             if (logger->isDebugEnabled())
                 logger->debug("Parsed test \"" + $3 + "\", taking " + $9 + " with an overall result of " +

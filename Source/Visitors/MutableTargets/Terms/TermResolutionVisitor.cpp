@@ -30,7 +30,7 @@ void TermResolutionVisitor::visit(MutableFunction &node)
 
     for (std::remove_const_t<decltype(argument_count)> i = 0; i < argument_count; ++i) {
         const auto &rule = rewriting_rules_hook.find(args[i]->get_disambiguated_name());
-        if (rule != rewriting_rules_hook.end() && node != *rule->second.get())
+        if (rule != rewriting_rules_hook.end() && node != *rule->second)
             /*
              * Rewrite the argument according to the rule if and only if:
              *

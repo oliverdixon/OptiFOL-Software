@@ -16,12 +16,14 @@
 #include <string>
 #include <vector>
 
+#include "../IHashable.hpp"
+
 namespace Gtk
 {
 
 /*
  * <gtk/builder.h> introduces symbols into the global namespace that clash with Bison-generated code. So we forward-
- * declare it instead, as it's only used as an (unused) parameter l-value reference.
+ * declare it instead, as it is only used as an (unused) parameter l-value reference.
  */
 class Builder;
 
@@ -31,51 +33,43 @@ namespace optifol
 {
 
 class TestResult :
-        public Glib::Object
+        public IHashable
 {
 public:
     struct Partial
     {
         Partial() = default;
-        Partial(const std::string& file, std::size_t line, const std::string& message);
+        Partial(std::string file, std::size_t line, std::string message);
 
         std::string file;
-        std::size_t line;
+        std::size_t line = 0;
         std::string message;
     };
 
-    TestResult(const std::string& test_suite, const std::string& test_name, bool passed, std::size_t execution_time,
+    TestResult(std::string test_name, bool passed, std::size_t execution_time,
         std::vector<Partial>&& partial_results = {});
 
-    TestResult(const std::string& test_suite, const std::string& test_name, bool passed, std::size_t execution_time,
-        std::vector<Partial>&& partial_results, BaseObjectType* cobject, const Glib::RefPtr<Gtk::Builder>& builder);
+    [[nodiscard]] std::size_t hash() const noexcept override;
 
-    [[nodiscard]] Glib::PropertyProxy<Glib::ustring> property_test_suite();
+    void populate_test_suite_name(std::string suite_name);
 
-    [[nodiscard]] Glib::PropertyProxy<Glib::ustring> property_test_name();
+    [[nodiscard]] std::string get_test_name() const noexcept;
 
-    [[nodiscard]] Glib::PropertyProxy_ReadOnly<Glib::ustring> property_test_suite() const;
+    [[nodiscard]] bool has_passed() const noexcept;
 
-    [[nodiscard]] Glib::PropertyProxy_ReadOnly<Glib::ustring> property_test_name() const;
+    [[nodiscard]] std::size_t get_execution_time() const noexcept;
 
-    [[nodiscard]] Glib::PropertyProxy<bool> property_passed();
+    [[nodiscard]] std::vector<TestResult::Partial> &&steal_partial_results() noexcept;
 
-    [[nodiscard]] Glib::PropertyProxy_ReadOnly<bool> property_passed() const;
-
-    [[nodiscard]] Glib::PropertyProxy<std::size_t> property_execution_time();
-
-    [[nodiscard]] Glib::PropertyProxy_ReadOnly<std::size_t> property_execution_time() const;
-
-    [[nodiscard]] Glib::PropertyProxy<std::vector<Partial>> property_partial_results();
-
-    [[nodiscard]] Glib::PropertyProxy_ReadOnly<std::vector<Partial>> property_partial_results() const;
+    [[nodiscard]] std::optional<std::string> get_test_suite_name() const noexcept;
 
 private:
-    Glib::Property<Glib::ustring> test_suite;
-    Glib::Property<Glib::ustring> test_name;
-    Glib::Property<bool> passed;
-    Glib::Property<std::size_t> execution_time;
-    Glib::Property<std::vector<Partial>> partial_results;
+    const std::string test_name;
+    const bool passed;
+    const std::size_t execution_time;
+
+    std::vector<Partial> partial_results;
+    std::optional<std::string> suite_name;
 };
 
 } // namespace optifol

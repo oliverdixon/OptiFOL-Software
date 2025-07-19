@@ -20,7 +20,6 @@
 #pragma clang diagnostic pop
 
 #include <log4cxx/logger.h>
-
 #include "../../Exceptions/ParseError.hpp"
 
 namespace optifol
@@ -30,6 +29,9 @@ class TestResult;
 class GoogleTestParser:
     public impl::BaseGoogleTestParser
 {
+    std::unordered_map<TestResult *, std::unique_ptr<TestResult>> test_results;
+    std::vector<std::unique_ptr<TestResult>> pending_test_results;
+
 public:
     /**
      * @brief Instantiate a new Google Test results protocol parser, to be supplied by the given lexer
@@ -47,22 +49,28 @@ public:
 
     void add_result(std::unique_ptr<TestResult>&& test_result)
     {
-        test_results.push_back(std::move(test_result));
+        test_results.emplace(test_result.get(), std::move(test_result));
     }
 
-    std::vector<std::unique_ptr<TestResult>>&& steal_test_results() noexcept
+    void add_pending_test_result(std::unique_ptr<TestResult>&& test_result)
     {
-        return std::move(test_results);
+        pending_test_results.push_back(std::move(test_result));
     }
 
-    const std::vector<std::unique_ptr<TestResult>>& observe_test_results() const noexcept
+    std::unique_ptr<TestResult> steal_next_pending_result() noexcept
     {
-        return test_results;
+        if (pending_test_results.empty())
+            return nullptr;
+
+        auto borrowed_result = std::move(pending_test_results.back());
+        pending_test_results.pop_back();
+        return std::move(borrowed_result);
     }
 
-private:
-    std::vector<std::unique_ptr<TestResult>> test_results;
-    std::string test_suite;
+    std::unique_ptr<TestResult> steal_test_result(const std::string_view fixture_name, const std::string_view test_name)
+    {
+
+    }
 };
 
 }

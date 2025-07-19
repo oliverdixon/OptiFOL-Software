@@ -21,8 +21,7 @@ namespace optifol
 
 /**
  * @class Test
- * @brief The Test storage object denotes a single unit test, within a text fixture, to be executed against a testable
- *  target executable.
+ * @brief The Test storage object denotes a single unit test to be executed against a testable target executable.
  */
 class Test :
         public StorageObjectBase
@@ -30,7 +29,7 @@ class Test :
 public:
     explicit Test(const std::string& target_executable);
 
-    Test(const std::string& target_executable, BaseObjectType* cobject, const Glib::RefPtr<Gtk::Builder>& builder);
+    Test(const std::string& target_executable, BaseObjectType* cobject, const Glib::RefPtr<Gtk::Builder>&);
 
     [[nodiscard]] Glib::PropertyProxy<Glib::ustring> property_target_executable();
 

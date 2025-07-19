@@ -115,7 +115,7 @@ public:
      * @brief Retrieves a handle to an immutable sentence symbol owned by the repository
      * @param sentence A hash-equal sentence to the target sentence
      * @return A constant handle to the sentence, if a suitable match exists in the repository. Otherwise, an empty
-     * \ref std::optional.
+     *  @ref std::optional.
      */
     std::optional<const ISentence *> get_symbol_handle(const ISentence &sentence) const;
 
