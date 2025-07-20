@@ -191,7 +191,7 @@ void ReportsAreaGenerateLaTeXPopover::show_details_toggled() const
 }
 
 bool ReportsAreaGenerateLaTeXPopover::console_stream_callback(
-        const Glib::IOCondition condition, struct ProcessStream *stream_metadata) const
+        const Glib::IOCondition condition, ProcessStream *stream_metadata) const
 {
     if ((condition & Glib::IOCondition::IO_IN) == Glib::IOCondition::IO_IN) {
         stream_metadata->append_line_to_buffer(buffer);

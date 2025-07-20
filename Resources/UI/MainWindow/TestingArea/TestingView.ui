@@ -93,7 +93,7 @@ To prepare Analysis Groups, select a Subsystem from the left-hand <i>Project Exp
                                 <object class="GtkSeparator"/>
                             </child>
                             <child>
-                                <object class="GtkMenuButton">
+                                <object class="GtkButton" id="run_tests"> <!-- TODO should be MenuButton -->
                                     <property name="icon-name">object-select-symbolic</property>
                                     <property name="tooltip-text">Re-Run Selected Test Group</property>
                                 </object>
@@ -175,8 +175,11 @@ To prepare Analysis Groups, select a Subsystem from the left-hand <i>Project Exp
             <child>
                 <object class="GtkNotebook">
                     <child>
-                        <object class="GtkLabel">
-                            <property name="label">Content: Group A Test Report</property>
+                        <object class="GtkTextView" id="run_tests_output">
+                            <style>
+                                <class name="optifol_monospace" />
+                            </style>
+                            <property name="editable">FALSE</property>
                         </object>
                     </child>
                     <child type="tab">

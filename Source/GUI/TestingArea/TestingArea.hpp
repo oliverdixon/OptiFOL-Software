@@ -15,12 +15,16 @@
 #define TESTINGAREA_HPP
 
 #include <glibmm/refptr.h>
+#include <gtkmm/button.h>
 #include <gtkmm/singleselection.h>
+#include <gtkmm/textbuffer.h>
 
 #include "../../DereferencingEqualityFunctor.hpp"
 #include "../../Storage/Subsystem.hpp"
 #include "../../UserTesting/Google/GoogleTestListener.hpp"
 #include "../IWindowArea.hpp"
+#include "../ProcessExecutor.hpp"
+
 
 namespace optifol
 {
@@ -43,17 +47,24 @@ public:
 
     void propagate_pending_results();
 
+    void execute_tests();
+
 private:
     static const log4cxx::LoggerPtr area_logger;
+    static const char * const area_name;
 
     Glib::RefPtr<const Subsystem> active_subsystem;
     Glib::RefPtr<Gio::ListStore<Requirement>> data_model;
     Glib::RefPtr<Gtk::SingleSelection> selection_model = Gtk::SingleSelection::create();
 
     std::unique_ptr<TestListenerBase> test_listener;
+    std::optional<ProcessExecutor> test_executor;
 
     std::unordered_map<TestResult *, std::shared_ptr<TestResult>, std::hash<TestResult>,
         DereferencingEqualityFunctor<const TestResult *, const TestResult>> received_test_results;
+
+    Gtk::Button * const run_tests_button;
+    const Glib::RefPtr<Gtk::TextBuffer> run_tests_output_buffer;
 };
 
 } // namespace optifol

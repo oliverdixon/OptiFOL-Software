@@ -11,10 +11,10 @@
  * @version Development
  */
 
+#include <glibmm/main.h>
+
 #include "ProcessStream.hpp"
 #include "../Logging.hpp"
-
-#include <glibmm/main.h>
 
 namespace optifol
 {
@@ -45,14 +45,18 @@ void ProcessStream::disconnect()
 {
     logger->debug("Disconnecting from subprocess channel.");
 
-    channel->close();
-    watch.disconnect();
+    if (channel != nullptr)
+        channel->close();
+
+    if (watch.connected())
+        watch.disconnect();
 }
 
 bool ProcessStream::is_connected() const noexcept
 {
     return watch.connected();
 }
+
 void ProcessStream::append_line_to_buffer(const Glib::RefPtr<Gtk::TextBuffer> &target_buffer) const
 {
     Glib::ustring line;

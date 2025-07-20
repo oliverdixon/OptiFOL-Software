@@ -144,14 +144,14 @@ std::string_view Requirement::observe_latex_statement() const noexcept
 
 void Requirement::emplace_test_result(const std::shared_ptr<TestResult> &test_result)
 {
-    const auto& requirement_name = property_name().get_value(); // All execution paths needs this.
+    const auto &requirement_name = property_name().get_value(); // All execution paths needs this.
 
     try {
         if (test.has_value() == false)
-            throw SemanticException("Attempted to assign result to a non-existent test for requirement \"" +
-                requirement_name + "\".");
+            throw SemanticException(
+                    "Attempted to assign result to a non-existent test for requirement \"" + requirement_name + "\".");
         test->emplace_result(test_result);
-    } catch (const SemanticException& semantic_exception) {
+    } catch (const SemanticException &semantic_exception) {
         req_logger->error("Incoming test result was rejected by the requirement \"" + requirement_name + "\".");
         req_logger->error(semantic_exception.what());
         return;
@@ -168,85 +168,82 @@ const std::optional<Test> &Requirement::observe_test() const noexcept
 void Requirement::setup_properties(std::string &&requirement_name, std::string &&requirement_statement,
         std::string &&requirement_description, const guint requirement_priority, std::string &&requirement_test_input)
 {
-    property_statement().signal_changed().connect(
-            [this]
-            {
-                // If the statement has changed, pass it through the parser and normaliser.
-                const auto &typed_statement = property_statement().get_value();
-
-                if (typed_statement.empty() == true) {
-                    // TODO should compartmentalise all statement-related structures into a struct
-                    original_ast.reset();
-                    formatted_input_statement.clear();
-                    latex_input_statement.clear();
-                    prepared_ast.reset();
-
-                    req_logger->debug("Removed FOL statement from requirement \"" + property_name().get_value() +
-                        "\".");
-
-                    return;
-                }
-
-                lexer_input_stream.str(typed_statement);
-
-                try {
-                    parser.parse();
-                } catch (const ParseError &parse_error) {
-                    parse_logger->error(parse_error.what());
-                    return;
-                }
-
-                original_ast = parser.retrieve_sentence();
-                formatted_input_statement = text_serialise(original_ast.get());
-                latex_input_statement = latex_serialise(original_ast.get());
-
-                try {
-                    // Perform CNF normalisation followed by population of the symbol repository
-                    prepared_ast = populate_symbol_repository(cnf_normalise(original_ast->clone()));
-                } catch (const SemanticException &) {
-                    cnf_logger->error("Preparation process was unsuccessful due to invalid logical semantics; "
-                                      "requirements will be missing.");
-                    return;
-                }
-
-                std::ostringstream serialiser_stream;
-                prepared_ast->serialise(serialiser_stream);
-                property_normalised().set_value(serialiser_stream.str());
-
-                req_logger->debug("Successfully updated FOL statement for requirement \"" +
-                    property_name().get_value() + "\".");
-            });
-
-    property_test_input().signal_changed().connect(
-            [this]
-            {
-                const auto &input_line = property_test_input().get_value();
-
-                if (input_line.empty() == true) {
-                    test.reset();
-                    req_logger->debug("Removed associated unit test from requirement \"" +
-                        property_name().get_value() + "\".");
-                    return;
-                }
-
-                try {
-                    test.emplace(std::string_view(input_line.c_str(), input_line.bytes()));
-                } catch (const ParseError& parse_error) {
-                    req_logger->error("Could not parse unit test specification for requirement \"" +
-                        property_name().get_value() + "\".");
-                    req_logger->error(parse_error.what());
-                    return;
-                }
-
-                req_logger->debug("Successfully added unit test specification \"" + property_test_input().get_value() +
-                    "\" to requirement \"" + property_name().get_value() + "\".");
-            });
+    property_statement().signal_changed().connect(sigc::mem_fun(*this, &Requirement::handle_statement_change));
+    property_test_input().signal_changed().connect(sigc::mem_fun(*this, &Requirement::handle_test_change));
 
     property_name().set_value(std::move(requirement_name));
     property_statement().set_value(std::move(requirement_statement));
     property_description().set_value(std::move(requirement_description));
     property_priority().set_value(requirement_priority);
     property_test_input().set_value(requirement_test_input);
+}
+
+void Requirement::handle_statement_change()
+{
+    // If the statement has changed, pass it through the parser and normaliser.
+    const auto &typed_statement = property_statement().get_value();
+
+    if (typed_statement.empty() == true) {
+        // TODO should compartmentalise all statement-related structures into a struct
+        original_ast.reset();
+        formatted_input_statement.clear();
+        latex_input_statement.clear();
+        prepared_ast.reset();
+
+        req_logger->debug("Removed FOL statement from requirement \"" + property_name().get_value() + "\".");
+        return;
+    }
+
+    lexer_input_stream.str(typed_statement);
+
+    try {
+        parser.parse();
+    } catch (const ParseError &parse_error) {
+        parse_logger->error(parse_error.what());
+        return;
+    }
+
+    original_ast = parser.retrieve_sentence();
+    formatted_input_statement = text_serialise(original_ast.get());
+    latex_input_statement = latex_serialise(original_ast.get());
+
+    try {
+        // Perform CNF normalisation followed by population of the symbol repository
+        prepared_ast = populate_symbol_repository(cnf_normalise(original_ast->clone()));
+    } catch (const SemanticException &) {
+        cnf_logger->error("Preparation process was unsuccessful due to invalid logical semantics; "
+                          "requirements will be missing.");
+        return;
+    }
+
+    std::ostringstream serialiser_stream;
+    prepared_ast->serialise(serialiser_stream);
+    property_normalised().set_value(serialiser_stream.str());
+
+    req_logger->debug("Successfully updated FOL statement for requirement \"" + property_name().get_value() + "\".");
+}
+
+void Requirement::handle_test_change()
+{
+    const auto &input_line = property_test_input().get_value();
+
+    if (input_line.empty() == true) {
+        test.reset();
+        req_logger->debug("Removed associated unit test from requirement \"" + property_name().get_value() + "\".");
+        return;
+    }
+
+    try {
+        test.emplace(std::string_view(input_line.c_str(), input_line.bytes()));
+    } catch (const ParseError &parse_error) {
+        req_logger->error(
+                "Could not parse unit test specification for requirement \"" + property_name().get_value() + "\".");
+        req_logger->error(parse_error.what());
+        return;
+    }
+
+    req_logger->debug("Successfully added unit test specification \"" + property_test_input().get_value() +
+        "\" to requirement \"" + property_name().get_value() + "\".");
 }
 
 std::unique_ptr<IMutableSentence> Requirement::cnf_normalise(std::unique_ptr<IMutableSentence> &&sentence)

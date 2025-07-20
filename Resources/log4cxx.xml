@@ -14,7 +14,7 @@
     </appender>
 
     <logger name="SubprocessControl" additivity="false">
-        <priority value="warn"/>
+        <priority value="info"/>
         <appender-ref ref="ConsoleAppender"/>
     </logger>
 

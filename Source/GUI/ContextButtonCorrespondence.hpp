@@ -6,7 +6,6 @@
 #ifndef CONTEXTBUTTONCORRESPONDENCE_HPP
 #define CONTEXTBUTTONCORRESPONDENCE_HPP
 
-#include <optional>
 #include <giomm/menu.h>
 #include <giomm/simpleactiongroup.h>
 #include <gtkmm/menubutton.h>

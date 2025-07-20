@@ -146,9 +146,6 @@ private:
     static const log4cxx::LoggerPtr cnf_logger;
     static const log4cxx::LoggerPtr integration_logger;
 
-    void setup_properties(std::string &&requirement_name, std::string &&requirement_statement,
-            std::string &&requirement_description, guint requirement_priority, std::string &&requirement_test_input);
-
     /**
      * @brief Mutate the given sentence by pushing through the CNF normalisation pipeline
      * @param sentence An owning container, transferred to the member function, to normalise into conjunctive normal
@@ -156,14 +153,6 @@ private:
      * @return The owning container of the normalised sentence, with ownership transferred back to the caller
      */
     static std::unique_ptr<IMutableSentence> cnf_normalise(std::unique_ptr<IMutableSentence> &&sentence);
-
-    /**
-     * @brief Transform the given mutable IR node tree into an immutable equivalent, populating the symbol repository in
-     *  the process
-     * @param mutable_root An owning container of the root of the mutable IR node tree
-     * @return The owning container of the root of the immutable IR tree
-     */
-    std::unique_ptr<SentenceRoot> populate_symbol_repository(std::unique_ptr<IMutableSentence> &&mutable_root);
 
     /**
      * @brief Helper to push the given IMutableSentence node through a plain-text serialisation pipeline
@@ -178,6 +167,36 @@ private:
      * @return The @ref std:string representation of the LaTeX-escaped math-mode serialised sentence
      */
     static std::string latex_serialise(const IMutableSentence *sentence);
+
+    /**
+     * @brief Populate the core Requirement properties with the given initial values, and set up signals.
+     * @param requirement_name The initial Requirement name
+     * @param requirement_statement The initial Requirement statement text
+     * @param requirement_description The initial Requirement description
+     * @param requirement_priority The initial Requirement priority selection
+     * @param requirement_test_input The initial Requirement test specification
+     */
+    void setup_properties(std::string &&requirement_name, std::string &&requirement_statement,
+            std::string &&requirement_description, guint requirement_priority, std::string &&requirement_test_input);
+
+    /**
+     * @brief Handle a change in the Requirement statement by re-parsing and updating internal state where necessary.
+     */
+    void handle_statement_change();
+
+    /**
+     * @brief Handle a change in the Test textual specification by re-parsing and updating internal state where
+     *  necessary.
+     */
+    void handle_test_change();
+
+    /**
+     * @brief Transform the given mutable IR node tree into an immutable equivalent, populating the symbol repository in
+     *  the process
+     * @param mutable_root An owning container of the root of the mutable IR node tree
+     * @return The owning container of the root of the immutable IR tree
+     */
+    std::unique_ptr<SentenceRoot> populate_symbol_repository(std::unique_ptr<IMutableSentence> &&mutable_root);
 
     Glib::Property<Glib::ustring> statement;
     Glib::Property<Glib::ustring> normalised_statement;
