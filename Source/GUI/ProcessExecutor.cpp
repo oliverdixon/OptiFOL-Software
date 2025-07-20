@@ -19,11 +19,11 @@
 namespace optifol
 {
 
-const log4cxx::LoggerPtr ProcessExecutor::logger = Logging::get_logger({"SubprocessControl", "TextExecutor", "Core"});
+const log4cxx::LoggerPtr ProcessExecutor::logger = Logging::get_logger({"SubprocessControl", "TextExecutor"});
 
 ProcessExecutor::ProcessExecutor(const std::string &working_directory, const std::vector<std::string> &argv,
         const std::vector<std::string> &envp, const Glib::RefPtr<Gtk::TextBuffer> &output,
-        sigc::slot<void(int)>&& finished_callback) :
+        sigc::slot<void(int)> &&finished_callback) :
     output(output)
 {
     const auto tag_table = output->get_tag_table();
@@ -48,14 +48,21 @@ ProcessExecutor::ProcessExecutor(const std::string &working_directory, const std
             &stderr_fd);
 
     Glib::signal_child_watch().connect(
-        [this, finished_callback](const Glib::Pid ended_pid, const int exit_code)
-        {
-            if (ended_pid == pid)
-                // Filter PIDs that aren't ours. (Shouldn't ever happen.)
+            [this, finished_callback](const Glib::Pid ended_pid, const int exit_code)
+            {
+                if (ended_pid != pid)
+                    // Filter PIDs that aren't ours. (Shouldn't ever happen, but isn't worth logging.)
+                    return;
+
+                if (exit_code == 0)
+                    logger->info("Subprocess with PID " + std::to_string(pid) + " exited normally.");
+                else
+                    logger->warn("Subprocess with PID " + std::to_string(pid) + " exited with non-zero exit code " +
+                            std::to_string(exit_code) + '.');
+
                 finished_callback(exit_code);
-        },
-        pid
-    );
+            },
+            pid);
 
     stdout_stream.emplace(stdout_tag, stdout_fd, sigc::mem_fun(*this, &ProcessExecutor::stream_callback));
     stderr_stream.emplace(stderr_tag, stderr_fd, sigc::mem_fun(*this, &ProcessExecutor::stream_callback));
@@ -64,25 +71,33 @@ ProcessExecutor::ProcessExecutor(const std::string &working_directory, const std
 }
 
 ProcessExecutor::Stream::Stream(const Glib::RefPtr<Gtk::TextTag> &formatting_tag, const int source_fd,
-        sigc::bound_mem_functor<decltype(&ProcessExecutor::stream_callback), Glib::IOCondition, const Stream *>&&
-            write_line_callback) :
+        sigc::bound_mem_functor<decltype(&ProcessExecutor::stream_callback), Glib::IOCondition, const Stream *>
+                &&write_line_callback) :
     formatting_tag(formatting_tag),
     channel(Glib::IOChannel::create_from_fd(source_fd)),
-    watch(Glib::signal_io().connect(
-        sigc::bind(std::move(write_line_callback), this),
-        channel,
-        Glib::IOCondition::IO_IN | Glib::IOCondition::IO_HUP | Glib::IOCondition::IO_ERR
-    ))
+    bound_write_line_callback(sigc::bind(write_line_callback, this)),
+    watch(Glib::signal_io().connect(bound_write_line_callback, channel,
+            Glib::IOCondition::IO_IN | Glib::IOCondition::IO_HUP | Glib::IOCondition::IO_ERR))
 {
 }
 
 ProcessExecutor::Stream::~Stream()
 {
-    if (channel != nullptr)
-        channel->close();
+    try {
+        /*
+         * Even with the buffers flushed, we manually execute the callback just to be safe. In the worst case, there's
+         * nothing to read. We explicitly ignore the return code of the callback, as during destruction we don't care if
+         * the channel is reporting a HUP.
+         */
+        if (channel->flush() == Glib::IOStatus::NORMAL)
+            std::ignore = bound_write_line_callback(Glib::IOCondition::IO_IN);
 
-    if (watch.connected())
         watch.disconnect();
+        channel->close();
+    } catch (const Glib::IOChannelError &channel_error) {
+        logger->error("Could not graciously destruct stream for subprocess.");
+        logger->error(channel_error.what());
+    }
 }
 
 void ProcessExecutor::Stream::append_line_to_buffer(const Glib::RefPtr<Gtk::TextBuffer> &target_buffer) const
@@ -103,7 +118,8 @@ bool ProcessExecutor::stream_callback(const Glib::IOCondition condition, const S
      * If we've triggered the callback with something other than a IOCondition::IO_IN, something unexpected has
      * happened and Glib is indicating an error state.
      */
-    // TODO handle.
+    logger->warn("Abnormal IO condition reported by GLib for subprocess stream: code " +
+            std::to_string(std::to_underlying(condition)) + '.');
     return false;
 }
 

@@ -343,8 +343,6 @@ add_executable(OptifolGUI
         Source/GUI/ReportsArea/ReportsAreaGenerateLaTeXPopover.hpp
         Source/GUI/TestingArea/TestingArea.cpp
         Source/GUI/TestingArea/TestingArea.hpp
-        Source/GUI/ProcessStream.cpp
-        Source/GUI/ProcessStream.hpp
         Source/GUI/IWindowArea.hpp
         Source/GUI/AnalysisArea/AnalysisAreaNewAnalysisGroupPopover.cpp
         Source/GUI/AnalysisArea/AnalysisAreaNewAnalysisGroupPopover.hpp

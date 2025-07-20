@@ -99,9 +99,9 @@ void TestingArea::execute_tests()
         },
         std::vector<std::string>{},
         run_tests_output_buffer,
-        [](const int exit_code)
+        [this](const int)
         {
-            std::cout << "Processed finished with code " << std::to_string(exit_code) << std::endl;
+            test_executor.reset();
         }
     );
 }

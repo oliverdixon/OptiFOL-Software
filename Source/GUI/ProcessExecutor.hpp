@@ -81,7 +81,8 @@ private:
                 write_line_callback);
 
         /**
-         * @brief Destruct the stream by cancelling all watches.
+         * @brief Destruct the Stream by flushing the buffers, invoking any callbacks, and disconnecting watches and
+         *  signals.
          */
         ~Stream();
 
@@ -94,6 +95,7 @@ private:
     private:
         Glib::RefPtr<Gtk::TextTag> formatting_tag;
         const Glib::RefPtr<Glib::IOChannel> channel;
+        sigc::slot<bool(Glib::IOCondition)> bound_write_line_callback;
         sigc::connection watch;
     };
 
@@ -102,7 +104,7 @@ private:
     const Glib::RefPtr<Gtk::TextBuffer> output;
     std::optional<Stream> stdout_stream;
     std::optional<Stream> stderr_stream;
-    Glib::Pid pid;
+    Glib::Pid pid = -1;
 };
 
 } // namespace optifol

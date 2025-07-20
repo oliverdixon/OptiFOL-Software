@@ -14,7 +14,6 @@
 #ifndef REPORTSAREAGENERATELATEXPOPOVER_HPP
 #define REPORTSAREAGENERATELATEXPOPOVER_HPP
 
-#include <glibmm/iochannel.h>
 #include <glibmm/refptr.h>
 #include <gtkmm/box.h>
 #include <gtkmm/builder.h>
@@ -26,7 +25,7 @@
 #include <gtkmm/textbuffer.h>
 #include <log4cxx/logger.h>
 
-#include "../ProcessStream.hpp"
+#include "../ProcessExecutor.hpp"
 
 namespace optifol
 {
@@ -169,14 +168,6 @@ private:
      */
     void show_details_toggled() const;
 
-    /**
-     * @brief Handle new data appearing on a subprocess output stream by appending to the popover output
-     * @param condition The condition(s) responsible for invoking the callback
-     * @param stream_metadata The ProcessStream slot of the origin subprocess stream
-     * @return <code>true</code> if data was successfully copied to the console output; <code>false</code> otherwise.
-     */
-    bool console_stream_callback(Glib::IOCondition condition, ProcessStream *stream_metadata) const;
-
     static const char * const popover_name;
     static const log4cxx::LoggerPtr popover_logger;
 
@@ -192,9 +183,7 @@ private:
 
     Glib::RefPtr<Gio::File> index_csv;
     Glib::RefPtr<Gio::File> output_directory;
-
-    ProcessStream process_stdout;
-    ProcessStream process_stderr;
+    std::optional<ProcessExecutor> latex_executor;
 };
 
 } // namespace optifol
