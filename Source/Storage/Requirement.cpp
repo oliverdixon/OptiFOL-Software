@@ -12,9 +12,6 @@
  */
 
 #include "Requirement.hpp"
-
-#include <cassert>
-
 #include "../Exceptions/SemanticException.hpp"
 #include "../Logging.hpp"
 #include "../Visitors/MutableTargets/Observers/LaTeXSerialisationVisitor.hpp"
@@ -39,12 +36,14 @@ std::istringstream Requirement::lexer_input_stream;
 FOLLexer Requirement::lexer{Requirement::lexer_input_stream, std::cerr};
 FOLParser Requirement::parser{&Requirement::lexer};
 
-log4cxx::LoggerPtr Requirement::cnf_logger = Logging::get_logger({"LogicServices", "CNFNormalisation"});
-log4cxx::LoggerPtr Requirement::parse_logger = Logging::get_logger({"LogicServices", "FormalParsing"});
-log4cxx::LoggerPtr Requirement::integration_logger = Logging::get_logger({"LogicServices", "SystemIntegration"});
+const log4cxx::LoggerPtr Requirement::req_logger = Logging::get_logger({"GUI", "RequirementControl"});
 
-Requirement::Requirement(
-        std::string &&name, std::string &&statement, std::string &&description, guint priority, std::nullptr_t) :
+const log4cxx::LoggerPtr Requirement::cnf_logger = Logging::get_logger({"LogicServices", "CNFNormalisation"});
+const log4cxx::LoggerPtr Requirement::parse_logger = Logging::get_logger({"LogicServices", "FormalParsing"});
+const log4cxx::LoggerPtr Requirement::integration_logger = Logging::get_logger({"LogicServices", "SystemIntegration"});
+
+Requirement::Requirement(std::string &&name, std::string &&statement, std::string &&description, const guint priority,
+        std::string &&test, std::nullptr_t) :
     Glib::ObjectBase("Requirement"),
     statement(*this, "Requirement-statement"),
     normalised_statement(*this, "Requirement-normalised"),
@@ -52,11 +51,11 @@ Requirement::Requirement(
     priority(*this, "Requirement-priority"),
     test_input(*this, "Requirement-test-input")
 {
-    setup_properties(std::move(name), std::move(statement), std::move(description), priority);
+    setup_properties(std::move(name), std::move(statement), std::move(description), priority, std::move(test));
 }
 
 Requirement::Requirement(std::string &&name, std::string &&statement, std::string &&description, const guint priority,
-        SymbolRepository &system_repository) :
+        std::string &&test, SymbolRepository &system_repository) :
     Glib::ObjectBase("Requirement"),
     statement(*this, "Requirement-statement"),
     normalised_statement(*this, "Requirement-normalised"),
@@ -65,11 +64,12 @@ Requirement::Requirement(std::string &&name, std::string &&statement, std::strin
     test_input(*this, "Requirement-test-input"),
     repository_building_visitor(system_repository)
 {
-    setup_properties(std::move(name), std::move(statement), std::move(description), priority);
+    setup_properties(std::move(name), std::move(statement), std::move(description), priority, std::move(test));
 }
 
 Requirement::Requirement(std::string &&name, std::string &&statement, std::string &&description, const guint priority,
-        BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &builder, SymbolRepository &system_repository) :
+        std::string &&test, BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &builder,
+        SymbolRepository &system_repository) :
     Glib::ObjectBase("Requirement"),
     StorageObjectBase(cobject, builder),
     statement(*this, "Requirement-statement"),
@@ -79,7 +79,7 @@ Requirement::Requirement(std::string &&name, std::string &&statement, std::strin
     test_input(*this, "Requirement-test-input"),
     repository_building_visitor(system_repository)
 {
-    setup_properties(std::move(name), std::move(statement), std::move(description), priority);
+    setup_properties(std::move(name), std::move(statement), std::move(description), priority, std::move(test));
 }
 
 Glib::PropertyProxy<Glib::ustring> Requirement::property_statement()
@@ -144,7 +144,20 @@ std::string_view Requirement::observe_latex_statement() const noexcept
 
 void Requirement::emplace_test_result(const std::shared_ptr<TestResult> &test_result)
 {
-    test->emplace_result(test_result);
+    const auto& requirement_name = property_name().get_value(); // All execution paths needs this.
+
+    try {
+        if (test.has_value() == false)
+            throw SemanticException("Attempted to assign result to a non-existent test for requirement \"" +
+                requirement_name + "\".");
+        test->emplace_result(test_result);
+    } catch (const SemanticException& semantic_exception) {
+        req_logger->error("Incoming test result was rejected by the requirement \"" + requirement_name + "\".");
+        req_logger->error(semantic_exception.what());
+        return;
+    }
+
+    req_logger->debug("Assigned test result to test for requirement \"" + requirement_name + "\".");
 }
 
 const std::optional<Test> &Requirement::observe_test() const noexcept
@@ -153,49 +166,87 @@ const std::optional<Test> &Requirement::observe_test() const noexcept
 }
 
 void Requirement::setup_properties(std::string &&requirement_name, std::string &&requirement_statement,
-        std::string &&requirement_description, const guint requirement_priority)
+        std::string &&requirement_description, const guint requirement_priority, std::string &&requirement_test_input)
 {
     property_statement().signal_changed().connect(
             [this]
             {
                 // If the statement has changed, pass it through the parser and normaliser.
-                const auto& typed_statement = property_statement().get_value();
-                if (typed_statement.empty() == false) {
-                    lexer_input_stream.str(typed_statement);
+                const auto &typed_statement = property_statement().get_value();
 
-                    try {
-                        parser.parse();
-                    } catch (const ParseError &parse_error) {
-                        parse_logger->error(parse_error.what());
-                        return;
-                    }
+                if (typed_statement.empty() == true) {
+                    // TODO should compartmentalise all statement-related structures into a struct
+                    original_ast.reset();
+                    formatted_input_statement.clear();
+                    latex_input_statement.clear();
+                    prepared_ast.reset();
 
-                    original_ast = parser.retrieve_sentence();
-                    formatted_input_statement = text_serialise(original_ast.get());
-                    latex_input_statement = latex_serialise(original_ast.get());
+                    req_logger->debug("Removed FOL statement from requirement \"" + property_name().get_value() +
+                        "\".");
 
-                    try {
-                        // Perform CNF normalisation followed by population of the symbol repository
-                        prepared_ast = populate_symbol_repository(cnf_normalise(original_ast->clone()));
-                    } catch (const SemanticException &) {
-                        cnf_logger->error("Preparation process was unsuccessful due to invalid logical semantics; "
-                                          "requirements will be missing.");
-                        return;
-                    }
-
-                    std::ostringstream serialiser_stream;
-                    prepared_ast->serialise(serialiser_stream);
-                    property_normalised().set_value(serialiser_stream.str());
+                    return;
                 }
+
+                lexer_input_stream.str(typed_statement);
+
+                try {
+                    parser.parse();
+                } catch (const ParseError &parse_error) {
+                    parse_logger->error(parse_error.what());
+                    return;
+                }
+
+                original_ast = parser.retrieve_sentence();
+                formatted_input_statement = text_serialise(original_ast.get());
+                latex_input_statement = latex_serialise(original_ast.get());
+
+                try {
+                    // Perform CNF normalisation followed by population of the symbol repository
+                    prepared_ast = populate_symbol_repository(cnf_normalise(original_ast->clone()));
+                } catch (const SemanticException &) {
+                    cnf_logger->error("Preparation process was unsuccessful due to invalid logical semantics; "
+                                      "requirements will be missing.");
+                    return;
+                }
+
+                std::ostringstream serialiser_stream;
+                prepared_ast->serialise(serialiser_stream);
+                property_normalised().set_value(serialiser_stream.str());
+
+                req_logger->debug("Successfully updated FOL statement for requirement \"" +
+                    property_name().get_value() + "\".");
+            });
+
+    property_test_input().signal_changed().connect(
+            [this]
+            {
+                const auto &input_line = property_test_input().get_value();
+
+                if (input_line.empty() == true) {
+                    test.reset();
+                    req_logger->debug("Removed associated unit test from requirement \"" +
+                        property_name().get_value() + "\".");
+                    return;
+                }
+
+                try {
+                    test.emplace(std::string_view(input_line.c_str(), input_line.bytes()));
+                } catch (const ParseError& parse_error) {
+                    req_logger->error("Could not parse unit test specification for requirement \"" +
+                        property_name().get_value() + "\".");
+                    req_logger->error(parse_error.what());
+                    return;
+                }
+
+                req_logger->debug("Successfully added unit test specification \"" + property_test_input().get_value() +
+                    "\" to requirement \"" + property_name().get_value() + "\".");
             });
 
     property_name().set_value(std::move(requirement_name));
     property_statement().set_value(std::move(requirement_statement));
     property_description().set_value(std::move(requirement_description));
     property_priority().set_value(requirement_priority);
-
-    // TODO fixed values for testing. Should have a signal_changed here like with the statement.
-    test.emplace("cmake-build-debug/OptifolTesting", "FOLParserTest", "Quantifier_Universal");
+    property_test_input().set_value(requirement_test_input);
 }
 
 std::unique_ptr<IMutableSentence> Requirement::cnf_normalise(std::unique_ptr<IMutableSentence> &&sentence)

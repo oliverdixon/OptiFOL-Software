@@ -58,9 +58,18 @@ void IndexDuplicateRequirementPopover::confirm_button_clicked() const
             std::dynamic_pointer_cast<const Requirement>(active_data_model->get_item(index_area.get_selected_index()));
 
     if (candidate != nullptr)
-        index_area.construct_and_add_requirement(new_name_entry->get_text(),
-                candidate->property_statement().get_value(), candidate->property_description().get_value(),
-                candidate->property_priority().get_value());
+        // TODO StorageObjectBase needs to define a clone virtual member function.
+        index_area.construct_and_add_requirement(
+                new_name_entry->get_text(),
+                candidate->property_statement().get_value(),
+                candidate->property_description().get_value(),
+                candidate->property_priority().get_value(),
+                candidate->property_test_input().get_value()
+            );
+
+    popover_logger->info("Duplicated new subsystem requirement with name \"" + new_name_entry->get_text() +
+        "\" from existing \"" + old_name_entry->get_text() + "\".");
+    clear_inputs();
 }
 
 void IndexDuplicateRequirementPopover::cancel_button_clicked() const
@@ -69,6 +78,7 @@ void IndexDuplicateRequirementPopover::cancel_button_clicked() const
     clear_inputs();
 }
 
+// ReSharper disable once CppDFAUnreachableFunctionCall - False positive: called from button-click callback.
 void IndexDuplicateRequirementPopover::clear_inputs() const
 {
     old_name_entry->set_text("");

@@ -3,9 +3,13 @@
  * 2025 Oliver Dixon <od641@york.ac.uk>
  */
 
-//
-// Created by owd on 7/16/25.
-//
+/**
+ * @file
+ * @brief Class specification for the TestResult results storage
+ * @author Oliver Dixon
+ * @date 2025-07-20
+ * @version Development
+ */
 
 #ifndef TESTRESULT_HPP
 #define TESTRESULT_HPP
@@ -26,7 +30,7 @@ public:
     struct Partial
     {
         Partial() = default;
-        Partial(const std::string &file, std::size_t line, const std::string &message);
+        Partial(std::string file, std::size_t line, std::string message);
 
         std::string file;
         std::size_t line = 0;
@@ -46,13 +50,9 @@ public:
 
     [[nodiscard]] std::size_t get_execution_time() const noexcept;
 
-    [[nodiscard]] std::vector<Partial> &&steal_partial_results() noexcept;
-
     [[nodiscard]] std::optional<std::string> get_test_suite_name() const noexcept;
 
     bool operator==(const TestResult & other) const noexcept;
-
-    bool operator==(const TestResult * other) const noexcept;
 
     bool operator==(const std::pair<std::string_view, std::string_view>& names) const noexcept;
 

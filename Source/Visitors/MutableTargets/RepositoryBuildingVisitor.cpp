@@ -21,12 +21,14 @@
 #include "../../IR/MutableVariants/Sentences/MutablePredicate.hpp"
 #include "../../IR/MutableVariants/Sentences/MutableQuantified.hpp"
 #include "../../IR/MutableVariants/Sentences/MutableSentenceRoot.hpp"
+#include "../../IR/MutableVariants/Terms/MutableConstant.hpp"
 #include "../../IR/MutableVariants/Terms/MutableFunction.hpp"
 #include "../../IR/MutableVariants/Terms/MutableVariable.hpp"
 #include "../../IR/Sentences/Identity.hpp"
 #include "../../IR/Sentences/Predicate.hpp"
 #include "../../IR/Sentences/Quantified.hpp"
 #include "../../IR/Sentences/SentenceRoot.hpp"
+#include "../../IR/Terms/Constant.hpp"
 #include "../../IR/Terms/Function.hpp"
 #include "../../IR/Terms/Variable.hpp"
 
@@ -38,6 +40,11 @@ const char *RepositoryBuildingVisitor::visitor_name = "Repository-Building Visit
 RepositoryBuildingVisitor::RepositoryBuildingVisitor(SymbolRepository &symbol_repository) :
     symbol_repository(symbol_repository)
 {
+}
+
+RepositoryBuildingVisitor RepositoryBuildingVisitor::clone_from_template() const
+{
+    return RepositoryBuildingVisitor(symbol_repository);
 }
 
 std::string_view RepositoryBuildingVisitor::get_visitor_name()
@@ -123,6 +130,11 @@ const Function *RepositoryBuildingVisitor::visit(MutableFunction &node)
 
     return symbol_repository.add_symbol<Function>(
             std::make_unique<Function>(std::string(node.get_disambiguated_name()), std::move(processed_terms)));
+}
+
+const Constant *RepositoryBuildingVisitor::visit(const MutableConstant &node) const
+{
+    return symbol_repository.add_symbol<Constant>(std::make_unique<Constant>(node.to_string()));
 }
 
 } // namespace optifol

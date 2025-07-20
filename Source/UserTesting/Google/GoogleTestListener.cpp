@@ -13,11 +13,10 @@
 
 #include <giomm/inetsocketaddress.h>
 #include <giomm/socketlistener.h>
+#include <giomm/resource.h>
 
 #include "../../Logging.hpp"
 #include "GoogleTestListener.hpp"
-
-#include <giomm/resource.h>
 
 namespace optifol
 {
@@ -69,23 +68,43 @@ void GoogleTestListener::connection_callback(const Glib::RefPtr<Gio::AsyncResult
          * following:
          *
          *  1. The parser is non-streaming, so we need to have the entire input stored before passing it to the lexer
-         *     and parser routines. When the TCP packets arrive in chunks of GoogleTestListener::read_size bytes, they
-         *     must be collated into a single source; and
+         *     and parser routines. When the TCP packets arrive in chunks of GoogleTestListener::temp_buffer_size bytes,
+         *     they must be collated into a single source; and
          *
-         *  2. The collated buffer will grow by factors of GoogleTestListener::read_size per append operation, so we can
-         *     do allocation ahead of time.
+         *  2. The collated buffer will grow by factors of GoogleTestListener::temp_buffer_size per append operation, so
+         *     we can do allocation ahead of time.
          */
 
         std::string results_string;
-        char buffer[read_size];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+        /*
+         * Our buffer access is guaranteed to be safe. Access is performed at two points:
+         *
+         *  1. Gio::InputStream::read mutates the buffer in the maximal half-open interval [0, sizeof(buffer)). This is
+         *     guaranteed by documented constraints on the read function; and
+         *
+         *  2. We manually append a NULL-terminator at the position indicated by the return value of the read function.
+         *     This is further guaranteed to be within the half-open interval [0, sizeof(buffer)), hence the access can
+         *     occur at most sizeof(buffer) - 1 bytes into the array.
+         *
+         * The use of an "unsafe" C construct is enforced by the GioMM library. See
+         * https://gnome.pages.gitlab.gnome.org/glibmm/classGio_1_1InputStream.html#a42ab2486116d40f6ef828277befb508a.
+         */
+        char buffer[temp_buffer_size];
 
         gssize bytes_read = 0;
         while ((bytes_read = input_stream->read(buffer, sizeof(buffer) - 1)) > 0) {
-            results_string.reserve(results_string.capacity() + read_size);
+            /*
+             * We rather do a single worst-case allocation of the entire temporary buffer than lots of small allocations
+             * in the actual number of bytes read. In Google Test streaming, packets are often small and numerous.
+             */
+            results_string.reserve(results_string.capacity() + temp_buffer_size);
             buffer[bytes_read] = '\0';
-            logger->debug("Read " + std::to_string(bytes_read) + " from input stream of last connection.");
+            logger->trace("Read " + std::to_string(bytes_read) + " from input stream of last connection.");
             results_string.append(buffer);
         }
+#pragma clang diagnostic pop
 
         listener->accept_async(sigc::mem_fun(*this, &GoogleTestListener::connection_callback));
 

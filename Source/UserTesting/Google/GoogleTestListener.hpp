@@ -63,7 +63,7 @@ private:
     void connection_callback(const Glib::RefPtr<Gio::AsyncResult> &result) noexcept override;
 
     static const log4cxx::LoggerPtr logger;
-    static constexpr std::size_t read_size = 1024;
+    static constexpr std::size_t temp_buffer_size = 1024;
 
     Glib::RefPtr<Gio::SocketListener> listener = Gio::SocketListener::create();
 

@@ -62,10 +62,9 @@ void TestingArea::propagate_pending_results()
         const auto requirement = data_model->get_item(requirement_idx);
         const auto &test = requirement->observe_test();
 
-        const auto& glib_suite_name = test->property_test_suite().get_value();
-        const auto& glib_test_name = test->property_test_name().get_value();
-
         if (test.has_value() == true) {
+            const auto& glib_suite_name = test->property_test_suite().get_value();
+            const auto& glib_test_name = test->property_test_name().get_value();
 
             const auto it = received_test_results.find(std::make_pair(
                 std::string_view(glib_suite_name->c_str(), glib_suite_name->bytes()),

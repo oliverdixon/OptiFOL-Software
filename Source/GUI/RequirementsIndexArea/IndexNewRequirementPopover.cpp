@@ -33,8 +33,8 @@ IndexNewRequirementPopover::IndexNewRequirementPopover(Gtk::Builder &builder, Re
     description_entry(
             GTKHelpers::get_widget<Gtk::TextView>(popover_name, builder, "new_requirement_property_description")),
     statement_entry(GTKHelpers::get_widget<Gtk::Entry>(popover_name, builder, "new_requirement_property_sentence")),
-    test_entry(GTKHelpers::get_widget<Gtk::Entry>(popover_name, builder, "new_requirement_property_test")),
-    priority_entry(GTKHelpers::get_widget<Gtk::DropDown>(popover_name, builder, "new_requirement_property_priority"))
+    priority_entry(GTKHelpers::get_widget<Gtk::DropDown>(popover_name, builder, "new_requirement_property_priority")),
+    test_entry(GTKHelpers::get_widget<Gtk::Entry>(popover_name, builder, "new_requirement_property_test"))
 {
     confirm_button->signal_clicked().connect(sigc::mem_fun(*this, &IndexNewRequirementPopover::confirm_button_clicked));
     cancel_button->signal_clicked().connect(sigc::mem_fun(*this, &IndexNewRequirementPopover::cancel_button_clicked));
@@ -44,12 +44,13 @@ void IndexNewRequirementPopover::confirm_button_clicked() const
 {
     my_popover->popdown();
 
-    // TODO associated test field?
     index_area.construct_and_add_requirement(
         name_entry->get_text(),
         statement_entry->get_text(),
         description_entry->get_buffer()->get_text(),
-        priority_entry->get_selected());
+        priority_entry->get_selected(),
+        test_entry->get_text()
+    );
 
     popover_logger->info("Created new subsystem requirement with name \"" + name_entry->get_text() + "\".");
     clear_inputs();

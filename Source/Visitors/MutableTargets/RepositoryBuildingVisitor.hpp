@@ -35,6 +35,8 @@ class MutableVariable;
 class Variable;
 class MutableFunction;
 class Function;
+class MutableConstant;
+class Constant;
 
 /**
  * @class RepositoryBuildingVisitor
@@ -142,6 +144,13 @@ public:
     explicit RepositoryBuildingVisitor(SymbolRepository &symbol_repository);
 
     /**
+     * @brief Create a new RepositoryBuildingVisitor templated from the current object, using the same global symbol
+     *  repository reference but discarding any transitory state.
+     * @return The constructed visitor instance.
+     */
+    [[nodiscard]] RepositoryBuildingVisitor clone_from_template() const;
+
+    /**
      * @brief Gets the human-readable visitor name
      * @return An observing view of the human-readable visitor name string
      */
@@ -158,6 +167,8 @@ public:
     [[nodiscard]] const Variable *visit(const MutableVariable &node) const;
 
     [[nodiscard]] const Function *visit(MutableFunction& node);
+
+    [[nodiscard]] const Constant *visit(const MutableConstant & node) const;
 
     void visit(MutableSentenceRoot &node);
 

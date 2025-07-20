@@ -119,8 +119,8 @@ private:
     Gtk::Entry * const name_entry;
     Gtk::TextView * const description_entry;
     Gtk::Entry * const statement_entry;
-    Gtk::Entry * const test_entry;
     Gtk::DropDown * const priority_entry;
+    Gtk::Entry * const test_entry;
 };
 
 } // namespace optifol

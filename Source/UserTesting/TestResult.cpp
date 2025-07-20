@@ -3,9 +3,13 @@
  * 2025 Oliver Dixon <od641@york.ac.uk>
  */
 
-//
-// Created by owd on 7/16/25.
-//
+/**
+ * @file
+ * @brief Class implementation for the TestResult results storage
+ * @author Oliver Dixon
+ * @date 2025-07-20
+ * @version Development
+ */
 
 #include "TestResult.hpp"
 
@@ -15,10 +19,10 @@
 namespace optifol
 {
 
-TestResult::Partial::Partial(const std::string &file, const std::size_t line, const std::string &message) :
-    file(file),
+TestResult::Partial::Partial(std::string file, const std::size_t line, std::string message) :
+    file(std::move(file)),
     line(line),
-    message(message)
+    message(std::move(message))
 {
 }
 
@@ -57,11 +61,6 @@ std::size_t TestResult::get_execution_time() const noexcept
     return execution_time;
 }
 
-std::vector<TestResult::Partial> &&TestResult::steal_partial_results() noexcept
-{
-    return std::move(partial_results);
-}
-
 std::optional<std::string> TestResult::get_test_suite_name() const noexcept
 {
     return suite_name;
@@ -70,11 +69,6 @@ std::optional<std::string> TestResult::get_test_suite_name() const noexcept
 bool TestResult::operator==(const TestResult &other) const noexcept
 {
     return test_name == other.test_name && suite_name == other.suite_name;
-}
-
-bool TestResult::operator==(const TestResult *other) const noexcept
-{
-    return *this == *other;
 }
 
 bool TestResult::operator==(const std::pair<std::string_view, std::string_view>& names) const noexcept

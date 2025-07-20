@@ -20,8 +20,8 @@
 #include "../IR/Sentences/SentenceRoot.hpp"
 #include "../IR/SymbolRepository.hpp"
 #include "../Visitors/MutableTargets/RepositoryBuildingVisitor.hpp"
+
 #include "FOLLexer.hpp"
-#include "GoogleTestListener.hpp"
 #include "StorageObjectBase.hpp"
 #include "Test.hpp"
 
@@ -43,12 +43,13 @@ public:
      * @param statement The initial FOL statement of the Requirement
      * @param description The initial long-form description of the Requirement
      * @param priority The initial priority of the Requirement
+     * @param test The input string providing associated unit test information
      * @param system_repository A null pointer to explicitly signify the lacking SymbolRepository
      * @warning As no system-wide symbol repository has been provided, this Requirement will not supply its symbols to
      *  the wider system. Logical analysis will produce unexpected results.
      */
     explicit Requirement(std::string&& name, std::string&& statement, std::string&& description, guint priority,
-        std::nullptr_t system_repository);
+        std::string&& test, std::nullptr_t system_repository);
 
     /**
      * @brief Create a new Requirement with the given name and register in the Glib GType system
@@ -56,11 +57,12 @@ public:
      * @param statement The initial FOL statement of the Requirement
      * @param description The initial long-form description of the Requirement
      * @param priority The initial priority of the Requirement
+     * @param test The input string providing associated unit test information
      * @param system_repository The system-wide symbol repository with lifetimes guaranteed to cover that of the
      *  Requirement
      */
     explicit Requirement(std::string&& name, std::string&& statement, std::string&& description, guint priority,
-        SymbolRepository& system_repository);
+        std::string&& test, SymbolRepository& system_repository);
 
     /**
      * @brief Create a new Requirement with the given name and register in the Glib GType system
@@ -68,13 +70,15 @@ public:
      * @param statement The initial FOL statement of the Requirement
      * @param description The initial long-form description of the Requirement
      * @param priority The initial priority of the Requirement
+     * @param test The input string providing associated unit test information
      * @param cobject The C cast-item used by Glib::Object
      * @param builder Currently unused builder parameter to provide to the Glib::Object instance
      * @param system_repository The system-wide symbol repository with lifetimes guaranteed to cover that of the
      *  Requirement
      */
     Requirement(std::string&& name, std::string&& statement, std::string&& description, guint priority,
-        BaseObjectType* cobject, const Glib::RefPtr<Gtk::Builder>& builder, SymbolRepository& system_repository);
+        std::string&& test, BaseObjectType* cobject, const Glib::RefPtr<Gtk::Builder>& builder,
+        SymbolRepository& system_repository);
 
     /**
      * @brief Get a read-write proxy for the 'statement' property
@@ -137,12 +141,13 @@ public:
     [[nodiscard]] const std::optional<Test>& observe_test() const noexcept;
 
 private:
-    static log4cxx::LoggerPtr parse_logger;
-    static log4cxx::LoggerPtr cnf_logger;
-    static log4cxx::LoggerPtr integration_logger;
+    static const log4cxx::LoggerPtr req_logger;
+    static const log4cxx::LoggerPtr parse_logger;
+    static const log4cxx::LoggerPtr cnf_logger;
+    static const log4cxx::LoggerPtr integration_logger;
 
     void setup_properties(std::string &&requirement_name, std::string &&requirement_statement,
-            std::string &&requirement_description, guint requirement_priority);
+            std::string &&requirement_description, guint requirement_priority, std::string &&requirement_test_input);
 
     /**
      * @brief Mutate the given sentence by pushing through the CNF normalisation pipeline
@@ -160,24 +165,28 @@ private:
      */
     std::unique_ptr<SentenceRoot> populate_symbol_repository(std::unique_ptr<IMutableSentence> &&mutable_root);
 
+    /**
+     * @brief Helper to push the given IMutableSentence node through a plain-text serialisation pipeline
+     * @param sentence The sentence to serialise
+     * @return The @ref std::string representation of the plain-text serialised sentence
+     */
     static std::string text_serialise(const IMutableSentence * sentence);
 
+    /**
+     * @brief Helper to push the given IMutableSentence node through a LaTeX-text serialisation pipeline
+     * @param sentence The sentence to serialise into math-mode LaTeX format
+     * @return The @ref std:string representation of the LaTeX-escaped math-mode serialised sentence
+     */
     static std::string latex_serialise(const IMutableSentence *sentence);
 
     Glib::Property<Glib::ustring> statement;
-
     Glib::Property<Glib::ustring> normalised_statement;
-
     Glib::Property<Glib::ustring> description;
-
     Glib::Property<guint> priority;
-
     Glib::Property<Glib::ustring> test_input;
 
     std::optional<Test> test;
-
     std::unique_ptr<IMutableSentence> original_ast;
-
     std::unique_ptr<SentenceRoot> prepared_ast;
 
     std::optional<RepositoryBuildingVisitor> repository_building_visitor;

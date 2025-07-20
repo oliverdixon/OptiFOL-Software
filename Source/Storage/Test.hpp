@@ -27,10 +27,12 @@ namespace optifol
 class Test : public StorageObjectBase
 {
 public:
-    Test(const std::string &target_executable, const std::string &test_suite, const std::string &test_name);
+    explicit Test(std::string_view packed_input_line);
 
-    Test(const std::string &target_executable, const std::string &test_suite, const std::string &test_name,
-            BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &);
+    Test(std::string target_executable, std::string test_suite, std::string test_name);
+
+    Test(std::string target_executable, std::string test_suite, std::string test_name, BaseObjectType *cobject,
+            const Glib::RefPtr<Gtk::Builder> &);
 
     void emplace_result(const std::shared_ptr<TestResult> &test_result);
 
