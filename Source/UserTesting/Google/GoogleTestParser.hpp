@@ -22,12 +22,35 @@
 #include <log4cxx/logger.h>
 #include <sigc++/slot.h>
 #include "../../Exceptions/ParseError.hpp"
-#include "../../DereferencingEqualityFunctor.hpp"
 #include "../TestResult.hpp"
 
 namespace optifol
 {
 
+/**
+ * @class GoogleTestParser
+ * @brief Provide additional functionality to the Bison-generated impl::BaseGoogleTestParser for enhanced ownership
+ *  semantics of produced results.
+ *
+ * @details In particular, the parser should obey the following sequence for all individually parsed test results within
+ *  their respective G-Test test cases:
+ *  <ol>
+ *      <li>
+ *          Construct the TestResult and transfer ownership to the parser in the <i>Pending</i> state with
+ *          @ref add_pending_test_result.
+ *      </li>
+ *      <li>
+ *          Once the test case name is known by the innermost TestCase production, extract all pending results and
+ *          populate with the test name. Ownership of the pending TestResult is transferred back to the grammar
+ *          production generated member function. Use @ref steal_next_pending_result until it indicates that there are
+ *          no further pending results owned by the parser instance.
+ *      </li>
+ *      <li>
+ *          As TestResult objects are populated with the test case name, use @ref push_result to invoke the
+ *          parser-defined callback and transfer ownership of the TestResult to the client.
+ *      </li>
+ *  </ol>
+ */
 class GoogleTestParser : public impl::BaseGoogleTestParser
 {
 public:
@@ -48,16 +71,33 @@ public:
         throw ParseError(msg, 0); // TODO get bad column number
     }
 
+    /**
+     * @brief Invoke the callback to indicate a new TestResult has been produced by the parser
+     * @param test_result An exclusively owning container for the constructed TestResult object
+     * @note This member function must be public as it is accessed by the Bison-generated C++ grammar productions code.
+     */
     void push_result(std::unique_ptr<TestResult> &&test_result) const
     {
         push_callback(std::move(test_result));
     }
 
+    /**
+     * @brief Provide a new TestResult to be stored in the pending state, such that the TestResult is temporarily held
+     *  by the parser for further mutation before it is suitable for the push callback.
+     * @param test_result The exclusively owning container for the pending TestResult object
+     * @note This member function must be public as it is accessed by the Bison-generated C++ grammar productions code.
+     */
     void add_pending_test_result(std::unique_ptr<TestResult> &&test_result)
     {
         pending_test_results.push_back(std::move(test_result));
     }
 
+    /**
+     * @brief Extract and provide the next pending test result; this function should typically be polled until there are
+     *  no more pending results, as the ordering is not defined.
+     * @return An exclusively owning container for the stolen TestResult, or nullptr if there are no pending results.
+     * @note This member function must be public as it is accessed by the Bison-generated C++ grammar productions code.
+     */
     std::unique_ptr<TestResult> steal_next_pending_result() noexcept
     {
         if (pending_test_results.empty())

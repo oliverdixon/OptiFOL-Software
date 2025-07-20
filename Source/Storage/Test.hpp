@@ -32,36 +32,29 @@ public:
     Test(const std::string &target_executable, const std::string &test_suite, const std::string &test_name,
             BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &);
 
-    void emplace_result(std::unique_ptr<TestResult>&& test_result);
+    void emplace_result(const std::shared_ptr<TestResult> &test_result);
 
     [[nodiscard]] Glib::PropertyProxy<Glib::ustring> property_target_executable();
-
-    [[nodiscard]] Glib::PropertyProxy_ReadOnly<Glib::ustring> property_target_executable() const;
 
     [[nodiscard]] Glib::PropertyProxy<std::optional<Glib::ustring>> property_test_suite();
 
     [[nodiscard]] Glib::PropertyProxy<Glib::ustring> property_test_name();
 
-    [[nodiscard]] Glib::PropertyProxy<std::size_t> property_execution_time_ms();
+    [[nodiscard]] Glib::PropertyProxy<std::shared_ptr<TestResult>> property_result();
 
-    [[nodiscard]] Glib::PropertyProxy<std::vector<TestResult::Partial>> property_partial_results();
+    [[nodiscard]] Glib::PropertyProxy_ReadOnly<Glib::ustring> property_target_executable() const;
 
     [[nodiscard]] Glib::PropertyProxy_ReadOnly<std::optional<Glib::ustring>> property_test_suite() const;
 
     [[nodiscard]] Glib::PropertyProxy_ReadOnly<Glib::ustring> property_test_name() const;
 
-    [[nodiscard]] Glib::PropertyProxy_ReadOnly<std::size_t> property_execution_time_ms() const;
-
-    [[nodiscard]] Glib::PropertyProxy_ReadOnly<std::vector<TestResult::Partial>>
-    property_partial_results() const;
+    [[nodiscard]] Glib::PropertyProxy_ReadOnly<std::shared_ptr<TestResult>> property_result() const;
 
 private:
     Glib::Property<Glib::ustring> target_executable;
     Glib::Property<std::optional<Glib::ustring>> test_suite;
     Glib::Property<Glib::ustring> test_name;
-    Glib::Property<bool> passed;
-    Glib::Property<std::size_t> execution_time_ms;
-    Glib::Property<std::vector<TestResult::Partial>> partial_results;
+    Glib::Property<std::shared_ptr<TestResult>> result;
 };
 
 } // namespace optifol

@@ -51,7 +51,7 @@ void IndexNewRequirementPopover::confirm_button_clicked() const
         description_entry->get_buffer()->get_text(),
         priority_entry->get_selected());
 
-    popover_logger->debug("Created new subsystem requirement with name \"" + name_entry->get_text() + "\".");
+    popover_logger->info("Created new subsystem requirement with name \"" + name_entry->get_text() + "\".");
     clear_inputs();
 }
 

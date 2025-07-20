@@ -132,7 +132,7 @@ public:
 
     [[nodiscard]] std::string_view observe_latex_statement() const noexcept;
 
-    void emplace_test_result(std::unique_ptr<TestResult>&& test_result);
+    void emplace_test_result(const std::shared_ptr<TestResult> &test_result);
 
     [[nodiscard]] const std::optional<Test>& observe_test() const noexcept;
 

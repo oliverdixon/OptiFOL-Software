@@ -142,9 +142,9 @@ std::string_view Requirement::observe_latex_statement() const noexcept
     return latex_input_statement;
 }
 
-void Requirement::emplace_test_result(std::unique_ptr<TestResult> &&test_result)
+void Requirement::emplace_test_result(const std::shared_ptr<TestResult> &test_result)
 {
-    test->emplace_result(std::move(test_result));
+    test->emplace_result(test_result);
 }
 
 const std::optional<Test> &Requirement::observe_test() const noexcept

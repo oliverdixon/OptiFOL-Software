@@ -44,14 +44,16 @@ public:
     void propagate_pending_results();
 
 private:
+    static const log4cxx::LoggerPtr area_logger;
+
     Glib::RefPtr<const Subsystem> active_subsystem;
     Glib::RefPtr<Gio::ListStore<Requirement>> data_model;
     Glib::RefPtr<Gtk::SingleSelection> selection_model = Gtk::SingleSelection::create();
 
-    std::unique_ptr<ITestListener> test_listener;
+    std::unique_ptr<TestListenerBase> test_listener;
 
-    std::unordered_map<TestResult *, std::unique_ptr<TestResult>, std::hash<TestResult>,
-        DereferencingEqualityFunctor<const TestResult *, const TestResult>> pending_test_results;
+    std::unordered_map<TestResult *, std::shared_ptr<TestResult>, std::hash<TestResult>,
+        DereferencingEqualityFunctor<const TestResult *, const TestResult>> received_test_results;
 };
 
 } // namespace optifol

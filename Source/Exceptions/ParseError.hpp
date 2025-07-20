@@ -22,18 +22,13 @@ class ParseError final :
         public std::runtime_error
 {
 public:
-    explicit ParseError(const std::string& message, const std::size_t column):
-        std::runtime_error(std::string("Parsing Error: ") + message),
-        column(column)
+    explicit ParseError(const std::string& message, const std::size_t):
+        std::runtime_error(std::string("Parsing Error: ") + message)
     { }
 
-    explicit ParseError(const char* message, const std::size_t column):
-        std::runtime_error(std::string("Parsing Error: ") + message),
-        column(column)
+    explicit ParseError(const char* message, const std::size_t):
+        std::runtime_error(std::string("Parsing Error: ") + message)
     { }
-
-private:
-    std::size_t column;
 };
 
 }

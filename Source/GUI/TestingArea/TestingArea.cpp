@@ -16,6 +16,8 @@
 namespace optifol
 {
 
+const log4cxx::LoggerPtr TestingArea::area_logger = Logging::get_logger({"GUI", "Testing"});
+
 TestingArea::TestingArea(Gtk::Builder &builder) :
     test_listener(std::make_unique<GoogleTestListener>(sigc::mem_fun(*this, &TestingArea::accept_new_result),
             sigc::mem_fun(*this, &TestingArea::propagate_pending_results)))
@@ -38,18 +40,17 @@ void TestingArea::deselect_model()
 
 const Subsystem *TestingArea::observe_active_subsystem() const noexcept
 {
-    return nullptr; // TODO
+    return active_subsystem.get();
 }
 
 guint TestingArea::get_selected_index() const
 {
-    // TODO
-    return GTK_INVALID_LIST_POSITION;
+    return selection_model->get_selected();
 }
 
 void TestingArea::accept_new_result(std::unique_ptr<TestResult> &&test_result)
 {
-    pending_test_results.emplace(test_result.get(), std::move(test_result));
+    received_test_results.emplace(test_result.get(), std::move(test_result));
 }
 
 void TestingArea::propagate_pending_results()
@@ -64,23 +65,20 @@ void TestingArea::propagate_pending_results()
         const auto& glib_suite_name = test->property_test_suite().get_value();
         const auto& glib_test_name = test->property_test_name().get_value();
 
-        const std::string_view suite_name{glib_suite_name->c_str(), glib_suite_name->bytes()};
-        const std::string_view test_name{glib_test_name.c_str(), glib_test_name.bytes()};
-
         if (test.has_value() == true) {
-            const auto it = pending_test_results.find(
-                    std::make_pair(suite_name, test_name));
 
-            if (it != pending_test_results.cend()) {
-                requirement->emplace_test_result(std::move(it->second));
+            const auto it = received_test_results.find(std::make_pair(
+                std::string_view(glib_suite_name->c_str(), glib_suite_name->bytes()),
+                std::string_view(glib_test_name.c_str(), glib_test_name.bytes())
+            ));
 
-                /*
-                 * TODO: MAJOR BUG: multiple requirements may use the same test. So we should be used shared_ptr,
-                 *  not unique_ptr, in the GoogleTest infrastructure. There can still be a notion of "stealing", just
-                 *  using shared_ptr(shared_ptr&&) move c'tor.
-                 */
-                pending_test_results.erase(it);
-            }
+            if (it != received_test_results.cend()) {
+                requirement->emplace_test_result(it->second);
+                area_logger->debug("Matched parsed test result \"" + *glib_suite_name + '.' + glib_test_name +
+                    "\" with requirement \"" + requirement->property_name().get_value() + "\".");
+            } else
+                area_logger->debug("Could not match requirement \"" + requirement->property_name().get_value() +
+                    "\" with any parsed test.");
         }
     }
 }

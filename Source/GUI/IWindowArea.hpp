@@ -80,7 +80,6 @@ public:
      * @brief Retrieves the index of the selected model-dependent item
      * @return The index of the item selected within the area's data model, or @ref GTK_INVALID_LIST_POSITION if no item
      *  is selected
-     * @example RequirementsIndexArea.hpp
      */
     virtual guint get_selected_index() const = 0;
 };

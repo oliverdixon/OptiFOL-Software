@@ -356,7 +356,7 @@ add_executable(OptifolGUI
         Source/GUI/RequirementsIndexArea/IndexDuplicateRequirementPopover.hpp
         Source/GUI/RequirementsIndexArea/IndexDeleteRequirementPopover.cpp
         Source/GUI/RequirementsIndexArea/IndexDeleteRequirementPopover.hpp
-        Source/UserTesting/ITestListener.hpp
+        Source/UserTesting/TestListenerBase.hpp
         Source/UserTesting/Google/GoogleTestListener.cpp
         Source/UserTesting/Google/GoogleTestListener.hpp
         Source/Storage/Test.cpp
