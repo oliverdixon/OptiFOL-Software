@@ -24,7 +24,6 @@ Test::Test(const std::string_view packed_input_line) :
     Glib::ObjectBase("Test"),
     target_executable(*this, "Test-target-executable"),
     test_suite(*this, "Test-test-suite"),
-    test_name(*this, "Test-test-name"),
     result(*this, "Test-result")
 {
     using std::operator""sv;
@@ -46,31 +45,31 @@ Test::Test(const std::string_view packed_input_line) :
     if (it == tokens.cend())
         throw ParseError("No test name provided in unit test specification \"" + std::string(packed_input_line)
             + "\".", 0);
-    test_name.set_value(std::string(std::string_view(*it++)));
 
+    property_name().set_value(std::string(std::string_view(*it++)));
     if (it != tokens.cend())
         throw ParseError("Additional parameters provided in unit test specification \"" + std::string(packed_input_line)
             + "\".", 0);
 }
 
-Test::Test(std::string target_executable, std::string test_suite, std::string test_name) :
+Test::Test(const std::string& target_executable, const std::string& test_suite, const std::string& test_name) :
     Glib::ObjectBase("Test"),
-    target_executable(*this, "Test-target-executable", std::move(target_executable)),
-    test_suite(*this, "Test-test-suite", std::move(test_suite)),
-    test_name(*this, "Test-test-name", std::move(test_name)),
+    target_executable(*this, "Test-target-executable", target_executable),
+    test_suite(*this, "Test-test-suite", test_suite),
     result(*this, "Test-result")
 {
+    property_name().set_value(test_name);
 }
 
-Test::Test(std::string target_executable, std::string test_suite, std::string test_name, BaseObjectType *cobject,
-        const Glib::RefPtr<Gtk::Builder> &builder) :
+Test::Test(const std::string& target_executable, const std::string& test_suite, const std::string& test_name,
+        BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &builder) :
     Glib::ObjectBase("Test"),
     StorageObjectBase(cobject, builder),
-    target_executable(*this, "Test-target-executable", std::move(target_executable)),
-    test_suite(*this, "Test-test-suite", std::move(test_suite)),
-    test_name(*this, "Test-test-name", std::move(test_name)),
+    target_executable(*this, "Test-target-executable", target_executable),
+    test_suite(*this, "Test-test-suite", test_suite),
     result(*this, "Test-result")
 {
+    property_name().set_value(test_name);
 }
 
 void Test::emplace_result(const std::shared_ptr<TestResult> &test_result)
@@ -85,9 +84,9 @@ void Test::emplace_result(const std::shared_ptr<TestResult> &test_result)
         throw SemanticException("Incoming test result was from a different suite: \"" + *result_suite_value +
             "\", but needed \"" + *expected_suite_value + "\".");
 
-    if (test_result->get_test_name() != Glib::UStringView(test_name))
+    if (test_result->get_test_name() != Glib::UStringView(property_name().get_value()))
         throw SemanticException("Incoming test result was from a different test: \"" + test_result->get_test_name() +
-            "\", but needed \"" + test_name + "\".");
+            "\", but needed \"" + property_name().get_value() + "\".");
 
     result.set_value(test_result);
 }
@@ -107,11 +106,6 @@ Glib::PropertyProxy<std::optional<Glib::ustring>> Test::property_test_suite()
     return test_suite.get_proxy();
 }
 
-Glib::PropertyProxy<Glib::ustring> Test::property_test_name()
-{
-    return test_name.get_proxy();
-}
-
 Glib::PropertyProxy<std::shared_ptr<TestResult>> Test::property_result()
 {
     return result.get_proxy();
@@ -120,11 +114,6 @@ Glib::PropertyProxy<std::shared_ptr<TestResult>> Test::property_result()
 Glib::PropertyProxy_ReadOnly<std::optional<Glib::ustring>> Test::property_test_suite() const
 {
     return test_suite.get_proxy();
-}
-
-Glib::PropertyProxy_ReadOnly<Glib::ustring> Test::property_test_name() const
-{
-    return test_name.get_proxy();
 }
 
 Glib::PropertyProxy_ReadOnly<std::shared_ptr<TestResult>> Test::property_result() const

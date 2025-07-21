@@ -109,14 +109,14 @@ void ProcessExecutor::Stream::append_line_to_buffer(const Glib::RefPtr<Gtk::Text
 
 bool ProcessExecutor::stream_callback(const Glib::IOCondition condition, const Stream *stream_metadata) const
 {
-    if ((condition & Glib::IOCondition::IO_IN) == Glib::IOCondition::IO_IN) {
+    if (std::to_underlying(condition & (Glib::IOCondition::IO_IN | Glib::IOCondition::IO_HUP)) != 0) {
         stream_metadata->append_line_to_buffer(output);
         return true;
     }
 
     /*
-     * If we've triggered the callback with something other than a IOCondition::IO_IN, something unexpected has
-     * happened and Glib is indicating an error state.
+     * If we've triggered the callback with something other than a IOCondition::IO_IN or IOCondition::IO_HUP, something
+     * unexpected has happened and Glib is indicating an error state.
      */
     logger->warn("Abnormal IO condition reported by GLib for subprocess stream: code " +
             std::to_string(std::to_underlying(condition)) + '.');

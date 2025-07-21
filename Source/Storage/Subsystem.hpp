@@ -19,6 +19,7 @@
 #include "AnalysisGroup.hpp"
 #include "Requirement.hpp"
 #include "StorageObjectBase.hpp"
+#include "TestGroup.hpp"
 #include "TreeNode.hpp"
 
 namespace optifol
@@ -29,9 +30,8 @@ namespace optifol
  * @brief The Subsystem storage object forms the second level of the Optifol object hierarchy; it belongs to a Project,
  *  and consists of many individual requirements.
  */
-class Subsystem :
-        public StorageObjectBase,
-        public TreeNode
+class Subsystem : public StorageObjectBase,
+                  public TreeNode
 {
 public:
     /**
@@ -40,7 +40,7 @@ public:
      * @param parent The owning node: typically a Project (if root-level Subsystem) or Subsystem if a member of a nested
      *  hierarchy.
      */
-    explicit Subsystem(std::string&& name, TreeNode * parent);
+    explicit Subsystem(const Glib::ustring &name, TreeNode *parent);
 
     /**
      * @brief Create a new Subsystem with the given name and register in the Glib GType system
@@ -50,8 +50,8 @@ public:
      * @param parent The owning node: typically a Project (if root-level Subsystem) or Subsystem if a member of a nested
      *  hierarchy.
      */
-    Subsystem(std::string&& name, BaseObjectType* cobject, const Glib::RefPtr<Gtk::Builder>& builder,
-        TreeNode * parent);
+    Subsystem(const Glib::ustring &name, BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &builder,
+            TreeNode *parent);
 
     /**
      * @brief Tests a couple of subsystem for equality
@@ -59,7 +59,7 @@ public:
      * @return Is the current subsystem the same as the other subsystem?
      * @note This comparator determines equality by subsystem metadata.
      */
-    bool operator==(const Subsystem& other) const noexcept;
+    bool operator==(const Subsystem &other) const noexcept;
 
     /**
      * @brief Recursively generate a human-readable path of the Subsystem hierarchy, delimited with oblique characters
@@ -73,10 +73,20 @@ public:
     // TODO: shouldn't be public.
     Glib::RefPtr<Gio::ListStore<AnalysisGroup>> analysis_groups = Gio::ListStore<AnalysisGroup>::create();
 
+    // TODO: shouldn't be public.
+    Glib::RefPtr<Gio::ListStore<TestGroup>> test_groups = Gio::ListStore<TestGroup>::create();
+
 private:
+    /**
+     * @brief Configure the Subsystem to a know initial state, including the configuration of signal handlers for
+     *  changing internal list models, and construction of default test and analysis groups.
+     * @param name The initial name of the Subsystem
+     */
+    void setup_groups(const Glib::ustring &name);
+
     mutable std::pair<std::size_t, std::string> fully_qualified_path_cache;
 };
 
-}
+} // namespace optifol
 
 #endif

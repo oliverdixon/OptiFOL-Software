@@ -4,7 +4,6 @@
   -->
 
 <object class="GtkBox">
-    <!--
     <child>
         <object class="GtkLabel" id="testing_advice_unselected">
             <style>
@@ -20,20 +19,19 @@
             <property name="max-width-chars">80</property>
             <property name="wrap">TRUE</property>
             <property name="label">
-                <![CDATA[<b>The Analysis View is not applicable to Project-level scopes.</b>
+                <![CDATA[<b>The Testing View is not applicable to Project-level scopes.</b>
 
-The <i>Analysis View</i> allows organisation of Requirements defined in the selected Subsystem into <i>Analysis Groups</i>.
+The <i>Testing View</i> allows organisation of Test-associated Requirements defined in the selected Subsystem into <i>Test Groups</i>.
 
-Analysis Groups can be individually checked for logical consistency and scanned for redundant entries.
+Test Groups can be individually subject to execution under an external unit testing framework, such as Google Test, to determine software-level satisfaction of Requirements.
 
-To prepare Analysis Groups, select a Subsystem from the left-hand <i>Project Explorer</i> pane and define some Requirements in the <i>Requirements Index</i> view.]]>
+To prepare Test Groups, select a Subsystem from the left-hand <i>Project Explorer</i> pane and define some Requirements in the <i>Requirements Index</i> view.]]>
             </property>
         </object>
     </child>
-    -->
     <child>
-        <object class="GtkPaned" id="testing_index_content">
-            <property name="visible">TRUE</property>
+        <object class="GtkPaned" id="testing_content">
+            <property name="visible">FALSE</property>
             <property name="orientation">vertical</property>
             <child>
                 <object class="GtkBox">

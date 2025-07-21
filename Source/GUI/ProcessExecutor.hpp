@@ -25,6 +25,7 @@ namespace optifol
 /**
  * @class ProcessExecutor
  * @brief Provides a RAII container for asynchronous execution of external processes under the Glib framework.
+ *
  * @details The ProcessExecutor wraps the @ref Glib::spawn_async_with_pipes in an RAII container and provides the
  *  following helpful capabilities:
  *  <ul>
@@ -33,6 +34,9 @@ namespace optifol
  *      <li>Asynchronously executing the child and invoking a synchronous callback on child exit; and</li>
  *      <li>Providing standard RAII destruction capability, such that listening streams are killed correctly.</li>
  *  </ul>
+ *
+ * @todo Due to buffering, stderr and stdout lines may not appear on the buffer in the order in which they were sent
+ *   from the subprocess. This is a known issue and will be fixed.
  */
 class ProcessExecutor
 {

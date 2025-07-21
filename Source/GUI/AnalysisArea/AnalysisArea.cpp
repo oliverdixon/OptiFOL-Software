@@ -90,6 +90,7 @@ AnalysisArea::AnalysisArea(Gtk::Builder &builder) :
             const auto factory = Gtk::SignalListItemFactory::create();
 
             if (gtk_id == "analysis_requirement_name") {
+
                 factory->signal_setup().connect(sigc::bind(&GTKHelpers::on_setup_expandable_label, false));
                 factory->signal_bind().connect([this](const Glib::RefPtr<Gtk::ListItem> &list_item)
                 {
@@ -100,13 +101,19 @@ AnalysisArea::AnalysisArea(Gtk::Builder &builder) :
                      */
                     GTKHelpers::on_bind_expandable_name(list_item, tree_model);
                 });
+
             } else if (gtk_id == "analysis_requirement_statement") {
+
                 factory->signal_setup().connect(sigc::bind(&GTKHelpers::on_setup_flat_label, true));
                 factory->signal_bind().connect(sigc::ptr_fun(&RequirementsIndexArea::on_bind_property_statement));
+
             } else if (gtk_id == "analysis_requirement_cnf") {
+
                 factory->signal_setup().connect(sigc::bind(&GTKHelpers::on_setup_flat_label, true));
                 factory->signal_bind().connect(sigc::ptr_fun(&RequirementsIndexArea::on_bind_property_normalised));
+
             } else
+
                 // Jump out here if unrecognised, so all further code can assume a factory was configured.
                 continue;
 
