@@ -104,26 +104,26 @@ RequirementsIndexArea::RequirementsIndexArea(Gtk::Builder& builder) :
             const auto factory = Gtk::SignalListItemFactory::create();
 
             if (gtk_id == "requirement_name") {
-                factory->signal_setup().connect(sigc::bind(&GTKHelpers::on_setup_flat_label, false));
-                factory->signal_bind().connect(sigc::ptr_fun(&GTKHelpers::on_bind_flat_name));
+                factory->signal_setup().connect(sigc::bind(&GTKHelpers::setup_label, false));
+                factory->signal_bind().connect(sigc::ptr_fun(&StorageObjectBase::bind_name));
             } else if (gtk_id == "requirement_statement") {
-                factory->signal_setup().connect(sigc::bind(&GTKHelpers::on_setup_flat_label, true));
+                factory->signal_setup().connect(sigc::bind(&GTKHelpers::setup_label, true));
                 factory->signal_bind().connect(sigc::ptr_fun(&RequirementsIndexArea::on_bind_property_statement));
             } else if (gtk_id == "requirement_description") {
-                factory->signal_setup().connect(sigc::bind(&GTKHelpers::on_setup_flat_label, false));
+                factory->signal_setup().connect(sigc::bind(&GTKHelpers::setup_label, false));
                 factory->signal_bind().connect(sigc::ptr_fun(&RequirementsIndexArea::on_bind_property_description));
             } else if (gtk_id == "requirement_priority") {
-                factory->signal_setup().connect(sigc::bind(&GTKHelpers::on_setup_flat_label, false));
+                factory->signal_setup().connect(sigc::bind(&GTKHelpers::setup_label, false));
                 factory->signal_bind().connect(sigc::ptr_fun(&RequirementsIndexArea::on_bind_property_priority));
             } else if (gtk_id == "requirement_test") {
-                factory->signal_setup().connect(sigc::bind(&GTKHelpers::on_setup_flat_label, false));
+                factory->signal_setup().connect(sigc::bind(&GTKHelpers::setup_label, false));
                 factory->signal_bind().connect(sigc::ptr_fun(&RequirementsIndexArea::on_bind_property_test_input));
             } else if (gtk_id == "requirement_created") {
-                factory->signal_setup().connect(sigc::bind(&GTKHelpers::on_setup_flat_label, false));
-                factory->signal_bind().connect(sigc::ptr_fun(&GTKHelpers::on_bind_flat_creation_time));
+                factory->signal_setup().connect(sigc::bind(&GTKHelpers::setup_label, false));
+                factory->signal_bind().connect(sigc::ptr_fun(&StorageObjectBase::bind_creation_time));
             } else if (gtk_id == "requirement_modified") {
-                factory->signal_setup().connect(sigc::bind(&GTKHelpers::on_setup_flat_label, false));
-                factory->signal_bind().connect(sigc::ptr_fun(&GTKHelpers::on_bind_flat_modified_time));
+                factory->signal_setup().connect(sigc::bind(&GTKHelpers::setup_label, false));
+                factory->signal_bind().connect(sigc::ptr_fun(&StorageObjectBase::bind_modification_time));
             } else
                 // Jump out here if unrecognised, so all further code can assume a factory was configured.
                 continue;

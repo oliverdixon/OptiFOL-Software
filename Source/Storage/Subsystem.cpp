@@ -59,28 +59,45 @@ void Subsystem::setup_groups(const Glib::ustring &name)
     analysis_groups->append(Glib::make_refptr_for_instance(new AnalysisGroup("Unassigned Requirements")));
     test_groups->append(Glib::make_refptr_for_instance(new TestGroup("Unassigned Requirements")));
 
-    requirements->signal_items_changed().connect([this](const guint position, const guint removed, const guint added)
+    requirements->signal_items_changed().connect([this](const guint position,
+        const guint removed_count, const guint added_count)
     {
         const auto default_analysis_group = analysis_groups->get_item(0);
         const auto default_test_group = test_groups->get_item(0);
 
-        if (added == 1) {
-            default_analysis_group->requirements->append(requirements->get_item(position));
-            default_test_group->requirements->append(requirements->get_item(position));
+        if (added_count == 1) {
+            const auto candidate = requirements->get_item(position);
+
+            if (candidate->is_analysis_ready())
+                default_analysis_group->insert(candidate);
+
+            if (candidate->observe_test().has_value())
+                default_test_group->insert(candidate);
         }
 
-        else if (added > 1) {
-            std::vector<Glib::RefPtr<Requirement>> additions;
-            additions.reserve(added);
+        else if (added_count > 1) {
+            std::vector<Glib::RefPtr<Requirement>> analysis_additions;
+            std::vector<Glib::RefPtr<Requirement>> testing_additions;
 
-            for (guint idx = position; idx < added; ++idx)
-                additions.push_back(requirements->get_item(idx));
+            analysis_additions.reserve(added_count);
+            testing_additions.reserve(added_count);
 
-            default_analysis_group->requirements->splice(0, 0, additions);
-            default_test_group->requirements->splice(0, 0, additions);
+            for (guint added_list_idx = position; added_list_idx < added_count; ++added_list_idx) {
+                const auto candidate = requirements->get_item(added_list_idx);
+
+                if (candidate->is_analysis_ready())
+                    analysis_additions.push_back(candidate);
+
+                if (candidate->observe_test().has_value())
+                    testing_additions.push_back(candidate);
+            }
+
+            default_analysis_group->insert(analysis_additions);
+            default_test_group->insert(testing_additions);
         }
 
         // TODO how do we handle removals? From the unassigned group is hard enough, but what about all others?
+        std::ignore = removed_count;
     });
 
     assert(analysis_groups->get_n_items() == 1);

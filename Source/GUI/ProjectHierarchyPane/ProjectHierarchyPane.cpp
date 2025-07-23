@@ -82,8 +82,8 @@ ProjectHierarchyPane::ProjectHierarchyPane(
             });
 
     const auto factory = Gtk::SignalListItemFactory::create();
-    factory->signal_setup().connect(sigc::bind(&GTKHelpers::on_setup_expandable_label, false));
-    factory->signal_bind().connect(sigc::bind(&GTKHelpers::on_bind_expandable_name, tree_model));
+    factory->signal_setup().connect(sigc::bind(&GTKHelpers::setup_expandable_label, false));
+    factory->signal_bind().connect(sigc::bind(&StorageObjectBase::bind_name_property_expandable, tree_model));
     view->set_factory(factory);
 
     configure_new_project_popover(builder);

@@ -14,16 +14,15 @@
 #ifndef ANALYSISGROUP_HPP
 #define ANALYSISGROUP_HPP
 
-#include <giomm/liststore.h>
-
-#include "Requirement.hpp"
+#include "RequirementGroupBase.hpp"
 #include "StorageObjectBase.hpp"
 
 namespace optifol
 {
 
 class AnalysisGroup :
-        public StorageObjectBase
+        public StorageObjectBase,
+        public RequirementGroupBase
 {
 public:
     /**
@@ -33,9 +32,6 @@ public:
     explicit AnalysisGroup(const Glib::ustring& name);
 
     AnalysisGroup(const Glib::ustring& name, BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &builder);
-
-    // TODO: shouldn't be public
-    Glib::RefPtr<Gio::ListStore<Requirement>> requirements = Gio::ListStore<Requirement>::create();
 };
 
 }

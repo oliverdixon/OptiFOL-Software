@@ -12,6 +12,10 @@
  */
 
 #include "Requirement.hpp"
+
+#include <gtkmm/label.h>
+#include <gtkmm/listitem.h>
+
 #include "../Exceptions/SemanticException.hpp"
 #include "../Logging.hpp"
 #include "../Visitors/MutableTargets/Observers/LaTeXSerialisationVisitor.hpp"
@@ -163,6 +167,23 @@ void Requirement::emplace_test_result(const std::shared_ptr<TestResult> &test_re
 const std::optional<Test> &Requirement::observe_test() const noexcept
 {
     return test;
+}
+std::pair<const Requirement *, Gtk::Label *> Requirement::requirement_bind_helper(Gtk::ListItem &list_item)
+{
+    const auto &requirement = std::dynamic_pointer_cast<const Requirement>(list_item.get_item());
+    if (requirement == nullptr)
+        return {};
+
+    const auto label = dynamic_cast<Gtk::Label *>(list_item.get_child());
+    if (label == nullptr)
+        return {};
+
+    return {requirement.get(), label};
+}
+
+bool Requirement::is_analysis_ready() const noexcept
+{
+    return prepared_ast != nullptr;
 }
 
 void Requirement::setup_properties(std::string &&requirement_name, std::string &&requirement_statement,

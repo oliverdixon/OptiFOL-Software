@@ -91,7 +91,7 @@ AnalysisArea::AnalysisArea(Gtk::Builder &builder) :
 
             if (gtk_id == "analysis_requirement_name") {
 
-                factory->signal_setup().connect(sigc::bind(&GTKHelpers::on_setup_expandable_label, false));
+                factory->signal_setup().connect(sigc::bind(&GTKHelpers::setup_expandable_label, false));
                 factory->signal_bind().connect([this](const Glib::RefPtr<Gtk::ListItem> &list_item)
                 {
                     /*
@@ -99,17 +99,17 @@ AnalysisArea::AnalysisArea(Gtk::Builder &builder) :
                      * on execution of the bind call. Hence, calling bind(tree_model) on the below function would fix
                      * all subsequent invocations to the initial value of the tree_model.
                      */
-                    GTKHelpers::on_bind_expandable_name(list_item, tree_model);
+                    StorageObjectBase::bind_name_property_expandable(list_item, tree_model);
                 });
 
             } else if (gtk_id == "analysis_requirement_statement") {
 
-                factory->signal_setup().connect(sigc::bind(&GTKHelpers::on_setup_flat_label, true));
+                factory->signal_setup().connect(sigc::bind(&GTKHelpers::setup_label, true));
                 factory->signal_bind().connect(sigc::ptr_fun(&RequirementsIndexArea::on_bind_property_statement));
 
             } else if (gtk_id == "analysis_requirement_cnf") {
 
-                factory->signal_setup().connect(sigc::bind(&GTKHelpers::on_setup_flat_label, true));
+                factory->signal_setup().connect(sigc::bind(&GTKHelpers::setup_label, true));
                 factory->signal_bind().connect(sigc::ptr_fun(&RequirementsIndexArea::on_bind_property_normalised));
 
             } else
@@ -160,7 +160,7 @@ Glib::RefPtr<Gio::ListModel> AnalysisArea::analysis_group_expand(const Glib::Ref
     const auto candidate = std::dynamic_pointer_cast<AnalysisGroup>(item);
 
     if (candidate != nullptr)
-        return candidate->requirements;
+        return candidate->get_mutable_list();
 
     return nullptr;
 }

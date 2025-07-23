@@ -25,6 +25,14 @@
 #include "StorageObjectBase.hpp"
 #include "Test.hpp"
 
+namespace Gtk
+{
+
+class ListItem;
+class Label;
+
+}
+
 namespace optifol
 {
 
@@ -139,6 +147,14 @@ public:
     void emplace_test_result(const std::shared_ptr<TestResult> &test_result);
 
     [[nodiscard]] const std::optional<Test>& observe_test() const noexcept;
+
+    static std::pair<const Requirement *, Gtk::Label *> requirement_bind_helper(Gtk::ListItem &list_item);
+
+    /**
+     * @brief Determines the suitability of the Requirement for participation in formal analysis.
+     * @return Does the Requirement have a prepared and normalised statement AST?
+     */
+    [[nodiscard]] bool is_analysis_ready() const noexcept;
 
 private:
     static const log4cxx::LoggerPtr req_logger;

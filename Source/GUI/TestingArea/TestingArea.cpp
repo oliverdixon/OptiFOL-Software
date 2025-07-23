@@ -36,7 +36,6 @@ TestingArea::TestingArea(Gtk::Builder &builder) :
     selection_model->set_can_unselect(true);
 
     run_tests_button->signal_clicked().connect(sigc::mem_fun(*this, &TestingArea::execute_tests));
-
     test_groups_view->set_model(selection_model);
 
     const auto columns = test_groups_view->get_columns();
@@ -51,33 +50,66 @@ TestingArea::TestingArea(Gtk::Builder &builder) :
 
             if (gtk_id == "test_requirement_name") {
 
-                factory->signal_setup().connect(sigc::bind(&GTKHelpers::on_setup_expandable_label, false));
+                factory->signal_setup().connect(sigc::bind(&GTKHelpers::setup_expandable_label, false));
                 factory->signal_bind().connect([this](const Glib::RefPtr<Gtk::ListItem> &list_item)
-                        { GTKHelpers::on_bind_expandable_name(list_item, tree_model); });
+                        { StorageObjectBase::bind_name_property_expandable(list_item, tree_model); });
 
             } else if (gtk_id == "test_target_executable") {
 
-                using ReturnType = Glib::ustring;
-
-                factory->signal_setup().connect(sigc::bind(&GTKHelpers::on_setup_flat_label, true));
-                factory->signal_bind().connect(sigc::bind(&TestingArea::on_bind_test_property<ReturnType>,
-                    sigc::mem_fun(static_cast<TestPropertyGetter<ReturnType>>(&Test::property_target_executable))));
+                factory->signal_setup().connect(sigc::bind(&GTKHelpers::setup_label, false));
+                factory->signal_bind().connect([](const Glib::RefPtr<Gtk::ListItem> & list_item)
+                {
+                    const auto [requirement, label] = Requirement::requirement_bind_helper(*list_item);
+                    GTKHelpers::bind_any_property(
+                        sigc::mem_fun(static_cast<TestGetter<Glib::ustring>>(&Test::property_target_executable)),
+                        *requirement->observe_test(), label);
+                });
 
             } else if (gtk_id == "test_suite") {
 
-                using ReturnType = std::optional<Glib::ustring>;
-
-                factory->signal_setup().connect(sigc::bind(&GTKHelpers::on_setup_flat_label, true));
-                factory->signal_bind().connect(sigc::bind(&TestingArea::on_bind_test_property_opt<ReturnType>,
-                    sigc::mem_fun(static_cast<TestPropertyGetter<ReturnType>>(&Test::property_test_suite))));
+                factory->signal_setup().connect(sigc::bind(&GTKHelpers::setup_label, false));
+                factory->signal_bind().connect([](const Glib::RefPtr<Gtk::ListItem> & list_item)
+                {
+                    const auto [requirement, label] = Requirement::requirement_bind_helper(*list_item);
+                    GTKHelpers::bind_any_property(
+                        sigc::mem_fun(static_cast<TestGetter<std::optional<Glib::ustring>>>(&Test::property_test_suite)),
+                        *requirement->observe_test(), label);
+                });
 
             } else if (gtk_id == "test_name") {
 
-                using ReturnType = Glib::ustring;
+                factory->signal_setup().connect(sigc::bind(&GTKHelpers::setup_label, false));
+                factory->signal_bind().connect([](const Glib::RefPtr<Gtk::ListItem> & list_item)
+                {
+                    const auto [requirement, label] = Requirement::requirement_bind_helper(*list_item);
+                    GTKHelpers::bind_any_property(
+                        sigc::mem_fun(static_cast<TestGetter<Glib::ustring>>(&Test::property_name)),
+                        *requirement->observe_test(), label);
+                });
 
-                factory->signal_setup().connect(sigc::bind(&GTKHelpers::on_setup_flat_label, true));
-                factory->signal_bind().connect(sigc::bind(&TestingArea::on_bind_test_property<ReturnType>,
-                    sigc::mem_fun(static_cast<TestPropertyGetter<ReturnType>>(&Test::property_name))));
+            } else if (gtk_id == "test_status") {
+
+                factory->signal_setup().connect(sigc::bind(&GTKHelpers::setup_label, false));
+                factory->signal_bind().connect([](const Glib::RefPtr<Gtk::ListItem> & list_item) -> void
+                {
+                    const auto [requirement, label] = Requirement::requirement_bind_helper(*list_item);
+                    const auto& test = requirement->observe_test();
+                    if (label == nullptr || test.has_value() == false)
+                        return;
+
+                    Glib::Binding::bind_property(
+                        test->property_result(),
+                        label->property_label(),
+                        Glib::Binding::Flags::SYNC_CREATE,
+                        [](const std::shared_ptr<TestResult> &result) -> std::optional<Glib::ustring>
+                        {
+                            if (result == nullptr)
+                                return "Unknown";
+
+                            return result->has_passed() ? "Passed" : "Failed";
+                        }
+                    );
+                });
 
             } else
                 // Jump out here if unrecognised, so all further code can assume a factory was configured.
@@ -130,7 +162,7 @@ void TestingArea::propagate_pending_results()
     const auto group_count = data_model->get_n_items();
 
     for (guint group_idx = 0; group_idx < group_count; ++group_idx) {
-        const auto grouped_requirements = data_model->get_item(group_idx)->requirements;
+        const auto grouped_requirements = data_model->get_item(group_idx)->get_mutable_list();
         const auto requirement_count = grouped_requirements->get_n_items();
 
         for (guint requirement_idx = 0; requirement_idx < requirement_count; ++requirement_idx) {
@@ -171,7 +203,7 @@ Glib::RefPtr<Gio::ListModel> TestingArea::test_group_expand(const Glib::RefPtr<G
     const auto candidate = std::dynamic_pointer_cast<TestGroup>(item);
 
     if (candidate != nullptr)
-        return candidate->requirements;
+        return candidate->get_mutable_list();
 
     return nullptr;
 }

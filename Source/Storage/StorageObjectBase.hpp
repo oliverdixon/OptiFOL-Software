@@ -21,6 +21,15 @@
 
 #include "../IHashable.hpp"
 
+namespace Gtk
+{
+
+class TreeListModel;
+class ListItem;
+class Label;
+
+}
+
 namespace optifol
 {
 
@@ -76,6 +85,38 @@ public:
     [[nodiscard]] Glib::PropertyProxy_ReadOnly<TimeT> property_modified_time() const;
 
     [[nodiscard]] std::size_t hash() const noexcept override;
+
+    /**
+     * @brief Establish a property-synched binding between the 'name' property of a StorableObjectBase object, and
+     *  a flat (non-expandable) label in a Gtk::ListView.
+     * @param list_item The list item provided by the GTK callback invocation
+     */
+    static void bind_name(const Glib::RefPtr<Gtk::ListItem> &list_item);
+
+    /**
+     * @brief Establish a property-synched binding between the 'creation time' property of a StorableObjectBase
+     *  object, and a flat (non-expandable) label in a Gtk::ListView by means of a locale-dependent formatting routine.
+     * @param list_item The list item provided by the GTK callback invocation
+     */
+    static void bind_creation_time(const Glib::RefPtr<Gtk::ListItem> &list_item);
+
+    /**
+     * @brief Establish a property-synched binding between the 'last-modified time' property of a StorableObjectBase-
+     *  like object, and a flat (non-expandable) label in a Gtk::ListView by means of a locale-dependent formatting
+     *  routine.
+     * @param list_item The list item provided by the GTK callback invocation
+     */
+    static void bind_modification_time(const Glib::RefPtr<Gtk::ListItem> &list_item);
+
+    /**
+     * @brief Establish a property-synched binding between the 'name' property of a StorableObjectBase-like object, and
+     *  a tree-expandable label in a Gtk::ListView with nested expanders.
+     * @param list_item The list item provided by the GTK callback invocation
+     * @param tree_model The tree model in which the list item exists, required to update expander responsibility
+     *  delegation
+     */
+    static void bind_name_property_expandable(
+            const Glib::RefPtr<Gtk::ListItem> &list_item, const Glib::RefPtr<Gtk::TreeListModel> &tree_model);
 
 protected:
     /**

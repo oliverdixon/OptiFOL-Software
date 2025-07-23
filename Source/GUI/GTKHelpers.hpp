@@ -14,6 +14,7 @@
 #ifndef GTKHELPERS_HPP
 #define GTKHELPERS_HPP
 
+#include <assert.h>
 #include <gtkmm.h>
 
 #include "../Storage/StorageObjectBase.hpp"
@@ -30,48 +31,26 @@ namespace mp_helpers
 
 /**
  * @class is_optional
- * @brief False case for testing specialisations of std::optional
+ * @brief False case for testing specialisations of @ref std::optional
  */
 template<typename>
-struct is_optional : std::false_type {};
+struct is_optional : std::false_type
+{
+};
 
 /**
  * @class is_optional
- * @brief True case for testing specialisations of std::optional
+ * @brief True case for testing specialisations of @ref std::optional
  * @tparam T The type to test
  */
 template<typename T>
-struct is_optional<std::optional<T>> : std::true_type {};
-
-/**
- * @class returns_optional
- * @brief False case for testing return-type optionality of const non-static member functions
- */
-template<typename>
-struct returns_optional : std::false_type {};
-
-/**
- * @class returns_optional
- * @brief True case for testing return-type optionality of const non-static member functions
- * @tparam CT The class in which the candidate function is a constant member
- * @tparam RT The return type of the candidate function
- * @tparam Args The argument-type vector of the candidate function
- */
-template<typename CT, typename RT, typename... Args>
-struct returns_optional<RT (CT::*)(Args...) const> : is_optional<RT> {};
+struct is_optional<std::optional<T>> : std::true_type
+{
+};
 
 // Current Clang 18 bug reports Doxygen violations for uses of @tparam on templated concepts.
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdocumentation"
-
-/**
- * @concept OptionalReturner
- * @brief Represents a function signature type, which represents that of a constant non-static member function returning
- *  some specialisation of std::optional.
- * @tparam FS The function signature of the function to test
- */
-template<typename FS>
-concept OptionalReturner = returns_optional<std::decay_t<FS>>::value;
 
 /**
  * @concept GTKWidget
@@ -91,7 +70,7 @@ concept GTKObject = std::derived_from<ObjectType, Glib::Object> && !std::is_abst
 
 #pragma clang diagnostic pop
 
-}
+} // namespace mp_helpers
 
 /**
  * @class GTKHelpers
@@ -116,7 +95,7 @@ public:
         const auto object = builder.get_object<ObjectType>(object_name);
         if (!object)
             throw std::runtime_error("Could not build \"" + std::string(segment_name) + "\": GTK object \"" +
-                object_name + "\" was not found");
+                    object_name + "\" was not found");
         return object;
     }
 
@@ -136,7 +115,7 @@ public:
         const auto widget = builder.get_widget<WidgetType>(widget_name);
         if (!widget)
             throw std::runtime_error("Could not build \"" + std::string(segment_name) + "\": GTK widget \"" +
-                widget_name + "\" was not found");
+                    widget_name + "\" was not found");
 
         return widget;
     }
@@ -146,7 +125,7 @@ public:
      * @param list_item The container into which the label should be emplaced
      * @param mono_styling Should the label be styled according to the standard monospace style?
      */
-    static void on_setup_flat_label(const Glib::RefPtr<Gtk::ListItem> &list_item, const bool mono_styling = false)
+    static void setup_label(const Glib::RefPtr<Gtk::ListItem> &list_item, const bool mono_styling = false)
     {
         const auto label = Gtk::make_managed<Gtk::Label>();
 
@@ -162,7 +141,7 @@ public:
      * @param list_item The container into which the label should be emplaced
      * @param mono_styling Should the label be styled according to the standard monospace style?
      */
-    static void on_setup_expandable_label(const Glib::RefPtr<Gtk::ListItem> &list_item, const bool mono_styling = false)
+    static void setup_expandable_label(const Glib::RefPtr<Gtk::ListItem> &list_item, const bool mono_styling = false)
     {
         const auto expander = Gtk::make_managed<Gtk::TreeExpander>();
         const auto label = Gtk::make_managed<Gtk::Label>();
@@ -176,90 +155,85 @@ public:
     }
 
     /**
-     * @brief Establish a property-synched binding between the 'name' property of a StorableObjectBase-like object, and
-     *  a flat (non-expandable) label in a Gtk::ListView.
-     * @param list_item The list item provided by the GTK callback invocation
+     * @brief Bind an arbitrary optional Glib::Property to a Gtk::Label
+     * @tparam BoundType The @ref std::optional specialisation type to be stringified and bound
+     * @tparam StoredType The class providing the property getter
+     * @param property_functor Unbound member function functor to provide observing property proxy, i.e.
+     *  Glib::PropertyProxy_ReadOnly.
+     * @param object The object instance containing the property to be bound
+     * @param label The destination label to contain a string representation of the property
+     * @details If the property functor provides a @ref std::optional containing a value, the populated label is
+     *  equivalent to the one provided by the non-@ref std::optional @ref bind_any_property. If the supplied property
+     *  does not contain a value, the label is marked "Empty" and styled with the @ref unknown_css_class_name CSS class.
      */
-    static void on_bind_flat_name(const Glib::RefPtr<Gtk::ListItem> &list_item)
+    template<typename BoundType, typename StoredType> requires mp_helpers::is_optional<BoundType>::value
+    static void bind_any_property(
+            sigc::mem_functor<Glib::PropertyProxy_ReadOnly<BoundType> (StoredType::*)() const> property_functor,
+            const StoredType &object, Gtk::Label *const label)
     {
-        const auto label = dynamic_cast<Gtk::Label *>(list_item->get_child());
-        const auto item = std::dynamic_pointer_cast<StorageObjectBase>(list_item->get_item());
+        if (label == nullptr)
+            return;
 
-        if (label != nullptr && item != nullptr)
-            Glib::Binding::bind_property(item->property_name(), label->property_label(),
-                Glib::Binding::Flags::SYNC_CREATE);
+        Glib::Binding::bind_property(
+            property_functor.operator()(object),
+            label->property_label(),
+            Glib::Binding::Flags::SYNC_CREATE,
+            [label](const BoundType &from) -> std::optional<Glib::ustring>
+            {
+                const bool is_already_unknown = label->has_css_class(unknown_css_class_name);
+                bool unknown_value = false;
+                std::string string_value;
+
+                if (from.has_value()) {
+                    if constexpr (std::is_convertible_v<Glib::ustring, decltype(*from)>)
+                        // If we have plain string value, just pass it through.
+                        string_value = *from;
+                    else
+                        // Otherwise, rely on the standard conversion functions with ADR.
+                        string_value = std::to_string(*from);
+                } else {
+                    unknown_value = true;
+                    string_value = "Empty";
+                }
+
+                if (is_already_unknown && !unknown_value)
+                    label->remove_css_class(unknown_css_class_name);
+                else if (!is_already_unknown && unknown_value)
+                    label->add_css_class(unknown_css_class_name);
+
+                return string_value;
+            }
+        );
     }
 
     /**
-     * @brief Establish a property-synched binding between the 'creation time' property of a StorableObjectBase-like
-     *  object, and a flat (non-expandable) label in a Gtk::ListView by means of a locale-dependent formatting routine.
-     * @param list_item The list item provided by the GTK callback invocation
+     * @brief Bind an arbitrary non-optional Glib::Property to a Gtk::Label
+     * @tparam BoundType The type to be stringified and bound
+     * @tparam StoredType The class providing the property getter
+     * @param property_functor Unbound member function functor to provide observing property proxy, i.e.
+     *  Glib::PropertyProxy_ReadOnly.
+     * @param object The object instance containing the property to be bound
+     * @param label The destination label to contain a string representation of the property
      */
-    static void on_bind_flat_creation_time(const Glib::RefPtr<Gtk::ListItem> &list_item)
+    template<typename BoundType, typename StoredType>
+    static void bind_any_property(
+            sigc::mem_functor<Glib::PropertyProxy_ReadOnly<BoundType> (StoredType::*)() const> property_functor,
+            const StoredType &object, Gtk::Label *const label)
     {
-        const auto label = dynamic_cast<Gtk::Label *>(list_item->get_child());
-        const auto item = std::dynamic_pointer_cast<StorageObjectBase>(list_item->get_item());
-
-        if (label != nullptr && item != nullptr)
-            Glib::Binding::bind_property(item->property_creation_time(), label->property_label(),
-                Glib::Binding::Flags::SYNC_CREATE, [](const std::chrono::system_clock::time_point& time)
-                {
-                    return std::format("{:%c}", time);
-                });
-    }
-
-    /**
-     * @brief Establish a property-synched binding between the 'last-modified time' property of a StorableObjectBase-
-     *  like object, and a flat (non-expandable) label in a Gtk::ListView by means of a locale-dependent formatting
-     *  routine.
-     * @param list_item The list item provided by the GTK callback invocation
-     */
-    static void on_bind_flat_modified_time(const Glib::RefPtr<Gtk::ListItem> &list_item)
-    {
-        const auto label = dynamic_cast<Gtk::Label *>(list_item->get_child());
-        const auto item = std::dynamic_pointer_cast<StorageObjectBase>(list_item->get_item());
-
-        if (label != nullptr && item != nullptr)
-            Glib::Binding::bind_property(item->property_modified_time(), label->property_label(),
-                Glib::Binding::Flags::SYNC_CREATE, [](const std::chrono::system_clock::time_point& time)
-                {
-                    return std::format("{:%c}", time);
-                });
-    }
-
-    /**
-     * @brief Establish a property-synched binding between the 'name' property of a StorableObjectBase-like object, and
-     *  a tree-expandable label in a Gtk::ListView with nested expanders.
-     * @param list_item The list item provided by the GTK callback invocation
-     * @param tree_model The tree model in which the list item exists, required to update expander responsibility
-     *  delegation
-     */
-    static void on_bind_expandable_name(const Glib::RefPtr<Gtk::ListItem> &list_item,
-        const Glib::RefPtr<Gtk::TreeListModel>& tree_model)
-    {
-        const auto position = list_item->get_position();
-        const auto model_item = std::dynamic_pointer_cast<StorageObjectBase>(list_item->
-            get_item());
-        const auto expander = dynamic_cast<Gtk::TreeExpander*>(list_item->get_child());
-
-        if (position == GTK_INVALID_LIST_POSITION || model_item == nullptr || expander == nullptr)
+        if (label == nullptr)
             return;
 
-        const auto gui_row = tree_model->get_row(position);
-        if (!gui_row)
-            return;
-
-        expander->set_list_row(gui_row);
-
-        const auto label = dynamic_cast<Gtk::Label*>(expander->get_child());
-        if (!label)
-            return;
-
-        Glib::Binding::bind_property(model_item->property_name(), label->property_label(),
-            Glib::Binding::Flags::SYNC_CREATE);
+        Glib::Binding::bind_property(
+            property_functor.operator()(object),
+            label->property_label(),
+            Glib::Binding::Flags::SYNC_CREATE
+        );
     }
+
+private:
+    static constexpr auto unknown_css_class_name = "optifol_unknown";
 };
 
-}
+} // namespace optifol
 
 #endif

@@ -113,15 +113,9 @@ public:
     void execute_tests();
 
 private:
-    template<typename ProxiedReturnType>
-    using TestPropertyGetter = Glib::PropertyProxy_ReadOnly<ProxiedReturnType> (Test::*)() const;
+    template<typename ReturnType>
+    using TestGetter = Glib::PropertyProxy_ReadOnly<ReturnType> (Test::*)() const;
 
-    static const log4cxx::LoggerPtr area_logger;
-    static const char *const area_name;
-
-    static Glib::RefPtr<Gio::ListModel> test_group_expand(const Glib::RefPtr<Glib::ObjectBase> &item);
-
-    // TODO: move to a location for all areas
     static std::optional<std::pair<const std::optional<Test>&, Gtk::Label *>> bind_helper(
         const Glib::RefPtr<Gtk::ListItem> &list_item)
     {
@@ -138,51 +132,10 @@ private:
         return std::make_pair(std::cref(requirement->observe_test()), label);
     }
 
-    // TODO: move to a location for all areas
-    template<typename GetterReturnType>
-    static void on_bind_test_property(const Glib::RefPtr<Gtk::ListItem> &list_item,
-            sigc::mem_functor<TestPropertyGetter<GetterReturnType>> property_functor)
-    {
-        const auto widgets = bind_helper(list_item);
+    static const log4cxx::LoggerPtr area_logger;
+    static const char *const area_name;
 
-        if (widgets.has_value()) {
-            if (widgets->first.has_value() && widgets->second != nullptr) {
-                Glib::Binding::bind_property(
-                    property_functor.operator()(*widgets->first),
-                    widgets->second->property_label(),
-                    Glib::Binding::Flags::SYNC_CREATE
-                );
-            }
-        }
-    }
-
-    // TODO: move to a location for all areas
-    template<typename GetterReturnType> requires mp_helpers::is_optional<GetterReturnType>::value
-    static void on_bind_test_property_opt(const Glib::RefPtr<Gtk::ListItem> &list_item,
-            sigc::mem_functor<TestPropertyGetter<GetterReturnType>> property_functor)
-    {
-        const auto widgets = bind_helper(list_item);
-
-        if (widgets.has_value()) {
-            if (widgets->first.has_value() && widgets->second != nullptr) {
-                Glib::Binding::bind_property(
-                    property_functor.operator()(*widgets->first),
-                    widgets->second->property_label(),
-                    Glib::Binding::Flags::SYNC_CREATE,
-                    [label = widgets->second](const GetterReturnType& from) -> std::optional<Glib::ustring>
-                    {
-                        if (from.has_value())
-                            return *from;
-
-                        // TODO apply CSS styling here.
-                        std::ignore = label;
-                        // https://github.com/oliverdixon/OptiFOL-Software/blob/fd644972cbadb41c92e86098f7c05dca999743fd/Source/GUI/Panels/RequirementsIndexArea.cpp#L382
-                        return "Empty";
-                    }
-                );
-            }
-        }
-    }
+    static Glib::RefPtr<Gio::ListModel> test_group_expand(const Glib::RefPtr<Glib::ObjectBase> &item);
 
     std::pair<Gtk::Widget *, Gtk::Widget *> on_off_widgets;
     Gtk::ColumnView *const test_groups_view;

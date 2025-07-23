@@ -363,6 +363,8 @@ add_executable(OptifolGUI
         Source/GUI/ProcessExecutor.hpp
         Source/Storage/TestGroup.cpp
         Source/Storage/TestGroup.hpp
+        Source/Storage/RequirementGroupBase.hpp
+        Source/Storage/RequirementGroupBase.cpp
 )
 
 set(COMMON_COMPILER_OPTIONS
