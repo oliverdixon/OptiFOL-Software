@@ -23,19 +23,36 @@ const log4cxx::LoggerPtr TestingArea::area_logger = Logging::get_logger({"GUI", 
 const char *const TestingArea::area_name = "Testing and Compliance Area";
 
 TestingArea::TestingArea(Gtk::Builder &builder) :
-    on_off_widgets(GTKHelpers::get_widget<Gtk::Widget>(area_name, builder, "testing_advice_unselected"),
-            GTKHelpers::get_widget<Gtk::Widget>(area_name, builder, "testing_content")),
-    test_groups_view(GTKHelpers::get_widget<Gtk::ColumnView>(area_name, builder, "test_groups_view")),
-    run_tests_button(GTKHelpers::get_widget<Gtk::Button>(area_name, builder, "run_tests")),
+    test_groups_view(
+        GTKHelpers::get_widget<Gtk::ColumnView>(area_name, builder, "test_groups_view")
+    ),
+    context_menu(
+        test_groups_view,
+        GTKHelpers::get_object<Gio::Menu>(area_name, builder, "test_groups_context_menu"),
+        {
+            {
+                "run_tests",
+                GTKHelpers::get_widget<Gtk::MenuButton>(area_name, builder, "run_tests"),
+                GTKHelpers::get_widget<Gtk::Popover>(area_name, builder, "run_tests_popover"),
+                true
+            }
+        }
+    ),
+    on_off_widgets(
+        GTKHelpers::get_widget<Gtk::Widget>(area_name, builder, "testing_advice_unselected"),
+        GTKHelpers::get_widget<Gtk::Widget>(area_name, builder, "testing_content")
+    ),
     run_tests_output_buffer(
-            GTKHelpers::get_widget<Gtk::TextView>(area_name, builder, "run_tests_output")->get_buffer()),
-    test_listener(std::make_unique<GoogleTestListener>(sigc::mem_fun(*this, &TestingArea::accept_new_result),
-            sigc::mem_fun(*this, &TestingArea::propagate_pending_results)))
+        GTKHelpers::get_widget<Gtk::TextView>(area_name, builder, "run_tests_output")->get_buffer()
+    ),
+    test_listener(
+        std::make_unique<GoogleTestListener>(sigc::mem_fun(*this, &TestingArea::accept_new_result),
+            sigc::mem_fun(*this, &TestingArea::propagate_pending_results))
+    )
 {
     selection_model->set_autoselect(false);
     selection_model->set_can_unselect(true);
 
-    run_tests_button->signal_clicked().connect(sigc::mem_fun(*this, &TestingArea::execute_tests));
     test_groups_view->set_model(selection_model);
 
     const auto columns = test_groups_view->get_columns();
@@ -196,6 +213,22 @@ void TestingArea::execute_tests()
                     "--gtest_filter=FOLParserTest.*", // TODO get from selected requirement/test group.
                     "--gtest_stream_result_to=127.0.0.1:12345"},
             std::vector<std::string>{}, run_tests_output_buffer, [this](const int) { test_executor.reset(); });
+}
+
+std::optional<std::pair<const std::optional<Test> &, Gtk::Label *>> TestingArea::bind_helper(
+        const Glib::RefPtr<Gtk::ListItem> &list_item)
+{
+    const auto requirement = std::dynamic_pointer_cast<Requirement>(list_item->get_item());
+
+    if (requirement == nullptr)
+        return std::nullopt;
+
+    const auto label = dynamic_cast<Gtk::Label *>(list_item->get_child());
+
+    if (label == nullptr)
+        return std::nullopt;
+
+    return std::make_pair(std::cref(requirement->observe_test()), label);
 }
 
 Glib::RefPtr<Gio::ListModel> TestingArea::test_group_expand(const Glib::RefPtr<Glib::ObjectBase> &item)

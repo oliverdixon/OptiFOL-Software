@@ -91,7 +91,7 @@ To prepare Test Groups, select a Subsystem from the left-hand <i>Project Explore
                                 <object class="GtkSeparator"/>
                             </child>
                             <child>
-                                <object class="GtkButton" id="run_tests"> <!-- TODO should be MenuButton -->
+                                <object class="GtkMenuButton" id="run_tests">
                                     <property name="icon-name">object-select-symbolic</property>
                                     <property name="tooltip-text">Re-Run Selected Test Group</property>
                                 </object>

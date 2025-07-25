@@ -51,6 +51,7 @@ void IndexDuplicateRequirementPopover::confirm_button_clicked() const
     const auto active_subsystem = index_area.observe_active_subsystem();
     assert(active_subsystem != nullptr);
 
+#if 0 // TODO URGENT
     const auto active_data_model = active_subsystem->requirements;
     assert(active_data_model != nullptr); // TODO remove all asserts with proper error logging
 
@@ -66,6 +67,7 @@ void IndexDuplicateRequirementPopover::confirm_button_clicked() const
                 candidate->property_priority().get_value(),
                 candidate->property_test_input().get_value()
             );
+#endif
 
     popover_logger->info("Duplicated new subsystem requirement with name \"" + new_name_entry->get_text() +
         "\" from existing \"" + old_name_entry->get_text() + "\".");

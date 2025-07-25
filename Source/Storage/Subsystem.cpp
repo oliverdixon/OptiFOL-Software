@@ -51,6 +51,18 @@ std::string Subsystem::get_path() const
     return fully_qualified_path_cache.second;
 }
 
+void Subsystem::use_requirements_selection_model(Gtk::SingleSelection &target_selection_model) const
+{
+    target_selection_model.set_model(requirements);
+}
+
+void Subsystem::for_each_requirement(const std::function<void(const Requirement &)> &function) const
+{
+    const auto count = requirements->get_n_items();
+    for (guint index = 0; index < count; ++index)
+        function(*requirements->get_item(index));
+}
+
 void Subsystem::setup_groups(const Glib::ustring &name)
 {
     assert(analysis_groups->get_n_items() == 0);

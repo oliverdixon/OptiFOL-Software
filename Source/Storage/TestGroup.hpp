@@ -14,20 +14,20 @@
 #ifndef TESTGROUP_HPP
 #define TESTGROUP_HPP
 
+#include "../GUI/ProcessExecutor.hpp"
 #include "RequirementGroupBase.hpp"
 #include "StorageObjectBase.hpp"
 
 namespace optifol
 {
 
-class TestGroup :
-        public StorageObjectBase,
-        public RequirementGroupBase
+class TestGroup : public StorageObjectBase,
+                  public RequirementGroupBase
 {
 public:
-    explicit TestGroup(const Glib::ustring& name);
+    explicit TestGroup(const Glib::ustring &name);
 
-    TestGroup(const Glib::ustring& name, BaseObjectType * cobject, const Glib::RefPtr<Gtk::Builder>& builder);
+    TestGroup(const Glib::ustring &name, BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &builder);
 };
 
 } // namespace optifol

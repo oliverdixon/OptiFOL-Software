@@ -12,9 +12,6 @@
  */
 
 #include "RequirementsIndexArea.hpp"
-
-#include <cassert>
-
 #include "../../Storage/Subsystem.hpp"
 #include "../GTKHelpers.hpp"
 
@@ -145,8 +142,7 @@ void RequirementsIndexArea::select_model(const Glib::RefPtr<const Subsystem> &ne
     on_off_widgets.second->set_visible(true);
 
     active_subsystem = new_subsystem;
-    data_model = active_subsystem->requirements;
-    selection_model->set_model(data_model);
+    new_subsystem->use_requirements_selection_model(*selection_model);
 }
 
 void RequirementsIndexArea::deselect_model()
@@ -155,7 +151,6 @@ void RequirementsIndexArea::deselect_model()
     on_off_widgets.first->set_visible(true);
 
     active_subsystem = nullptr;
-    data_model = nullptr;
     selection_model->set_model(nullptr);
 }
 
@@ -225,9 +220,6 @@ void RequirementsIndexArea::on_bind_property_normalised(const Glib::RefPtr<Gtk::
 
 void RequirementsIndexArea::update_with_selected_name(Gtk::Entry &target) const
 {
-    const auto active_data_model = active_subsystem->requirements;
-    assert(active_data_model != nullptr);
-
     const auto candidate = std::dynamic_pointer_cast<const Requirement>(selection_model->get_selected_item());
     if (candidate != nullptr)
         target.set_text(candidate->property_name().get_value());

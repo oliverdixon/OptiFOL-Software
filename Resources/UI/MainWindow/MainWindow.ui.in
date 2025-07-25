@@ -64,6 +64,19 @@
         </section>
     </menu>
 
+    <menu id="test_groups_context_menu">
+        <section>
+            <item>
+                <attribute name="label">New Test Group</attribute>
+                <attribute name="action">win.new_test_group</attribute>
+            </item>
+            <item>
+                <attribute name="label">Run Tests for Selected Test Group</attribute>
+                <attribute name="action">win.run_tests</attribute>
+            </item>
+        </section>
+    </menu>
+
     <menu id="reports_context_menu">
         <section>
             <item>
@@ -93,6 +106,9 @@
     ${NEW_ANALYSIS_GROUP_POPOVER}
     ${EDIT_ANALYSIS_GROUP_POPOVER}
     ${DELETE_ANALYSIS_GROUP_POPOVER}
+
+    <!-- Testing and compliance area popovers -->
+    ${RUN_TESTS_POPOVER}
 
     <!-- Releases and reports popovers -->
     ${GENERATE_LATEX_POPOVER}

@@ -16,6 +16,9 @@
 
 #include <glibmm/spawn.h>
 #include <gtkmm/textbuffer.h>
+#include <glibmm/iochannel.h>
+#include <log4cxx/logger.h>
+
 #include <string>
 #include <vector>
 

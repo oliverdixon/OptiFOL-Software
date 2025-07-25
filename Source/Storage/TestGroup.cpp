@@ -16,13 +16,13 @@
 namespace optifol
 {
 
-TestGroup::TestGroup(const Glib::ustring& name) :
+TestGroup::TestGroup(const Glib::ustring &name) :
     Glib::ObjectBase("TestGroup")
 {
     property_name().set_value(name);
 }
 
-TestGroup::TestGroup(const Glib::ustring& name, BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &builder) :
+TestGroup::TestGroup(const Glib::ustring &name, BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &builder) :
     Glib::ObjectBase("TestGroup"),
     StorageObjectBase(cobject, builder)
 {

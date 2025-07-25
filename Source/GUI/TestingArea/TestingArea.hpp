@@ -30,6 +30,7 @@
 #include "../GTKHelpers.hpp"
 #include "../IWindowArea.hpp"
 #include "../ProcessExecutor.hpp"
+#include "../ContextButtonCorrespondence.hpp"
 
 namespace optifol
 {
@@ -116,30 +117,23 @@ private:
     template<typename ReturnType>
     using TestGetter = Glib::PropertyProxy_ReadOnly<ReturnType> (Test::*)() const;
 
+    /**
+     * @brief Provide a Test-Gtk::Label @ref std::pair to assist the GTK bind functions for the given Requirement
+     *  Gtk::ListItem.
+     * @param list_item The Gtk::ListItem with a Requirement as its child.
+     * @return The optional Test detained by the Requirement, and the corresponding Gtk::Label for the Gtk::ListItem.
+     */
     static std::optional<std::pair<const std::optional<Test>&, Gtk::Label *>> bind_helper(
-        const Glib::RefPtr<Gtk::ListItem> &list_item)
-    {
-        const auto requirement = std::dynamic_pointer_cast<Requirement>(list_item->get_item());
+        const Glib::RefPtr<Gtk::ListItem> &list_item);
 
-        if (requirement == nullptr)
-            return std::nullopt;
-
-        const auto label = dynamic_cast<Gtk::Label *>(list_item->get_child());
-
-        if (label == nullptr)
-            return std::nullopt;
-
-        return std::make_pair(std::cref(requirement->observe_test()), label);
-    }
+    static Glib::RefPtr<Gio::ListModel> test_group_expand(const Glib::RefPtr<Glib::ObjectBase> &item);
 
     static const log4cxx::LoggerPtr area_logger;
     static const char *const area_name;
 
-    static Glib::RefPtr<Gio::ListModel> test_group_expand(const Glib::RefPtr<Glib::ObjectBase> &item);
-
-    std::pair<Gtk::Widget *, Gtk::Widget *> on_off_widgets;
     Gtk::ColumnView *const test_groups_view;
-    Gtk::Button *const run_tests_button;
+    ContextButtonCorrespondence context_menu;
+    std::pair<Gtk::Widget *, Gtk::Widget *> on_off_widgets;
     const Glib::RefPtr<Gtk::TextBuffer> run_tests_output_buffer;
 
     Glib::RefPtr<const Subsystem> active_subsystem;
@@ -149,6 +143,8 @@ private:
 
     std::unique_ptr<TestListenerBase> test_listener;
     std::optional<ProcessExecutor> test_executor;
+
+    std::unordered_map<std::string, std::vector<std::pair<std::string_view, std::string_view>>> executable_testspec;
 
     std::unordered_map<TestResult *, std::shared_ptr<TestResult>, std::hash<TestResult>,
             DereferencingEqualityFunctor<const TestResult *, const TestResult>>

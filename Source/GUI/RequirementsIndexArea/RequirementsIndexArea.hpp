@@ -176,10 +176,6 @@ public:
     template<class... CtorArgs>
     void construct_and_add_requirement(CtorArgs&&... args)
     {
-        data_model->append(Glib::make_refptr_for_instance(new Requirement(
-            std::forward<CtorArgs>(args)...,
-            symbol_repository
-        )));
     }
 
     /**
@@ -219,7 +215,6 @@ public:
 
 private:
     Glib::RefPtr<const Subsystem> active_subsystem;
-    Glib::RefPtr<Gio::ListStore<Requirement>> data_model;
     Glib::RefPtr<Gtk::SingleSelection> selection_model = Gtk::SingleSelection::create();
 
     std::pair<Gtk::Widget*, Gtk::Widget*> on_off_widgets;

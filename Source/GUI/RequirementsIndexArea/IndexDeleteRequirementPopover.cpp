@@ -47,10 +47,12 @@ void IndexDeleteRequirementPopover::confirm_button_clicked() const
     const auto active_subsystem = index_area.observe_active_subsystem();
     assert(active_subsystem != nullptr);
 
+#if 0 // TODO URGENT
     const auto active_data_model = active_subsystem->requirements;
     assert(active_data_model != nullptr);
 
     active_data_model->remove(index_area.get_selected_index());
+#endif
 }
 
 void IndexDeleteRequirementPopover::cancel_button_clicked() const

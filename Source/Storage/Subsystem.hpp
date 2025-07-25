@@ -15,6 +15,7 @@
 #define SUBSYSTEM_HPP
 
 #include <giomm/liststore.h>
+#include <gtkmm/singleselection.h>
 
 #include "AnalysisGroup.hpp"
 #include "Requirement.hpp"
@@ -68,21 +69,24 @@ public:
     [[nodiscard]] std::string get_path() const override;
 
     // TODO: shouldn't be public.
-    Glib::RefPtr<Gio::ListStore<Requirement>> requirements = Gio::ListStore<Requirement>::create();
-
-    // TODO: shouldn't be public.
     Glib::RefPtr<Gio::ListStore<AnalysisGroup>> analysis_groups = Gio::ListStore<AnalysisGroup>::create();
 
     // TODO: shouldn't be public.
     Glib::RefPtr<Gio::ListStore<TestGroup>> test_groups = Gio::ListStore<TestGroup>::create();
 
+    void use_requirements_selection_model(Gtk::SingleSelection &target_selection_model) const;
+
+    void for_each_requirement(const std::function<void(const Requirement &)> &function) const;
+
 private:
     /**
-     * @brief Configure the Subsystem to a know initial state, including the configuration of signal handlers for
+     * @brief Configure the Subsystem to a known initial state, including the configuration of signal handlers for
      *  changing internal list models, and construction of default test and analysis groups.
      * @param name The initial name of the Subsystem
      */
     void setup_groups(const Glib::ustring &name);
+
+    Glib::RefPtr<Gio::ListStore<Requirement>> requirements = Gio::ListStore<Requirement>::create();
 
     mutable std::pair<std::size_t, std::string> fully_qualified_path_cache;
 };
