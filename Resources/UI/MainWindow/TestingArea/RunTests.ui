@@ -33,6 +33,7 @@
                                 <property name="column">1</property>
                                 <property name="row">0</property>
                             </layout>
+                            <property name="sensitive">FALSE</property>
                         </object>
                     </child>
 
@@ -48,6 +49,10 @@
                     </child>
                     <child>
                         <object class="GtkDropDown" id="test_backend_provider">
+                            <style>
+                                <class name="optifol_boxed" />
+                                <class name="optifol_combo_box" />
+                            </style>
                             <property name="model">
                                 <object class="GtkStringList">
                                     <items>
@@ -71,10 +76,65 @@
 
             <child>
                 <object class="GtkBox">
+                    <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
+                    <child>
+                        <object class="GtkScrolledWindow">
+                            <property name="vexpand">false</property>
+                            <property name="hexpand">true</property>
+                            <property name="propagate-natural-height">true</property>
+                            <property name="propagate-natural-width">true</property>
+                            <child>
+                                <object class="GtkNotebook">
+                                    <property name="tab-pos">GTK_POS_LEFT</property>
+                                    <child>
+                                        <object class="GtkTextView">
+                                            <style>
+                                                <class name="optifol_monospace" />
+                                            </style>
+                                            <property name="editable">FALSE</property>
+                                        </object>
+                                    </child>
+                                    <child type="tab">
+                                        <object class="GtkLabel">
+                                            <property name="label">Executable A</property>
+                                        </object>
+                                    </child>
+                                    <child>
+                                        <object class="GtkTextView">
+                                            <style>
+                                                <class name="optifol_monospace" />
+                                            </style>
+                                            <property name="editable">FALSE</property>
+                                        </object>
+                                    </child>
+                                    <child type="tab">
+                                        <object class="GtkLabel">
+                                            <property name="label">Executable B</property>
+                                        </object>
+                                    </child>
+                                </object>
+                            </child>
+                        </object>
+                    </child>
+                    <child>
+                        <object class="GtkSeparator" />
+                    </child>
+                </object>
+            </child>
+
+            <child>
+                <object class="GtkBox">
+                    <property name="hexpand">TRUE</property>
                     <property name="halign">GTK_ALIGN_END</property>
                     <style>
                         <class name="optifol_grid_dialog" />
                     </style>
+                    <child>
+                        <object class="GtkButton" id="run_tests_discover">
+                            <property name="icon-name">edit-find-symbolic</property>
+                            <property name="tooltip-text">Dry Run and Discover Tests</property>
+                        </object>
+                    </child>
                     <child>
                         <object class="GtkButton" id="run_tests_cancel">
                             <property name="icon-name">window-close-symbolic</property>

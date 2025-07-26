@@ -173,16 +173,51 @@ To prepare Test Groups, select a Subsystem from the left-hand <i>Project Explore
             <child>
                 <object class="GtkNotebook">
                     <child>
-                        <object class="GtkTextView" id="run_tests_output">
-                            <style>
-                                <class name="optifol_monospace" />
-                            </style>
-                            <property name="editable">FALSE</property>
+                        <object class="GtkPaned">
+                            <property name="orientation">horizontal</property>
+                            <child>
+                                <object class="GtkPaned">
+                                    <property name="orientation">vertical</property>
+                                    <child>
+                                        <object class="GtkBox">
+                                            <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
+                                            <child>
+                                                <object class="GtkEntry">
+                                                    <property name="sensitive">FALSE</property>
+                                                    <property name="placeholder-text">Search by Name</property>
+                                                </object>
+                                            </child>
+                                            <child>
+                                                <object class="GtkScrolledWindow">
+                                                    <child>
+                                                        <object class="GtkListView">
+                                                            <property name="single-click-activate">FALSE</property>
+                                                        </object>
+                                                    </child>
+                                                </object>
+                                            </child>
+                                        </object>
+                                    </child>
+                                    <child>
+                                        <object class="GtkLabel">
+                                            <property name="label">Test status.</property>
+                                        </object>
+                                    </child>
+                                </object>
+                            </child>
+                            <child>
+                                <object class="GtkTextView" id="run_tests_output">
+                                    <style>
+                                        <class name="optifol_monospace" />
+                                    </style>
+                                    <property name="editable">FALSE</property>
+                                </object>
+                            </child>
                         </object>
                     </child>
                     <child type="tab">
                         <object class="GtkLabel">
-                            <property name="label">Group A Test Report</property>
+                            <property name="label">Example Test Report</property>
                         </object>
                     </child>
                     <child>
