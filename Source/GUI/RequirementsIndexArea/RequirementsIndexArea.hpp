@@ -194,15 +194,6 @@ public:
      */
     static void on_bind_property_normalised(const Glib::RefPtr<Gtk::ListItem> &list_item);
 
-    /**
-     * @brief Update the given text field target with the name of the presently selected Requirement in the active
-     *  Subsystem.
-     * @param target The text entry widget to display the selected Requirement name, or the empty string if there is no
-     *  selected Requirement.
-     * @pre There is an active subsystem for the RequirementsIndexArea
-     */
-    void update_with_selected_name(Gtk::Entry& target) const;
-
 private:
     Glib::RefPtr<Subsystem> active_subsystem;
     Glib::RefPtr<Gio::ListStore<Requirement>> data_model;

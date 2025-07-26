@@ -13,6 +13,7 @@
 
 #ifndef INDEXNEWREQUIREMENTPOPOVER_HPP
 #define INDEXNEWREQUIREMENTPOPOVER_HPP
+
 #include <gtkmm/builder.h>
 #include <gtkmm/dropdown.h>
 #include <gtkmm/textview.h>
@@ -113,6 +114,7 @@ private:
     static const log4cxx::LoggerPtr popover_logger;
 
     RequirementsIndexArea& index_area;
+
     Gtk::Popover * const my_popover;
     Gtk::Button * const confirm_button;
     Gtk::Button * const cancel_button;

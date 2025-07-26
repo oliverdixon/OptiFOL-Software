@@ -100,12 +100,10 @@ void Subsystem::handle_requirement_change(const guint initial_index, const guint
     for (guint remove_count_i = 0; remove_count_i < removed_count; ++remove_count_i) {
         const auto deleted_it = deleted_requirements.find(remove_count_i + initial_index);
 
-        if (deleted_it == deleted_requirements.cend()) {
+        if (deleted_it == deleted_requirements.cend())
             throw std::runtime_error("The deleted Requirement previously at index " +
                 std::to_string(remove_count_i + initial_index) +
                 " is not present in the deletion records; cannot propagate to Requirement groups.");
-            return;
-        }
 
         // Remove from analysis groups.
         if (deleted_it->second->is_analysis_ready()) {

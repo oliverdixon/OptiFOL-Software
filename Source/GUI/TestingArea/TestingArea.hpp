@@ -16,7 +16,6 @@
 
 #include <glibmm/binding.h>
 #include <glibmm/refptr.h>
-#include <gtkmm/button.h>
 #include <gtkmm/columnview.h>
 #include <gtkmm/label.h>
 #include <gtkmm/listitem.h>
@@ -27,10 +26,10 @@
 #include "../../DereferencingEqualityFunctor.hpp"
 #include "../../Storage/Subsystem.hpp"
 #include "../../UserTesting/Google/GoogleTestListener.hpp"
-#include "../GTKHelpers.hpp"
+#include "../ContextButtonCorrespondence.hpp"
 #include "../IWindowArea.hpp"
 #include "../ProcessExecutor.hpp"
-#include "../ContextButtonCorrespondence.hpp"
+#include "TestingRunTestsPopover.hpp"
 
 namespace optifol
 {
@@ -113,6 +112,8 @@ public:
 
     void execute_tests();
 
+    Glib::RefPtr<TestGroup> get_selection() const;
+
 private:
     template<typename ReturnType>
     using TestGetter = Glib::PropertyProxy_ReadOnly<ReturnType> (Test::*)() const;
@@ -125,6 +126,8 @@ private:
      */
     static std::optional<std::pair<const std::optional<Test>&, Gtk::Label *>> bind_helper(
         const Glib::RefPtr<Gtk::ListItem> &list_item);
+
+    void configure_selection_model() const;
 
     static const log4cxx::LoggerPtr area_logger;
     static const char *const area_name;
@@ -146,6 +149,8 @@ private:
     std::unordered_map<TestResult *, std::shared_ptr<TestResult>, std::hash<TestResult>,
             DereferencingEqualityFunctor<const TestResult *, const TestResult>>
             received_test_results;
+
+    TestingRunTestsPopover run_tests_popover;
 };
 
 } // namespace optifol

@@ -23,9 +23,7 @@ const log4cxx::LoggerPtr TestingArea::area_logger = Logging::get_logger({"GUI", 
 const char *const TestingArea::area_name = "Testing and Compliance Area";
 
 TestingArea::TestingArea(Gtk::Builder &builder) :
-    test_groups_view(
-        GTKHelpers::get_widget<Gtk::ColumnView>(area_name, builder, "test_groups_view")
-    ),
+    test_groups_view(GTKHelpers::get_widget<Gtk::ColumnView>(area_name, builder, "test_groups_view")),
     context_menu(
         test_groups_view,
         GTKHelpers::get_object<Gio::Menu>(area_name, builder, "test_groups_context_menu"),
@@ -48,11 +46,10 @@ TestingArea::TestingArea(Gtk::Builder &builder) :
     test_listener(
         std::make_unique<GoogleTestListener>(sigc::mem_fun(*this, &TestingArea::accept_new_result),
             sigc::mem_fun(*this, &TestingArea::propagate_pending_results))
-    )
+    ),
+    run_tests_popover(builder, *this)
 {
-    selection_model->set_autoselect(false);
-    selection_model->set_can_unselect(true);
-
+    configure_selection_model();
     test_groups_view->set_model(selection_model);
 
     const auto columns = test_groups_view->get_columns();
@@ -215,6 +212,20 @@ void TestingArea::execute_tests()
                     "--gtest_stream_result_to=127.0.0.1:12345"},
             std::vector<std::string>{}, run_tests_output_buffer, [this](const int) { test_executor.reset(); });
 }
+Glib::RefPtr<TestGroup> TestingArea::get_selection() const
+{
+    const auto selected_item = selection_model->get_selected_item();
+
+    if (selected_item == nullptr)
+        throw std::runtime_error("No item selected in the selection model.");
+
+    const auto selected_group = std::dynamic_pointer_cast<TestGroup>(selected_item);
+
+    if (selected_group == nullptr)
+        throw std::runtime_error("Selected item is not a Test Group.");
+
+    return selected_group;
+}
 
 std::optional<std::pair<const std::optional<Test> &, Gtk::Label *>> TestingArea::bind_helper(
         const Glib::RefPtr<Gtk::ListItem> &list_item)
@@ -230,6 +241,36 @@ std::optional<std::pair<const std::optional<Test> &, Gtk::Label *>> TestingArea:
         return std::nullopt;
 
     return std::make_pair(std::cref(requirement->observe_test()), label);
+}
+
+void TestingArea::configure_selection_model() const
+{
+    selection_model->set_autoselect(false);
+    selection_model->set_can_unselect(true);
+
+#if 0
+    selection_model->signal_selection_changed().connect(
+        [this](const guint position, const guint n_items)
+        {
+            if (n_items == 0)
+                context_menu.disable_action("new_test_group");
+            else
+                context_menu.enable_action("new_test_group");
+        }
+    );
+
+    selection_model->signal_items_changed().connect(
+        [this](guint, const guint removed, guint)
+        {
+            if (removed > 0) {
+                // If anything was removed from the model, just disable everything out of an abundance of caution.
+                context_menu.disable_action("new_test_group");
+                context_menu.disable_action("run_tests");
+                selection_model->unselect_all();
+            }
+        }
+    );
+#endif
 }
 
 } // namespace optifol

@@ -68,7 +68,7 @@ void IndexDuplicateRequirementPopover::clear_inputs() const
 
 void IndexDuplicateRequirementPopover::show_popover() const
 {
-    index_area.update_with_selected_name(*old_name_entry);
+    old_name_entry->set_text(index_area.get_selection()->property_name().get_value());
 }
 
 } // namespace optifol

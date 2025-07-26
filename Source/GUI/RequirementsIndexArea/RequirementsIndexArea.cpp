@@ -233,11 +233,4 @@ void RequirementsIndexArea::on_bind_property_normalised(const Glib::RefPtr<Gtk::
                 item->property_normalised(), label->property_label(), Glib::Binding::Flags::SYNC_CREATE);
 }
 
-void RequirementsIndexArea::update_with_selected_name(Gtk::Entry &target) const
-{
-    const auto candidate = std::dynamic_pointer_cast<const Requirement>(selection_model->get_selected_item());
-    if (candidate != nullptr)
-        target.set_text(candidate->property_name().get_value());
-}
-
 } // namespace optifol

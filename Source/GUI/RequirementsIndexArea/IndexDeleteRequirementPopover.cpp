@@ -60,7 +60,7 @@ void IndexDeleteRequirementPopover::clear_inputs() const
 }
 void IndexDeleteRequirementPopover::show_popover() const
 {
-    index_area.update_with_selected_name(*name_entry);
+    name_entry->set_text(index_area.get_selection()->property_name().get_value());
 }
 
 } // namespace optifol
