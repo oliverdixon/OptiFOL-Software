@@ -92,16 +92,15 @@ ProjectHierarchyPane::ProjectHierarchyPane(
     configure_delete_structure_popover(builder);
 }
 
-void ProjectHierarchyPane::add_subsystem_change_callback(
-        sigc::slot<void(const Glib::RefPtr<const Subsystem> &)> &&selected, sigc::slot<void()> &&deselected,
-        const bool onboard)
+void ProjectHierarchyPane::add_subsystem_change_callback(sigc::slot<void(const Glib::RefPtr<Subsystem> &)> &&selected,
+        sigc::slot<void()> &&deselected, const bool onboard)
 {
     auto &callback = subsystem_change_callbacks.emplace_back();
     callback.first.connect(std::move(selected));
     callback.second.connect(std::move(deselected));
 
     if (onboard) {
-        const auto subsystem = std::dynamic_pointer_cast<const Subsystem>(selection_model->get_selected_item());
+        const auto subsystem = std::dynamic_pointer_cast<Subsystem>(selection_model->get_selected_item());
         if (subsystem != nullptr)
             callback.first(subsystem);
         else
@@ -286,7 +285,7 @@ Glib::RefPtr<Gio::ListModel> ProjectHierarchyPane::tree_node_expand(const Glib::
 }
 
 // ReSharper disable once CppDFAUnreachableFunctionCall - false positive
-void ProjectHierarchyPane::emit_selected(const Glib::RefPtr<const Subsystem> &new_subsystem) const
+void ProjectHierarchyPane::emit_selected(const Glib::RefPtr<Subsystem> &new_subsystem) const
 {
     for (const auto &[select_callback, _]: subsystem_change_callbacks)
         select_callback.emit(new_subsystem);
@@ -301,7 +300,7 @@ void ProjectHierarchyPane::emit_deselected() const
 void ProjectHierarchyPane::switch_selection(guint) const
 {
     // Rely on the selection model to inform on the selected item. The view can be unreliable.
-    const auto subsystem = std::dynamic_pointer_cast<const Subsystem>(selection_model->get_selected_item());
+    const auto subsystem = std::dynamic_pointer_cast<Subsystem>(selection_model->get_selected_item());
     if (subsystem != nullptr)
         emit_selected(subsystem);
     else

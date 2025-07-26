@@ -48,6 +48,8 @@ public:
      */
     using TimeT = std::chrono::system_clock::time_point;
 
+    [[nodiscard]] std::size_t hash() const noexcept override;
+
     /**
      * @brief Get a read-write proxy for the 'name' property
      * @return The read-write 'name' proxy
@@ -83,8 +85,6 @@ public:
      * @return The read-only 'last-modified time' proxy
      */
     [[nodiscard]] Glib::PropertyProxy_ReadOnly<TimeT> property_modified_time() const;
-
-    [[nodiscard]] std::size_t hash() const noexcept override;
 
     /**
      * @brief Establish a property-synched binding between the 'name' property of a StorableObjectBase object, and

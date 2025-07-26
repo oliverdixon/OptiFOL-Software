@@ -17,7 +17,6 @@
 #include <gtkmm.h>
 #include <log4cxx/logger.h>
 
-#include "../../Storage/AnalysisGroup.hpp"
 #include "../../Storage/Project.hpp"
 #include "../AnalysisArea/AnalysisArea.hpp"
 #include "../ContextButtonCorrespondence.hpp"
@@ -49,7 +48,7 @@ public:
      *  state of the selection? The deselection callback is called during onboarding if and only if the present
      *  selection is invalid or not a Subsystem.
      */
-    void add_subsystem_change_callback(sigc::slot<void(const Glib::RefPtr<const Subsystem> &)> &&selected,
+    void add_subsystem_change_callback(sigc::slot<void(const Glib::RefPtr<Subsystem> &)> &&selected,
             sigc::slot<void()> &&deselected, bool onboard = true);
 
 private:
@@ -106,7 +105,7 @@ private:
     /**
      * @brief Emits a notification to all listeners that a new subsystem has been selected
      */
-    void emit_selected(const Glib::RefPtr<const Subsystem> &new_subsystem) const;
+    void emit_selected(const Glib::RefPtr<Subsystem> &new_subsystem) const;
 
     /**
      * @brief Emits a notification to all listeners that the previously selected subsystem has been deselected.
@@ -122,7 +121,7 @@ private:
     static const char *const area_name;
     static std::shared_ptr<log4cxx::Logger> logger;
 
-    std::vector<std::pair<sigc::signal<void(const Glib::RefPtr<const Subsystem> &)>, sigc::signal<void()>>>
+    std::vector<std::pair<sigc::signal<void(const Glib::RefPtr<Subsystem> &)>, sigc::signal<void()>>>
             subsystem_change_callbacks;
 
     Gtk::DropDown *const stack_switcher;

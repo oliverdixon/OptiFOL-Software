@@ -43,8 +43,7 @@ IndexNewRequirementPopover::IndexNewRequirementPopover(Gtk::Builder &builder, Re
 void IndexNewRequirementPopover::confirm_button_clicked() const
 {
     my_popover->popdown();
-
-    index_area.construct_and_add_requirement(
+    index_area.observe_active_subsystem()->build_requirement(
         name_entry->get_text(),
         statement_entry->get_text(),
         description_entry->get_buffer()->get_text(),

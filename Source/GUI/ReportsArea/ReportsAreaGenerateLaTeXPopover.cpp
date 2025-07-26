@@ -129,12 +129,13 @@ void ReportsAreaGenerateLaTeXPopover::update_requirements_csv() const
     popover_logger->info("Writing CSV requirements index for consumption by LaTeX template at " + csv_path + '.');
 
     std::ofstream file_stream(csv_path);
-    reports_area.observe_active_subsystem()->for_each_requirement([&file_stream](const Requirement& requirement)
-    {
-        file_stream << requirement.property_name().get_value() << ','
-                    << requirement.property_description().get_value() << ',' << '$'
-                    << requirement.observe_latex_statement() << '$' << '\n';
-    });
+    reports_area.observe_active_subsystem()->for_each(
+            [&file_stream](const Requirement &requirement)
+            {
+                file_stream << requirement.property_name().get_value() << ','
+                            << requirement.property_description().get_value() << ',' << '$'
+                            << requirement.observe_latex_statement() << '$' << '\n';
+            });
 
     file_stream.flush();
 }

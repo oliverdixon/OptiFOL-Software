@@ -32,7 +32,8 @@ namespace optifol
  *  and consists of many individual requirements.
  */
 class Subsystem : public StorageObjectBase,
-                  public TreeNode
+                  public TreeNode,
+                  public RequirementGroupBase
 {
 public:
     /**
@@ -68,15 +69,30 @@ public:
      */
     [[nodiscard]] std::string get_path() const override;
 
-    // TODO: shouldn't be public.
-    Glib::RefPtr<Gio::ListStore<AnalysisGroup>> analysis_groups = Gio::ListStore<AnalysisGroup>::create();
+    /**
+     * @brief Build a new Requirement, using the forwarded arguments, with the Subsystem SymbolRepository instance. The
+     *  built Requirement is immediately appended to the model.
+     * @tparam CtorArgs The types of Requirement constructor arguments to forward, as a parameter pack.
+     * @param args The head argument values to forward to the Requirement constructor.
+     */
+    template<typename... CtorArgs>
+    void build_requirement(CtorArgs &&...args)
+    {
+        insert_requirement(Glib::make_refptr_for_instance(
+            new Requirement(std::forward<CtorArgs>(args)..., symbol_repository)));
+    }
 
-    // TODO: shouldn't be public.
-    Glib::RefPtr<Gio::ListStore<TestGroup>> test_groups = Gio::ListStore<TestGroup>::create();
+    void record_slated_requirement(Glib::RefPtr<Requirement> slated_requirement, guint old_index) override;
 
-    void use_requirements_selection_model(Gtk::SingleSelection &target_selection_model) const;
+    /**
+     * @brief Duplicate the given Requirement and append to the index.
+     * @param requirement The Requirement to duplicate.
+     */
+    void duplicate_requirement(const Requirement &requirement);
 
-    void for_each_requirement(const std::function<void(const Requirement &)> &function) const;
+    Glib::RefPtr<Gio::ListStore<AnalysisGroup>> get_analysis_groups() const noexcept;
+
+    Glib::RefPtr<Gio::ListStore<TestGroup>> get_test_groups() const noexcept;
 
 private:
     /**
@@ -86,7 +102,21 @@ private:
      */
     void setup_groups(const Glib::ustring &name);
 
-    Glib::RefPtr<Gio::ListStore<Requirement>> requirements = Gio::ListStore<Requirement>::create();
+    /**
+     * @brief Handle insertions and/or deletions in the flat Requirement index model
+     * @param initial_index The index at which insertions/deleted started
+     * @param removed_count The number of Requirement objects removed from the list
+     * @param added_count The number of Requirement objects added to the list
+     */
+    void handle_requirement_change(guint initial_index, guint removed_count, guint added_count);
+
+    Glib::RefPtr<Gio::ListStore<AnalysisGroup>> analysis_groups = Gio::ListStore<AnalysisGroup>::create();
+    Glib::RefPtr<Gio::ListStore<TestGroup>> test_groups = Gio::ListStore<TestGroup>::create();
+
+    std::unordered_map<guint, Glib::RefPtr<Requirement>> deleted_requirements;
+
+    // TODO: future work - should this be in Analysis group for different group-wise FOL interpretations?
+    SymbolRepository symbol_repository;
 
     mutable std::pair<std::size_t, std::string> fully_qualified_path_cache;
 };

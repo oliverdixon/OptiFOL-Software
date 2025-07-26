@@ -11,8 +11,6 @@
  * @version Development
  */
 
-#include <cassert>
-
 #include "IndexDeleteRequirementPopover.hpp"
 #include "../GTKHelpers.hpp"
 #include "../Logging.hpp"
@@ -43,16 +41,10 @@ IndexDeleteRequirementPopover::IndexDeleteRequirementPopover(Gtk::Builder &build
 void IndexDeleteRequirementPopover::confirm_button_clicked() const
 {
     my_popover->popdown();
-
-    const auto active_subsystem = index_area.observe_active_subsystem();
-    assert(active_subsystem != nullptr);
-
-#if 0 // TODO URGENT
-    const auto active_data_model = active_subsystem->requirements;
-    assert(active_data_model != nullptr);
-
-    active_data_model->remove(index_area.get_selected_index());
-#endif
+    const auto slated_requirement = index_area.get_selection();
+    index_area.observe_active_subsystem()->delete_requirement(slated_requirement);
+    popover_logger->info("Deleted a subsystem requirement with name \"" +
+        slated_requirement->property_name().get_value() + "\".");
 }
 
 void IndexDeleteRequirementPopover::cancel_button_clicked() const

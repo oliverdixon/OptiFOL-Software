@@ -99,13 +99,13 @@ class TestingArea : public IWindowArea
 public:
     explicit TestingArea(Gtk::Builder &builder);
 
-    void select_model(const Glib::RefPtr<const Subsystem> &new_subsystem) override;
+    void select_model(const Glib::RefPtr<Subsystem> &new_subsystem) override;
 
     void deselect_model() override;
 
-    const Subsystem *observe_active_subsystem() const noexcept override;
+    Subsystem *observe_active_subsystem() noexcept override;
 
-    guint get_selected_index() const override;
+    const Subsystem *observe_active_subsystem() const noexcept override;
 
     void accept_new_result(std::unique_ptr<TestResult> &&test_result);
 
@@ -126,8 +126,6 @@ private:
     static std::optional<std::pair<const std::optional<Test>&, Gtk::Label *>> bind_helper(
         const Glib::RefPtr<Gtk::ListItem> &list_item);
 
-    static Glib::RefPtr<Gio::ListModel> test_group_expand(const Glib::RefPtr<Glib::ObjectBase> &item);
-
     static const log4cxx::LoggerPtr area_logger;
     static const char *const area_name;
 
@@ -136,8 +134,7 @@ private:
     std::pair<Gtk::Widget *, Gtk::Widget *> on_off_widgets;
     const Glib::RefPtr<Gtk::TextBuffer> run_tests_output_buffer;
 
-    Glib::RefPtr<const Subsystem> active_subsystem;
-    Glib::RefPtr<Gio::ListStore<TestGroup>> data_model;
+    Glib::RefPtr<Subsystem> active_subsystem;
     Glib::RefPtr<Gtk::SingleSelection> selection_model = Gtk::SingleSelection::create();
     Glib::RefPtr<Gtk::TreeListModel> tree_model;
 

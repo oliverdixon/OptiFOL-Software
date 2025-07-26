@@ -158,25 +158,15 @@ public:
      */
     explicit RequirementsIndexArea(Gtk::Builder& builder);
 
-    void select_model(const Glib::RefPtr<const Subsystem> &new_subsystem) override;
+    void select_model(const Glib::RefPtr<Subsystem> &new_subsystem) override;
 
     void deselect_model() override;
 
+    Subsystem *observe_active_subsystem() noexcept override;
+
     const Subsystem *observe_active_subsystem() const noexcept override;
 
-    guint get_selected_index() const override;
-
-    /**
-     * @brief Construct and add a Requirement in the internal data model for the associated Subsystem
-     * @tparam CtorArgs Argument type vector to forward to the Requirement constructor
-     * @param args Arguments to perfectly forward to the Requirement constructor
-     * @note This member function is not vacuous; it removes the need to expose a non-constant reference to the
-     *  SymbolRepository.
-     */
-    template<class... CtorArgs>
-    void construct_and_add_requirement(CtorArgs&&... args)
-    {
-    }
+    Glib::RefPtr<Requirement> get_selection() const;
 
     /**
      * @brief Bind a Requirement description attribute to a label
@@ -214,7 +204,8 @@ public:
     void update_with_selected_name(Gtk::Entry& target) const;
 
 private:
-    Glib::RefPtr<const Subsystem> active_subsystem;
+    Glib::RefPtr<Subsystem> active_subsystem;
+    Glib::RefPtr<Gio::ListStore<Requirement>> data_model;
     Glib::RefPtr<Gtk::SingleSelection> selection_model = Gtk::SingleSelection::create();
 
     std::pair<Gtk::Widget*, Gtk::Widget*> on_off_widgets;
@@ -224,8 +215,6 @@ private:
     Gtk::ColumnView * view;
 
     ContextButtonCorrespondence context_menu;
-
-    SymbolRepository symbol_repository;
 
     IndexNewRequirementPopover new_requirement_popover;
     IndexEditRequirementPopover edit_requirement_popover;

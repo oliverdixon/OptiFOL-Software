@@ -41,7 +41,7 @@ ReportsArea::ReportsArea(Gtk::Builder &builder) :
 {
 }
 
-void ReportsArea::select_model(const Glib::RefPtr<const Subsystem> &subsystem)
+void ReportsArea::select_model(const Glib::RefPtr<Subsystem> &subsystem)
 {
     on_off_widgets.first->set_visible(false);
     on_off_widgets.second->set_visible(true);
@@ -55,15 +55,14 @@ void ReportsArea::deselect_model()
     active_subsystem = nullptr;
 }
 
-const Subsystem *ReportsArea::observe_active_subsystem() const noexcept
+Subsystem *ReportsArea::observe_active_subsystem() noexcept
 {
     return active_subsystem.get();
 }
 
-guint ReportsArea::get_selected_index() const
+const Subsystem *ReportsArea::observe_active_subsystem() const noexcept
 {
-    // TODO
-    return GTK_INVALID_LIST_POSITION;
+    return active_subsystem.get();
 }
 
 } // namespace optifol

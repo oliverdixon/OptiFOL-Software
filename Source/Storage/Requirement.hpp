@@ -5,7 +5,7 @@
 
 /**
  * @file
- * @brief Class specification for the requirement-level storage object
+ * @brief Class specification for the Requirement storage object
  * @author Oliver Dixon
  * @date 2025-04-26
  * @version Development
@@ -87,6 +87,13 @@ public:
     Requirement(std::string&& name, std::string&& statement, std::string&& description, guint priority,
         std::string&& test, BaseObjectType* cobject, const Glib::RefPtr<Gtk::Builder>& builder,
         SymbolRepository& system_repository);
+
+    /**
+     * @brief Compare two Requirement objects for semantic equality
+     * @param other The Requirement with which to compare.
+     * @return Is the current Requirement equivalent to the given other Requirement?
+     */
+    bool operator==(const Requirement & other) const noexcept;
 
     /**
      * @brief Get a read-write proxy for the 'statement' property

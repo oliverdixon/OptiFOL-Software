@@ -11,8 +11,6 @@
  * @version Development
  */
 
-#include <cassert>
-
 #include "AnalysisAreaNewAnalysisGroupPopover.hpp"
 #include "../GTKHelpers.hpp"
 #include "../Logging.hpp"
@@ -43,12 +41,9 @@ AnalysisAreaNewAnalysisGroupPopover::AnalysisAreaNewAnalysisGroupPopover(
 
 void AnalysisAreaNewAnalysisGroupPopover::confirm_button_clicked() const
 {
-    const auto active_subsystem = analysis_area.observe_active_subsystem();
-    assert(active_subsystem != nullptr);
-
     my_popover->popdown();
-    active_subsystem->analysis_groups->append(
-            Glib::make_refptr_for_instance(new AnalysisGroup(name_entry->get_text())));
+    analysis_area.observe_active_subsystem()->get_analysis_groups()->append(Glib::make_refptr_for_instance(
+        new AnalysisGroup(name_entry->get_text())));
 
     popover_logger->debug("Created new analysis group with name \"" + name_entry->get_text() + "\".");
     clear_inputs();

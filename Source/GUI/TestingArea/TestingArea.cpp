@@ -137,14 +137,14 @@ TestingArea::TestingArea(Gtk::Builder &builder) :
     }
 }
 
-void TestingArea::select_model(const Glib::RefPtr<const Subsystem> &new_subsystem)
+void TestingArea::select_model(const Glib::RefPtr<Subsystem> &new_subsystem)
 {
     on_off_widgets.first->set_visible(false);
     on_off_widgets.second->set_visible(true);
 
     active_subsystem = new_subsystem;
-    data_model = active_subsystem->test_groups;
-    tree_model = Gtk::TreeListModel::create(data_model, sigc::ptr_fun(&TestingArea::test_group_expand), true, true);
+    tree_model = Gtk::TreeListModel::create(active_subsystem->get_test_groups(),
+        sigc::ptr_fun(&TestGroup::get_expanded_list<TestGroup>), true, true);
     selection_model->set_model(tree_model);
 }
 
@@ -155,18 +155,17 @@ void TestingArea::deselect_model()
 
     active_subsystem = nullptr;
     tree_model = nullptr;
-    data_model = nullptr;
     selection_model->set_model(nullptr);
+}
+
+Subsystem *TestingArea::observe_active_subsystem() noexcept
+{
+    return active_subsystem.get();
 }
 
 const Subsystem *TestingArea::observe_active_subsystem() const noexcept
 {
     return active_subsystem.get();
-}
-
-guint TestingArea::get_selected_index() const
-{
-    return selection_model->get_selected();
 }
 
 void TestingArea::accept_new_result(std::unique_ptr<TestResult> &&test_result)
@@ -176,17 +175,19 @@ void TestingArea::accept_new_result(std::unique_ptr<TestResult> &&test_result)
 
 void TestingArea::propagate_pending_results()
 {
+    const auto data_model = active_subsystem->get_test_groups();
     const auto group_count = data_model->get_n_items();
 
     for (guint group_idx = 0; group_idx < group_count; ++group_idx) {
-        const auto grouped_requirements = data_model->get_item(group_idx)->get_mutable_list();
-        const auto requirement_count = grouped_requirements->get_n_items();
+        const auto grouped_requirements = data_model->get_item(group_idx);
+        grouped_requirements->for_each(
+            [this](Requirement &requirement)
+            {
+                const auto &test = requirement.observe_test();
 
-        for (guint requirement_idx = 0; requirement_idx < requirement_count; ++requirement_idx) {
-            const auto requirement = grouped_requirements->get_item(requirement_idx);
-            const auto &test = requirement->observe_test();
+                if (test.has_value() == true)
+                    return;
 
-            if (test.has_value() == true) {
                 const auto &glib_suite_name = test->property_test_suite().get_value();
                 const auto &glib_test_name = test->property_name().get_value();
 
@@ -195,14 +196,14 @@ void TestingArea::propagate_pending_results()
                                 std::string_view(glib_test_name.c_str(), glib_test_name.bytes())));
 
                 if (it != received_test_results.cend()) {
-                    requirement->emplace_test_result(it->second);
+                    requirement.emplace_test_result(it->second);
                     area_logger->debug("Matched parsed test result \"" + *glib_suite_name + '.' + glib_test_name +
-                            "\" with requirement \"" + requirement->property_name().get_value() + "\".");
+                            "\" with requirement \"" + requirement.property_name().get_value() + "\".");
                 } else
-                    area_logger->debug("Could not match requirement \"" + requirement->property_name().get_value() +
+                    area_logger->debug("Could not match requirement \"" + requirement.property_name().get_value() +
                             "\" with any parsed test.");
             }
-        }
+        );
     }
 }
 
@@ -229,16 +230,6 @@ std::optional<std::pair<const std::optional<Test> &, Gtk::Label *>> TestingArea:
         return std::nullopt;
 
     return std::make_pair(std::cref(requirement->observe_test()), label);
-}
-
-Glib::RefPtr<Gio::ListModel> TestingArea::test_group_expand(const Glib::RefPtr<Glib::ObjectBase> &item)
-{
-    const auto candidate = std::dynamic_pointer_cast<TestGroup>(item);
-
-    if (candidate != nullptr)
-        return candidate->get_mutable_list();
-
-    return nullptr;
 }
 
 } // namespace optifol

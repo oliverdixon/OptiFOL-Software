@@ -130,21 +130,18 @@ public:
       */
     explicit AnalysisArea(Gtk::Builder& builder);
 
-    void select_model(const Glib::RefPtr<const Subsystem> &subsystem_model) override;
+    void select_model(const Glib::RefPtr<Subsystem> &subsystem_model) override;
 
     void deselect_model() override;
 
+    Subsystem *observe_active_subsystem() noexcept override;
+
     const Subsystem *observe_active_subsystem() const noexcept override;
 
-    guint get_selected_index() const override;
-
 private:
-    static Glib::RefPtr<Gio::ListModel> analysis_group_expand(const Glib::RefPtr<Glib::ObjectBase> &item);
-
     static const char * const area_name;
 
-    Glib::RefPtr<const Subsystem> active_subsystem;
-    Glib::RefPtr<Gio::ListStore<AnalysisGroup>> data_model;
+    Glib::RefPtr<Subsystem> active_subsystem;
     Glib::RefPtr<Gtk::SingleSelection> selection_model = Gtk::SingleSelection::create();
     Glib::RefPtr<Gtk::TreeListModel> tree_model;
 

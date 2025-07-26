@@ -88,13 +88,13 @@ class ReportsArea :
 public:
     explicit ReportsArea(Gtk::Builder& builder);
 
-    void select_model(const Glib::RefPtr<const Subsystem> &subsystem) override;
+    void select_model(const Glib::RefPtr<Subsystem> &subsystem) override;
 
     void deselect_model() override;
 
-    const Subsystem *observe_active_subsystem() const noexcept override;
+    Subsystem *observe_active_subsystem() noexcept override;
 
-    guint get_selected_index() const override;
+    const Subsystem *observe_active_subsystem() const noexcept override;
 
 private:
     static const char * const area_name;
@@ -105,7 +105,7 @@ private:
 
     ContextButtonCorrespondence context_menu;
 
-    Glib::RefPtr<const Subsystem> active_subsystem;
+    Glib::RefPtr<Subsystem> active_subsystem;
 
     ReportsAreaGenerateLaTeXPopover generate_latex_popover;
 };

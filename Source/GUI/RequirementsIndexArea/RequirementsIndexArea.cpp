@@ -136,13 +136,13 @@ RequirementsIndexArea::RequirementsIndexArea(Gtk::Builder& builder) :
 #endif
 }
 
-void RequirementsIndexArea::select_model(const Glib::RefPtr<const Subsystem> &new_subsystem)
+void RequirementsIndexArea::select_model(const Glib::RefPtr<Subsystem> &new_subsystem)
 {
     on_off_widgets.first->set_visible(false);
     on_off_widgets.second->set_visible(true);
 
     active_subsystem = new_subsystem;
-    new_subsystem->use_requirements_selection_model(*selection_model);
+    new_subsystem->populate_selection_model(*selection_model);
 }
 
 void RequirementsIndexArea::deselect_model()
@@ -154,14 +154,29 @@ void RequirementsIndexArea::deselect_model()
     selection_model->set_model(nullptr);
 }
 
+Subsystem *RequirementsIndexArea::observe_active_subsystem() noexcept
+{
+    return active_subsystem.get();
+}
+
 const Subsystem *RequirementsIndexArea::observe_active_subsystem() const noexcept
 {
     return active_subsystem.get();
 }
 
-guint RequirementsIndexArea::get_selected_index() const
+Glib::RefPtr<Requirement> RequirementsIndexArea::get_selection() const
 {
-    return selection_model->get_selected();
+    const auto selected_item = selection_model->get_selected_item();
+
+    if (selected_item == nullptr)
+        throw std::runtime_error("No item selected in the selection model.");
+
+    const auto selected_requirement = std::dynamic_pointer_cast<Requirement>(selected_item);
+
+    if (selected_requirement == nullptr)
+        throw std::runtime_error("Selected item is not a Requirement.");
+
+    return selected_requirement;
 }
 
 void RequirementsIndexArea::on_bind_property_description(const Glib::RefPtr<Gtk::ListItem> &list_item)

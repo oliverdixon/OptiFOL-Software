@@ -61,7 +61,7 @@ public:
      * @param subsystem_model The newly selected Subsystem model
      * @see ProjectHierarchyPane::add_subsystem_change_callback
      */
-    virtual void select_model(const Glib::RefPtr<const Subsystem> &subsystem_model) = 0;
+    virtual void select_model(const Glib::RefPtr<Subsystem> &subsystem_model) = 0;
 
     /**
      * @brief Handle a deselection (and no re-selection) of the previously selected Subsystem model
@@ -74,14 +74,9 @@ public:
      * @return The observing pointer, designed to be use for transitory single-threaded use only due to lack of
      *  documented lifetime guarantees.
      */
-    virtual const Subsystem * observe_active_subsystem() const noexcept = 0;
+    virtual Subsystem *observe_active_subsystem() noexcept = 0;
 
-    /**
-     * @brief Retrieves the index of the selected model-dependent item
-     * @return The index of the item selected within the area's data model, or @ref GTK_INVALID_LIST_POSITION if no item
-     *  is selected
-     */
-    virtual guint get_selected_index() const = 0;
+    virtual const Subsystem *observe_active_subsystem() const noexcept = 0;
 };
 
 } // namespace optifol

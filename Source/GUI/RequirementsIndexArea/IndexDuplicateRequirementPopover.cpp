@@ -11,10 +11,7 @@
  * @version Development
  */
 
-#include <cassert>
-
 #include "IndexDuplicateRequirementPopover.hpp"
-
 #include "../GTKHelpers.hpp"
 #include "../Logging.hpp"
 #include "../Storage/Subsystem.hpp"
@@ -48,26 +45,8 @@ void IndexDuplicateRequirementPopover::confirm_button_clicked() const
 {
     my_popover->popdown();
 
-    const auto active_subsystem = index_area.observe_active_subsystem();
-    assert(active_subsystem != nullptr);
-
-#if 0 // TODO URGENT
-    const auto active_data_model = active_subsystem->requirements;
-    assert(active_data_model != nullptr); // TODO remove all asserts with proper error logging
-
-    const auto candidate =
-            std::dynamic_pointer_cast<const Requirement>(active_data_model->get_item(index_area.get_selected_index()));
-
-    if (candidate != nullptr)
-        // TODO StorageObjectBase needs to define a clone virtual member function.
-        index_area.construct_and_add_requirement(
-                new_name_entry->get_text(),
-                candidate->property_statement().get_value(),
-                candidate->property_description().get_value(),
-                candidate->property_priority().get_value(),
-                candidate->property_test_input().get_value()
-            );
-#endif
+    const auto subsystem = index_area.observe_active_subsystem();
+    subsystem->duplicate_requirement(*index_area.get_selection());
 
     popover_logger->info("Duplicated new subsystem requirement with name \"" + new_name_entry->get_text() +
         "\" from existing \"" + old_name_entry->get_text() + "\".");

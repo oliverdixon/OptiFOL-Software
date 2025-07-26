@@ -122,15 +122,18 @@ AnalysisArea::AnalysisArea(Gtk::Builder &builder) :
     }
 }
 
-void AnalysisArea::select_model(const Glib::RefPtr<const Subsystem> &subsystem_model)
+void AnalysisArea::select_model(const Glib::RefPtr<Subsystem> &subsystem_model)
 {
     on_off_widgets.first->set_visible(false);
     on_off_widgets.second->set_visible(true);
 
     active_subsystem = subsystem_model;
-    data_model = active_subsystem->analysis_groups;
-    tree_model = Gtk::TreeListModel::create(data_model, sigc::ptr_fun(&AnalysisArea::analysis_group_expand), true,
-        true);
+    tree_model = Gtk::TreeListModel::create(
+        active_subsystem->get_analysis_groups(),
+        sigc::ptr_fun(&AnalysisGroup::get_expanded_list<AnalysisGroup>),
+        true,
+        true
+    );
     selection_model->set_model(tree_model);
 }
 
@@ -141,8 +144,12 @@ void AnalysisArea::deselect_model()
 
     active_subsystem = nullptr;
     tree_model = nullptr;
-    data_model = nullptr;
     selection_model->set_model(nullptr);
+}
+
+Subsystem *AnalysisArea::observe_active_subsystem() noexcept
+{
+    return active_subsystem.get();
 }
 
 const Subsystem *AnalysisArea::observe_active_subsystem() const noexcept
@@ -150,19 +157,4 @@ const Subsystem *AnalysisArea::observe_active_subsystem() const noexcept
     return active_subsystem.get();
 }
 
-guint AnalysisArea::get_selected_index() const
-{
-    return selection_model->get_selected();
-}
-
-Glib::RefPtr<Gio::ListModel> AnalysisArea::analysis_group_expand(const Glib::RefPtr<Glib::ObjectBase> &item)
-{
-    const auto candidate = std::dynamic_pointer_cast<AnalysisGroup>(item);
-
-    if (candidate != nullptr)
-        return candidate->get_mutable_list();
-
-    return nullptr;
-}
-
-}
+} // namespace optifol

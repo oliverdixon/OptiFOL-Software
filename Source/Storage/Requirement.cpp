@@ -5,7 +5,7 @@
 
 /**
  * @file
- * @brief Class implementation for the requirement-level storage object
+ * @brief Class implementation for the Requirement storage object
  * @author Oliver Dixon
  * @date 2025-04-26
  * @version Development
@@ -84,6 +84,11 @@ Requirement::Requirement(std::string &&name, std::string &&statement, std::strin
     repository_building_visitor(system_repository)
 {
     setup_properties(std::move(name), std::move(statement), std::move(description), priority, std::move(test));
+}
+
+bool Requirement::operator==(const Requirement & other) const noexcept
+{
+    return hash() == other.hash();
 }
 
 Glib::PropertyProxy<Glib::ustring> Requirement::property_statement()
