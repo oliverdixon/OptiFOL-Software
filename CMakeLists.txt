@@ -368,6 +368,8 @@ add_executable(OptifolGUI
         Source/Storage/RequirementGroupBase.cpp
         Source/GUI/TestingArea/TestingRunTestsPopover.cpp
         Source/GUI/TestingArea/TestingRunTestsPopover.hpp
+        Source/UserTesting/Google/GoogleTestFactory.cpp
+        Source/UserTesting/Google/GoogleTestFactory.hpp
 )
 
 set(COMMON_COMPILER_OPTIONS

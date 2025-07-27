@@ -16,10 +16,13 @@
 #include "../Logging.hpp"
 #include "ProcessExecutor.hpp"
 
+#include <cassert>
+#include <iostream>
+
 namespace optifol
 {
 
-const log4cxx::LoggerPtr ProcessExecutor::logger = Logging::get_logger({"SubprocessControl", "TextExecutor"});
+const log4cxx::LoggerPtr ProcessExecutor::logger = Logging::get_logger({"SubprocessControl", "ProcessExecutor"});
 
 ProcessExecutor::ProcessExecutor(const std::string &working_directory, const std::vector<std::string> &argv,
         const std::vector<std::string> &envp, const Glib::RefPtr<Gtk::TextBuffer> &output,
@@ -40,34 +43,23 @@ ProcessExecutor::ProcessExecutor(const std::string &working_directory, const std
         stderr_tag->property_foreground().set_value("red");
     }
 
-    int stdout_fd;
-    int stderr_fd;
+    try {
+        auto [stdout_fd, stderr_fd] = spawn_process(working_directory, argv, envp, std::move(finished_callback));
 
-    Glib::spawn_async_with_pipes(working_directory, argv, envp,
-            Glib::SpawnFlags::SEARCH_PATH | Glib::SpawnFlags::DO_NOT_REAP_CHILD, {}, &pid, nullptr, &stdout_fd,
-            &stderr_fd);
+        stdout_stream.emplace(stdout_tag, stdout_fd, sigc::mem_fun(*this, &ProcessExecutor::stream_callback));
+        stderr_stream.emplace(stderr_tag, stderr_fd, sigc::mem_fun(*this, &ProcessExecutor::stream_callback));
 
-    Glib::signal_child_watch().connect(
-            [this, finished_callback](const Glib::Pid ended_pid, const int exit_code)
-            {
-                if (ended_pid != pid)
-                    // Filter PIDs that aren't ours. (Shouldn't ever happen, but isn't worth logging.)
-                    return;
+        logger->info("Spawned tracking sub-process \"" + argv[0] + "\" with PID " + std::to_string(pid) + '.');
+    } catch (const Glib::SpawnError& spawn_error) {
+        output->insert_with_tag(output->end(), spawn_error.what(), stderr_tag);
+        throw;
+    }
+}
 
-                if (exit_code == 0)
-                    logger->info("Subprocess with PID " + std::to_string(pid) + " exited normally.");
-                else
-                    logger->warn("Subprocess with PID " + std::to_string(pid) + " exited with non-zero exit code " +
-                            std::to_string(exit_code) + '.');
-
-                finished_callback(exit_code);
-            },
-            pid);
-
-    stdout_stream.emplace(stdout_tag, stdout_fd, sigc::mem_fun(*this, &ProcessExecutor::stream_callback));
-    stderr_stream.emplace(stderr_tag, stderr_fd, sigc::mem_fun(*this, &ProcessExecutor::stream_callback));
-
-    logger->info("Spawned subprocess \"" + argv[0] + "\" with PID " + std::to_string(pid) + '.');
+ProcessExecutor::ProcessExecutor(const std::string &working_directory, const std::vector<std::string> &argv,
+        const std::vector<std::string> &envp, sigc::slot<void(int)> &&finished_callback)
+{
+    std::ignore = spawn_process(working_directory, argv, envp, std::move(finished_callback));
 }
 
 ProcessExecutor::Stream::Stream(const Glib::RefPtr<Gtk::TextTag> &formatting_tag, const int source_fd,
@@ -95,7 +87,7 @@ ProcessExecutor::Stream::~Stream()
         watch.disconnect();
         channel->close();
     } catch (const Glib::IOChannelError &channel_error) {
-        logger->error("Could not graciously destruct stream for subprocess.");
+        logger->error("Could not graciously destruct stream for sub-process.");
         logger->error(channel_error.what());
     }
 }
@@ -103,12 +95,14 @@ ProcessExecutor::Stream::~Stream()
 void ProcessExecutor::Stream::append_line_to_buffer(const Glib::RefPtr<Gtk::TextBuffer> &target_buffer) const
 {
     Glib::ustring line;
-    if (channel->read_line(line) == Glib::IOStatus::NORMAL)
+    if (channel->read_to_end(line) == Glib::IOStatus::NORMAL)
         target_buffer->insert_with_tag(target_buffer->end(), line, formatting_tag);
 }
 
 bool ProcessExecutor::stream_callback(const Glib::IOCondition condition, const Stream *stream_metadata) const
 {
+    assert(output != nullptr);
+
     if (std::to_underlying(condition & (Glib::IOCondition::IO_IN | Glib::IOCondition::IO_HUP)) != 0) {
         stream_metadata->append_line_to_buffer(output);
         return true;
@@ -118,9 +112,55 @@ bool ProcessExecutor::stream_callback(const Glib::IOCondition condition, const S
      * If we've triggered the callback with something other than a IOCondition::IO_IN or IOCondition::IO_HUP, something
      * unexpected has happened and Glib is indicating an error state.
      */
-    logger->warn("Abnormal IO condition reported by GLib for subprocess stream: code " +
+    logger->warn("Abnormal IO condition reported by GLib for sub-process stream: code " +
             std::to_string(std::to_underlying(condition)) + '.');
     return false;
+}
+
+std::pair<int, int> ProcessExecutor::spawn_process(const std::string& working_directory,
+        const std::vector<std::string> &argv, const std::vector<std::string> &envp,
+        sigc::slot<void(int)> &&finished_callback)
+{
+    int stdout_fd;
+    int stderr_fd;
+
+    try {
+        Glib::spawn_async_with_pipes(working_directory, argv, envp,
+                Glib::SpawnFlags::SEARCH_PATH | Glib::SpawnFlags::DO_NOT_REAP_CHILD, {}, &pid, nullptr, &stdout_fd,
+                &stderr_fd);
+    } catch (const Glib::SpawnError &spawn_error) {
+        logger->error("Failed to spawn sub-process.");
+        logger->error(spawn_error.what());
+        throw;
+    }
+
+    Glib::signal_child_watch().connect(
+        [this, finished_callback](const Glib::Pid ended_pid, const int exit_code)
+        {
+            if (ended_pid != pid)
+                // Filter PIDs that aren't ours. (Shouldn't ever happen, but isn't worth logging.)
+                    return;
+
+                /*
+                 * We would like to keep to RAII as much as practicable, but the streams must be irrevocably reset upon
+                 * sub-process termination otherwise the entire thread will hang.
+                 */
+                this->stdout_stream.reset();
+                this->stderr_stream.reset();
+                Glib::spawn_close_pid(pid);
+
+                if (exit_code == 0)
+                    logger->info("Subprocess with PID " + std::to_string(pid) + " exited normally.");
+                else
+                    logger->warn("Subprocess with PID " + std::to_string(pid) + " exited with non-zero exit code " +
+                            std::to_string(exit_code) + '.');
+
+                finished_callback(exit_code);
+            },
+            pid
+        );
+
+    return { stdout_fd, stderr_fd };
 }
 
 } // namespace optifol

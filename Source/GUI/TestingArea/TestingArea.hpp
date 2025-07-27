@@ -110,8 +110,11 @@ public:
 
     void propagate_pending_results();
 
-    void execute_tests();
-
+    /**
+     * @brief Gets the selected TestGroup object in the model view.
+     * @return The single selected TestGroup object in the model view.
+     * @throws std::runtime_error There was no suitable TestGroup object selected.
+     */
     Glib::RefPtr<TestGroup> get_selection() const;
 
 private:
@@ -126,6 +129,8 @@ private:
      */
     static std::optional<std::pair<const std::optional<Test>&, Gtk::Label *>> bind_helper(
         const Glib::RefPtr<Gtk::ListItem> &list_item);
+
+    void configure_columns() const;
 
     void configure_selection_model() const;
 

@@ -84,7 +84,7 @@
                         </object>
                     </child>
                     <child>
-                        <object class="GtkSeparator" />
+                        <object class="GtkSeparator" /> <!-- TODO: not showing with enough vertical padding! -->
                     </child>
                 </object>
             </child>

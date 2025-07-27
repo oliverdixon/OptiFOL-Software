@@ -52,6 +52,112 @@ TestingArea::TestingArea(Gtk::Builder &builder) :
     configure_selection_model();
     test_groups_view->set_model(selection_model);
 
+    configure_columns();
+}
+
+void TestingArea::select_model(const Glib::RefPtr<Subsystem> &new_subsystem)
+{
+    on_off_widgets.first->set_visible(false);
+    on_off_widgets.second->set_visible(true);
+
+    active_subsystem = new_subsystem;
+    tree_model = Gtk::TreeListModel::create(active_subsystem->get_test_groups(),
+        sigc::ptr_fun(&TestGroup::get_expanded_list<TestGroup>), true, true);
+    selection_model->set_model(tree_model);
+}
+
+void TestingArea::deselect_model()
+{
+    on_off_widgets.second->set_visible(false);
+    on_off_widgets.first->set_visible(true);
+
+    active_subsystem = nullptr;
+    tree_model = nullptr;
+    selection_model->set_model(nullptr);
+}
+
+Subsystem *TestingArea::observe_active_subsystem() noexcept
+{
+    return active_subsystem.get();
+}
+
+const Subsystem *TestingArea::observe_active_subsystem() const noexcept
+{
+    return active_subsystem.get();
+}
+
+void TestingArea::accept_new_result(std::unique_ptr<TestResult> &&test_result)
+{
+    received_test_results.emplace(test_result.get(), std::move(test_result));
+}
+
+void TestingArea::propagate_pending_results()
+{
+    const auto data_model = active_subsystem->get_test_groups();
+    const auto group_count = data_model->get_n_items();
+
+    for (guint group_idx = 0; group_idx < group_count; ++group_idx) {
+        const auto grouped_requirements = data_model->get_item(group_idx);
+        grouped_requirements->for_each(
+            [this](Requirement &requirement)
+            {
+                const auto &test = requirement.observe_test();
+
+                if (test.has_value() == true)
+                    return;
+
+                const auto &glib_suite_name = test->property_test_suite().get_value();
+                const auto &glib_test_name = test->property_name().get_value();
+
+                const auto it = received_test_results.find(
+                        std::make_pair(std::string_view(glib_suite_name->c_str(), glib_suite_name->bytes()),
+                                std::string_view(glib_test_name.c_str(), glib_test_name.bytes())));
+
+                if (it != received_test_results.cend()) {
+                    requirement.emplace_test_result(it->second);
+                    area_logger->debug("Matched parsed test result \"" + *glib_suite_name + '.' + glib_test_name +
+                            "\" with requirement \"" + requirement.property_name().get_value() + "\".");
+                } else
+                    area_logger->debug("Could not match requirement \"" + requirement.property_name().get_value() +
+                            "\" with any parsed test.");
+            }
+        );
+    }
+}
+
+Glib::RefPtr<TestGroup> TestingArea::get_selection() const
+{
+    const auto selected_item = selection_model->get_selected_item();
+
+    if (selected_item == nullptr)
+        throw std::runtime_error("No item selected in the selection model.");
+
+    const auto selected_group = std::dynamic_pointer_cast<TestGroup>(selected_item);
+
+    if (selected_group == nullptr)
+        throw std::runtime_error("Selected item is not a Test Group.");
+
+    return selected_group;
+}
+
+std::optional<std::pair<const std::optional<Test> &, Gtk::Label *>> TestingArea::bind_helper(
+        const Glib::RefPtr<Gtk::ListItem> &list_item)
+{
+    const auto requirement = std::dynamic_pointer_cast<Requirement>(list_item->get_item());
+
+    if (requirement == nullptr)
+        return std::nullopt;
+
+    const auto label = dynamic_cast<Gtk::Label *>(list_item->get_child());
+
+    if (label == nullptr)
+        return std::nullopt;
+
+    return std::make_pair(std::cref(requirement->observe_test()), label);
+}
+
+void TestingArea::configure_columns() const
+{
     const auto columns = test_groups_view->get_columns();
     const auto column_count = columns->get_n_items();
 
@@ -132,115 +238,6 @@ TestingArea::TestingArea(Gtk::Builder &builder) :
             column->set_factory(factory);
         }
     }
-}
-
-void TestingArea::select_model(const Glib::RefPtr<Subsystem> &new_subsystem)
-{
-    on_off_widgets.first->set_visible(false);
-    on_off_widgets.second->set_visible(true);
-
-    active_subsystem = new_subsystem;
-    tree_model = Gtk::TreeListModel::create(active_subsystem->get_test_groups(),
-        sigc::ptr_fun(&TestGroup::get_expanded_list<TestGroup>), true, true);
-    selection_model->set_model(tree_model);
-}
-
-void TestingArea::deselect_model()
-{
-    on_off_widgets.second->set_visible(false);
-    on_off_widgets.first->set_visible(true);
-
-    active_subsystem = nullptr;
-    tree_model = nullptr;
-    selection_model->set_model(nullptr);
-}
-
-Subsystem *TestingArea::observe_active_subsystem() noexcept
-{
-    return active_subsystem.get();
-}
-
-const Subsystem *TestingArea::observe_active_subsystem() const noexcept
-{
-    return active_subsystem.get();
-}
-
-void TestingArea::accept_new_result(std::unique_ptr<TestResult> &&test_result)
-{
-    received_test_results.emplace(test_result.get(), std::move(test_result));
-}
-
-void TestingArea::propagate_pending_results()
-{
-    const auto data_model = active_subsystem->get_test_groups();
-    const auto group_count = data_model->get_n_items();
-
-    for (guint group_idx = 0; group_idx < group_count; ++group_idx) {
-        const auto grouped_requirements = data_model->get_item(group_idx);
-        grouped_requirements->for_each(
-            [this](Requirement &requirement)
-            {
-                const auto &test = requirement.observe_test();
-
-                if (test.has_value() == true)
-                    return;
-
-                const auto &glib_suite_name = test->property_test_suite().get_value();
-                const auto &glib_test_name = test->property_name().get_value();
-
-                const auto it = received_test_results.find(
-                        std::make_pair(std::string_view(glib_suite_name->c_str(), glib_suite_name->bytes()),
-                                std::string_view(glib_test_name.c_str(), glib_test_name.bytes())));
-
-                if (it != received_test_results.cend()) {
-                    requirement.emplace_test_result(it->second);
-                    area_logger->debug("Matched parsed test result \"" + *glib_suite_name + '.' + glib_test_name +
-                            "\" with requirement \"" + requirement.property_name().get_value() + "\".");
-                } else
-                    area_logger->debug("Could not match requirement \"" + requirement.property_name().get_value() +
-                            "\" with any parsed test.");
-            }
-        );
-    }
-}
-
-void TestingArea::execute_tests()
-{
-    test_executor.emplace("",
-            std::vector<std::string>{"cmake-build-debug/OptifolTesting",
-                    "--gtest_filter=FOLParserTest.*", // TODO get from selected requirement/test group.
-                    "--gtest_stream_result_to=127.0.0.1:12345"},
-            std::vector<std::string>{}, run_tests_output_buffer, [this](const int) { test_executor.reset(); });
-}
-Glib::RefPtr<TestGroup> TestingArea::get_selection() const
-{
-    const auto selected_item = selection_model->get_selected_item();
-
-    if (selected_item == nullptr)
-        throw std::runtime_error("No item selected in the selection model.");
-
-    const auto selected_group = std::dynamic_pointer_cast<TestGroup>(selected_item);
-
-    if (selected_group == nullptr)
-        throw std::runtime_error("Selected item is not a Test Group.");
-
-    return selected_group;
-}
-
-std::optional<std::pair<const std::optional<Test> &, Gtk::Label *>> TestingArea::bind_helper(
-        const Glib::RefPtr<Gtk::ListItem> &list_item)
-{
-    const auto requirement = std::dynamic_pointer_cast<Requirement>(list_item->get_item());
-
-    if (requirement == nullptr)
-        return std::nullopt;
-
-    const auto label = dynamic_cast<Gtk::Label *>(list_item->get_child());
-
-    if (label == nullptr)
-        return std::nullopt;
-
-    return std::make_pair(std::cref(requirement->observe_test()), label);
 }
 
 void TestingArea::configure_selection_model() const

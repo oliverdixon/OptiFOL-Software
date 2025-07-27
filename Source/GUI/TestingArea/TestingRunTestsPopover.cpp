@@ -3,13 +3,19 @@
  * 2025 Oliver Dixon <od641@york.ac.uk>
  */
 
-//
-// Created by owd on 7/26/25.
-//
+/**
+ * @file
+ * @brief Class implementation for the <i>Run Tests</i> popover in the <i>Testing and Compliance</i> area.
+ * @author Oliver Dixon
+ * @date 2025-07-27
+ * @version Development
+ */
 
 #include "TestingRunTestsPopover.hpp"
+
 #include "../GTKHelpers.hpp"
 #include "../Logging.hpp"
+#include "GoogleTestFactory.hpp"
 #include "TestingArea.hpp"
 
 namespace optifol
@@ -24,6 +30,7 @@ TestingRunTestsPopover::TestingRunTestsPopover(Gtk::Builder &builder, TestingAre
     my_popover(GTKHelpers::get_widget<Gtk::Popover>(popover_name, builder, "run_tests_popover")),
     confirm_button(GTKHelpers::get_widget<Gtk::Button>(popover_name, builder, "run_tests_confirm")),
     cancel_button(GTKHelpers::get_widget<Gtk::Button>(popover_name, builder, "run_tests_cancel")),
+    test_provider(GTKHelpers::get_widget<Gtk::DropDown>(popover_name, builder, "test_backend_provider")),
     test_group_name_entry(GTKHelpers::get_widget<Gtk::Entry>(popover_name, builder, "test_group_name")),
     discovery_notebook(GTKHelpers::get_widget<Gtk::Notebook>(popover_name, builder, "run_tests_discovery_notebook")),
     discover_button(GTKHelpers::get_widget<Gtk::Button>(popover_name, builder, "run_tests_discover")),
@@ -34,12 +41,12 @@ TestingRunTestsPopover::TestingRunTestsPopover(Gtk::Builder &builder, TestingAre
     cancel_button->signal_clicked().connect(sigc::mem_fun(*this, &TestingRunTestsPopover::cancel_button_clicked));
     discover_button->signal_clicked().connect(sigc::mem_fun(*this, &TestingRunTestsPopover::discover_tests_clicked));
 
-    discovery_notebook->signal_page_added().connect([this](Gtk::Widget * const, const guint)
+    discovery_notebook->signal_page_added().connect([this](Gtk::Widget * const, const guint) noexcept
     {
         discovery_box->set_visible();
     });
 
-    discovery_notebook->signal_page_removed().connect([this](Gtk::Widget * const, const guint)
+    discovery_notebook->signal_page_removed().connect([this](Gtk::Widget * const, const guint) noexcept
     {
         if (discovery_notebook->get_n_pages() == 0)
             discovery_box->set_visible(false);
@@ -54,60 +61,71 @@ TestingRunTestsPopover::DiscoveryPage::DiscoveryPage(const std::string &tab_name
     text_view.add_css_class("optifol_monospace");
 }
 
-void TestingRunTestsPopover::confirm_button_clicked() const
+void TestingRunTestsPopover::confirm_button_clicked() const noexcept
 {
 
 }
 
-void TestingRunTestsPopover::cancel_button_clicked() const
+void TestingRunTestsPopover::cancel_button_clicked() const noexcept
 {
     my_popover->popdown();
     clear_inputs();
 }
 
-void TestingRunTestsPopover::clear_inputs() const
+// ReSharper disable once CppDFAUnreachableFunctionCall - False positive: called from button-click callback.
+void TestingRunTestsPopover::clear_inputs() const noexcept
 {
     test_group_name_entry->set_text("");
 }
 
-void TestingRunTestsPopover::show_popover()
+void TestingRunTestsPopover::show_popover() const noexcept
 {
-    const auto selected = testing_area.get_selection();
-    test_group_name_entry->set_text(selected->property_name().get_value());
+    try {
+        test_group_name_entry->set_text(testing_area.get_selection()->property_name().get_value());
+    } catch (const std::runtime_error& selection_error) {
+        popover_logger->error("Could not discover the selected Test Group entry.");
+        popover_logger->error(selection_error.what());
+    }
 }
 
-void TestingRunTestsPopover::discover_tests_clicked()
+void TestingRunTestsPopover::discover_tests_clicked() noexcept
 {
     const auto existing_page_count = static_cast<guint>(discovery_pages.size());
 
     // Pre-condition: verify that the stored pages are synchronised with the displayed pages prior to mutation.
     assert(existing_page_count == static_cast<guint>(discovery_notebook->get_n_pages()));
 
-    const auto selected_test_group = testing_area.get_selection();
-    const auto begin = selected_test_group->begin_executable_groups();
-    const auto end = selected_test_group->end_executable_groups();
-
     guint page_number = 0;
 
-    // Process each executable target required by the Test Group items, reusing notebook pages where possible.
-    for (std::remove_const_t<decltype(begin)> exe_group_it = begin; exe_group_it != end; ++exe_group_it) {
-        if (page_number < existing_page_count) {
+    try {
+        const auto selected_test_group = testing_area.get_selection();
+        const auto begin = selected_test_group->begin_executable_groups();
+        const auto end = selected_test_group->end_executable_groups();
 
-            // Mutate the existing discovery label and window.
-            auto& page = discovery_pages[page_number];
-            page.tab_label.set_text(exe_group_it->first);
-            discover_executable(exe_group_it->first, page.text_view.get_buffer());
+        // Process each executable target required by the Test Group items, reusing notebook pages where possible.
+        for (std::remove_const_t<decltype(begin)> exe_group_it = begin; exe_group_it != end; ++exe_group_it) {
+            if (page_number < existing_page_count) {
 
-        } else {
+                // Mutate the existing discovery label and window.
+                auto& page = discovery_pages[page_number];
+                page.tab_label.set_text(exe_group_it->first);
+                page.text_view.get_buffer()->set_text("");
+                discover_executable(exe_group_it->first, page.text_view.get_buffer());
 
-            // Create a new discovery label and window to be appended to the notebook.
-            auto& page = discovery_pages.emplace_back(exe_group_it->first);
-            discover_executable(exe_group_it->first, page.text_view.get_buffer());
-            discovery_notebook->append_page(page.scrolled_window, page.tab_label);
+            } else {
 
+                // Create a new discovery label and window to be appended to the notebook.
+                auto& page = discovery_pages.emplace_back(exe_group_it->first);
+                discover_executable(exe_group_it->first, page.text_view.get_buffer());
+                discovery_notebook->append_page(page.scrolled_window, page.tab_label);
+
+            }
+
+            ++page_number;
         }
-
-        ++page_number;
+    } catch (const std::runtime_error& selection_error) {
+        popover_logger->error("Could not discover the selected Test Group entry.");
+        popover_logger->error(selection_error.what());
     }
 
     /*
@@ -117,7 +135,6 @@ void TestingRunTestsPopover::discover_tests_clicked()
      * `page_number - 1` pages, and everything further should be discarded.
      */
     if (discovery_pages.empty() == false) {
-
         const auto last_stored_item_index = static_cast<guint>(discovery_pages.size()) - 1;
 
         for (guint index = last_stored_item_index; index > page_number; --index) {
@@ -135,21 +152,44 @@ void TestingRunTestsPopover::discover_tests_clicked()
     assert(static_cast<guint>(discovery_pages.size()) == static_cast<guint>(discovery_notebook->get_n_pages()));
 }
 
+// ReSharper disable once CppDFAUnreachableFunctionCall - False positive: called from button-click callback.
 void TestingRunTestsPopover::discover_executable(
-        const std::string &executable_name, const Glib::RefPtr<Gtk::TextBuffer> &output_buffer)
+        const std::string_view executable_name, Glib::RefPtr<Gtk::TextBuffer> output_buffer) noexcept
 {
-    auto executor = std::make_unique<ProcessExecutor>(
-        "",
-        std::vector<std::string>{std::string(executable_name), "--gtest_list_tests" },
-        std::vector<std::string>{},
-        output_buffer,
-        [this, executable_name](const int)
-        {
-            discovery_executor_pool.erase(executable_name);
+    switch (test_provider->get_selected()) {
+    case std::to_underlying(TestProvidersDropDown::GoogleTest):
+        // Exception properties of std::unordered_map::emplace are unclear. Also test factories are not noexcept.
+        try {
+            discover_button->set_sensitive(false);
+            discovery_executor_pool.emplace(
+                executable_name,
+                GoogleTestFactory::dry_run_executable(
+                    executable_name,
+                    std::move(output_buffer),
+                    [this, executable_name](const int) noexcept
+                    {
+                        /*
+                         * This is invoked from a Glib callback, so must be noexcept.
+                         *
+                         * std::hash<std::string_view>::operator() and std::string_view::operator== can be assumed to be
+                         * noexcept, thus std::unordered_map<std::string_view, ...> is noexcept.
+                         */
+                        discovery_executor_pool.erase(executable_name);
+                        discover_button->set_sensitive();
+                    }
+                )
+            );
+        } catch (...) {
+            discover_button->set_sensitive();
+            popover_logger->warn("Could not record entry of test discovery executor for \"" +
+                std::string(executable_name) + "\".");
         }
-    );
+        break;
 
-    discovery_executor_pool.emplace(executable_name, std::move(executor));
+    default:
+        popover_logger->error("Cannot execute dry-run for executable \"" + std::string(executable_name) +
+            "\": unsupported test provider.");
+    }
 }
 
 } // namespace optifol

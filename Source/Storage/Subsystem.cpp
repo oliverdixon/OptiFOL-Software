@@ -55,6 +55,7 @@ std::string Subsystem::get_path() const
 
 void Subsystem::record_slated_requirement(const Glib::RefPtr<Requirement> slated_requirement, const guint old_index)
 {
+    assert(deleted_requirements.contains(old_index) == false);
     deleted_requirements[old_index] = slated_requirement;
 }
 

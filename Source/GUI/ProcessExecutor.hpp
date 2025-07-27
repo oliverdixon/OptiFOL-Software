@@ -39,7 +39,9 @@ namespace optifol
  *  </ul>
  *
  * @todo Due to buffering, stderr and stdout lines may not appear on the buffer in the order in which they were sent
- *   from the subprocess. This is a known issue and will be fixed.
+ *   from the sub-process. This is a known issue and will be fixed.
+ *
+ * @todo Split into the base ProcessExecutor that doesn't do anything with streams. Then extend for a tracking variant.
  */
 class ProcessExecutor
 {
@@ -54,10 +56,15 @@ public:
      * @param finished_callback Callback to invoke once the child exited, taking only the process exit code.
      * @note Even if the ProcessExecutor is destructed, the callback shall still be executed on child exit as the
      *  child-watch signal is managed by the Glib calling context.
+     * @throws Glib::SpawnError The sub-process failed to start; in this case, a human-readable message will also be
+     *  logged to the output buffer with <code>stderr</code> formatting.
      */
     ProcessExecutor(const std::string &working_directory, const std::vector<std::string> &argv,
             const std::vector<std::string> &envp, const Glib::RefPtr<Gtk::TextBuffer> &output,
             sigc::slot<void(int)>&& finished_callback);
+
+    ProcessExecutor(const std::string &working_directory, const std::vector<std::string> &argv,
+            const std::vector<std::string> &envp, sigc::slot<void(int)>&& finished_callback);
 
 private:
     class Stream;
@@ -66,9 +73,13 @@ private:
      * @brief Callback to indicate that new data has arrived on the given stream
      * @param condition The condition under which the data has arrived
      * @param stream_metadata The stream object encapsulating the incoming data
+     * @pre The @ref output buffer is not null.
      * @return Was the data received under a non-erroneous condition?
      */
     bool stream_callback(Glib::IOCondition condition, const Stream *stream_metadata) const;
+
+    std::pair<int, int> spawn_process(const std::string& working_directory, const std::vector<std::string> &argv,
+        const std::vector<std::string> &envp, sigc::slot<void(int)>&& finished_callback);
 
     /**
      * @class Stream

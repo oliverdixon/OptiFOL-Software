@@ -53,7 +53,7 @@ ReportsAreaGenerateLaTeXPopover::ReportsAreaGenerateLaTeXPopover(
 
 void ReportsAreaGenerateLaTeXPopover::confirm_button_clicked()
 {
-    assert(latex_executor.has_value() == false); // We only run one LaTeX subprocess at once.
+    assert(latex_executor.has_value() == false); // We only run one LaTeX sub-process at once.
     confirm_button->set_sensitive(false);
 
     update_requirements_csv();
