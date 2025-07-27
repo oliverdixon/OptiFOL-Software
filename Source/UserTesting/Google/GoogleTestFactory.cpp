@@ -14,13 +14,15 @@
 #include <vector>
 
 #include "GoogleTestFactory.hpp"
-#include "../GUI/ProcessExecutor.hpp"
+#include "../../GUI/StreamingProcessExecutor.hpp"
 
 namespace optifol
 {
 
-std::unique_ptr<ProcessExecutor> GoogleTestFactory::execute_tests(sigc::slot<void(int)> &&finished_callback)
+std::unique_ptr<ProcessExecutor> GoogleTestFactory::execute_test(sigc::slot<void(int)> &&finished_callback)
 {
+    // TODO: this should open a listener and a process, and return both in unique_ptrs.
+
     return std::make_unique<ProcessExecutor>(
         "",
         std::vector<std::string>{
@@ -34,9 +36,9 @@ std::unique_ptr<ProcessExecutor> GoogleTestFactory::execute_tests(sigc::slot<voi
 }
 
 std::unique_ptr<ProcessExecutor> GoogleTestFactory::dry_run_executable(const std::string_view executable_name,
-        Glib::RefPtr<Gtk::TextBuffer> output_buffer, sigc::slot<void(int)> &&finished_callback)
+    Glib::RefPtr<Gtk::TextBuffer> output_buffer, sigc::slot<void(int)> &&finished_callback)
 {
-    return std::make_unique<ProcessExecutor>(
+    return std::make_unique<StreamingProcessExecutor>(
         "",
         std::vector<std::string>{std::string(executable_name), "--gtest_list_tests" },
         std::vector<std::string>{},

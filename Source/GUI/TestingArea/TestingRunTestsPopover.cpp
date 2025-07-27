@@ -15,6 +15,7 @@
 
 #include "../GTKHelpers.hpp"
 #include "../Logging.hpp"
+#include "../StreamingProcessExecutor.hpp"
 #include "GoogleTestFactory.hpp"
 #include "TestingArea.hpp"
 
@@ -63,7 +64,7 @@ TestingRunTestsPopover::DiscoveryPage::DiscoveryPage(const std::string &tab_name
 
 void TestingRunTestsPopover::confirm_button_clicked() const noexcept
 {
-
+    // TODO URGENT
 }
 
 void TestingRunTestsPopover::cancel_button_clicked() const noexcept
@@ -165,7 +166,7 @@ void TestingRunTestsPopover::discover_executable(
                 executable_name,
                 GoogleTestFactory::dry_run_executable(
                     executable_name,
-                    std::move(output_buffer),
+                    output_buffer,
                     [this, executable_name](const int) noexcept
                     {
                         /*
@@ -179,11 +180,17 @@ void TestingRunTestsPopover::discover_executable(
                     }
                 )
             );
+        } catch (const Glib::SpawnError& spawn_error) {
+            discover_button->set_sensitive();
+            StreamingProcessExecutor::write_exception_error(spawn_error, output_buffer);
+            popover_logger->error("Could not dry-run test executable \"" + std::string(executable_name) + "\".");
+            popover_logger->error(spawn_error.what());
         } catch (...) {
             discover_button->set_sensitive();
             popover_logger->warn("Could not record entry of test discovery executor for \"" +
                 std::string(executable_name) + "\".");
         }
+
         break;
 
     default:

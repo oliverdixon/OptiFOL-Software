@@ -25,7 +25,7 @@
 #include <gtkmm/textbuffer.h>
 #include <log4cxx/logger.h>
 
-#include "../ProcessExecutor.hpp"
+#include "../StreamingProcessExecutor.hpp"
 
 namespace optifol
 {
@@ -183,7 +183,7 @@ private:
 
     Glib::RefPtr<Gio::File> index_csv;
     Glib::RefPtr<Gio::File> output_directory;
-    std::optional<ProcessExecutor> latex_executor;
+    std::optional<StreamingProcessExecutor> latex_executor;
 };
 
 } // namespace optifol

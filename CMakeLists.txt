@@ -370,6 +370,8 @@ add_executable(OptifolGUI
         Source/GUI/TestingArea/TestingRunTestsPopover.hpp
         Source/UserTesting/Google/GoogleTestFactory.cpp
         Source/UserTesting/Google/GoogleTestFactory.hpp
+        Source/GUI/StreamingProcessExecutor.cpp
+        Source/GUI/StreamingProcessExecutor.hpp
 )
 
 set(COMMON_COMPILER_OPTIONS

@@ -25,7 +25,7 @@ class ProcessExecutor;
 class GoogleTestFactory
 {
 public:
-    static std::unique_ptr<ProcessExecutor> execute_tests(sigc::slot<void(int)> &&finished_callback);
+    static std::unique_ptr<ProcessExecutor> execute_test(sigc::slot<void(int)> &&finished_callback);
 
     static std::unique_ptr<ProcessExecutor> dry_run_executable(std::string_view executable_name,
             Glib::RefPtr<Gtk::TextBuffer> output_buffer, sigc::slot<void(int)> &&finished_callback);
