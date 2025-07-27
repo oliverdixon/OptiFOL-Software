@@ -14,47 +14,50 @@
 #ifndef TESTLISTENERBASE_HPP
 #define TESTLISTENERBASE_HPP
 
+#include <giomm/asyncresult.h>
+#include <glibmm/refptr.h>
+#include <log4cxx/logger.h>
 #include <memory>
+#include <unordered_set>
+
+#include "../DereferencingEqualityFunctor.hpp"
+#include "TestResult.hpp"
 
 namespace optifol
 {
 
-class TestResult;
+class Requirement;
 
 /**
  * @class TestListenerBase
  * @brief Provides a test-framework-agnostic listener to accept network-streamed payloads describing results of
- *  automated tests. Asynchronous network operations are provided by the Glib socket abstraction layers.
+ *  automated tests. Asynchronous network operations are provided by the Glib socket abstraction layers. Received
+ *  TestResult objects are stored by the listener in a blob and can be distributed (through shared ownership) to
+ *  relevant Requirement objects with @ref endow_requirement.
  */
 class TestListenerBase
 {
 public:
     /**
-     * @brief Register the callback to inform clients of newly parsed TestResult objects
-     * @param result_callback The callback capable of taking exclusive ownership of the TestResult object from the
-     *  payload protocol parser
+     * @brief Destruct the TestListenerBase, discarding any unused TestResult objects and closing any opened network
+     *  state.
      */
-    explicit TestListenerBase(sigc::slot<void(std::unique_ptr<TestResult> &&)>&& result_callback) :
-        result_callback(std::move(result_callback))
-    {
-    }
+    virtual ~TestListenerBase() = default;
 
     /**
-     * @brief De-registers the callback bindings.
-     */
-    virtual ~TestListenerBase()
-    {
-        result_callback.disconnect();
-    }
-
-    /**
-     * @brief Reports a newly formed TestResult object to the callback
+     * @brief Accepts a newly formed TestResult object
      * @param test_result The owning container of the constructed TestResult
      */
-    void report_result(std::unique_ptr<TestResult>&& test_result) const
-    {
-        result_callback(std::move(test_result));
-    }
+    void accept_result(std::unique_ptr<TestResult> &&test_result);
+
+    /**
+     * @brief Given a Requirement with an associated Test object, determine whether a stored TestResult matches the test
+     *  specification of the Requirement. If it does, share the TestResult with the Requirement.
+     * @param requirement The Requirement to consider sharing the TestResult
+     * @throws SemanticException if the Requirement refused the TestResult
+     * @see Requirement::emplace_test_result
+     */
+    void endow_requirement(Requirement &requirement);
 
 protected:
     /**
@@ -67,7 +70,8 @@ protected:
     virtual void connection_callback(const Glib::RefPtr<Gio::AsyncResult> &result) noexcept = 0;
 
 private:
-    sigc::slot<void(std::unique_ptr<TestResult>&&)> result_callback;
+    std::unordered_set<std::shared_ptr<TestResult>, std::hash<TestResult>,
+        DereferencingEqualityFunctor<std::shared_ptr<TestResult>, TestResult>> received_test_blob;
 };
 
 } // namespace optifol

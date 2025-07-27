@@ -82,45 +82,6 @@ const Subsystem *TestingArea::observe_active_subsystem() const noexcept
     return active_subsystem.get();
 }
 
-void TestingArea::accept_new_result(std::unique_ptr<TestResult> &&test_result)
-{
-    received_test_results.emplace(test_result.get(), std::move(test_result));
-}
-
-void TestingArea::propagate_pending_results()
-{
-    const auto data_model = active_subsystem->get_test_groups();
-    const auto group_count = data_model->get_n_items();
-
-    for (guint group_idx = 0; group_idx < group_count; ++group_idx) {
-        const auto grouped_requirements = data_model->get_item(group_idx);
-        grouped_requirements->for_each(
-            [this](Requirement &requirement)
-            {
-                const auto &test = requirement.observe_test();
-
-                if (test.has_value() == true)
-                    return;
-
-                const auto &glib_suite_name = test->property_test_suite().get_value();
-                const auto &glib_test_name = test->property_name().get_value();
-
-                const auto it = received_test_results.find(
-                        std::make_pair(std::string_view(glib_suite_name->c_str(), glib_suite_name->bytes()),
-                                std::string_view(glib_test_name.c_str(), glib_test_name.bytes())));
-
-                if (it != received_test_results.cend()) {
-                    requirement.emplace_test_result(it->second);
-                    area_logger->debug("Matched parsed Test result \"" + *glib_suite_name + '.' + glib_test_name +
-                            "\" with Requirement \"" + requirement.property_name().get_value() + "\".");
-                } else
-                    area_logger->debug("Could not match Requirement \"" + requirement.property_name().get_value() +
-                            "\" with any parsed Test.");
-            }
-        );
-    }
-}
-
 Glib::RefPtr<TestGroup> TestingArea::get_selection() const
 {
     const auto selected_item = selection_model->get_selected_item();

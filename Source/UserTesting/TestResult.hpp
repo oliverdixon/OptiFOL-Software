@@ -87,6 +87,11 @@ struct std::hash<optifol::TestResult>
     {
         return object.hash();
     }
+
+    std::size_t operator()(const std::shared_ptr<optifol::TestResult> &shared_hashable) const noexcept
+    {
+        return shared_hashable->hash();
+    }
 };
 
 #endif // TESTRESULT_HPP

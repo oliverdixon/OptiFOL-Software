@@ -25,11 +25,12 @@
 #include <gtkmm/textview.h>
 #include <log4cxx/logger.h>
 
-#include "../ProcessExecutor.hpp"
-
 namespace optifol
 {
 
+class TestGroup;
+class TestListenerBase;
+class ProcessExecutor;
 class TestingArea;
 
 /**
@@ -130,7 +131,7 @@ private:
     /**
      * @brief Handle a click of the <i>Confirm</i> by attempting to create a Requirement with the given characteristics.
      */
-    void confirm_button_clicked() const noexcept;
+    void confirm_button_clicked() noexcept;
 
     /**
      * @brief Handle a click of the <i>Cancel</i> button by discarding all input and closing the popover.
@@ -164,7 +165,14 @@ private:
      *  of @ref discovery_executor_pool.
      * @param output_buffer The destination buffer to which the executable pipes should be streamed.
      */
-    void discover_executable(std::string_view executable_name, Glib::RefPtr<Gtk::TextBuffer> output_buffer) noexcept;
+    void discover_executable(std::string_view executable_name, const Glib::RefPtr<Gtk::TextBuffer>& output_buffer)
+        noexcept;
+
+    /**
+     * @brief Consider each Requirement in the @ref group_under_test, and query all listeners in the @ref listener_pool
+     *  for relevant TestResult objects. If relevant results are found, share with the Requirement.
+     */
+    void distribute_test_results() const noexcept;
 
     static const char *const popover_name;
     static const log4cxx::LoggerPtr popover_logger;
@@ -182,6 +190,10 @@ private:
 
     std::vector<DiscoveryPage> discovery_pages;
     std::unordered_map<std::string_view, std::unique_ptr<ProcessExecutor>> discovery_executor_pool;
+
+    Glib::RefPtr<TestGroup> group_under_test;
+    std::unordered_map<std::string_view, std::unique_ptr<ProcessExecutor>> test_runner_pool;
+    std::vector<std::unique_ptr<TestListenerBase>> listener_pool;
 };
 
 } // namespace optifol

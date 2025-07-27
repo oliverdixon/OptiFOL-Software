@@ -62,9 +62,33 @@ TestingRunTestsPopover::DiscoveryPage::DiscoveryPage(const std::string &tab_name
     text_view.add_css_class("optifol_monospace");
 }
 
-void TestingRunTestsPopover::confirm_button_clicked() const noexcept
+void TestingRunTestsPopover::confirm_button_clicked() noexcept
 {
-    // TODO URGENT
+    // TODO URGENT: verify noexcept property of this and the lambda.
+    const auto selected_test_group = testing_area.get_selection();
+    const auto begin = selected_test_group->begin_executable_groups();
+    const auto end = selected_test_group->end_executable_groups();
+
+    for (std::remove_const_t<decltype(begin)> exe_group_it = begin; exe_group_it != end; ++exe_group_it) {
+        auto [executor, listener] = GoogleTestFactory::execute_test_group(
+            exe_group_it->first,
+            "FOLParserTest.*", // TODO URGENT: take test specification from TestGroup.
+            [this, executable_name = exe_group_it->first](const int pid)
+            {
+                if (test_runner_pool.erase(executable_name) != 1)
+                    // We should always be removing exactly one executor instance, as this is the process-exit callback.
+                    popover_logger->warn("Test runner pool failed integrity check: more than one entry for executable "
+                        + executable_name + " running under PID " + std::to_string(pid) + '.');
+
+                if (test_runner_pool.empty())
+                    // Once all test executables have completed, spin over the Requirements and assign TestResults.
+                    distribute_test_results();
+            }
+        );
+
+        test_runner_pool.emplace(exe_group_it->first, std::move(executor));
+        listener_pool.push_back(std::move(listener));
+    }
 }
 
 void TestingRunTestsPopover::cancel_button_clicked() const noexcept
@@ -155,18 +179,15 @@ void TestingRunTestsPopover::discover_tests_clicked() noexcept
 
 // ReSharper disable once CppDFAUnreachableFunctionCall - False positive: called from button-click callback.
 void TestingRunTestsPopover::discover_executable(
-        const std::string_view executable_name, Glib::RefPtr<Gtk::TextBuffer> output_buffer) noexcept
+        const std::string_view executable_name, const Glib::RefPtr<Gtk::TextBuffer> &output_buffer) noexcept
 {
     switch (test_provider->get_selected()) {
     case std::to_underlying(TestProvidersDropDown::GoogleTest):
         // Exception properties of std::unordered_map::emplace are unclear. Also test factories are not noexcept.
         try {
             discover_button->set_sensitive(false);
-            discovery_executor_pool.emplace(
-                executable_name,
-                GoogleTestFactory::dry_run_executable(
-                    executable_name,
-                    output_buffer,
+            discovery_executor_pool.emplace(executable_name,
+                GoogleTestFactory::dry_run_executable(executable_name, output_buffer,
                     [this, executable_name](const int) noexcept
                     {
                         /*
@@ -180,23 +201,39 @@ void TestingRunTestsPopover::discover_executable(
                     }
                 )
             );
-        } catch (const Glib::SpawnError& spawn_error) {
+        } catch (const Glib::SpawnError &spawn_error) {
             discover_button->set_sensitive();
             StreamingProcessExecutor::write_exception_error(spawn_error, output_buffer);
             popover_logger->error("Could not dry-run test executable \"" + std::string(executable_name) + "\".");
             popover_logger->error(spawn_error.what());
         } catch (...) {
             discover_button->set_sensitive();
-            popover_logger->warn("Could not record entry of test discovery executor for \"" +
-                std::string(executable_name) + "\".");
+            popover_logger->warn(
+                    "Could not record entry of test discovery executor for \"" + std::string(executable_name) + "\".");
         }
 
         break;
 
     default:
         popover_logger->error("Cannot execute dry-run for executable \"" + std::string(executable_name) +
-            "\": unsupported test provider.");
+                "\": unsupported test provider.");
     }
+}
+
+void TestingRunTestsPopover::distribute_test_results() const noexcept
+{
+    testing_area.get_selection()->for_each(
+        [this](Requirement& requirement)
+        {
+            try {
+                for (const auto& result_group : listener_pool)
+                    result_group->endow_requirement(requirement);
+            } catch (const SemanticException& semantic_exception) {
+                popover_logger->warn("Could not assign TestResult to Requirement in active group-under-test.");
+                popover_logger->warn(semantic_exception.what());
+            }
+        }
+    );
 }
 
 } // namespace optifol

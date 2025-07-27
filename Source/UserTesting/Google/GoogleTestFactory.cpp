@@ -21,25 +21,23 @@
 namespace optifol
 {
 
-const log4cxx::LoggerPtr GoogleTestFactory::logger = Logging::get_logger({"UserTesting", "GoogleTest", "Factories"});
+const log4cxx::LoggerPtr GoogleTestFactory::logger = Logging::get_logger({"UserTesting", "Factories", "GoogleTest"});
 guint16 GoogleTestFactory::port_number = GoogleTestFactory::minimum_port_number;
 
 std::pair<std::unique_ptr<ProcessExecutor>, std::unique_ptr<TestListenerBase>> GoogleTestFactory::execute_test_group(
     const std::string_view test_executable,
     const std::string_view test_specification,
-    sigc::slot<void(std::unique_ptr<TestResult>&&)>&& new_result_callback,
-    sigc::slot<void()>&& results_finished_callback,
     sigc::slot<void(int)> &&process_finished_callback
 )
 {
+    // TODO URGENT: what if executable doesn't exist? How to express on UI?
+
     /*
      * TODO: if the binding fails due to the port number being taken, we should continue to try until we (a) hit the
      *  max, or (b) find an unused port and bind successfully. The bound port may not be the same as the one passed, so
      *  TestListenerBase should provide functionality to interrogate the effective address of the socket once bound.
      */
-    auto listener = std::make_unique<GoogleTestListener>(std::move(new_result_callback),
-        std::move(results_finished_callback), port_number);
-
+    auto listener = std::make_unique<GoogleTestListener>(port_number);
     auto executor = std::make_unique<ProcessExecutor>(
         "",
         std::vector{
@@ -60,13 +58,13 @@ std::pair<std::unique_ptr<ProcessExecutor>, std::unique_ptr<TestListenerBase>> G
 }
 
 std::unique_ptr<ProcessExecutor> GoogleTestFactory::dry_run_executable(const std::string_view executable_name,
-    Glib::RefPtr<Gtk::TextBuffer> output_buffer, sigc::slot<void(int)> &&finished_callback)
+    const Glib::RefPtr<Gtk::TextBuffer>& output_buffer, sigc::slot<void(int)> &&finished_callback)
 {
     return std::make_unique<StreamingProcessExecutor>(
         "",
         std::vector<std::string>{std::string(executable_name), "--gtest_list_tests" },
         std::vector<std::string>{},
-        std::move(output_buffer),
+        output_buffer,
         std::move(finished_callback)
     );
 }

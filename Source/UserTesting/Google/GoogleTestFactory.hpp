@@ -31,13 +31,11 @@ public:
     static std::pair<std::unique_ptr<ProcessExecutor>, std::unique_ptr<TestListenerBase>> execute_test_group(
         std::string_view test_executable,
         std::string_view test_specification,
-        sigc::slot<void(std::unique_ptr<TestResult>&&)>&& new_result_callback,
-        sigc::slot<void()>&& results_finished_callback,
         sigc::slot<void(int)> &&process_finished_callback
     );
 
     static std::unique_ptr<ProcessExecutor> dry_run_executable(std::string_view executable_name,
-        Glib::RefPtr<Gtk::TextBuffer> output_buffer, sigc::slot<void(int)> &&finished_callback);
+        const Glib::RefPtr<Gtk::TextBuffer>& output_buffer, sigc::slot<void(int)> &&finished_callback);
 
 private:
     static const log4cxx::LoggerPtr logger;

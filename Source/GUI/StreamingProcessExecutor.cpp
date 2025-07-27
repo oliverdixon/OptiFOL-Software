@@ -21,7 +21,7 @@ namespace optifol
 {
 
 const log4cxx::LoggerPtr StreamingProcessExecutor::logger = Logging::get_logger({"SubprocessControl",
-    "StreamingProcessExecutor"});
+    "ProcessExecutor", "PipeStreamers"});
 
 StreamingProcessExecutor::StreamingProcessExecutor(const std::string &working_directory,
         const std::vector<std::string> &argv, const std::vector<std::string> &envp,
@@ -35,7 +35,8 @@ StreamingProcessExecutor::StreamingProcessExecutor(const std::string &working_di
     stderr_stream.emplace(get_colour_tag(output, "stderr_tag", "red"), stderr_fd,
         sigc::mem_fun(*this, &StreamingProcessExecutor::stream_callback));
 
-    logger->info("Spawned tracking sub-process \"" + argv[0] + "\" with PID " + std::to_string(pid) + '.');
+    logger->debug("For PID " + std::to_string(pid) + ", tracking stdout on FD " + std::to_string(stdout_fd) +
+        " and stderr on FD " + std::to_string(stderr_fd) + '.');
 }
 
 void StreamingProcessExecutor::write_exception_error(

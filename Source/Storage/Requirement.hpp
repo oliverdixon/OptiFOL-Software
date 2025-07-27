@@ -151,6 +151,14 @@ public:
 
     [[nodiscard]] std::string_view observe_latex_statement() const noexcept;
 
+    /**
+     * @brief Assign a shared TestResult object to the Requirement
+     * @param test_result The TestResult to share
+     * @throws SemanticException if the Requirement does not have a Test, or rejects the TestResult due to not being
+     *  relevant to the associated Test (for example, if it originates from a different test, fixture, or target
+     *  executable).
+     * @see Test::emplace_result
+     */
     void emplace_test_result(const std::shared_ptr<TestResult> &test_result);
 
     [[nodiscard]] const std::optional<Test>& observe_test() const noexcept;

@@ -67,7 +67,7 @@ public:
 
     void error(const std::string &msg) override
     {
-        Logging::get_logger({"UserTesting", "GoogleTest", "Parser"})->error(msg);
+        Logging::get_logger({"UserTesting", "Parsing", "GoogleTest"})->error(msg);
         throw ParseError(msg, 0); // TODO get bad column number
     }
 

@@ -35,8 +35,6 @@ public:
 
     decltype(grouped_executables)::const_iterator end_executable_groups() const noexcept;
 
-    decltype(grouped_executables)::size_type executable_groups_count() const noexcept;
-
 private:
     void handle_requirement_change(guint initial_index, guint removed_count, guint added_count);
 

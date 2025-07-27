@@ -155,24 +155,23 @@ void Requirement::emplace_test_result(const std::shared_ptr<TestResult> &test_re
 {
     const auto &requirement_name = property_name().get_value(); // All execution paths needs this.
 
-    try {
-        if (test.has_value() == false)
-            throw SemanticException(
-                    "Attempted to assign result to a non-existent test for requirement \"" + requirement_name + "\".");
-        test->emplace_result(test_result);
-    } catch (const SemanticException &semantic_exception) {
-        req_logger->error("Incoming test result was rejected by the requirement \"" + requirement_name + "\".");
-        req_logger->error(semantic_exception.what());
-        return;
-    }
+    if (test.has_value() == false)
+        throw SemanticException("Attempted to assign result to a non-existent Test for Requirement \"" +
+            requirement_name + "\".");
 
-    req_logger->debug("Assigned test result to test for requirement \"" + requirement_name + "\".");
+    test->emplace_result(test_result);
+
+    // TODO URGENT: handle tests not part of a suite.
+    // TODO URGENT: handle iteration tests. Should we support, or just collapse?
+    req_logger->debug("Assigned result \"" + *test_result->get_test_suite_name() + ':' + test_result->get_test_name() +
+        "\" to Test for Requirement \"" + requirement_name + "\".");
 }
 
 const std::optional<Test> &Requirement::observe_test() const noexcept
 {
     return test;
 }
+
 std::pair<const Requirement *, Gtk::Label *> Requirement::requirement_bind_helper(Gtk::ListItem &list_item)
 {
     const auto &requirement = std::dynamic_pointer_cast<const Requirement>(list_item.get_item());

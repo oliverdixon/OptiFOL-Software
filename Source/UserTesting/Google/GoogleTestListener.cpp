@@ -21,16 +21,10 @@
 namespace optifol
 {
 
-const log4cxx::LoggerPtr GoogleTestListener::logger = Logging::get_logger({"UserTesting", "GoogleTest", "Network"});
+const log4cxx::LoggerPtr GoogleTestListener::logger = Logging::get_logger({"UserTesting", "Network", "GoogleTest"});
 
-GoogleTestListener::GoogleTestListener(
-        sigc::slot<void(std::unique_ptr<TestResult> &&)> &&report_callback,
-        sigc::slot<void()> &&close_callback,
-        const guint16 port_number
-    ) :
-    TestListenerBase(std::move(report_callback)),
-    close_callback(close_callback),
-    parser(&lexer, sigc::mem_fun(*this, &TestListenerBase::report_result))
+GoogleTestListener::GoogleTestListener(const guint16 port_number) :
+    parser(&lexer, sigc::mem_fun(*this, &TestListenerBase::accept_result))
 {
     try {
         const auto address = Gio::InetAddress::create_loopback(Gio::SocketFamily::IPV4);
@@ -48,11 +42,6 @@ GoogleTestListener::GoogleTestListener(
         logger->error(exception.what());
         throw;
     }
-}
-
-GoogleTestListener::~GoogleTestListener()
-{
-    close_callback.disconnect();
 }
 
 void GoogleTestListener::connection_callback(const Glib::RefPtr<Gio::AsyncResult> &result) noexcept
@@ -117,7 +106,6 @@ void GoogleTestListener::connection_callback(const Glib::RefPtr<Gio::AsyncResult
          */
         lexer_input_stream.str(results_string);
         parser.parse();
-        close_callback();
     } catch (const Glib::Error &exception) {
         logger->error("Cannot accept or read from client on TCP socket.");
         logger->error(exception.what());

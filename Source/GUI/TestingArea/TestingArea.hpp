@@ -23,12 +23,10 @@
 #include <gtkmm/textbuffer.h>
 #include <gtkmm/treelistmodel.h>
 
-#include "../../DereferencingEqualityFunctor.hpp"
 #include "../../Storage/Subsystem.hpp"
 #include "../../UserTesting/Google/GoogleTestListener.hpp"
 #include "../ContextButtonCorrespondence.hpp"
 #include "../IWindowArea.hpp"
-#include "../ProcessExecutor.hpp"
 #include "TestingRunTestsPopover.hpp"
 
 namespace optifol
@@ -106,10 +104,6 @@ public:
 
     const Subsystem *observe_active_subsystem() const noexcept override;
 
-    void accept_new_result(std::unique_ptr<TestResult> &&test_result);
-
-    void propagate_pending_results();
-
     /**
      * @brief Gets the selected TestGroup object in the model view.
      * @return The single selected TestGroup object in the model view.
@@ -145,11 +139,6 @@ private:
     Glib::RefPtr<Subsystem> active_subsystem;
     Glib::RefPtr<Gtk::SingleSelection> selection_model = Gtk::SingleSelection::create();
     Glib::RefPtr<Gtk::TreeListModel> tree_model;
-
-    std::unordered_map<std::string, std::vector<std::pair<std::string_view, std::string_view>>> executable_testspec;
-    std::unordered_map<TestResult *, std::shared_ptr<TestResult>, std::hash<TestResult>,
-            DereferencingEqualityFunctor<const TestResult *, const TestResult>>
-            received_test_results;
 
     TestingRunTestsPopover run_tests_popover;
 };

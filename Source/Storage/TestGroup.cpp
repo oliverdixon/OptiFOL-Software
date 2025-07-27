@@ -41,11 +41,6 @@ decltype(TestGroup::grouped_executables)::const_iterator TestGroup::end_executab
     return grouped_executables.cend();
 }
 
-decltype(TestGroup::grouped_executables)::size_type TestGroup::executable_groups_count() const noexcept
-{
-    return grouped_executables.size();
-}
-
 void TestGroup::handle_requirement_change(const guint initial_index, const guint removed_count, const guint added_count)
 {
     // First remove all deleted Requirements from the grouped executable map.

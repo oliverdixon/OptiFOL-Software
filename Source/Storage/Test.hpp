@@ -34,6 +34,11 @@ public:
     Test(const std::string& target_executable, const std::string& test_suite, const std::string& test_name,
         BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &);
 
+    /**
+     * @brief Accept a shared TestResult object to indicate the last-known result of the Test.
+     * @param test_result The TestResult to share.
+     * @throws SemanticException if the TestResult was not appropriate or relevant to the Test.
+     */
     void emplace_result(const std::shared_ptr<TestResult> &test_result);
 
     [[nodiscard]] Glib::PropertyProxy<Glib::ustring> property_target_executable();

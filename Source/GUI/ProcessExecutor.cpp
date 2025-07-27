@@ -36,6 +36,7 @@ ProcessExecutor::ProcessExecutor(const std::string &working_directory, const std
     }
 
     Glib::signal_child_watch().connect(sigc::mem_fun(*this, &ProcessExecutor::reap_child), pid);
+    logger->info("Spawned sub-process \"" + argv[0] + "\" with PID " + std::to_string(pid) + '.');
 }
 
 void ProcessExecutor::reap_child(const Glib::Pid ended_pid, const int exit_code) noexcept

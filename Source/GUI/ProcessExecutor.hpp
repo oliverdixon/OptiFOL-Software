@@ -11,8 +11,8 @@
  * @version Development
  */
 
-#ifndef TESTEXECUTORBASE_HPP
-#define TESTEXECUTORBASE_HPP
+#ifndef PROCESSEXECUTOR_HPP
+#define PROCESSEXECUTOR_HPP
 
 #include <log4cxx/logger.h>
 #include <glibmm/spawn.h>
@@ -75,4 +75,4 @@ private:
 
 } // namespace optifol
 
-#endif // TESTEXECUTORBASE_HPP
+#endif // PROCESSEXECUTOR_HPP
