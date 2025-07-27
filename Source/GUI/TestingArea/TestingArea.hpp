@@ -146,11 +146,7 @@ private:
     Glib::RefPtr<Gtk::SingleSelection> selection_model = Gtk::SingleSelection::create();
     Glib::RefPtr<Gtk::TreeListModel> tree_model;
 
-    std::unique_ptr<TestListenerBase> test_listener;
-    std::optional<ProcessExecutor> test_executor;
-
     std::unordered_map<std::string, std::vector<std::pair<std::string_view, std::string_view>>> executable_testspec;
-
     std::unordered_map<TestResult *, std::shared_ptr<TestResult>, std::hash<TestResult>,
             DereferencingEqualityFunctor<const TestResult *, const TestResult>>
             received_test_results;

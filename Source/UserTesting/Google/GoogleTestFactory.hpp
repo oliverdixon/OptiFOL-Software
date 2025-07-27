@@ -14,21 +14,36 @@
 #ifndef GOOGLETESTFACTORY_HPP
 #define GOOGLETESTFACTORY_HPP
 
-#include <memory>
 #include <gtkmm/textbuffer.h>
+#include <log4cxx/logger.h>
+#include <memory>
 
 namespace optifol
 {
 
+class TestListenerBase;
+class TestResult;
 class ProcessExecutor;
 
 class GoogleTestFactory
 {
 public:
-    static std::unique_ptr<ProcessExecutor> execute_test(sigc::slot<void(int)> &&finished_callback);
+    static std::pair<std::unique_ptr<ProcessExecutor>, std::unique_ptr<TestListenerBase>> execute_test_group(
+        std::string_view test_executable,
+        std::string_view test_specification,
+        sigc::slot<void(std::unique_ptr<TestResult>&&)>&& new_result_callback,
+        sigc::slot<void()>&& results_finished_callback,
+        sigc::slot<void(int)> &&process_finished_callback
+    );
 
     static std::unique_ptr<ProcessExecutor> dry_run_executable(std::string_view executable_name,
-            Glib::RefPtr<Gtk::TextBuffer> output_buffer, sigc::slot<void(int)> &&finished_callback);
+        Glib::RefPtr<Gtk::TextBuffer> output_buffer, sigc::slot<void(int)> &&finished_callback);
+
+private:
+    static const log4cxx::LoggerPtr logger;
+    static constexpr guint16 minimum_port_number = 1024; // First unprivileged port number under Linux.
+    static constexpr guint16 maximum_port_number = std::numeric_limits<guint16>::max();
+    static guint16 port_number;
 };
 
 } // namespace optifol

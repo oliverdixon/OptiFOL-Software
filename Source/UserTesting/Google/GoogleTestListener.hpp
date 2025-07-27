@@ -49,10 +49,11 @@ public:
      * @param report_callback The acceptor of parsed TestResult objects as they are parsed from packet payloads.
      * @param close_callback The indicator that an entire payload has been parsed and provided to the
      *  <code>report_callback</code>.
+     * @param port_number The port number of the listening socket.
      * @throws Glib::Error The socket could not be established.
      */
     explicit GoogleTestListener(sigc::slot<void(std::unique_ptr<TestResult>&&)>&& report_callback,
-        sigc::slot<void()>&& close_callback);
+        sigc::slot<void()>&& close_callback, guint16 port_number);
 
     /**
      * @brief Destruct the Google Test listener and gracefully wind down any internal state.

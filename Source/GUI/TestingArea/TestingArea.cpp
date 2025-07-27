@@ -43,10 +43,6 @@ TestingArea::TestingArea(Gtk::Builder &builder) :
     run_tests_output_buffer(
         GTKHelpers::get_widget<Gtk::TextView>(area_name, builder, "run_tests_output")->get_buffer()
     ),
-    test_listener(
-        std::make_unique<GoogleTestListener>(sigc::mem_fun(*this, &TestingArea::accept_new_result),
-            sigc::mem_fun(*this, &TestingArea::propagate_pending_results))
-    ),
     run_tests_popover(builder, *this)
 {
     configure_selection_model();
@@ -115,11 +111,11 @@ void TestingArea::propagate_pending_results()
 
                 if (it != received_test_results.cend()) {
                     requirement.emplace_test_result(it->second);
-                    area_logger->debug("Matched parsed test result \"" + *glib_suite_name + '.' + glib_test_name +
-                            "\" with requirement \"" + requirement.property_name().get_value() + "\".");
+                    area_logger->debug("Matched parsed Test result \"" + *glib_suite_name + '.' + glib_test_name +
+                            "\" with Requirement \"" + requirement.property_name().get_value() + "\".");
                 } else
-                    area_logger->debug("Could not match requirement \"" + requirement.property_name().get_value() +
-                            "\" with any parsed test.");
+                    area_logger->debug("Could not match Requirement \"" + requirement.property_name().get_value() +
+                            "\" with any parsed Test.");
             }
         );
     }

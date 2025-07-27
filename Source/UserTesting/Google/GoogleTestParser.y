@@ -36,7 +36,7 @@
     #include "GoogleTestLexer.hpp"
     #define yylex(x) scanner->lex(x)
 
-    const log4cxx::LoggerPtr logger = optifol::Logging::get_logger({"UserTesting", "GoogleTestResultsParser"});
+    const log4cxx::LoggerPtr logger = optifol::Logging::get_logger({"UserTesting", "GoogleTest", "Parser"});
 }
 
 %token ProtocolVersion

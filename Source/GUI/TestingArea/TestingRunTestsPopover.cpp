@@ -176,7 +176,7 @@ void TestingRunTestsPopover::discover_executable(
                          * noexcept, thus std::unordered_map<std::string_view, ...> is noexcept.
                          */
                         discovery_executor_pool.erase(executable_name);
-                        discover_button->set_sensitive();
+                        discover_button->set_sensitive(); // Make sure this is restored!
                     }
                 )
             );

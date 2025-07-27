@@ -21,17 +21,20 @@
 namespace optifol
 {
 
-const log4cxx::LoggerPtr GoogleTestListener::logger = Logging::get_logger({"UserTesting", "GoogleTestListener"});
+const log4cxx::LoggerPtr GoogleTestListener::logger = Logging::get_logger({"UserTesting", "GoogleTest", "Network"});
 
 GoogleTestListener::GoogleTestListener(
-        sigc::slot<void(std::unique_ptr<TestResult> &&)> &&report_callback, sigc::slot<void()> &&close_callback) :
+        sigc::slot<void(std::unique_ptr<TestResult> &&)> &&report_callback,
+        sigc::slot<void()> &&close_callback,
+        const guint16 port_number
+    ) :
     TestListenerBase(std::move(report_callback)),
     close_callback(close_callback),
     parser(&lexer, sigc::mem_fun(*this, &TestListenerBase::report_result))
 {
     try {
         const auto address = Gio::InetAddress::create_loopback(Gio::SocketFamily::IPV4);
-        const auto socket_address = Gio::InetSocketAddress::create(address, 12345);
+        const auto socket_address = Gio::InetSocketAddress::create(address, port_number);
         Glib::RefPtr<Gio::SocketAddress> effective_address;
 
         if (listener->add_address(socket_address, Gio::Socket::Type::STREAM, Gio::Socket::Protocol::TCP,
