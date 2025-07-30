@@ -224,6 +224,7 @@ target_include_directories(OptifolCommon SYSTEM PRIVATE
 
 find_program(GLIB_COMPILE_RESOURCES NAMES glib-compile-resources REQUIRED)
 find_package(log4cxx REQUIRED)
+find_package(RapidJSON REQUIRED)
 
 set(RESOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Resources)
 set(RESOURCE_XML_IN ${RESOURCE_DIR}/optifol.gresource.xml.in)
@@ -246,6 +247,7 @@ set(MAINWINDOW_RESOURCE_COMPONENTS
         ${RESOURCE_DIR}/UI/MainWindow/RequirementsIndexArea/DeleteRequirementPopover.ui
         ${RESOURCE_DIR}/UI/MainWindow/RequirementsIndexArea/EditRequirementPopover.ui
         ${RESOURCE_DIR}/UI/MainWindow/RequirementsIndexArea/DuplicateRequirementPopover.ui
+        ${RESOURCE_DIR}/UI/MainWindow/RequirementsIndexArea/ManageTestsPopover.ui
         ${RESOURCE_DIR}/UI/MainWindow/RequirementsIndexArea/RequirementsIndexView.ui
 
         ${RESOURCE_DIR}/UI/MainWindow/AnalysisArea/AnalysisView.ui
@@ -373,6 +375,12 @@ add_executable(OptifolGUI
         Source/GUI/StreamingProcessExecutor.cpp
         Source/GUI/StreamingProcessExecutor.hpp
         Source/UserTesting/TestListenerBase.cpp
+        Source/UserTesting/TargetTestExecutableBase.cpp
+        Source/UserTesting/TargetTestExecutableBase.hpp
+        Source/GUI/RequirementsIndexArea/ManageTestsPopover.cpp
+        Source/GUI/RequirementsIndexArea/ManageTestsPopover.hpp
+        Source/UserTesting/Google/GoogleTestExecutable.cpp
+        Source/UserTesting/Google/GoogleTestExecutable.hpp
 )
 
 set(COMMON_COMPILER_OPTIONS
@@ -408,6 +416,7 @@ target_include_directories(OptifolGUI PRIVATE
 
 target_include_directories(OptifolGUI SYSTEM PRIVATE
         ${GTKMM_INCLUDE_DIRS}
+        ${RAPIDJSON_INCLUDE_DIRS}
 )
 
 utils_strip(OptifolGUI)

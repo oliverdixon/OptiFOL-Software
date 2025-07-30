@@ -9,6 +9,7 @@ NEW_REQUIREMENT_POPOVER=./RequirementsIndexArea/NewRequirementPopover.ui
 DELETE_REQUIREMENT_POPOVER=./RequirementsIndexArea/DeleteRequirementPopover.ui
 EDIT_REQUIREMENT_POPOVER=./RequirementsIndexArea/EditRequirementPopover.ui
 DUPLICATE_REQUIREMENT_POPOVER=./RequirementsIndexArea/DuplicateRequirementPopover.ui
+MANAGE_TESTS_POPOVER=./RequirementsIndexArea/ManageTestsPopover.ui
 
 ANALYSIS_VIEW=./AnalysisArea/AnalysisView.ui
 NEW_ANALYSIS_GROUP_POPOVER=./AnalysisArea/NewAnalysisGroupPopover.ui

@@ -1,0 +1,82 @@
+<!--
+  - Copyright (c) All Rights Reserved
+  - 2025 Oliver Dixon <od641@york.ac.uk>
+  -->
+
+<object class="GtkPopover" id="manage_tests_popover">
+    <property name="position">GTK_POS_RIGHT</property>
+    <property name="child">
+        <object class="GtkBox">
+            <style>
+                <class name="optifol_grid_dialog" />
+            </style>
+            <property name="orientation">vertical</property>
+            <child>
+                <object class="GtkColumnView" id="manage_tests_view">
+                    <child>
+                        <object class="GtkColumnViewColumn">
+                            <property name="id">manage_tests_target_exe</property>
+                            <property name="title">Target Executable</property>
+                            <property name="resizable">TRUE</property>
+                        </object>
+                    </child>
+                    <child>
+                        <object class="GtkColumnViewColumn">
+                            <property name="id">manage_tests_fixture</property>
+                            <property name="title">Test Fixture</property>
+                            <property name="resizable">TRUE</property>
+                        </object>
+                    </child>
+                    <child>
+                        <object class="GtkColumnViewColumn">
+                            <property name="id">manage_tests_name</property>
+                            <property name="title">Test Name</property>
+                            <property name="resizable">TRUE</property>
+                        </object>
+                    </child>
+                </object>
+            </child>
+            <child>
+                <object class="GtkSeparator" />
+            </child>
+            <child>
+                <object class="GtkBox">
+                    <property name="hexpand">TRUE</property>
+                    <style>
+                        <class name="optifol_grid_dialog" />
+                    </style>
+                    <child>
+                        <object class="GtkButton" id="manage_tests_new_test">
+                            <property name="icon-name">list-add-symbolic</property>
+                            <property name="tooltip-text">Add New Test</property>
+                        </object>
+                    </child>
+                    <child>
+                        <object class="GtkButton" id="manage_tests_duplicate_test">
+                            <property name="icon-name">edit-copy-symbolic</property>
+                            <property name="tooltip-text">Duplicate Selected Test</property>
+                        </object>
+                    </child>
+                    <child>
+                        <object class="GtkButton" id="manage_tests_delete_test">
+                            <property name="icon-name">edit-delete-symbolic</property>
+                            <property name="tooltip-text">Delete Selected Test</property>
+                        </object>
+                    </child>
+                    <child>
+                        <object class="GtkBox">
+                            <property name="hexpand">TRUE</property>
+                            <property name="halign">GTK_ALIGN_END</property>
+                            <child>
+                                <object class="GtkButton" id="manage_tests_confirm">
+                                    <property name="icon-name">emblem-ok-symbolic</property>
+                                    <property name="tooltip-text">Update Tests</property>
+                                </object>
+                            </child>
+                        </object>
+                    </child>
+                </object>
+            </child>
+        </object>
+    </property>
+</object>

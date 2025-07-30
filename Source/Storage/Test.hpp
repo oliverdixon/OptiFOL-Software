@@ -14,6 +14,7 @@
 #ifndef TEST_HPP
 #define TEST_HPP
 
+#include "../UserTesting/TargetTestExecutableBase.hpp"
 #include "../UserTesting/TestResult.hpp"
 #include "StorageObjectBase.hpp"
 
@@ -27,12 +28,9 @@ namespace optifol
 class Test : public StorageObjectBase
 {
 public:
-    explicit Test(std::string_view packed_input_line);
+    Test();
 
-    Test(const std::string& target_executable, const std::string& test_suite, const std::string& test_name);
-
-    Test(const std::string& target_executable, const std::string& test_suite, const std::string& test_name,
-        BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &);
+    Test(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &builder);
 
     /**
      * @brief Accept a shared TestResult object to indicate the last-known result of the Test.
@@ -41,21 +39,24 @@ public:
      */
     void emplace_result(const std::shared_ptr<TestResult> &test_result);
 
-    [[nodiscard]] Glib::PropertyProxy<Glib::ustring> property_target_executable();
+    void share_test_executable(std::shared_ptr<TargetTestExecutableBase> shared_exe);
 
-    [[nodiscard]] Glib::PropertyProxy<std::optional<Glib::ustring>> property_test_suite();
+    [[nodiscard]] const TargetTestExecutableBase * observe_test_executable() const noexcept;
+
+    [[nodiscard]] Glib::PropertyProxy<Glib::ustring> property_fixture();
 
     [[nodiscard]] Glib::PropertyProxy<std::shared_ptr<TestResult>> property_result();
 
-    [[nodiscard]] Glib::PropertyProxy_ReadOnly<Glib::ustring> property_target_executable() const;
+    [[nodiscard]] Glib::PropertyProxy_ReadOnly<Glib::ustring> property_target_executable_name() const;
 
-    [[nodiscard]] Glib::PropertyProxy_ReadOnly<std::optional<Glib::ustring>> property_test_suite() const;
+    [[nodiscard]] Glib::PropertyProxy_ReadOnly<Glib::ustring> property_fixture() const;
 
     [[nodiscard]] Glib::PropertyProxy_ReadOnly<std::shared_ptr<TestResult>> property_result() const;
 
 private:
-    Glib::Property<Glib::ustring> target_executable;
-    Glib::Property<std::optional<Glib::ustring>> test_suite;
+    std::shared_ptr<TargetTestExecutableBase> target_executable;
+    Glib::Property<Glib::ustring> target_executable_name;
+    Glib::Property<Glib::ustring> fixture;
     Glib::Property<std::shared_ptr<TestResult>> result;
 };
 

@@ -137,9 +137,11 @@ void TestingArea::configure_columns() const
                 factory->signal_bind().connect([](const Glib::RefPtr<Gtk::ListItem> & list_item)
                 {
                     const auto [requirement, label] = Requirement::requirement_bind_helper(*list_item);
+#if 0 // TODO URGENT
                     GTKHelpers::bind_any_property(
-                        sigc::mem_fun(static_cast<TestGetter<Glib::ustring>>(&Test::property_target_executable)),
+                        sigc::mem_fun(static_cast<TestGetter<Glib::ustring>>(&Test::property_target_executable_name)),
                         *requirement->observe_test(), label);
+#endif
                 });
 
             } else if (gtk_id == "test_suite") {
@@ -149,7 +151,7 @@ void TestingArea::configure_columns() const
                 {
                     const auto [requirement, label] = Requirement::requirement_bind_helper(*list_item);
                     GTKHelpers::bind_any_property(
-                        sigc::mem_fun(static_cast<TestGetter<std::optional<Glib::ustring>>>(&Test::property_test_suite)),
+                        sigc::mem_fun(static_cast<TestGetter<Glib::ustring>>(&Test::property_fixture)),
                         *requirement->observe_test(), label);
                 });
 

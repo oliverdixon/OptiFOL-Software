@@ -116,17 +116,20 @@ void StorageObjectBase::bind_name_property_expandable(
 }
 
 StorageObjectBase::StorageObjectBase() :
-    Glib::ObjectBase("StorageObjectBase"), name(*this, "StorageObjectBase-name"),
+    Glib::ObjectBase("StorageObjectBase"),
+    name(*this, "StorageObjectBase-name"),
     creation_time(*this, "StorageObjectBase-creation-time", std::chrono::system_clock::now()),
     modified_time(*this, "StorageObjectBase-modified-time", std::chrono::system_clock::now())
 {
 }
 
 StorageObjectBase::StorageObjectBase(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &) :
-    Glib::ObjectBase("StorageObjectBase"), Glib::Object(cobject), name(*this, "StorageObjectBase-name"),
+    Glib::ObjectBase("StorageObjectBase"),
+    Glib::Object(cobject),
+    name(*this, "StorageObjectBase-name"),
     creation_time(*this, "StorageObjectBase-creation-time", std::chrono::system_clock::now()),
     modified_time(*this, "StorageObjectBase-modified-time", std::chrono::system_clock::now())
 {
 }
 
-}
+} // namespace optifol

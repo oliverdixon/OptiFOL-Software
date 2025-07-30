@@ -14,6 +14,7 @@
 #ifndef TESTRESULT_HPP
 #define TESTRESULT_HPP
 
+#include <glibmm/ustring.h>
 #include <optional>
 #include <string>
 #include <vector>
@@ -42,7 +43,7 @@ public:
 
     [[nodiscard]] std::size_t hash() const noexcept override;
 
-    void populate_test_suite_name(std::string suite_name);
+    void populate_test_suite_name(const std::string &suite_name);
 
     [[nodiscard]] std::string get_test_name() const noexcept;
 
@@ -50,7 +51,7 @@ public:
 
     [[nodiscard]] std::size_t get_execution_time() const noexcept;
 
-    [[nodiscard]] std::optional<std::string> get_test_suite_name() const noexcept;
+    [[nodiscard]] Glib::ustring get_test_suite_name() const noexcept;
 
     bool operator==(const TestResult & other) const noexcept;
 
@@ -62,7 +63,7 @@ private:
     const std::size_t execution_time;
 
     std::vector<Partial> partial_results;
-    std::optional<std::string> suite_name;
+    Glib::ustring suite_name;
 };
 
 } // namespace optifol

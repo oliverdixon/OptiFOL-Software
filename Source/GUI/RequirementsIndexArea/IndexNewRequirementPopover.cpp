@@ -34,10 +34,14 @@ IndexNewRequirementPopover::IndexNewRequirementPopover(Gtk::Builder &builder, Re
             GTKHelpers::get_widget<Gtk::TextView>(popover_name, builder, "new_requirement_property_description")),
     statement_entry(GTKHelpers::get_widget<Gtk::Entry>(popover_name, builder, "new_requirement_property_sentence")),
     priority_entry(GTKHelpers::get_widget<Gtk::DropDown>(popover_name, builder, "new_requirement_property_priority")),
-    test_entry(GTKHelpers::get_widget<Gtk::Entry>(popover_name, builder, "new_requirement_property_test"))
+    manage_tests_popover(index_area, builder),
+    test_synopsis(GTKHelpers::get_widget<Gtk::Entry>(popover_name, builder, "new_requirement_property_test")),
+    edit_tests_button(GTKHelpers::get_widget<Gtk::MenuButton>(popover_name, builder, "new_requirement_manage_tests")),
+    edit_tests_popover(GTKHelpers::get_widget<Gtk::Popover>(popover_name, builder, "manage_tests_popover"))
 {
     confirm_button->signal_clicked().connect(sigc::mem_fun(*this, &IndexNewRequirementPopover::confirm_button_clicked));
     cancel_button->signal_clicked().connect(sigc::mem_fun(*this, &IndexNewRequirementPopover::cancel_button_clicked));
+    edit_tests_button->set_popover(*edit_tests_popover);
 }
 
 void IndexNewRequirementPopover::confirm_button_clicked() const
@@ -48,7 +52,7 @@ void IndexNewRequirementPopover::confirm_button_clicked() const
         statement_entry->get_text(),
         description_entry->get_buffer()->get_text(),
         priority_entry->get_selected(),
-        test_entry->get_text()
+        test_synopsis->get_text()
     );
 
     popover_logger->info("Created new subsystem requirement with name \"" + name_entry->get_text() + "\".");
@@ -67,7 +71,7 @@ void IndexNewRequirementPopover::clear_inputs() const
     name_entry->set_text("");
     description_entry->get_buffer()->set_text("");
     statement_entry->set_text("");
-    test_entry->set_text("");
+    test_synopsis->set_text("");
     priority_entry->set_selected(0);
 }
 

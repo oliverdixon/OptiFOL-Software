@@ -98,7 +98,7 @@
                             </child>
                             <child>
                                 <object class="GtkButton" id="generate_latex_confirm">
-                                    <property name="icon-name">object-select-symbolic</property>
+                                    <property name="icon-name">emblem-ok-symbolic</property>
                                     <property name="tooltip-text">Generate LaTeX and PDF</property>
                                 </object>
                             </child>

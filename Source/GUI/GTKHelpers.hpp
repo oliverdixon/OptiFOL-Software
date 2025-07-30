@@ -137,6 +137,28 @@ public:
     }
 
     /**
+     * @brief Set up an editable text field (Gtk::Entry) within the given container
+     * @param list_item The container into which the field should be emplaced
+     */
+    static void setup_entry(const Glib::RefPtr<Gtk::ListItem> &list_item)
+    {
+        const auto entry = Gtk::make_managed<Gtk::Entry>();
+        entry->set_halign(Gtk::Align::START);
+        list_item->set_child(*entry);
+    }
+
+    /**
+     * @brief Set up a combo box (Gtk::DropDown) within the given container
+     * @param list_item The container into which the combo box should be emplaced
+     */
+    static void setup_combo_box(const Glib::RefPtr<Gtk::ListItem> &list_item)
+    {
+        const auto combo_box = Gtk::make_managed<Gtk::DropDown>();
+        combo_box->set_halign(Gtk::Align::START);
+        list_item->set_child(*combo_box);
+    }
+
+    /**
      * @brief Set up an expandable GTK label within the given container
      * @param list_item The container into which the label should be emplaced
      * @param mono_styling Should the label be styled according to the standard monospace style?

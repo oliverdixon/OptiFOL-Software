@@ -59,7 +59,8 @@ void TestGroup::handle_requirement_change(const guint initial_index, const guint
                 "\" was present in the Test Group deletion records but did not have an associated Test.");
 
         // Locate the group in which the Requirement was stored, keyed by its target executable.
-        const auto executable_group_it = grouped_executables.find(deleted_req_test->property_target_executable().
+#if 0 // TODO URGENT
+        const auto executable_group_it = grouped_executables.find(deleted_req_test->property_target_executable_name().
             get_value());
 
         if (executable_group_it != grouped_executables.cend()) {
@@ -74,6 +75,7 @@ void TestGroup::handle_requirement_change(const guint initial_index, const guint
         }
 
         deleted_requirements.erase(deleted_it);
+#endif
     }
 
     // Then handle new Requirements by grouping according to the executable name.
@@ -87,8 +89,9 @@ void TestGroup::handle_requirement_change(const guint initial_index, const guint
             throw std::runtime_error("The incoming Requirement \"" + requirement->property_name().get_value() + "\""
                 " does not have an associated Test.");
 
+#if 0 // TODO URGENT
         // Get the executable group with which the incoming Requirement should be associated, creating if needed.
-        const auto& executable_name = requirement_test->property_target_executable().get_value();
+        const auto& executable_name = requirement_test->property_target_executable_name().get_value();
         auto executable_group_it = grouped_executables.find(executable_name);
         if (executable_group_it == grouped_executables.end())
             executable_group_it = grouped_executables.emplace(executable_name,
@@ -96,6 +99,7 @@ void TestGroup::handle_requirement_change(const guint initial_index, const guint
 
         // Insert the incoming Requirement into the suitable executable group.
         executable_group_it->second.insert(std::move(requirement));
+#endif
     }
 }
 

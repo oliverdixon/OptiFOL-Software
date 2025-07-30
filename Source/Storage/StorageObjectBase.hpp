@@ -122,7 +122,7 @@ protected:
     /**
      * @brief Derive from the common storage base with the universal of GType-registered properties
      */
-    explicit StorageObjectBase();
+    StorageObjectBase();
 
     /**
      * @brief Derive from the common storage base with the universal of GType-registered properties

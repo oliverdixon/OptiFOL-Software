@@ -163,7 +163,7 @@ void Requirement::emplace_test_result(const std::shared_ptr<TestResult> &test_re
 
     // TODO URGENT: handle tests not part of a suite.
     // TODO URGENT: handle iteration tests. Should we support, or just collapse?
-    req_logger->debug("Assigned result \"" + *test_result->get_test_suite_name() + ':' + test_result->get_test_name() +
+    req_logger->debug("Assigned result \"" + test_result->get_test_suite_name() + ':' + test_result->get_test_name() +
         "\" to Test for Requirement \"" + requirement_name + "\".");
 }
 
@@ -259,7 +259,8 @@ void Requirement::handle_test_change()
     }
 
     try {
-        test.emplace(std::string_view(input_line.c_str(), input_line.bytes()));
+        // TODO URGENT
+        // test.emplace(std::string_view(input_line.c_str(), input_line.bytes()));
     } catch (const ParseError &parse_error) {
         req_logger->error(
                 "Could not parse unit test specification for requirement \"" + property_name().get_value() + "\".");

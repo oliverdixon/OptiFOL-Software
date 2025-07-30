@@ -16,9 +16,11 @@
 
 #include <gtkmm/builder.h>
 #include <gtkmm/dropdown.h>
+#include <gtkmm/entry.h>
 #include <gtkmm/textview.h>
 
-#include "../AnalysisArea/AnalysisAreaNewAnalysisGroupPopover.hpp"
+#include "../ContextButtonCorrespondence.hpp"
+#include "ManageTestsPopover.hpp"
 
 namespace optifol
 {
@@ -122,7 +124,11 @@ private:
     Gtk::TextView * const description_entry;
     Gtk::Entry * const statement_entry;
     Gtk::DropDown * const priority_entry;
-    Gtk::Entry * const test_entry;
+
+    ManageTestsPopover manage_tests_popover;
+    Gtk::Entry * const test_synopsis;
+    Gtk::MenuButton * const edit_tests_button;
+    Gtk::Popover * const edit_tests_popover;
 };
 
 } // namespace optifol

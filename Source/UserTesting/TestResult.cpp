@@ -37,13 +37,12 @@ TestResult::TestResult(std::string test_name, const bool passed, const std::size
 
 std::size_t TestResult::hash() const noexcept
 {
-    assert(suite_name.has_value());
-    return hash_combine(std::hash<std::string>{}(*suite_name), std::hash<std::string>{}(test_name));
+    return hash_combine(std::hash<std::string>{}(suite_name), std::hash<std::string>{}(test_name));
 }
 
-void TestResult::populate_test_suite_name(std::string suite_name)
+void TestResult::populate_test_suite_name(const std::string &suite_name)
 {
-    this->suite_name.emplace(std::move(suite_name));
+    this->suite_name = suite_name;
 }
 
 std::string TestResult::get_test_name() const noexcept
@@ -61,7 +60,7 @@ std::size_t TestResult::get_execution_time() const noexcept
     return execution_time;
 }
 
-std::optional<std::string> TestResult::get_test_suite_name() const noexcept
+Glib::ustring TestResult::get_test_suite_name() const noexcept
 {
     return suite_name;
 }
@@ -73,10 +72,7 @@ bool TestResult::operator==(const TestResult &other) const noexcept
 
 bool TestResult::operator==(const std::pair<std::string_view, std::string_view>& names) const noexcept
 {
-    if (suite_name.has_value() == false)
-        return names.first.empty() && names.second == test_name;
-
-    return names.first == *suite_name && names.second == test_name;
+    return names.first == suite_name.c_str() && names.second == test_name;
 }
 
 } // namespace optifol
