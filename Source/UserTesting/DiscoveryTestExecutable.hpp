@@ -11,7 +11,7 @@
 #define DISCOVERYTESTEXECUTABLE_HPP
 
 #include <giomm/liststore.h>
-#include "../../Storage/StorageObjectBase.hpp"
+#include "../Storage/StorageObjectBase.hpp"
 #include "DiscoveryTestFixture.hpp"
 
 namespace optifol

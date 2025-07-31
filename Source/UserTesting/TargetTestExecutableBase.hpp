@@ -15,7 +15,7 @@
 #include <unordered_set>
 
 #include "../Storage/StorageObjectBase.hpp"
-#include "IR/TestResult.hpp"
+#include "TestResult.hpp"
 
 namespace optifol
 {

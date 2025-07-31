@@ -14,9 +14,10 @@
 #ifndef TEST_HPP
 #define TEST_HPP
 
-#include "../../Storage/StorageObjectBase.hpp"
-#include "../TargetTestExecutableBase.hpp"
+#include "../Storage/StorageObjectBase.hpp"
+#include "TargetTestExecutableBase.hpp"
 #include "TestResult.hpp"
+#include "TestSpecificationEntry.hpp"
 
 namespace optifol
 {
@@ -28,9 +29,10 @@ namespace optifol
 class Test : public StorageObjectBase
 {
 public:
-    Test();
+    explicit Test(const TestSpecificationEntry& template_specification);
 
-    Test(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &builder);
+    Test(const TestSpecificationEntry& template_specification, BaseObjectType *cobject,
+        const Glib::RefPtr<Gtk::Builder> &builder);
 
     /**
      * @brief Accept a shared TestResult object to indicate the last-known result of the Test.
@@ -54,6 +56,8 @@ public:
     [[nodiscard]] Glib::PropertyProxy_ReadOnly<std::shared_ptr<TestResult>> property_result() const;
 
 private:
+    void instantiate_from_specification(const TestSpecificationEntry& template_specification);
+
     std::shared_ptr<TargetTestExecutableBase> target_executable;
     Glib::Property<Glib::ustring> target_executable_name;
     Glib::Property<Glib::ustring> fixture;

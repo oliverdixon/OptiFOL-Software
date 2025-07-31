@@ -21,7 +21,7 @@
 #include <unordered_set>
 
 #include "../DereferencingEqualityFunctor.hpp"
-#include "IR/TestResult.hpp"
+#include "TestResult.hpp"
 
 namespace optifol
 {

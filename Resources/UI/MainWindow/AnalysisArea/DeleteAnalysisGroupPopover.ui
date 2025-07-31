@@ -48,7 +48,7 @@
                     <child>
                         <object class="GtkLabel">
                             <style>
-                                <class name="optifol_optional" />
+                                <class name="optifol_emphasised" />
                             </style>
                             <property name="label">Are you sure?</property>
                         </object>

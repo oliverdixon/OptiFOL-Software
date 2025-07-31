@@ -19,7 +19,7 @@
 #include <string>
 #include <vector>
 
-#include "../../IHashable.hpp"
+#include "../IHashable.hpp"
 
 namespace optifol
 {
@@ -51,7 +51,7 @@ public:
 
     [[nodiscard]] std::size_t get_execution_time() const noexcept;
 
-    [[nodiscard]] Glib::ustring get_test_suite_name() const noexcept;
+    [[nodiscard]] Glib::ustring get_fixture_name() const noexcept;
 
     bool operator==(const TestResult & other) const noexcept;
 
@@ -63,7 +63,7 @@ private:
     const std::size_t execution_time;
 
     std::vector<Partial> partial_results;
-    Glib::ustring suite_name;
+    Glib::ustring fixture_name;
 };
 
 } // namespace optifol

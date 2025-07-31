@@ -186,8 +186,6 @@ public:
      */
     static void on_bind_property_priority(const Glib::RefPtr<Gtk::ListItem> &list_item);
 
-    static void on_bind_property_test_input(const Glib::RefPtr<Gtk::ListItem> &list_item);
-
     /**
      * @brief Bind a Requirement CNF-normalised attribute to a label
      * @param list_item The container in which the destination label exists

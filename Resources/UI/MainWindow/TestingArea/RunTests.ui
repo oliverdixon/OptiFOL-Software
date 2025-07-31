@@ -16,7 +16,6 @@
                     <style>
                         <class name="optifol_grid_dialog" />
                     </style>
-
                     <child>
                         <object class="GtkLabel">
                             <property name="label">Test Group Name</property>
@@ -36,57 +35,11 @@
                             <property name="sensitive">FALSE</property>
                         </object>
                     </child>
-
-                    <child>
-                        <object class="GtkLabel">
-                            <property name="label">Testing Framework</property>
-                            <property name="halign">GTK_ALIGN_END</property>
-                            <layout>
-                                <property name="column">0</property>
-                                <property name="row">1</property>
-                            </layout>
-                        </object>
-                    </child>
-                    <child>
-                        <object class="GtkDropDown" id="test_backend_provider">
-                            <style>
-                                <class name="optifol_boxed" />
-                                <class name="optifol_combo_box" />
-                            </style>
-                            <property name="model">
-                                <object class="GtkStringList">
-                                    <items>
-                                        <item>Google Test</item>
-                                    </items>
-                                </object>
-                            </property>
-                            <layout>
-                                <property name="column">1</property>
-                                <property name="row">1</property>
-                            </layout>
-                        </object>
-                    </child>
-
                 </object>
             </child>
 
             <child>
                 <object class="GtkSeparator" />
-            </child>
-
-            <child>
-                <object class="GtkBox" id="run_tests_discovery_box">
-                    <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
-                    <property name="visible">FALSE</property>
-                    <child>
-                        <object class="GtkNotebook" id="run_tests_discovery_notebook">
-                            <property name="tab-pos">GTK_POS_LEFT</property>
-                        </object>
-                    </child>
-                    <child>
-                        <object class="GtkSeparator" /> <!-- TODO: not showing with enough vertical padding! -->
-                    </child>
-                </object>
             </child>
 
             <child>
@@ -96,12 +49,6 @@
                     <style>
                         <class name="optifol_grid_dialog" />
                     </style>
-                    <child>
-                        <object class="GtkButton" id="run_tests_discover">
-                            <property name="icon-name">edit-find-symbolic</property>
-                            <property name="tooltip-text">Dry Run and Discover Tests</property>
-                        </object>
-                    </child>
                     <child>
                         <object class="GtkButton" id="run_tests_cancel">
                             <property name="icon-name">window-close-symbolic</property>

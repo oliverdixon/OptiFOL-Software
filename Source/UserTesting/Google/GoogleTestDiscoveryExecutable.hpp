@@ -10,8 +10,8 @@
 #ifndef GOOGLETESTDISCOVERYEXECUTABLE_HPP
 #define GOOGLETESTDISCOVERYEXECUTABLE_HPP
 
-#include "../IR/DiscoveryTestExecutable.hpp"
 #include "../../GUI/ProcessExecutor.hpp"
+#include "../DiscoveryTestExecutable.hpp"
 
 namespace optifol
 {

@@ -21,7 +21,7 @@
 #include "../IR/SymbolRepository.hpp"
 #include "../Visitors/MutableTargets/RepositoryBuildingVisitor.hpp"
 
-#include "../UserTesting/IR/Test.hpp"
+#include "../UserTesting/Test.hpp"
 #include "FOLLexer.hpp"
 #include "StorageObjectBase.hpp"
 
@@ -51,13 +51,12 @@ public:
      * @param statement The initial FOL statement of the Requirement
      * @param description The initial long-form description of the Requirement
      * @param priority The initial priority of the Requirement
-     * @param test The input string providing associated unit test information
      * @param system_repository A null pointer to explicitly signify the lacking SymbolRepository
      * @warning As no system-wide symbol repository has been provided, this Requirement will not supply its symbols to
      *  the wider system. Logical analysis will produce unexpected results.
      */
     explicit Requirement(std::string&& name, std::string&& statement, std::string&& description, guint priority,
-        std::string&& test, std::nullptr_t system_repository);
+        const Glib::RefPtr<Gio::ListStore<Test>>& tests, std::nullptr_t system_repository);
 
     /**
      * @brief Create a new Requirement with the given name and register in the Glib GType system
@@ -65,12 +64,11 @@ public:
      * @param statement The initial FOL statement of the Requirement
      * @param description The initial long-form description of the Requirement
      * @param priority The initial priority of the Requirement
-     * @param test The input string providing associated unit test information
      * @param system_repository The system-wide symbol repository with lifetimes guaranteed to cover that of the
      *  Requirement
      */
     explicit Requirement(std::string&& name, std::string&& statement, std::string&& description, guint priority,
-        std::string&& test, SymbolRepository& system_repository);
+        const Glib::RefPtr<Gio::ListStore<Test>>& tests, SymbolRepository& system_repository);
 
     /**
      * @brief Create a new Requirement with the given name and register in the Glib GType system
@@ -78,15 +76,14 @@ public:
      * @param statement The initial FOL statement of the Requirement
      * @param description The initial long-form description of the Requirement
      * @param priority The initial priority of the Requirement
-     * @param test The input string providing associated unit test information
      * @param cobject The C cast-item used by Glib::Object
      * @param builder Currently unused builder parameter to provide to the Glib::Object instance
      * @param system_repository The system-wide symbol repository with lifetimes guaranteed to cover that of the
      *  Requirement
      */
     Requirement(std::string&& name, std::string&& statement, std::string&& description, guint priority,
-        std::string&& test, BaseObjectType* cobject, const Glib::RefPtr<Gtk::Builder>& builder,
-        SymbolRepository& system_repository);
+        const Glib::RefPtr<Gio::ListStore<Test>>& tests, BaseObjectType* cobject,
+        const Glib::RefPtr<Gtk::Builder>& builder, SymbolRepository& system_repository);
 
     /**
      * @brief Compare two Requirement objects for semantic equality
@@ -113,13 +110,13 @@ public:
      */
     [[nodiscard]] Glib::PropertyProxy<guint> property_priority();
 
-    [[nodiscard]] Glib::PropertyProxy<Glib::ustring> property_test_input();
-
     /**
      * @brief Get a read-write proxy for the 'normalised statement' property
      * @return The read-write 'normalised statement' proxy
      */
     [[nodiscard]] Glib::PropertyProxy<Glib::ustring> property_normalised();
+
+    [[nodiscard]] Glib::RefPtr<Gio::ListStore<Test>> get_tests() const noexcept;
 
     /**
      * @brief Get a read-only proxy for the 'statement' property
@@ -139,8 +136,6 @@ public:
      */
     [[nodiscard]] Glib::PropertyProxy_ReadOnly<guint> property_priority() const;
 
-    [[nodiscard]] Glib::PropertyProxy_ReadOnly<Glib::ustring> property_test_input() const;
-
     /**
      * @brief Get a read-only proxy for the 'normalised statement' property
      * @return The read-only 'normalised statement' proxy
@@ -150,16 +145,6 @@ public:
     [[nodiscard]] std::string get_formatted_statement() const;
 
     [[nodiscard]] std::string_view observe_latex_statement() const noexcept;
-
-    /**
-     * @brief Assign a shared TestResult object to the Requirement
-     * @param test_result The TestResult to share
-     * @throws SemanticException if the Requirement does not have a Test, or rejects the TestResult due to not being
-     *  relevant to the associated Test (for example, if it originates from a different test, fixture, or target
-     *  executable).
-     * @see Test::emplace_result
-     */
-    void emplace_test_result(const std::shared_ptr<TestResult> &test_result);
 
     [[nodiscard]] const std::optional<Test>& observe_test() const noexcept;
 
@@ -205,21 +190,15 @@ private:
      * @param requirement_statement The initial Requirement statement text
      * @param requirement_description The initial Requirement description
      * @param requirement_priority The initial Requirement priority selection
-     * @param requirement_test_input The initial Requirement test specification
      */
     void setup_properties(std::string &&requirement_name, std::string &&requirement_statement,
-            std::string &&requirement_description, guint requirement_priority, std::string &&requirement_test_input);
+            std::string &&requirement_description, guint requirement_priority,
+            const Glib::RefPtr<Gio::ListStore<Test>> &requirement_tests);
 
     /**
      * @brief Handle a change in the Requirement statement by re-parsing and updating internal state where necessary.
      */
     void handle_statement_change();
-
-    /**
-     * @brief Handle a change in the Test textual specification by re-parsing and updating internal state where
-     *  necessary.
-     */
-    void handle_test_change();
 
     /**
      * @brief Transform the given mutable IR node tree into an immutable equivalent, populating the symbol repository in
@@ -233,9 +212,9 @@ private:
     Glib::Property<Glib::ustring> normalised_statement;
     Glib::Property<Glib::ustring> description;
     Glib::Property<guint> priority;
-    Glib::Property<Glib::ustring> test_input;
 
-    std::optional<Test> test;
+    Glib::RefPtr<Gio::ListStore<Test>> tests = Gio::ListStore<Test>::create();
+    std::optional<Test> test; // TODO URGENT: remove
     std::unique_ptr<IMutableSentence> original_ast;
     std::unique_ptr<SentenceRoot> prepared_ast;
 

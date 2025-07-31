@@ -47,43 +47,40 @@ const log4cxx::LoggerPtr Requirement::parse_logger = Logging::get_logger({"Logic
 const log4cxx::LoggerPtr Requirement::integration_logger = Logging::get_logger({"LogicServices", "SystemIntegration"});
 
 Requirement::Requirement(std::string &&name, std::string &&statement, std::string &&description, const guint priority,
-        std::string &&test, std::nullptr_t) :
+        const Glib::RefPtr<Gio::ListStore<Test>>& tests, std::nullptr_t) :
     Glib::ObjectBase("Requirement"),
     statement(*this, "Requirement-statement"),
     normalised_statement(*this, "Requirement-normalised"),
     description(*this, "Requirement-description"),
-    priority(*this, "Requirement-priority"),
-    test_input(*this, "Requirement-test-input")
+    priority(*this, "Requirement-priority")
 {
-    setup_properties(std::move(name), std::move(statement), std::move(description), priority, std::move(test));
+    setup_properties(std::move(name), std::move(statement), std::move(description), priority, tests);
 }
 
 Requirement::Requirement(std::string &&name, std::string &&statement, std::string &&description, const guint priority,
-        std::string &&test, SymbolRepository &system_repository) :
+        const Glib::RefPtr<Gio::ListStore<Test>>& tests, SymbolRepository &system_repository) :
     Glib::ObjectBase("Requirement"),
     statement(*this, "Requirement-statement"),
     normalised_statement(*this, "Requirement-normalised"),
     description(*this, "Requirement-description"),
     priority(*this, "Requirement-priority"),
-    test_input(*this, "Requirement-test-input"),
     repository_building_visitor(system_repository)
 {
-    setup_properties(std::move(name), std::move(statement), std::move(description), priority, std::move(test));
+    setup_properties(std::move(name), std::move(statement), std::move(description), priority, tests);
 }
 
 Requirement::Requirement(std::string &&name, std::string &&statement, std::string &&description, const guint priority,
-        std::string &&test, BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &builder,
-        SymbolRepository &system_repository) :
+        const Glib::RefPtr<Gio::ListStore<Test>>& tests, BaseObjectType *cobject,
+        const Glib::RefPtr<Gtk::Builder> &builder, SymbolRepository &system_repository) :
     Glib::ObjectBase("Requirement"),
     StorageObjectBase(cobject, builder),
     statement(*this, "Requirement-statement"),
     normalised_statement(*this, "Requirement-normalised"),
     description(*this, "Requirement-description"),
     priority(*this, "Requirement-priority"),
-    test_input(*this, "Requirement-test-input"),
     repository_building_visitor(system_repository)
 {
-    setup_properties(std::move(name), std::move(statement), std::move(description), priority, std::move(test));
+    setup_properties(std::move(name), std::move(statement), std::move(description), priority, tests);
 }
 
 bool Requirement::operator==(const Requirement & other) const noexcept
@@ -106,14 +103,14 @@ Glib::PropertyProxy<guint> Requirement::property_priority()
     return priority.get_proxy();
 }
 
-Glib::PropertyProxy<Glib::ustring> Requirement::property_test_input()
-{
-    return test_input.get_proxy();
-}
-
 Glib::PropertyProxy<Glib::ustring> Requirement::property_normalised()
 {
     return normalised_statement.get_proxy();
+}
+
+Glib::RefPtr<Gio::ListStore<Test>> Requirement::get_tests() const noexcept
+{
+    return tests;
 }
 
 Glib::PropertyProxy_ReadOnly<Glib::ustring> Requirement::property_statement() const
@@ -131,11 +128,6 @@ Glib::PropertyProxy_ReadOnly<guint> Requirement::property_priority() const
     return priority.get_proxy();
 }
 
-Glib::PropertyProxy_ReadOnly<Glib::ustring> Requirement::property_test_input() const
-{
-    return test_input.get_proxy();
-}
-
 Glib::PropertyProxy_ReadOnly<Glib::ustring> Requirement::property_normalised() const
 {
     return normalised_statement.get_proxy();
@@ -149,22 +141,6 @@ std::string Requirement::get_formatted_statement() const
 std::string_view Requirement::observe_latex_statement() const noexcept
 {
     return latex_input_statement;
-}
-
-void Requirement::emplace_test_result(const std::shared_ptr<TestResult> &test_result)
-{
-    const auto &requirement_name = property_name().get_value(); // All execution paths needs this.
-
-    if (test.has_value() == false)
-        throw SemanticException("Attempted to assign result to a non-existent Test for Requirement \"" +
-            requirement_name + "\".");
-
-    test->emplace_result(test_result);
-
-    // TODO URGENT: handle tests not part of a suite.
-    // TODO URGENT: handle iteration tests. Should we support, or just collapse?
-    req_logger->debug("Assigned result \"" + test_result->get_test_suite_name() + ':' + test_result->get_test_name() +
-        "\" to Test for Requirement \"" + requirement_name + "\".");
 }
 
 const std::optional<Test> &Requirement::observe_test() const noexcept
@@ -191,16 +167,16 @@ bool Requirement::is_analysis_ready() const noexcept
 }
 
 void Requirement::setup_properties(std::string &&requirement_name, std::string &&requirement_statement,
-        std::string &&requirement_description, const guint requirement_priority, std::string &&requirement_test_input)
+        std::string &&requirement_description, const guint requirement_priority,
+        const Glib::RefPtr<Gio::ListStore<Test>> &requirement_tests)
 {
     property_statement().signal_changed().connect(sigc::mem_fun(*this, &Requirement::handle_statement_change));
-    property_test_input().signal_changed().connect(sigc::mem_fun(*this, &Requirement::handle_test_change));
 
     property_name().set_value(std::move(requirement_name));
     property_statement().set_value(std::move(requirement_statement));
     property_description().set_value(std::move(requirement_description));
     property_priority().set_value(requirement_priority);
-    property_test_input().set_value(requirement_test_input);
+    tests = requirement_tests;
 }
 
 void Requirement::handle_statement_change()
@@ -246,30 +222,6 @@ void Requirement::handle_statement_change()
     property_normalised().set_value(serialiser_stream.str());
 
     req_logger->debug("Successfully updated FOL statement for requirement \"" + property_name().get_value() + "\".");
-}
-
-void Requirement::handle_test_change()
-{
-    const auto &input_line = property_test_input().get_value();
-
-    if (input_line.empty() == true) {
-        test.reset();
-        req_logger->debug("Removed associated unit test from requirement \"" + property_name().get_value() + "\".");
-        return;
-    }
-
-    try {
-        // TODO URGENT
-        // test.emplace(std::string_view(input_line.c_str(), input_line.bytes()));
-    } catch (const ParseError &parse_error) {
-        req_logger->error(
-                "Could not parse unit test specification for requirement \"" + property_name().get_value() + "\".");
-        req_logger->error(parse_error.what());
-        return;
-    }
-
-    req_logger->debug("Successfully added unit test specification \"" + property_test_input().get_value() +
-        "\" to requirement \"" + property_name().get_value() + "\".");
 }
 
 std::unique_ptr<IMutableSentence> Requirement::cnf_normalise(std::unique_ptr<IMutableSentence> &&sentence)

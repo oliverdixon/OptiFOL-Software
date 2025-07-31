@@ -20,7 +20,6 @@
 #include <gtkmm/label.h>
 #include <gtkmm/listitem.h>
 #include <gtkmm/singleselection.h>
-#include <gtkmm/textbuffer.h>
 #include <gtkmm/treelistmodel.h>
 
 #include "../../Storage/Subsystem.hpp"
@@ -80,11 +79,6 @@ namespace optifol
  *          </tr>
  *          <tr>
  *              <td>GtkColumnViewColumn</td>
- *              <td><code>test_name</code></td>
- *              <td>Table column to display the name of the Test</td>
- *          </tr>
- *          <tr>
- *              <td>GtkColumnViewColumn</td>
  *              <td><code>test_status</code></td>
  *              <td>Table column to display the iconised result of the lastest Test run</td>
  *          </tr>
@@ -134,7 +128,6 @@ private:
     Gtk::ColumnView *const test_groups_view;
     ContextButtonCorrespondence context_menu;
     std::pair<Gtk::Widget *, Gtk::Widget *> on_off_widgets;
-    const Glib::RefPtr<Gtk::TextBuffer> run_tests_output_buffer;
 
     Glib::RefPtr<Subsystem> active_subsystem;
     Glib::RefPtr<Gtk::SingleSelection> selection_model = Gtk::SingleSelection::create();

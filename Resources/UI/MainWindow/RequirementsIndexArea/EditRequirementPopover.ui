@@ -39,9 +39,6 @@
                         <object class="GtkLabel">
                             <property name="label">Description</property>
                             <property name="halign">GTK_ALIGN_END</property>
-                            <style>
-                                <class name="optifol_optional" />
-                            </style>
                             <layout>
                                 <property name="column">0</property>
                                 <property name="row">1</property>
@@ -84,12 +81,9 @@
                     </child>
 
                     <child>
-                        <object class="GtkLabel">
+                        <object class="GtkLabel"> <!-- TODO URGENT update to match new requirement popover. -->
                             <property name="label">Associated Test</property>
                             <property name="halign">GTK_ALIGN_END</property>
-                            <style>
-                                <class name="optifol_optional" />
-                            </style>
                             <layout>
                                 <property name="column">0</property>
                                 <property name="row">3</property>
@@ -148,33 +142,20 @@
             <child>
                 <object class="GtkBox">
                     <property name="hexpand">TRUE</property>
+                    <property name="halign">GTK_ALIGN_END</property>
+                    <style>
+                        <class name="optifol_grid_dialog" />
+                    </style>
                     <child>
-                        <object class="GtkLabel">
-                            <style>
-                                <class name="optifol_optional" />
-                            </style>
-                            <property name="label">Oblique fields are optional</property>
+                        <object class="GtkButton" id="edit_requirement_cancel">
+                            <property name="icon-name">window-close-symbolic</property>
+                            <property name="tooltip-text">Cancel Requirement Changes</property>
                         </object>
                     </child>
                     <child>
-                        <object class="GtkBox">
-                            <property name="hexpand">TRUE</property>
-                            <property name="halign">GTK_ALIGN_END</property>
-                            <style>
-                                <class name="optifol_grid_dialog" />
-                            </style>
-                            <child>
-                                <object class="GtkButton" id="edit_requirement_cancel">
-                                    <property name="icon-name">window-close-symbolic</property>
-                                    <property name="tooltip-text">Cancel Requirement Changes</property>
-                                </object>
-                            </child>
-                            <child>
-                                <object class="GtkButton" id="edit_requirement_confirm">
-                                    <property name="icon-name">emblem-ok-symbolic</property>
-                                    <property name="tooltip-text">Confirm Requirement Details</property>
-                                </object>
-                            </child>
+                        <object class="GtkButton" id="edit_requirement_confirm">
+                            <property name="icon-name">emblem-ok-symbolic</property>
+                            <property name="tooltip-text">Confirm Requirement Details</property>
                         </object>
                     </child>
                 </object>

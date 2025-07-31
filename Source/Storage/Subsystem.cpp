@@ -61,9 +61,13 @@ void Subsystem::record_slated_requirement(const Glib::RefPtr<Requirement> slated
 
 void Subsystem::duplicate_requirement(const Requirement &requirement)
 {
-    build_requirement(requirement.property_name().get_value(), requirement.property_statement().get_value(),
-            requirement.property_description().get_value(), requirement.property_priority().get_value(),
-            requirement.property_test_input().get_value());
+    build_requirement(
+        requirement.property_name().get_value(),
+        requirement.property_statement().get_value(),
+        requirement.property_description().get_value(),
+        requirement.property_priority().get_value(),
+        requirement.get_tests()
+    );
 }
 
 Glib::RefPtr<Gio::ListStore<AnalysisGroup>> Subsystem::get_analysis_groups() const noexcept

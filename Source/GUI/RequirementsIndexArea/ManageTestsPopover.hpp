@@ -22,8 +22,9 @@
 #include <unordered_set>
 
 #include "../../DereferencingEqualityFunctor.hpp"
-#include "../../UserTesting/IR/DiscoveryTestExecutable.hpp"
-#include "TestSpecificationEntry.hpp"
+#include "../../UserTesting/DiscoveryTestExecutable.hpp"
+#include "../../UserTesting/TargetTestExecutableBase.hpp"
+#include "../../UserTesting/TestSpecificationEntry.hpp"
 
 namespace optifol
 {
@@ -34,7 +35,10 @@ class RequirementsIndexArea;
 class ManageTestsPopover
 {
 public:
-    ManageTestsPopover(RequirementsIndexArea& parent_area, Gtk::Builder& builder);
+    explicit ManageTestsPopover(Gtk::Builder& builder);
+
+    // TODO: this is inefficient. We need to take the difference on the Requirement and only construct necessary Test objects.
+    Glib::RefPtr<Gio::ListStore<Test>> get_aggregate_tests() const;
 
 private:
     static const char * const popover_name;
@@ -43,7 +47,7 @@ private:
     /**
      * @brief Handle a click of the <i>Confirm</i> by hiding the popover.
      */
-    void confirm_button_clicked() const;
+    void confirm_button_clicked();
 
     void new_test_clicked() const;
 
@@ -59,8 +63,6 @@ private:
 
     void handle_executable_change(const Glib::RefPtr<TestSpecificationEntry> &test_spec, const Gtk::Entry *exe_entry);
 
-    RequirementsIndexArea& parent_area;
-
     Gtk::Popover * const popover;
     Gtk::Button * const confirm_button;
     Gtk::Button * const new_test_button;
@@ -72,9 +74,11 @@ private:
     Glib::RefPtr<Gio::ListStore<TestSpecificationEntry>> test_spec_model =
         Gio::ListStore<TestSpecificationEntry>::create();
 
-    std::unordered_set<Glib::RefPtr<DiscoveryTestExecutable>,
+    std::unordered_set<
+        Glib::RefPtr<DiscoveryTestExecutable>,
         std::hash<DiscoveryTestExecutable>,
-        DereferencingEqualityFunctor<Glib::RefPtr<DiscoveryTestExecutable>, DiscoveryTestExecutable>> test_exe_cache;
+        DereferencingEqualityFunctor<Glib::RefPtr<DiscoveryTestExecutable>, DiscoveryTestExecutable>
+    > discovery_exe_cache;
 };
 
 } // namespace optifol

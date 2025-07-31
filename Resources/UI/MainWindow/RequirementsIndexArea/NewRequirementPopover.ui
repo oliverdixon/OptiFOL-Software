@@ -39,9 +39,6 @@
                         <object class="GtkLabel">
                             <property name="label">Description</property>
                             <property name="halign">GTK_ALIGN_END</property>
-                            <style>
-                                <class name="optifol_optional" />
-                            </style>
                             <layout>
                                 <property name="column">0</property>
                                 <property name="row">1</property>
@@ -85,11 +82,8 @@
 
                     <child>
                         <object class="GtkLabel">
-                            <property name="label">SW Tests</property>
+                            <property name="label">Software Tests</property>
                             <property name="halign">GTK_ALIGN_END</property>
-                            <style>
-                                <class name="optifol_optional" />
-                            </style>
                             <layout>
                                 <property name="column">0</property>
                                 <property name="row">3</property>
@@ -98,13 +92,9 @@
                     </child>
                     <child>
                         <object class="GtkBox">
-                            <layout>
-                                <property name="column">1</property>
-                                <property name="row">3</property>
-                            </layout>
+                            <property name="orientation">horizontal</property>
                             <child>
-                                <object class="GtkEntry" id="new_requirement_property_test">
-                                    <property name="placeholder-text">None</property>
+                                <object class="GtkEntry" id="new_requirement_test_count">
                                     <property name="sensitive">FALSE</property>
                                 </object>
                             </child>
@@ -114,6 +104,10 @@
                                     <property name="tooltip-text">Manage Associated Software Tests</property>
                                 </object>
                             </child>
+                            <layout>
+                                <property name="column">1</property>
+                                <property name="row">3</property>
+                            </layout>
                         </object>
                     </child>
 

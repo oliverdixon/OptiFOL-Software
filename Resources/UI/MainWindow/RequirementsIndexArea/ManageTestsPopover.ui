@@ -17,21 +17,18 @@
                         <object class="GtkColumnViewColumn">
                             <property name="id">manage_tests_target_exe</property>
                             <property name="title">Target Executable</property>
-                            <property name="resizable">TRUE</property>
                         </object>
                     </child>
                     <child>
                         <object class="GtkColumnViewColumn">
                             <property name="id">manage_tests_fixture</property>
                             <property name="title">Test Fixture</property>
-                            <property name="resizable">TRUE</property>
                         </object>
                     </child>
                     <child>
                         <object class="GtkColumnViewColumn">
                             <property name="id">manage_tests_name</property>
                             <property name="title">Test Name</property>
-                            <property name="resizable">TRUE</property>
                         </object>
                     </child>
                 </object>

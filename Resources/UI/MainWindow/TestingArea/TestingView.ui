@@ -30,140 +30,90 @@ To prepare Test Groups, select a Subsystem from the left-hand <i>Project Explore
         </object>
     </child>
     <child>
-        <object class="GtkPaned" id="testing_content">
-            <property name="visible">FALSE</property>
+        <object class="GtkBox" id="testing_content">
             <property name="orientation">vertical</property>
             <child>
                 <object class="GtkBox">
-                    <property name="orientation">vertical</property>
+                    <property name="halign">GTK_ALIGN_FILL</property>
+                    <style>
+                        <class name="toolbar"/>
+                        <class name="optifol_boxed"/>
+                    </style>
                     <child>
-                        <object class="GtkBox">
-                            <property name="halign">GTK_ALIGN_FILL</property>
-                            <style>
-                                <class name="toolbar"/>
-                                <class name="optifol_boxed"/>
-                            </style>
-                            <child>
-                                <object class="GtkMenuButton" id="new_test_group">
-                                    <property name="icon-name">folder-new-symbolic</property>
-                                    <property name="tooltip-text">New Test Group</property>
-                                </object>
-                            </child>
-                            <child>
-                                <object class="GtkMenuButton" id="edit_test_group">
-                                    <property name="icon-name">document-edit-symbolic</property>
-                                    <property name="tooltip-text">Edit Test Group</property>
-                                    <property name="sensitive">FALSE</property>
-                                </object>
-                            </child>
-                            <child>
-                                <object class="GtkMenuButton" id="delete_test_group">
-                                    <property name="icon-name">edit-delete-symbolic</property>
-                                    <property name="tooltip-text">Delete Test Group</property>
-                                    <property name="sensitive">FALSE</property>
-                                </object>
-                            </child>
-                            <child>
-                                <object class="GtkSeparator"/>
-                            </child>
-                            <child>
-                                <object class="GtkMenuButton">
-                                    <property name="icon-name">edit-copy-symbolic</property>
-                                    <property name="tooltip-text">Copy Selected Requirement to Test Group</property>
-                                    <property name="sensitive">FALSE</property>
-                                </object>
-                            </child>
-                            <child>
-                                <object class="GtkMenuButton">
-                                    <property name="icon-name">go-bottom-symbolic</property>
-                                    <property name="tooltip-text">Move Selected Requirement to Test Group</property>
-                                    <property name="sensitive">FALSE</property>
-                                </object>
-                            </child>
-                            <child>
-                                <object class="GtkMenuButton">
-                                    <property name="icon-name">list-remove-symbolic</property>
-                                    <property name="tooltip-text">Remove Selected Requirement from Test Group</property>
-                                    <property name="sensitive">FALSE</property>
-                                </object>
-                            </child>
-                            <child>
-                                <object class="GtkSeparator"/>
-                            </child>
-                            <child>
-                                <object class="GtkMenuButton" id="run_tests">
-                                    <property name="icon-name">emblem-ok-symbolic</property>
-                                    <property name="tooltip-text">Re-Run Selected Test Group</property>
-                                </object>
-                            </child>
-                            <child>
-                                <object class="GtkBox">
-                                    <property name="hexpand">TRUE</property>
-                                    <property name="halign">GTK_ALIGN_END</property>
-                                    <child>
-                                        <object class="GtkEntry">
-                                            <property name="sensitive">FALSE</property>
-                                            <property name="placeholder-text">Search by Name</property>
-                                        </object>
-                                    </child>
-                                    <child>
-                                        <object class="GtkButton">
-                                            <property name="sensitive">FALSE</property>
-                                            <property name="icon-name">edit-find-symbolic</property>
-                                            <property name="tooltip-text">Search Requirements</property>
-                                        </object>
-                                    </child>
-                                    <child>
-                                        <object class="GtkButton">
-                                            <property name="sensitive">FALSE</property>
-                                            <property name="icon-name">edit-clear-all-symbolic</property>
-                                            <property name="tooltip-text">Clear Search</property>
-                                        </object>
-                                    </child>
-                                </object>
-                            </child>
+                        <object class="GtkMenuButton" id="new_test_group">
+                            <property name="icon-name">folder-new-symbolic</property>
+                            <property name="tooltip-text">New Test Group</property>
                         </object>
                     </child>
                     <child>
-                        <object class="GtkScrolledWindow">
-                            <property name="vexpand">TRUE</property>
+                        <object class="GtkMenuButton" id="edit_test_group">
+                            <property name="icon-name">document-edit-symbolic</property>
+                            <property name="tooltip-text">Edit Test Group</property>
+                            <property name="sensitive">FALSE</property>
+                        </object>
+                    </child>
+                    <child>
+                        <object class="GtkMenuButton" id="delete_test_group">
+                            <property name="icon-name">edit-delete-symbolic</property>
+                            <property name="tooltip-text">Delete Test Group</property>
+                            <property name="sensitive">FALSE</property>
+                        </object>
+                    </child>
+                    <child>
+                        <object class="GtkSeparator"/>
+                    </child>
+                    <child>
+                        <object class="GtkMenuButton">
+                            <property name="icon-name">edit-copy-symbolic</property>
+                            <property name="tooltip-text">Copy Selected Requirement to Test Group</property>
+                            <property name="sensitive">FALSE</property>
+                        </object>
+                    </child>
+                    <child>
+                        <object class="GtkMenuButton">
+                            <property name="icon-name">go-bottom-symbolic</property>
+                            <property name="tooltip-text">Move Selected Requirement to Test Group</property>
+                            <property name="sensitive">FALSE</property>
+                        </object>
+                    </child>
+                    <child>
+                        <object class="GtkMenuButton">
+                            <property name="icon-name">list-remove-symbolic</property>
+                            <property name="tooltip-text">Remove Selected Requirement from Test Group</property>
+                            <property name="sensitive">FALSE</property>
+                        </object>
+                    </child>
+                    <child>
+                        <object class="GtkSeparator"/>
+                    </child>
+                    <child>
+                        <object class="GtkMenuButton" id="run_tests">
+                            <property name="icon-name">emblem-ok-symbolic</property>
+                            <property name="tooltip-text">Re-Run Selected Test Group</property>
+                        </object>
+                    </child>
+                    <child>
+                        <object class="GtkBox">
+                            <property name="hexpand">TRUE</property>
+                            <property name="halign">GTK_ALIGN_END</property>
                             <child>
-                                <object class="GtkColumnView" id="test_groups_view">
-                                    <child>
-                                        <object class="GtkColumnViewColumn">
-                                            <property name="id">test_requirement_name</property>
-                                            <property name="title">Requirement</property>
-                                            <property name="resizable">TRUE</property>
-                                        </object>
-                                    </child>
-                                    <child>
-                                        <object class="GtkColumnViewColumn">
-                                            <property name="id">test_target_executable</property>
-                                            <property name="title">Target Executable</property>
-                                            <property name="resizable">TRUE</property>
-                                        </object>
-                                    </child>
-                                    <child>
-                                        <object class="GtkColumnViewColumn">
-                                            <property name="id">test_suite</property>
-                                            <property name="title">Test Suite</property>
-                                            <property name="resizable">TRUE</property>
-                                        </object>
-                                    </child>
-                                    <child>
-                                        <object class="GtkColumnViewColumn">
-                                            <property name="id">test_name</property>
-                                            <property name="title">Test Name</property>
-                                            <property name="resizable">TRUE</property>
-                                        </object>
-                                    </child>
-                                    <child>
-                                        <object class="GtkColumnViewColumn">
-                                            <property name="id">test_status</property>
-                                            <property name="title">Test Status</property>
-                                            <property name="resizable">TRUE</property>
-                                        </object>
-                                    </child>
+                                <object class="GtkEntry">
+                                    <property name="sensitive">FALSE</property>
+                                    <property name="placeholder-text">Search by Name</property>
+                                </object>
+                            </child>
+                            <child>
+                                <object class="GtkButton">
+                                    <property name="sensitive">FALSE</property>
+                                    <property name="icon-name">edit-find-symbolic</property>
+                                    <property name="tooltip-text">Search Requirements</property>
+                                </object>
+                            </child>
+                            <child>
+                                <object class="GtkButton">
+                                    <property name="sensitive">FALSE</property>
+                                    <property name="icon-name">edit-clear-all-symbolic</property>
+                                    <property name="tooltip-text">Clear Search</property>
                                 </object>
                             </child>
                         </object>
@@ -171,63 +121,38 @@ To prepare Test Groups, select a Subsystem from the left-hand <i>Project Explore
                 </object>
             </child>
             <child>
-                <object class="GtkNotebook">
+                <object class="GtkScrolledWindow">
+                    <property name="vexpand">TRUE</property>
                     <child>
-                        <object class="GtkPaned">
-                            <property name="orientation">horizontal</property>
+                        <object class="GtkColumnView" id="test_groups_view">
                             <child>
-                                <object class="GtkPaned">
-                                    <property name="orientation">vertical</property>
-                                    <child>
-                                        <object class="GtkBox">
-                                            <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
-                                            <child>
-                                                <object class="GtkEntry">
-                                                    <property name="sensitive">FALSE</property>
-                                                    <property name="placeholder-text">Search by Name</property>
-                                                </object>
-                                            </child>
-                                            <child>
-                                                <object class="GtkScrolledWindow">
-                                                    <child>
-                                                        <object class="GtkListView">
-                                                            <property name="single-click-activate">FALSE</property>
-                                                        </object>
-                                                    </child>
-                                                </object>
-                                            </child>
-                                        </object>
-                                    </child>
-                                    <child>
-                                        <object class="GtkLabel">
-                                            <property name="label">Test status.</property>
-                                        </object>
-                                    </child>
+                                <object class="GtkColumnViewColumn">
+                                    <property name="id">test_requirement_name</property>
+                                    <property name="title">Requirement</property>
+                                    <property name="resizable">TRUE</property>
                                 </object>
                             </child>
                             <child>
-                                <object class="GtkTextView" id="run_tests_output">
-                                    <style>
-                                        <class name="optifol_monospace" />
-                                    </style>
-                                    <property name="editable">FALSE</property>
+                                <object class="GtkColumnViewColumn">
+                                    <property name="id">test_target_executable</property>
+                                    <property name="title">Target Executable</property>
+                                    <property name="resizable">TRUE</property>
                                 </object>
                             </child>
-                        </object>
-                    </child>
-                    <child type="tab">
-                        <object class="GtkLabel">
-                            <property name="label">Example Test Report</property>
-                        </object>
-                    </child>
-                    <child>
-                        <object class="GtkLabel">
-                            <property name="label">Content: Group B Test Report</property>
-                        </object>
-                    </child>
-                    <child type="tab">
-                        <object class="GtkLabel">
-                            <property name="label">Group B Test Report</property>
+                            <child>
+                                <object class="GtkColumnViewColumn">
+                                    <property name="id">test_suite</property>
+                                    <property name="title">Test Suite</property>
+                                    <property name="resizable">TRUE</property>
+                                </object>
+                            </child>
+                            <child>
+                                <object class="GtkColumnViewColumn">
+                                    <property name="id">test_status</property>
+                                    <property name="title">Test Status</property>
+                                    <property name="resizable">TRUE</property>
+                                </object>
+                            </child>
                         </object>
                     </child>
                 </object>

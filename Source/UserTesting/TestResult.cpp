@@ -37,12 +37,12 @@ TestResult::TestResult(std::string test_name, const bool passed, const std::size
 
 std::size_t TestResult::hash() const noexcept
 {
-    return hash_combine(std::hash<std::string>{}(suite_name), std::hash<std::string>{}(test_name));
+    return hash_combine(std::hash<std::string>{}(fixture_name), std::hash<std::string>{}(test_name));
 }
 
 void TestResult::populate_test_suite_name(const std::string &suite_name)
 {
-    this->suite_name = suite_name;
+    this->fixture_name = suite_name;
 }
 
 std::string TestResult::get_test_name() const noexcept
@@ -60,19 +60,19 @@ std::size_t TestResult::get_execution_time() const noexcept
     return execution_time;
 }
 
-Glib::ustring TestResult::get_test_suite_name() const noexcept
+Glib::ustring TestResult::get_fixture_name() const noexcept
 {
-    return suite_name;
+    return fixture_name;
 }
 
 bool TestResult::operator==(const TestResult &other) const noexcept
 {
-    return test_name == other.test_name && suite_name == other.suite_name;
+    return test_name == other.test_name && fixture_name == other.fixture_name;
 }
 
 bool TestResult::operator==(const std::pair<std::string_view, std::string_view>& names) const noexcept
 {
-    return names.first == suite_name.c_str() && names.second == test_name;
+    return names.first == fixture_name.c_str() && names.second == test_name;
 }
 
 } // namespace optifol

@@ -66,6 +66,7 @@ void GoogleTestDiscoveryExecutable::discovery_done_callback(const int exit_code)
     const auto& fixtures = document["testsuites"];
     assert(fixtures.IsArray());
 
+    // TODO URGENT make this all more robust. Don't do asserts. Throw exceptions.
     for (const auto& fixture : fixtures.GetArray()) {
         assert(fixture.IsObject());
         const auto& fixture_name = fixture["name"];

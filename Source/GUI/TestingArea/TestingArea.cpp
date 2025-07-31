@@ -40,9 +40,6 @@ TestingArea::TestingArea(Gtk::Builder &builder) :
         GTKHelpers::get_widget<Gtk::Widget>(area_name, builder, "testing_advice_unselected"),
         GTKHelpers::get_widget<Gtk::Widget>(area_name, builder, "testing_content")
     ),
-    run_tests_output_buffer(
-        GTKHelpers::get_widget<Gtk::TextView>(area_name, builder, "run_tests_output")->get_buffer()
-    ),
     run_tests_popover(builder, *this)
 {
     configure_selection_model();
@@ -137,11 +134,9 @@ void TestingArea::configure_columns() const
                 factory->signal_bind().connect([](const Glib::RefPtr<Gtk::ListItem> & list_item)
                 {
                     const auto [requirement, label] = Requirement::requirement_bind_helper(*list_item);
-#if 0 // TODO URGENT
                     GTKHelpers::bind_any_property(
-                        sigc::mem_fun(static_cast<TestGetter<Glib::ustring>>(&Test::property_target_executable_name)),
+                        sigc::mem_fun(&Test::property_target_executable_name),
                         *requirement->observe_test(), label);
-#endif
                 });
 
             } else if (gtk_id == "test_suite") {
@@ -152,17 +147,6 @@ void TestingArea::configure_columns() const
                     const auto [requirement, label] = Requirement::requirement_bind_helper(*list_item);
                     GTKHelpers::bind_any_property(
                         sigc::mem_fun(static_cast<TestGetter<Glib::ustring>>(&Test::property_fixture)),
-                        *requirement->observe_test(), label);
-                });
-
-            } else if (gtk_id == "test_name") {
-
-                factory->signal_setup().connect(sigc::bind(&GTKHelpers::setup_label, false));
-                factory->signal_bind().connect([](const Glib::RefPtr<Gtk::ListItem> & list_item)
-                {
-                    const auto [requirement, label] = Requirement::requirement_bind_helper(*list_item);
-                    GTKHelpers::bind_any_property(
-                        sigc::mem_fun(static_cast<TestGetter<Glib::ustring>>(&Test::property_name)),
                         *requirement->observe_test(), label);
                 });
 

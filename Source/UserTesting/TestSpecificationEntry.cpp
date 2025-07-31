@@ -3,9 +3,13 @@
  * 2025 Oliver Dixon <od641@york.ac.uk>
  */
 
-//
-// Created by owd on 7/31/25.
-//
+/**
+ * @file
+ * @brief Class implementation for the TestSpecificationEntry storage object
+ * @author Oliver Dixon
+ * @date 2025-07-31
+ * @version Development
+ */
 
 #include "TestSpecificationEntry.hpp"
 

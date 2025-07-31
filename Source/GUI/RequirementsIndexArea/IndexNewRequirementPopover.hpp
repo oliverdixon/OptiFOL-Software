@@ -72,11 +72,6 @@ class RequirementsIndexArea;
  *          <td>Text entry area for the FOL statement of the new Requirement</td>
  *      </tr>
  *      <tr>
- *          <td>Gtk::Entry</td>
- *          <td><code>new_requirement_property_test</code></td>
- *          <td>Text entry area for the optional associated test(s) of the new Requirement</td>
- *      </tr>
- *      <tr>
  *          <td>Gtk::DropDown</td>
  *          <td><code>new_requirement_property_priority</code></td>
  *          <td>Text entry area for the optional associated test(s) of the new Requirement</td>
@@ -126,7 +121,6 @@ private:
     Gtk::DropDown * const priority_entry;
 
     ManageTestsPopover manage_tests_popover;
-    Gtk::Entry * const test_synopsis;
     Gtk::MenuButton * const edit_tests_button;
     Gtk::Popover * const edit_tests_popover;
 };

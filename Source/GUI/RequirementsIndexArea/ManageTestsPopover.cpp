@@ -7,11 +7,10 @@
 // Created by owd on 7/29/25.
 //
 
-#include "ManageTestsPopover.hpp"
-
 #include <iostream>
 
-#include "../../UserTesting/IR/Test.hpp"
+#include "ManageTestsPopover.hpp"
+#include "../../UserTesting/Test.hpp"
 #include "../GTKHelpers.hpp"
 #include "../Logging.hpp"
 #include "GoogleTestDiscoveryExecutable.hpp"
@@ -23,8 +22,7 @@ const char *const ManageTestsPopover::popover_name = "New Requirement Popover";
 const log4cxx::LoggerPtr ManageTestsPopover::popover_logger =
         Logging::get_logger({"GUI", "RequirementsIndex", "NewRequirement", "TestManagement"});
 
-ManageTestsPopover::ManageTestsPopover(RequirementsIndexArea &parent_area, Gtk::Builder &builder) :
-    parent_area(parent_area),
+ManageTestsPopover::ManageTestsPopover(Gtk::Builder &builder) :
     popover(GTKHelpers::get_widget<Gtk::Popover>(popover_name, builder, "manage_tests_popover")),
     confirm_button(GTKHelpers::get_widget<Gtk::Button>(popover_name, builder, "manage_tests_confirm")),
     new_test_button(GTKHelpers::get_widget<Gtk::Button>(popover_name, builder, "manage_tests_new_test")),
@@ -49,7 +47,7 @@ ManageTestsPopover::ManageTestsPopover(RequirementsIndexArea &parent_area, Gtk::
         Glib::RefPtr<Gtk::ColumnViewColumn> column = nullptr;
 
         if ((column = columns->get_typed_object<Gtk::ColumnViewColumn>(position)) != nullptr) {
-            const auto& gtk_id = column->get_id();
+            const auto &gtk_id = column->get_id();
             const auto factory = Gtk::SignalListItemFactory::create();
 
             if (gtk_id == "manage_tests_target_exe") {
@@ -71,7 +69,18 @@ ManageTestsPopover::ManageTestsPopover(RequirementsIndexArea &parent_area, Gtk::
     }
 }
 
-void ManageTestsPopover::confirm_button_clicked() const
+Glib::RefPtr<Gio::ListStore<Test>> ManageTestsPopover::get_aggregate_tests() const
+{
+    const auto spec_count = test_spec_model->get_n_items();
+    Glib::RefPtr<Gio::ListStore<Test>> model = Gio::ListStore<Test>::create();
+
+    for (guint spec_index = 0; spec_index < spec_count; ++spec_index)
+        model->append(Glib::make_refptr_for_instance(new Test(*test_spec_model->get_item(spec_index))));
+
+    return model;
+}
+
+void ManageTestsPopover::confirm_button_clicked()
 {
     popover->popdown();
 }
@@ -219,11 +228,11 @@ void ManageTestsPopover::bind_test_name(const Glib::RefPtr<Gtk::ListItem> &list_
 void ManageTestsPopover::handle_executable_change(const Glib::RefPtr<TestSpecificationEntry> &test_spec,
     const Gtk::Entry *const exe_entry)
 {
-    const auto cached_exe_it = test_exe_cache.find(exe_entry->get_text());
+    const auto cached_exe_it = discovery_exe_cache.find(exe_entry->get_text());
 
-    if (cached_exe_it == test_exe_cache.cend()) {
+    if (cached_exe_it == discovery_exe_cache.cend()) {
         const auto& name = exe_entry->get_text();
-        const auto [entry, was_added] = test_exe_cache.emplace(Glib::make_refptr_for_instance(
+        const auto [entry, was_added] = discovery_exe_cache.emplace(Glib::make_refptr_for_instance(
             new GoogleTestDiscoveryExecutable(name)));
 
         if (was_added) {

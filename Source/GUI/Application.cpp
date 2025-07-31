@@ -16,11 +16,7 @@
 #include "Application.hpp"
 #include "GTKHelpers.hpp"
 #include "MainWindow.hpp"
-
-#include "../Storage/Project.hpp"
-#include "../Storage/Requirement.hpp"
 #include "../Storage/Subsystem.hpp"
-#include "../UserTesting/IR/Test.hpp"
 
 namespace optifol
 {
@@ -54,12 +50,6 @@ void Application::on_startup()
 
 void Application::on_activate()
 {
-    // Create dummy instances of derived GObjects to register with the GType system.
-    static_cast<void>(Project({}));
-    static_cast<void>(Subsystem({}, nullptr));
-    static_cast<void>(Requirement({}, {}, {}, {}, {}, nullptr));
-    static_cast<void>(Test());
-
     const auto main_window = create_main_window();
     main_window->present();
     about_dialog->set_transient_for(*main_window);

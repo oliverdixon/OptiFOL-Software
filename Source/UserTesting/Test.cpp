@@ -12,33 +12,36 @@
  */
 
 #include "Test.hpp"
-#include "../../Exceptions/SemanticException.hpp"
+#include "../Exceptions/SemanticException.hpp"
 
 #include "GoogleTestExecutable.hpp"
 
 namespace optifol
 {
 
-Test::Test() :
+Test::Test(const TestSpecificationEntry& template_specification) :
     Glib::ObjectBase("Test"),
     target_executable_name(*this, "Test-target-executable-name"),
-    fixture(*this, "Test-test-suite"),
+    fixture(*this, "Test-test-fixture"),
     result(*this, "Test-result")
 {
+    instantiate_from_specification(template_specification);
 }
 
-Test::Test(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &builder) :
+Test::Test(const TestSpecificationEntry& template_specification, BaseObjectType *cobject,
+        const Glib::RefPtr<Gtk::Builder> &builder) :
     Glib::ObjectBase("Test"),
     StorageObjectBase(cobject, builder),
     target_executable_name(*this, "Test-target-executable-name"),
-    fixture(*this, "Test-test-suite"),
+    fixture(*this, "Test-test-fixture"),
     result(*this, "Test-result")
 {
+    instantiate_from_specification(template_specification);
 }
 
 void Test::emplace_result(const std::shared_ptr<TestResult> &test_result)
 {
-    const auto &result_suite_value = test_result->get_test_suite_name();
+    const auto &result_suite_value = test_result->get_fixture_name();
     const auto &expected_suite_value = fixture.get_value();
 
     if (result_suite_value != expected_suite_value)
@@ -90,6 +93,14 @@ Glib::PropertyProxy_ReadOnly<Glib::ustring> Test::property_fixture() const
 Glib::PropertyProxy_ReadOnly<std::shared_ptr<TestResult>> Test::property_result() const
 {
     return result.get_proxy();
+}
+
+void Test::instantiate_from_specification(const TestSpecificationEntry &template_specification)
+{
+    share_test_executable(std::make_shared<GoogleTestExecutable>(template_specification.property_executable().
+        get_value()->property_name().get_value()));
+    property_fixture().set_value(template_specification.property_fixture().get_value()->property_name().get_value());
+    property_name().set_value(template_specification.property_name().get_value());
 }
 
 } // namespace optifol
