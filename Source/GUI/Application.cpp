@@ -20,7 +20,7 @@
 #include "../Storage/Project.hpp"
 #include "../Storage/Requirement.hpp"
 #include "../Storage/Subsystem.hpp"
-#include "../Storage/Test.hpp"
+#include "../UserTesting/IR/Test.hpp"
 
 namespace optifol
 {

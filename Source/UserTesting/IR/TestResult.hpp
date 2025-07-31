@@ -19,7 +19,7 @@
 #include <string>
 #include <vector>
 
-#include "../IHashable.hpp"
+#include "../../IHashable.hpp"
 
 namespace optifol
 {

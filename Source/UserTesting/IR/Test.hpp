@@ -14,9 +14,9 @@
 #ifndef TEST_HPP
 #define TEST_HPP
 
-#include "../UserTesting/TargetTestExecutableBase.hpp"
-#include "../UserTesting/TestResult.hpp"
-#include "StorageObjectBase.hpp"
+#include "../../Storage/StorageObjectBase.hpp"
+#include "../TargetTestExecutableBase.hpp"
+#include "TestResult.hpp"
 
 namespace optifol
 {

@@ -14,10 +14,16 @@
 #include <gtkmm/builder.h>
 #include <gtkmm/button.h>
 #include <gtkmm/columnview.h>
+#include <gtkmm/entry.h>
 #include <gtkmm/listitem.h>
 #include <gtkmm/popover.h>
 #include <gtkmm/singleselection.h>
 #include <log4cxx/logger.h>
+#include <unordered_set>
+
+#include "../../DereferencingEqualityFunctor.hpp"
+#include "../../UserTesting/IR/DiscoveryTestExecutable.hpp"
+#include "TestSpecificationEntry.hpp"
 
 namespace optifol
 {
@@ -43,9 +49,15 @@ private:
 
     void delete_test_clicked() const;
 
-    static void bind_test_executable(const Glib::RefPtr<Gtk::ListItem>& list_item);
+    static void setup_fixtures_combo(const Glib::RefPtr<Gtk::ListItem> &list_item);
 
-    static void bind_text_fixture(const Glib::RefPtr<Gtk::ListItem>& list_item);
+    void bind_test_executable(const Glib::RefPtr<Gtk::ListItem> &list_item);
+
+    static void bind_test_fixture(const Glib::RefPtr<Gtk::ListItem>& list_item);
+
+    static void bind_test_name(const Glib::RefPtr<Gtk::ListItem>& list_item);
+
+    void handle_executable_change(const Glib::RefPtr<TestSpecificationEntry> &test_spec, const Gtk::Entry *exe_entry);
 
     RequirementsIndexArea& parent_area;
 
@@ -57,7 +69,12 @@ private:
     Gtk::ColumnView * const view;
 
     Glib::RefPtr<Gtk::SingleSelection> selection_model = Gtk::SingleSelection::create();
-    Glib::RefPtr<Gio::ListStore<Test>> test_spec_model;
+    Glib::RefPtr<Gio::ListStore<TestSpecificationEntry>> test_spec_model =
+        Gio::ListStore<TestSpecificationEntry>::create();
+
+    std::unordered_set<Glib::RefPtr<DiscoveryTestExecutable>,
+        std::hash<DiscoveryTestExecutable>,
+        DereferencingEqualityFunctor<Glib::RefPtr<DiscoveryTestExecutable>, DiscoveryTestExecutable>> test_exe_cache;
 };
 
 } // namespace optifol

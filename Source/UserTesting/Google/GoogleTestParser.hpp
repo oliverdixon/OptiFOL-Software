@@ -22,7 +22,7 @@
 #include <log4cxx/logger.h>
 #include <sigc++/slot.h>
 #include "../../Exceptions/ParseError.hpp"
-#include "../TestResult.hpp"
+#include "../IR/TestResult.hpp"
 
 namespace optifol
 {

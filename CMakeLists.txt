@@ -200,8 +200,8 @@ add_library(OptifolCommon OBJECT
         Source/IR/Sentences/IProcessedSentence.hpp
         Source/UserTesting/Google/GoogleTestLexer.hpp
         Source/UserTesting/Google/GoogleTestParser.hpp
-        Source/UserTesting/TestResult.cpp
-        Source/UserTesting/TestResult.hpp
+        Source/UserTesting/IR/TestResult.cpp
+        Source/UserTesting/IR/TestResult.hpp
         Source/DereferencingEqualityFunctor.hpp
 )
 
@@ -360,8 +360,8 @@ add_executable(OptifolGUI
         Source/UserTesting/TestListenerBase.hpp
         Source/UserTesting/Google/GoogleTestListener.cpp
         Source/UserTesting/Google/GoogleTestListener.hpp
-        Source/Storage/Test.cpp
-        Source/Storage/Test.hpp
+        Source/UserTesting/IR/Test.cpp
+        Source/UserTesting/IR/Test.hpp
         Source/GUI/ProcessExecutor.cpp
         Source/GUI/ProcessExecutor.hpp
         Source/Storage/TestGroup.cpp
@@ -381,6 +381,14 @@ add_executable(OptifolGUI
         Source/GUI/RequirementsIndexArea/ManageTestsPopover.hpp
         Source/UserTesting/Google/GoogleTestExecutable.cpp
         Source/UserTesting/Google/GoogleTestExecutable.hpp
+        Source/UserTesting/IR/DiscoveryTestExecutable.cpp
+        Source/UserTesting/IR/DiscoveryTestExecutable.hpp
+        Source/GUI/RequirementsIndexArea/TestSpecificationEntry.cpp
+        Source/GUI/RequirementsIndexArea/TestSpecificationEntry.hpp
+        Source/UserTesting/IR/DiscoveryTestFixture.cpp
+        Source/UserTesting/IR/DiscoveryTestFixture.hpp
+        Source/UserTesting/Google/GoogleTestDiscoveryExecutable.cpp
+        Source/UserTesting/Google/GoogleTestDiscoveryExecutable.hpp
 )
 
 set(COMMON_COMPILER_OPTIONS

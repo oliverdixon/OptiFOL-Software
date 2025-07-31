@@ -21,9 +21,9 @@
 #include "../IR/SymbolRepository.hpp"
 #include "../Visitors/MutableTargets/RepositoryBuildingVisitor.hpp"
 
+#include "../UserTesting/IR/Test.hpp"
 #include "FOLLexer.hpp"
 #include "StorageObjectBase.hpp"
-#include "Test.hpp"
 
 namespace Gtk
 {

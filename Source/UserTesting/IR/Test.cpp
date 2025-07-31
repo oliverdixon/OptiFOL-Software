@@ -12,7 +12,7 @@
  */
 
 #include "Test.hpp"
-#include "../Exceptions/SemanticException.hpp"
+#include "../../Exceptions/SemanticException.hpp"
 
 #include "GoogleTestExecutable.hpp"
 
@@ -55,7 +55,7 @@ void Test::emplace_result(const std::shared_ptr<TestResult> &test_result)
 void Test::share_test_executable(std::shared_ptr<TargetTestExecutableBase> shared_exe)
 {
     target_executable = shared_exe;
-    
+
     if (shared_exe == nullptr)
         target_executable_name.set_value("");
     else

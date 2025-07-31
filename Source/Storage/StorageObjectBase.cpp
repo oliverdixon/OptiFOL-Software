@@ -56,8 +56,7 @@ Glib::PropertyProxy_ReadOnly<StorageObjectBase::TimeT> StorageObjectBase::proper
 
 std::size_t StorageObjectBase::hash() const noexcept
 {
-    return hash_combine(std::hash<std::string>{}(property_name().get_value()),
-            std::hash<std::chrono::system_clock::time_point>{}(property_creation_time().get_value()));
+    return std::hash<std::string>{}(property_name().get_value());
 }
 
 void StorageObjectBase::bind_name(const Glib::RefPtr<Gtk::ListItem> &list_item)
