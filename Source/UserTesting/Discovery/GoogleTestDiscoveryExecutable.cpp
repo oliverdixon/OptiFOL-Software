@@ -3,9 +3,13 @@
  * 2025 Oliver Dixon <od641@york.ac.uk>
  */
 
-//
-// Created by owd on 7/31/25.
-//
+/**
+ * @file
+ * @brief Class implementation for the GoogleTestDiscoveryExecutable discovery executable backend
+ * @author Oliver Dixon
+ * @date 2025-08-02
+ * @version Development
+ */
 
 #include "GoogleTestDiscoveryExecutable.hpp"
 
@@ -17,17 +21,17 @@
 namespace optifol
 {
 
-GoogleTestDiscoveryExecutable::GoogleTestDiscoveryExecutable(const Glib::ustring &name) :
+GoogleTestDiscoveryExecutable::GoogleTestDiscoveryExecutable(const Glib::ustring &executable_path) :
     Glib::ObjectBase("GoogleTestDiscoveryExecutable"),
-    DiscoveryTestExecutable(name)
+    DiscoveryTestExecutable(executable_path)
 {
     start_discovery();
 }
 
 GoogleTestDiscoveryExecutable::GoogleTestDiscoveryExecutable(
-        const Glib::ustring &name, BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &builder) :
+        const Glib::ustring &executable_path, BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &builder) :
     Glib::ObjectBase("GoogleTestDiscoveryExecutable"),
-    DiscoveryTestExecutable(name, cobject, builder)
+    DiscoveryTestExecutable(executable_path, cobject, builder)
 {
     start_discovery();
 }
@@ -39,7 +43,7 @@ void GoogleTestDiscoveryExecutable::start_discovery()
 
     discovery_tmp_file_path.emplace("/tmp/google_test_discovery." + std::to_string(current_time_ms.count()) + ".json");
     discovery_executor = std::make_unique<ProcessExecutor>(
-        "",
+        "", // Current working directory.
         std::vector<std::string>{
             property_name().get_value(),
             "--gtest_list_tests",

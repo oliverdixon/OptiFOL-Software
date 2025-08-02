@@ -3,9 +3,13 @@
  * 2025 Oliver Dixon <od641@york.ac.uk>
  */
 
-//
-// Created by owd on 7/29/25.
-//
+/**
+ * @file
+ * @brief Class implementation for the GoogleTestExecutable executable backend
+ * @author Oliver Dixon
+ * @date 2025-08-02
+ * @version Development
+ */
 
 #include "GoogleTestExecutable.hpp"
 

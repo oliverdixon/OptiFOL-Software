@@ -30,10 +30,6 @@ public:
             yyFlexLexer(yy_in, yy_out)
     {}
 
-    explicit FOLLexer(std::istream *yy_in = nullptr, std::ostream *yy_out = nullptr) :
-            yyFlexLexer(yy_in, yy_out)
-    {}
-
     int lex(FOLParser::semantic_type *yylval);
 };
 

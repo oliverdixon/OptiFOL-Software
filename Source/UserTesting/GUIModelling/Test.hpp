@@ -43,9 +43,9 @@ public:
      * @param test_result The TestResult to share.
      * @throws SemanticException if the TestResult was not appropriate or relevant to the Test.
      */
-    void emplace_result(const std::shared_ptr<TestResult> &test_result);
+    void emplace_result(std::shared_ptr<TestResult> test_result);
 
-    void share_test_executable(const std::shared_ptr<TargetTestExecutableBase> &shared_exe);
+    void share_test_executable(std::shared_ptr<TargetTestExecutableBase> shared_exe);
 
     [[nodiscard]] const TargetTestExecutableBase *observe_test_executable() const noexcept;
 

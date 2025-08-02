@@ -34,9 +34,6 @@ public:
         sigc::slot<void(int)> &&process_finished_callback
     );
 
-    static std::unique_ptr<ProcessExecutor> dry_run_executable(std::string_view executable_name,
-        const Glib::RefPtr<Gtk::TextBuffer>& output_buffer, sigc::slot<void(int)> &&finished_callback);
-
 private:
     static const log4cxx::LoggerPtr logger;
     static constexpr guint16 minimum_port_number = 1024; // First unprivileged port number under Linux.

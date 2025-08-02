@@ -26,7 +26,7 @@ TestResult::Partial::Partial(std::string file, const std::size_t line, std::stri
 {
 }
 
-TestResult::TestResult(std::string test_name, const bool passed, const std::size_t execution_time,
+TestResult::TestResult(Glib::ustring test_name, const bool passed, const std::size_t execution_time,
         std::vector<Partial> &&partial_results) :
     test_name(std::move(test_name)),
     passed(passed),
@@ -45,7 +45,7 @@ void TestResult::populate_test_fixture_name(const std::string &incoming_fixture_
     fixture_name = incoming_fixture_name;
 }
 
-Glib::ustring TestResult::get_test_name() const noexcept
+Glib::ustring TestResult::copy_test_name() const noexcept
 {
     return test_name;
 }
@@ -60,7 +60,7 @@ std::size_t TestResult::get_execution_time() const noexcept
     return execution_time;
 }
 
-Glib::ustring TestResult::get_fixture_name() const noexcept
+Glib::ustring TestResult::copy_fixture_name() const noexcept
 {
     return fixture_name;
 }

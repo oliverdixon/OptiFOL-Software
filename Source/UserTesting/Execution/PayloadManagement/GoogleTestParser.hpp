@@ -37,11 +37,11 @@ namespace optifol
  *  <ol>
  *      <li>
  *          Construct the TestResult and transfer ownership to the parser in the <i>Pending</i> state with
- *          @ref add_pending_test_result.
+ *          @ref add_pending_test_result. Pending results are held in @ref std::unique_ptr containers.
  *      </li>
  *      <li>
- *          Once the test case name is known by the innermost TestCase production, extract all pending results and
- *          populate with the test name. Ownership of the pending TestResult is transferred back to the grammar
+ *          Once the test fixture name is known by the innermost TestCase production, extract all pending results and
+ *          populate with the fixture name. Ownership of the pending TestResult is transferred back to the grammar
  *          production generated member function. Use @ref steal_next_pending_result until it indicates that there are
  *          no further pending results owned by the parser instance.
  *      </li>

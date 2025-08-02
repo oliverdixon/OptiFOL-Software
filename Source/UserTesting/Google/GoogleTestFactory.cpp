@@ -57,16 +57,4 @@ std::pair<std::unique_ptr<ProcessExecutor>, std::unique_ptr<TestListenerBase>> G
     return { std::move(executor), std::move(listener) };
 }
 
-std::unique_ptr<ProcessExecutor> GoogleTestFactory::dry_run_executable(const std::string_view executable_name,
-    const Glib::RefPtr<Gtk::TextBuffer>& output_buffer, sigc::slot<void(int)> &&finished_callback)
-{
-    return std::make_unique<StreamingProcessExecutor>(
-        "",
-        std::vector<std::string>{std::string(executable_name), "--gtest_list_tests" },
-        std::vector<std::string>{},
-        output_buffer,
-        std::move(finished_callback)
-    );
-}
-
 } // namespace optifol

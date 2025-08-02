@@ -13,7 +13,6 @@
 
 #include "Test.hpp"
 #include "../../Exceptions/SemanticException.hpp"
-
 #include "../Execution/GoogleTestExecutable.hpp"
 
 namespace optifol
@@ -25,7 +24,7 @@ Test::Test(std::shared_ptr<TestSpecificationEntry> template_specification) :
     fixture(*this, "Test-test-fixture"),
     result(*this, "Test-result")
 {
-    instantiate_from_specification(template_specification);
+    instantiate_from_specification(std::move(template_specification));
 }
 
 Test::Test(std::shared_ptr<TestSpecificationEntry> template_specification, BaseObjectType *cobject,
@@ -36,7 +35,7 @@ Test::Test(std::shared_ptr<TestSpecificationEntry> template_specification, BaseO
     fixture(*this, "Test-test-fixture"),
     result(*this, "Test-result")
 {
-    instantiate_from_specification(template_specification);
+    instantiate_from_specification(std::move(template_specification));
 }
 
 Glib::RefPtr<Gtk::TreeListModel> Test::get_tree() const noexcept
@@ -44,25 +43,25 @@ Glib::RefPtr<Gtk::TreeListModel> Test::get_tree() const noexcept
     return nullptr;
 }
 
-void Test::emplace_result(const std::shared_ptr<TestResult> &test_result)
+void Test::emplace_result(std::shared_ptr<TestResult> test_result)
 {
-    const auto &result_suite_value = test_result->get_fixture_name();
-    const auto &expected_suite_value = fixture.get_value();
+    const auto &given_fixture_name = test_result->copy_fixture_name();
+    const auto &expected_fixture_name = fixture.get_value();
 
-    if (result_suite_value != expected_suite_value)
-        throw SemanticException("Incoming test result was from a different suite: \"" + result_suite_value +
-                "\", but needed \"" + expected_suite_value + "\".");
+    if (given_fixture_name != expected_fixture_name)
+        throw SemanticException("Incoming test result was from a different fixture: \"" + given_fixture_name +
+                "\", but needed \"" + expected_fixture_name + "\".");
 
-    if (test_result->get_test_name() != property_name().get_value().c_str())
-        throw SemanticException("Incoming test result was from a different test: \"" + test_result->get_test_name() +
+    if (test_result->copy_test_name() != property_name().get_value())
+        throw SemanticException("Incoming test result was from a different test: \"" + test_result->copy_test_name() +
                 "\", but needed \"" + property_name().get_value() + "\".");
 
-    result.set_value(test_result);
+    result.set_value(std::move(test_result));
 }
 
-void Test::share_test_executable(const std::shared_ptr<TargetTestExecutableBase>& shared_exe)
+void Test::share_test_executable(std::shared_ptr<TargetTestExecutableBase> shared_exe)
 {
-    target_executable = shared_exe;
+    target_executable = std::move(shared_exe);
 
     if (shared_exe == nullptr)
         target_executable_name.set_value("");
@@ -102,7 +101,8 @@ Glib::PropertyProxy_ReadOnly<std::shared_ptr<TestResult>> Test::property_result(
 
 void Test::instantiate_from_specification(std::shared_ptr<TestSpecificationEntry> spec)
 {
-    share_test_executable(std::make_shared<GoogleTestExecutable>(spec->property_executable().get_value()->property_name().get_value()));
+    share_test_executable(std::make_shared<GoogleTestExecutable>(
+            spec->property_executable().get_value()->property_name().get_value()));
     property_fixture().set_value(spec->property_fixture().get_value()->property_name().get_value());
     property_name().set_value(spec->property_name().get_value());
 
@@ -116,7 +116,7 @@ void Test::instantiate_from_specification(std::shared_ptr<TestSpecificationEntry
         property_fixture().set_value(spec->property_fixture().get_value()->property_name().get_value());
     });
 
-    // TODO URGENT: executable
+    // TODO URGENT: executable binding
 }
 
 } // namespace optifol

@@ -54,7 +54,7 @@ private:
     }
 
     Glib::RefPtr<Gtk::TreeListModel> tests_tree =
-        Gtk::TreeListModel::create(model, &ITestModelNode::get_given_tree, true);
+            Gtk::TreeListModel::create(model, &ITestModelNode::get_given_tree, true);
     std::unordered_map<guint, Glib::RefPtr<Requirement>> deleted_requirements;
 };
 
