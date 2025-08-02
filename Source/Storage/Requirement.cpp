@@ -157,6 +157,11 @@ bool Requirement::is_analysis_ready() const noexcept
     return prepared_ast != nullptr;
 }
 
+bool Requirement::has_tests() const noexcept
+{
+    return tests->get_n_items() > 0;
+}
+
 void Requirement::setup_properties(std::string &&requirement_name, std::string &&requirement_statement,
         std::string &&requirement_description, const guint requirement_priority,
         Glib::RefPtr<Gio::ListStore<TestSpecificationEntry>> &&requirement_tests)

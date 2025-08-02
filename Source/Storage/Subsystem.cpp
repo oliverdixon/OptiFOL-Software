@@ -22,7 +22,7 @@ namespace optifol
 Subsystem::Subsystem(const Glib::ustring& name, TreeNode *parent) :
     Glib::ObjectBase("Subsystem"),
     TreeNode(parent),
-    RequirementGroupBase(sigc::mem_fun(*this, &Subsystem::handle_requirement_change))
+    ObjectGroupBase(sigc::mem_fun(*this, &Subsystem::handle_requirement_change))
 {
     setup_groups(name);
 }
@@ -32,7 +32,7 @@ Subsystem::Subsystem(const Glib::ustring &name, BaseObjectType *cobject, const G
     Glib::ObjectBase("Subsystem"),
     StorageObjectBase(cobject, builder),
     TreeNode(parent),
-    RequirementGroupBase(sigc::mem_fun(*this, &Subsystem::handle_requirement_change))
+    ObjectGroupBase(sigc::mem_fun(*this, &Subsystem::handle_requirement_change))
 {
     setup_groups(name);
 }
@@ -51,12 +51,6 @@ std::string Subsystem::get_path() const
     }
 
     return fully_qualified_path_cache.second;
-}
-
-void Subsystem::record_slated_requirement(const Glib::RefPtr<Requirement> slated_requirement, const guint old_index)
-{
-    assert(deleted_requirements.contains(old_index) == false);
-    deleted_requirements[old_index] = slated_requirement;
 }
 
 void Subsystem::duplicate_requirement(const Requirement &requirement)
@@ -103,32 +97,21 @@ void Subsystem::handle_requirement_change(const guint initial_index, const guint
     // TODO: efficiently remove multiple records with splice. See insertion logic below.
 
     for (guint remove_count_i = 0; remove_count_i < removed_count; ++remove_count_i) {
-        const auto deleted_it = deleted_requirements.find(remove_count_i + initial_index);
-
-        if (deleted_it == deleted_requirements.cend())
-            throw std::runtime_error("The deleted Requirement previously at index " +
-                std::to_string(remove_count_i + initial_index) +
-                " is not present in the deletion records; cannot propagate to Requirement groups.");
+        const auto deleted_item = steal_deleted_object(initial_index + remove_count_i);
 
         // Remove from analysis groups.
-        if (deleted_it->second->is_analysis_ready()) {
+        if (deleted_item->is_analysis_ready()) {
             const auto analysis_group_count = analysis_groups->get_n_items();
             for (guint analysis_group_index = 0; analysis_group_index < analysis_group_count; ++analysis_group_index)
-                analysis_groups->get_item(analysis_group_index)->delete_requirement(deleted_it->second);
+                analysis_groups->get_item(analysis_group_index)->delete_object(deleted_item);
         }
 
         // Remove from test groups.
-        if (deleted_it->second->get_tests()->get_n_items() > 0) {
+        if (deleted_item->has_tests()) {
             const auto test_group_count = test_groups->get_n_items();
             for (guint test_group_index = 0; test_group_index < test_group_count; ++test_group_index)
-                test_groups->get_item(test_group_index)->delete_requirement(deleted_it->second);
+                test_groups->get_item(test_group_index)->delete_object(deleted_item);
         }
-
-        /*
-         * Remove from the deleted requirements record, potentially pulling the ref-count to zero and deleting the
-         * Requirement from memory.
-         */
-        deleted_requirements.erase(deleted_it);
     }
 
     // Then handle new requirements by distributing across the default analysis and test groups.
@@ -137,15 +120,15 @@ void Subsystem::handle_requirement_change(const guint initial_index, const guint
     const auto default_test_group = test_groups->get_item(0);
 
     if (added_count == 1) {
-        const auto candidate = get_requirement(initial_index);
+        const auto candidate = get_object_by_index(initial_index);
 
         // Distribute to default analysis group, if it has an OK formula.
         if (candidate->is_analysis_ready())
-            default_analysis_group->insert_requirement(candidate);
+            default_analysis_group->insert_object(candidate);
 
         // Distribute to default test group, if it has at least one test.
-        if (candidate->get_tests()->get_n_items() > 0)
-            default_test_group->insert_requirement(candidate);
+        if (candidate->has_tests())
+            default_test_group->insert_object(candidate);
     }
 
     else if (added_count > 1) {
@@ -158,17 +141,17 @@ void Subsystem::handle_requirement_change(const guint initial_index, const guint
         testing_additions.reserve(added_count);
 
         for (guint added_list_i = initial_index; added_list_i < added_count; ++added_list_i) {
-            const auto candidate = get_requirement(added_list_i + initial_index);
+            const auto candidate = get_object_by_index(added_list_i + initial_index);
 
             if (candidate->is_analysis_ready())
                 analysis_additions.push_back(candidate);
 
-            if (candidate->get_tests()->get_n_items() > 0)
+            if (candidate->has_tests())
                 testing_additions.push_back(candidate);
         }
 
-        default_analysis_group->insert_requirement(analysis_additions);
-        default_test_group->insert_requirement(testing_additions);
+        default_analysis_group->insert_object(analysis_additions);
+        default_test_group->insert_object(testing_additions);
     }
 }
 

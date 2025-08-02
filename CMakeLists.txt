@@ -366,8 +366,7 @@ add_executable(OptifolGUI
         Source/GUI/ProcessExecutor.hpp
         Source/UserTesting/GUIModelling/TestGroup.cpp
         Source/UserTesting/GUIModelling/TestGroup.hpp
-        Source/Storage/RequirementGroupBase.hpp
-        Source/Storage/RequirementGroupBase.cpp
+        Source/Storage/ObjectGroupBase.hpp
         Source/GUI/TestingArea/TestingRunTestsPopover.cpp
         Source/GUI/TestingArea/TestingRunTestsPopover.hpp
         Source/UserTesting/Google/GoogleTestFactory.cpp

@@ -129,7 +129,7 @@ void AnalysisArea::select_model(const Glib::RefPtr<Subsystem> &subsystem_model)
 
     active_subsystem = subsystem_model;
     tree_model = Gtk::TreeListModel::create(active_subsystem->get_analysis_groups(),
-        sigc::ptr_fun(&RequirementGroupBase::get_expanded_list<AnalysisGroup>));
+        &ObjectGroupBase<Requirement>::get_model, true);
     selection_model->set_model(tree_model);
 }
 

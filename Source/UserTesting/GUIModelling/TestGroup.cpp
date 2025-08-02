@@ -18,7 +18,7 @@ namespace optifol
 
 TestGroup::TestGroup(const Glib::ustring &name) :
     Glib::ObjectBase("TestGroup"),
-    RequirementGroupBase(sigc::mem_fun(*this, &TestGroup::handle_requirement_change))
+    ObjectGroupBase(sigc::mem_fun(*this, &TestGroup::handle_requirement_change))
 {
     property_name().set_value(name);
 }
@@ -26,7 +26,7 @@ TestGroup::TestGroup(const Glib::ustring &name) :
 TestGroup::TestGroup(const Glib::ustring &name, BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &builder) :
     Glib::ObjectBase("TestGroup"),
     StorageObjectBase(cobject, builder),
-    RequirementGroupBase(sigc::mem_fun(*this, &TestGroup::handle_requirement_change))
+    ObjectGroupBase(sigc::mem_fun(*this, &TestGroup::handle_requirement_change))
 {
     property_name().set_value(name);
 }
@@ -86,7 +86,7 @@ void TestGroup::handle_requirement_change(const guint initial_index, const guint
 
     for (guint added_count_i = 0; added_count_i < added_count; ++added_count_i) {
         // Get the Test from the incoming Requirement.
-        auto requirement = get_requirement(added_count_i + initial_index);
+        auto requirement = get_object_by_index(added_count_i + initial_index);
         const auto& requirement_test = requirement->observe_test();
 
         if (requirement_test.has_value() == false)
@@ -104,11 +104,6 @@ void TestGroup::handle_requirement_change(const guint initial_index, const guint
         executable_group_it->second.insert(std::move(requirement));
     }
 #endif
-}
-
-void TestGroup::record_slated_requirement(const Glib::RefPtr<Requirement> slated_requirement, const guint old_index)
-{
-    deleted_requirements[old_index] = slated_requirement;
 }
 
 } // namespace optifol

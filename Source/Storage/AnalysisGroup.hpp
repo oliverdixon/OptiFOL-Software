@@ -14,15 +14,15 @@
 #ifndef ANALYSISGROUP_HPP
 #define ANALYSISGROUP_HPP
 
-#include "RequirementGroupBase.hpp"
-#include "StorageObjectBase.hpp"
+#include "ObjectGroupBase.hpp"
+#include "Requirement.hpp"
 
 namespace optifol
 {
 
 class AnalysisGroup :
         public StorageObjectBase,
-        public RequirementGroupBase
+        public ObjectGroupBase<Requirement>
 {
 public:
     /**

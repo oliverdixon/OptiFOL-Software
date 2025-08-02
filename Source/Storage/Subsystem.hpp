@@ -33,7 +33,7 @@ namespace optifol
  */
 class Subsystem : public StorageObjectBase,
                   public TreeNode,
-                  public RequirementGroupBase
+                  public ObjectGroupBase<Requirement>
 {
 public:
     /**
@@ -78,11 +78,9 @@ public:
     template<typename... CtorArgs>
     void build_requirement(CtorArgs &&...args)
     {
-        insert_requirement(Glib::make_refptr_for_instance(
-            new Requirement(std::forward<CtorArgs>(args)..., symbol_repository)));
+        insert_object(
+                Glib::make_refptr_for_instance(new Requirement(std::forward<CtorArgs>(args)..., symbol_repository)));
     }
-
-    void record_slated_requirement(Glib::RefPtr<Requirement> slated_requirement, guint old_index) override;
 
     /**
      * @brief Duplicate the given Requirement and append to the index.
@@ -112,8 +110,6 @@ private:
 
     Glib::RefPtr<Gio::ListStore<AnalysisGroup>> analysis_groups = Gio::ListStore<AnalysisGroup>::create();
     Glib::RefPtr<Gio::ListStore<TestGroup>> test_groups = Gio::ListStore<TestGroup>::create();
-
-    std::unordered_map<guint, Glib::RefPtr<Requirement>> deleted_requirements;
 
     // TODO: future work - should this be in Analysis group for different group-wise FOL interpretations?
     SymbolRepository symbol_repository;

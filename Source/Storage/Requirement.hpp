@@ -51,6 +51,7 @@ public:
      * @param statement The initial FOL statement of the Requirement
      * @param description The initial long-form description of the Requirement
      * @param priority The initial priority of the Requirement
+     * @param tests The initial set of TestSpecificationEntry objects to template Test objects.
      * @param system_repository A null pointer to explicitly signify the lacking SymbolRepository
      * @warning As no system-wide symbol repository has been provided, this Requirement will not supply its symbols to
      *  the wider system. Logical analysis will produce unexpected results.
@@ -64,6 +65,7 @@ public:
      * @param statement The initial FOL statement of the Requirement
      * @param description The initial long-form description of the Requirement
      * @param priority The initial priority of the Requirement
+     * @param tests The initial set of TestSpecificationEntry objects to template Test objects.
      * @param system_repository The system-wide symbol repository with lifetimes guaranteed to cover that of the
      *  Requirement
      */
@@ -76,6 +78,7 @@ public:
      * @param statement The initial FOL statement of the Requirement
      * @param description The initial long-form description of the Requirement
      * @param priority The initial priority of the Requirement
+     * @param tests The initial set of TestSpecificationEntry objects to template Test objects.
      * @param cobject The C cast-item used by Glib::Object
      * @param builder Currently unused builder parameter to provide to the Glib::Object instance
      * @param system_repository The system-wide symbol repository with lifetimes guaranteed to cover that of the
@@ -156,6 +159,13 @@ public:
      */
     [[nodiscard]] bool is_analysis_ready() const noexcept;
 
+    /**
+     * @brief Determines whether the Requirement has at least one associated Test. This is commonly useful for
+     *  determining its suitability to be added to a TestGroup.
+     * @return Does the Requirement have at least one Test?
+     */
+    [[nodiscard]] bool has_tests() const noexcept;
+
 private:
     static const log4cxx::LoggerPtr req_logger;
     static const log4cxx::LoggerPtr parse_logger;
@@ -190,6 +200,7 @@ private:
      * @param requirement_statement The initial Requirement statement text
      * @param requirement_description The initial Requirement description
      * @param requirement_priority The initial Requirement priority selection
+     * @param requirement_tests The initial set of TestSpecificationEntry objects to template Test objects.
      */
     void setup_properties(std::string &&requirement_name, std::string &&requirement_statement,
             std::string &&requirement_description, guint requirement_priority,
@@ -216,8 +227,8 @@ private:
     Glib::Property<guint> priority;
 
     Glib::RefPtr<Gio::ListStore<TestSpecificationEntry>> test_specs = Gio::ListStore<TestSpecificationEntry>::create();
-    Glib::RefPtr<Gio::ListStore<Test>> tests = Gio::ListStore<Test>::create();
-    Glib::RefPtr<Gtk::TreeListModel> tests_tree =
+    const Glib::RefPtr<Gio::ListStore<Test>> tests = Gio::ListStore<Test>::create();
+    const Glib::RefPtr<Gtk::TreeListModel> tests_tree =
             Gtk::TreeListModel::create(tests, &ITestModelNode::get_given_tree, true);
 
     std::unique_ptr<IMutableSentence> original_ast;

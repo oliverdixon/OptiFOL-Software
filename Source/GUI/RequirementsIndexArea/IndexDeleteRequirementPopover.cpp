@@ -42,7 +42,7 @@ void IndexDeleteRequirementPopover::confirm_button_clicked() const
 {
     my_popover->popdown();
     const auto slated_requirement = index_area.get_selection();
-    index_area.observe_active_subsystem()->delete_requirement(slated_requirement);
+    index_area.observe_active_subsystem()->delete_object(slated_requirement);
     popover_logger->info("Deleted a subsystem requirement with name \"" +
         slated_requirement->property_name().get_value() + "\".");
 }

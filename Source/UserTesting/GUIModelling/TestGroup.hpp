@@ -15,14 +15,14 @@
 #define TESTGROUP_HPP
 
 #include "../../GUI/ProcessExecutor.hpp"
-#include "../../Storage/RequirementGroupBase.hpp"
-#include "../../Storage/StorageObjectBase.hpp"
+#include "../../Storage/ObjectGroupBase.hpp"
+#include "../../Storage/Requirement.hpp"
 
 namespace optifol
 {
 
 class TestGroup : public StorageObjectBase,
-                  public RequirementGroupBase,
+                  public ObjectGroupBase<Requirement>,
                   public ITestModelNode
 {
     std::unordered_map<std::string, std::unordered_set<Glib::RefPtr<Requirement>>> grouped_executables;
@@ -41,21 +41,8 @@ public:
 private:
     void handle_requirement_change(guint initial_index, guint removed_count, guint added_count);
 
-    void record_slated_requirement(Glib::RefPtr<Requirement> slated_requirement, guint old_index) override;
-
-    static Glib::RefPtr<Gio::ListModel> get_expanded_test_list(const Glib::RefPtr<Glib::ObjectBase> &item)
-    {
-        const auto candidate = std::dynamic_pointer_cast<Requirement>(item);
-
-        if (candidate != nullptr)
-            return candidate->get_tests();
-
-        return nullptr;
-    }
-
     Glib::RefPtr<Gtk::TreeListModel> tests_tree =
             Gtk::TreeListModel::create(model, &ITestModelNode::get_given_tree, true);
-    std::unordered_map<guint, Glib::RefPtr<Requirement>> deleted_requirements;
 };
 
 } // namespace optifol
