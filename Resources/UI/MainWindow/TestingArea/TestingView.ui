@@ -141,8 +141,8 @@ To prepare Test Groups, select a Subsystem from the left-hand <i>Project Explore
                             </child>
                             <child>
                                 <object class="GtkColumnViewColumn">
-                                    <property name="id">test_suite</property>
-                                    <property name="title">Test Suite</property>
+                                    <property name="id">test_fixture</property>
+                                    <property name="title">Test Fixture</property>
                                     <property name="resizable">TRUE</property>
                                 </object>
                             </child>

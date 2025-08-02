@@ -11,7 +11,7 @@
 #define DISCOVERYTESTFIXTURE_HPP
 
 #include <gtkmm/stringlist.h>
-#include "../Storage/StorageObjectBase.hpp"
+#include "../../Storage/StorageObjectBase.hpp"
 
 namespace optifol
 {

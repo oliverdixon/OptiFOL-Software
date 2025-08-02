@@ -14,7 +14,6 @@
 #include "Requirement.hpp"
 
 #include <gtkmm/label.h>
-#include <gtkmm/listitem.h>
 
 #include "../Exceptions/SemanticException.hpp"
 #include "../Logging.hpp"
@@ -153,19 +152,6 @@ std::string_view Requirement::observe_latex_statement() const noexcept
     return latex_input_statement;
 }
 
-std::pair<const Requirement *, Gtk::Label *> Requirement::requirement_bind_helper(Gtk::ListItem &list_item)
-{
-    const auto &requirement = std::dynamic_pointer_cast<const Requirement>(list_item.get_item());
-    if (requirement == nullptr)
-        return {};
-
-    const auto label = dynamic_cast<Gtk::Label *>(list_item.get_child());
-    if (label == nullptr)
-        return {};
-
-    return {requirement.get(), label};
-}
-
 bool Requirement::is_analysis_ready() const noexcept
 {
     return prepared_ast != nullptr;
@@ -176,7 +162,6 @@ void Requirement::setup_properties(std::string &&requirement_name, std::string &
         Glib::RefPtr<Gio::ListStore<TestSpecificationEntry>> &&requirement_tests)
 {
     property_statement().signal_changed().connect(sigc::mem_fun(*this, &Requirement::handle_statement_change));
-    test_specs->signal_items_changed().connect(sigc::mem_fun(*this, &Requirement::handle_test_spec_change));
 
     property_name().set_value(std::move(requirement_name));
     property_statement().set_value(std::move(requirement_statement));
@@ -184,6 +169,7 @@ void Requirement::setup_properties(std::string &&requirement_name, std::string &
     property_priority().set_value(requirement_priority);
     test_specs = std::move(requirement_tests);
 
+    test_specs->signal_items_changed().connect(sigc::mem_fun(*this, &Requirement::handle_test_spec_change));
     handle_test_spec_change(0, 0, test_specs->get_n_items()); // On first setup, all items are new.
 }
 
@@ -235,13 +221,13 @@ void Requirement::handle_statement_change()
 void Requirement::handle_test_spec_change(const guint position, const guint removed_count, const guint added_count)
     const
 {
-    std::vector<std::shared_ptr<Test>> new_tests;
+    std::vector<Glib::RefPtr<Test>> new_tests;
     new_tests.reserve(added_count);
 
     for (guint spec_index = position; spec_index < added_count; ++spec_index) {
         const auto& spec = test_specs->get_item(spec_index);
         if (spec != nullptr)
-            new_tests.push_back(std::make_shared<Test>(spec));
+            new_tests.push_back(Glib::make_refptr_for_instance(new Test(spec)));
     }
 
     tests->splice(position, removed_count, new_tests);

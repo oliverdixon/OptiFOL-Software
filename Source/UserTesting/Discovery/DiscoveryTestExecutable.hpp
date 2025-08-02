@@ -3,15 +3,19 @@
  * 2025 Oliver Dixon <od641@york.ac.uk>
  */
 
-//
-// Created by owd on 7/30/25.
-//
+/**
+ * @file
+ * @brief Class specification for the DiscoveryTestExecutable storage object
+ * @author Oliver Dixon
+ * @date 2025-08-02
+ * @version Development
+ */
 
 #ifndef DISCOVERYTESTEXECUTABLE_HPP
 #define DISCOVERYTESTEXECUTABLE_HPP
 
 #include <giomm/liststore.h>
-#include "../Storage/StorageObjectBase.hpp"
+#include "../../Storage/StorageObjectBase.hpp"
 #include "DiscoveryTestFixture.hpp"
 
 namespace optifol

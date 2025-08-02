@@ -17,7 +17,7 @@
 #include <giomm/liststore.h>
 #include <gtkmm/singleselection.h>
 
-#include "../UserTesting/TestGroup.hpp"
+#include "../UserTesting/GUIModelling/TestGroup.hpp"
 #include "AnalysisGroup.hpp"
 #include "Requirement.hpp"
 #include "StorageObjectBase.hpp"

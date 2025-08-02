@@ -21,7 +21,7 @@
 #include <gtkmm/treelistmodel.h>
 
 #include "../../Storage/Subsystem.hpp"
-#include "../../UserTesting/Google/GoogleTestListener.hpp"
+#include "../../UserTesting/Execution/PayloadManagement/GoogleTestListener.hpp"
 #include "../ContextButtonCorrespondence.hpp"
 #include "../IWindowArea.hpp"
 #include "TestingRunTestsPopover.hpp"
@@ -72,8 +72,8 @@ namespace optifol
  *          </tr>
  *          <tr>
  *              <td>GtkColumnViewColumn</td>
- *              <td><code>test_suite</code></td>
- *              <td>Table column to display the constituent test suite of the Test</td>
+ *              <td><code>test_fixture</code></td>
+ *              <td>Table column to display the test fixture of the Test</td>
  *          </tr>
  *          <tr>
  *              <td>GtkColumnViewColumn</td>
@@ -104,6 +104,9 @@ public:
     Glib::RefPtr<TestGroup> get_selection() const;
 
 private:
+    template<typename ReturnType>
+    using TestGetter = Glib::PropertyProxy_ReadOnly<ReturnType> (Test::*)() const;
+
     void configure_columns() const;
 
     void configure_selection_model() const;

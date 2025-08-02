@@ -10,7 +10,7 @@
 #ifndef GOOGLETESTEXECUTABLE_HPP
 #define GOOGLETESTEXECUTABLE_HPP
 
-#include "../TargetTestExecutableBase.hpp"
+#include "TargetTestExecutableBase.hpp"
 
 namespace optifol
 {

@@ -14,11 +14,11 @@
 #ifndef TEST_HPP
 #define TEST_HPP
 
-#include "../Storage/StorageObjectBase.hpp"
+#include "../../Storage/StorageObjectBase.hpp"
+#include "../Discovery/TestSpecificationEntry.hpp"
+#include "../Execution/TargetTestExecutableBase.hpp"
+#include "../Execution/TestResult.hpp"
 #include "ITestModelNode.hpp"
-#include "TargetTestExecutableBase.hpp"
-#include "TestResult.hpp"
-#include "TestSpecificationEntry.hpp"
 
 namespace optifol
 {

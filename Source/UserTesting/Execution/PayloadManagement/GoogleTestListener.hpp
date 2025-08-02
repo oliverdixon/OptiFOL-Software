@@ -17,8 +17,8 @@
 #include <giomm/socketlistener.h>
 #include <log4cxx/logger.h>
 
-#include "../TestListenerBase.hpp"
 #include "GoogleTestLexer.hpp"
+#include "TestListenerBase.hpp"
 
 namespace optifol
 {

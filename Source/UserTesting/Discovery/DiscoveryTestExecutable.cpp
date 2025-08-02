@@ -3,9 +3,13 @@
  * 2025 Oliver Dixon <od641@york.ac.uk>
  */
 
-//
-// Created by owd on 7/30/25.
-//
+/**
+ * @file
+ * @brief Class implementation for the DiscoveryTestExecutable storage object
+ * @author Oliver Dixon
+ * @date 2025-08-02
+ * @version Development
+ */
 
 #include "DiscoveryTestExecutable.hpp"
 

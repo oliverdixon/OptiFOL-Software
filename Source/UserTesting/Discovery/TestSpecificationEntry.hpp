@@ -14,7 +14,7 @@
 #ifndef TESTSPECIFICATIONENTRY_HPP
 #define TESTSPECIFICATIONENTRY_HPP
 
-#include "../Storage/StorageObjectBase.hpp"
+#include "../../Storage/StorageObjectBase.hpp"
 #include "DiscoveryTestExecutable.hpp"
 
 namespace optifol
@@ -24,7 +24,8 @@ namespace optifol
  * @class TestSpecificationEntry
  * @brief Provides a GObject container for aggregation of discovered tests with a DiscoveryTestExecutable,
  *  DiscoveryTestFixture, and Glib::ustring test name. Discovered tests are sole metadata objects containing printable
- *  data returned from test discovery.
+ *  data returned from test discovery. Note that the <code>name</code> property from StorageObjectBase is used to encode
+ *  the test name.
  * @see Test for the runnable non-discovery counterpart.
  */
 class TestSpecificationEntry : public StorageObjectBase
@@ -70,11 +71,26 @@ public:
 private:
     /**
      * @brief Establish callbacks such that the internal intra-model state stays correctly synchronised.
+     * @details In particular, changes in the @ref executable will unidirectionally propagate to the @ref fixture.
      */
     void setup_sync_callbacks();
 
+    /**
+     * @brief The discovered executable shared-ownership reference property.
+     * @details This property shares ownership for a DiscoveryTestExecutable object. Shared ownership is necessary here;
+     *  multiple TestSpecificationEntry objects are likely to refer to the same DiscoveryTestExecutable. Due to this, it
+     *  is likely that callers (c.f. ManageTestsPopover) will want to maintain some sort of set-based cache and provide
+     *  references. Lifetime guarantees cannot be provided on the cache, so shared ownership is necessary.
+     */
     Glib::Property<Glib::RefPtr<DiscoveryTestExecutable>> executable;
 
+    /**
+     * @brief The discovered fixture shared-ownership reference property.
+     * @details This property shares ownership for a DiscoveryTestFixture object. Shared ownership is unfortunately
+     *  necessary here. The DiscoveryTestFixture will, under defined operating conditions, be a member of the fixtures
+     *  detained by @ref executable. Although lifetime guarantees can be placed on the DiscoveryTestExecutable, Glib
+     *  does not guarantee stable pointers within the internal Gio::ListModel; hence we need to claim ownership locally.
+     */
     Glib::Property<Glib::RefPtr<DiscoveryTestFixture>> fixture;
 };
 

@@ -12,9 +12,8 @@
  */
 
 #include "TestingArea.hpp"
-#include "../../UserTesting/TestGroup.hpp"
+#include "../../UserTesting/GUIModelling/TestGroup.hpp"
 #include "../GTKHelpers.hpp"
-#include "../ProcessExecutor.hpp"
 
 namespace optifol
 {
@@ -54,8 +53,7 @@ void TestingArea::select_model(const Glib::RefPtr<Subsystem> &new_subsystem)
     on_off_widgets.second->set_visible(true);
 
     active_subsystem = new_subsystem;
-    tree_model = Gtk::TreeListModel::create(active_subsystem->get_test_groups(),
-        sigc::ptr_fun(&ITestModelNode::get_given_tree), true);
+    tree_model = Gtk::TreeListModel::create(active_subsystem->get_test_groups(), &ITestModelNode::get_given_tree, true);
     selection_model->set_model(tree_model);
 }
 
@@ -117,7 +115,7 @@ void TestingArea::configure_columns() const
                 factory->signal_setup().connect(sigc::bind(&GTKHelpers::setup_label, false));
                 // TODO: bind
 
-            } else if (gtk_id == "test_suite") {
+            } else if (gtk_id == "test_fixture") {
 
                 factory->signal_setup().connect(sigc::bind(&GTKHelpers::setup_label, false));
                 // TODO: bind

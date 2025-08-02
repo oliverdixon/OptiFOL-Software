@@ -14,9 +14,9 @@
 #include <vector>
 
 #include "../../GUI/StreamingProcessExecutor.hpp"
-#include "../TestGroup.hpp"
+#include "../Execution/PayloadManagement/GoogleTestListener.hpp"
+#include "../GUIModelling/TestGroup.hpp"
 #include "GoogleTestFactory.hpp"
-#include "GoogleTestListener.hpp"
 
 namespace optifol
 {

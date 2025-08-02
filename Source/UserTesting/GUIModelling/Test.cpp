@@ -12,9 +12,9 @@
  */
 
 #include "Test.hpp"
-#include "../Exceptions/SemanticException.hpp"
+#include "../../Exceptions/SemanticException.hpp"
 
-#include "GoogleTestExecutable.hpp"
+#include "../Execution/GoogleTestExecutable.hpp"
 
 namespace optifol
 {

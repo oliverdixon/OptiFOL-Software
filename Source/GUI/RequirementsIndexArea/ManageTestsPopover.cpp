@@ -9,10 +9,10 @@
 
 #include <iostream>
 
-#include "../../UserTesting/Test.hpp"
+#include "../../UserTesting/Discovery/GoogleTestDiscoveryExecutable.hpp"
+#include "../../UserTesting/GUIModelling/Test.hpp"
 #include "../GTKHelpers.hpp"
 #include "../Logging.hpp"
-#include "GoogleTestDiscoveryExecutable.hpp"
 #include "ManageTestsPopover.hpp"
 #include "RequirementsIndexArea.hpp"
 

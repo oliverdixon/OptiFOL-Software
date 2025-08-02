@@ -20,8 +20,8 @@
 #include <memory>
 #include <unordered_set>
 
-#include "../DereferencingEqualityFunctor.hpp"
-#include "TestResult.hpp"
+#include "../../../DereferencingEqualityFunctor.hpp"
+#include "../TestResult.hpp"
 
 namespace optifol
 {

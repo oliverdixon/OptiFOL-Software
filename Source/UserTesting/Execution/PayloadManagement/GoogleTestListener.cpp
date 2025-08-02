@@ -15,7 +15,7 @@
 #include <giomm/socketlistener.h>
 #include <giomm/resource.h>
 
-#include "../../Logging.hpp"
+#include "../../../Logging.hpp"
 #include "GoogleTestListener.hpp"
 
 namespace optifol

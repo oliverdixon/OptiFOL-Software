@@ -22,7 +22,7 @@
 
     #include "../Exceptions/SemanticException.hpp"
     #include "../Exceptions/ParseError.hpp"
-    #include "../UserTesting/TestResult.hpp"
+    #include "../TestResult.hpp"
     #include "../Logging.hpp"
 
     namespace optifol

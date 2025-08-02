@@ -15,7 +15,7 @@
 
 #include "../GTKHelpers.hpp"
 #include "../Logging.hpp"
-#include "GoogleTestFactory.hpp"
+#include "../UserTesting/Google/GoogleTestFactory.hpp"
 #include "TestingArea.hpp"
 
 namespace optifol

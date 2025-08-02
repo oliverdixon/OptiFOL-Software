@@ -20,7 +20,7 @@
 #include "../IR/MutableVariants/Sentences/IMutableSentence.hpp"
 #include "../IR/Sentences/SentenceRoot.hpp"
 #include "../IR/SymbolRepository.hpp"
-#include "../UserTesting/Test.hpp"
+#include "../UserTesting/GUIModelling/Test.hpp"
 #include "../Visitors/MutableTargets/RepositoryBuildingVisitor.hpp"
 #include "FOLLexer.hpp"
 #include "StorageObjectBase.hpp"
@@ -149,8 +149,6 @@ public:
     [[nodiscard]] std::string get_formatted_statement() const;
 
     [[nodiscard]] std::string_view observe_latex_statement() const noexcept;
-
-    static std::pair<const Requirement *, Gtk::Label *> requirement_bind_helper(Gtk::ListItem &list_item);
 
     /**
      * @brief Determines the suitability of the Requirement for participation in formal analysis.

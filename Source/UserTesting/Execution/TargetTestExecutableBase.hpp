@@ -14,7 +14,7 @@
 #include <gtkmm/stringlist.h>
 #include <unordered_set>
 
-#include "../Storage/StorageObjectBase.hpp"
+#include "../../Storage/StorageObjectBase.hpp"
 #include "TestResult.hpp"
 
 namespace optifol

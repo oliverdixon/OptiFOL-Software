@@ -22,9 +22,9 @@
 #include <unordered_set>
 
 #include "../../DereferencingEqualityFunctor.hpp"
-#include "../../UserTesting/DiscoveryTestExecutable.hpp"
-#include "../../UserTesting/TargetTestExecutableBase.hpp"
-#include "../../UserTesting/TestSpecificationEntry.hpp"
+#include "../../UserTesting/Discovery/DiscoveryTestExecutable.hpp"
+#include "../../UserTesting/Discovery/TestSpecificationEntry.hpp"
+#include "../../UserTesting/Execution/TargetTestExecutableBase.hpp"
 
 namespace optifol
 {

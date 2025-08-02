@@ -57,13 +57,13 @@ flex_target(FOLLexer
 )
 
 bison_target(GoogleTestParser
-        Source/UserTesting/Google/GoogleTestParser.y
+        Source/UserTesting/Execution/PayloadManagement/GoogleTestParser.y
         ${GENERATED_SRC_DIR}/BaseGoogleTestParser.cpp
         COMPILE_FLAGS "-t -Wcounterexamples"
 )
 
 flex_target(GoogleTestLexer
-        Source/UserTesting/Google/GoogleTestLexer.l
+        Source/UserTesting/Execution/PayloadManagement/GoogleTestLexer.l
         ${GENERATED_SRC_DIR}/GoogleTestLexer.cpp
 )
 
@@ -85,7 +85,7 @@ target_compile_options(OptifolGenerated PRIVATE -Wno-everything)
 
 target_include_directories(OptifolGenerated PRIVATE
         Source/Interpreter
-        Source/UserTesting/Google/
+        Source/UserTesting/Execution/PayloadManagement
         ${GENERATED_INCLUDE_DIR}
 )
 
@@ -198,10 +198,10 @@ add_library(OptifolCommon OBJECT
         Source/Visitors/MutableTargets/Observers/LaTeXSerialisationVisitor.cpp
         Source/Visitors/MutableTargets/Observers/LaTeXSerialisationVisitor.hpp
         Source/IR/Sentences/IProcessedSentence.hpp
-        Source/UserTesting/Google/GoogleTestLexer.hpp
-        Source/UserTesting/Google/GoogleTestParser.hpp
-        Source/UserTesting/TestResult.cpp
-        Source/UserTesting/TestResult.hpp
+        Source/UserTesting/Execution/PayloadManagement/GoogleTestLexer.hpp
+        Source/UserTesting/Execution/PayloadManagement/GoogleTestParser.hpp
+        Source/UserTesting/Execution/TestResult.cpp
+        Source/UserTesting/Execution/TestResult.hpp
         Source/DereferencingEqualityFunctor.hpp
 )
 
@@ -357,15 +357,15 @@ add_executable(OptifolGUI
         Source/GUI/RequirementsIndexArea/IndexDuplicateRequirementPopover.hpp
         Source/GUI/RequirementsIndexArea/IndexDeleteRequirementPopover.cpp
         Source/GUI/RequirementsIndexArea/IndexDeleteRequirementPopover.hpp
-        Source/UserTesting/TestListenerBase.hpp
-        Source/UserTesting/Google/GoogleTestListener.cpp
-        Source/UserTesting/Google/GoogleTestListener.hpp
-        Source/UserTesting/Test.cpp
-        Source/UserTesting/Test.hpp
+        Source/UserTesting/Execution/PayloadManagement/TestListenerBase.hpp
+        Source/UserTesting/Execution/PayloadManagement/GoogleTestListener.cpp
+        Source/UserTesting/Execution/PayloadManagement/GoogleTestListener.hpp
+        Source/UserTesting/GUIModelling/Test.cpp
+        Source/UserTesting/GUIModelling/Test.hpp
         Source/GUI/ProcessExecutor.cpp
         Source/GUI/ProcessExecutor.hpp
-        Source/UserTesting/TestGroup.cpp
-        Source/UserTesting/TestGroup.hpp
+        Source/UserTesting/GUIModelling/TestGroup.cpp
+        Source/UserTesting/GUIModelling/TestGroup.hpp
         Source/Storage/RequirementGroupBase.hpp
         Source/Storage/RequirementGroupBase.cpp
         Source/GUI/TestingArea/TestingRunTestsPopover.cpp
@@ -374,22 +374,22 @@ add_executable(OptifolGUI
         Source/UserTesting/Google/GoogleTestFactory.hpp
         Source/GUI/StreamingProcessExecutor.cpp
         Source/GUI/StreamingProcessExecutor.hpp
-        Source/UserTesting/TestListenerBase.cpp
-        Source/UserTesting/TargetTestExecutableBase.cpp
-        Source/UserTesting/TargetTestExecutableBase.hpp
+        Source/UserTesting/Execution/PayloadManagement/TestListenerBase.cpp
+        Source/UserTesting/Execution/TargetTestExecutableBase.cpp
+        Source/UserTesting/Execution/TargetTestExecutableBase.hpp
         Source/GUI/RequirementsIndexArea/ManageTestsPopover.cpp
         Source/GUI/RequirementsIndexArea/ManageTestsPopover.hpp
-        Source/UserTesting/Google/GoogleTestExecutable.cpp
-        Source/UserTesting/Google/GoogleTestExecutable.hpp
-        Source/UserTesting/DiscoveryTestExecutable.cpp
-        Source/UserTesting/DiscoveryTestExecutable.hpp
-        Source/UserTesting/TestSpecificationEntry.cpp
-        Source/UserTesting/TestSpecificationEntry.hpp
-        Source/UserTesting/DiscoveryTestFixture.cpp
-        Source/UserTesting/DiscoveryTestFixture.hpp
-        Source/UserTesting/Google/GoogleTestDiscoveryExecutable.cpp
-        Source/UserTesting/Google/GoogleTestDiscoveryExecutable.hpp
-        Source/UserTesting/ITestModelNode.hpp
+        Source/UserTesting/Execution/GoogleTestExecutable.cpp
+        Source/UserTesting/Execution/GoogleTestExecutable.hpp
+        Source/UserTesting/Discovery/DiscoveryTestExecutable.cpp
+        Source/UserTesting/Discovery/DiscoveryTestExecutable.hpp
+        Source/UserTesting/Discovery/TestSpecificationEntry.cpp
+        Source/UserTesting/Discovery/TestSpecificationEntry.hpp
+        Source/UserTesting/Discovery/DiscoveryTestFixture.cpp
+        Source/UserTesting/Discovery/DiscoveryTestFixture.hpp
+        Source/UserTesting/Discovery/GoogleTestDiscoveryExecutable.cpp
+        Source/UserTesting/Discovery/GoogleTestDiscoveryExecutable.hpp
+        Source/UserTesting/GUIModelling/ITestModelNode.hpp
 )
 
 set(COMMON_COMPILER_OPTIONS
@@ -419,7 +419,7 @@ target_link_libraries(OptifolGUI PRIVATE
 
 target_include_directories(OptifolGUI PRIVATE
         Source/Interpreter/
-        Source/UserTesting/Google/
+        Source/UserTesting/Execution/PayloadManagement
         ${GENERATED_INCLUDE_DIR}
 )
 

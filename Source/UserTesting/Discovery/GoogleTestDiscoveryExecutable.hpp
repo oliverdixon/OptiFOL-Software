@@ -11,7 +11,7 @@
 #define GOOGLETESTDISCOVERYEXECUTABLE_HPP
 
 #include "../../GUI/ProcessExecutor.hpp"
-#include "../DiscoveryTestExecutable.hpp"
+#include "DiscoveryTestExecutable.hpp"
 
 namespace optifol
 {
