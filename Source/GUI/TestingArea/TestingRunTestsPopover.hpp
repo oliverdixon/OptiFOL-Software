@@ -14,23 +14,20 @@
 #ifndef TESTINGRUNTESTSPOPOVER_HPP
 #define TESTINGRUNTESTSPOPOVER_HPP
 
-#include <gtkmm/box.h>
 #include <gtkmm/builder.h>
 #include <gtkmm/button.h>
-#include <gtkmm/dropdown.h>
 #include <gtkmm/entry.h>
-#include <gtkmm/notebook.h>
 #include <gtkmm/popover.h>
-#include <gtkmm/scrolledwindow.h>
 #include <gtkmm/textview.h>
 #include <log4cxx/logger.h>
+
+#include "../ProcessExecutor.hpp"
 
 namespace optifol
 {
 
 class TestGroup;
 class TestListenerBase;
-class ProcessExecutor;
 class TestingArea;
 
 /**
@@ -103,12 +100,6 @@ private:
      */
     void show_popover() const noexcept;
 
-    /**
-     * @brief Consider each Requirement in the @ref group_under_test, and query all listeners in the @ref listener_pool
-     *  for relevant TestResult objects. If relevant results are found, share with the Requirement.
-     */
-    void distribute_test_results() const noexcept;
-
     static const char *const popover_name;
     static const log4cxx::LoggerPtr popover_logger;
 
@@ -118,10 +109,6 @@ private:
     Gtk::Button *const confirm_button;
     Gtk::Button *const cancel_button;
     Gtk::Entry *const test_group_name_entry;
-
-    Glib::RefPtr<TestGroup> group_under_test;
-    std::unordered_map<std::string_view, std::unique_ptr<ProcessExecutor>> test_runner_pool;
-    std::vector<std::unique_ptr<TestListenerBase>> listener_pool;
 };
 
 } // namespace optifol

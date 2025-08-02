@@ -11,8 +11,8 @@
  * @version Development
  */
 
-#ifndef HPP
-#define HPP
+#ifndef OPTIFOL_HPP
+#define OPTIFOL_HPP
 
 /**
  * @namespace optifol
@@ -21,6 +21,8 @@
  *  library or various third-party libraries. No such usage is UB, and all such symbol definitions are the result of
  *  template specialisation.
  */
-namespace optifol { }
+namespace optifol
+{
+}
 
-#endif
+#endif // OPTIFOL_HPP

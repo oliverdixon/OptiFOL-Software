@@ -19,6 +19,8 @@
 namespace optifol
 {
 
+const log4cxx::LoggerPtr Subsystem::subsystem_logger = Logging::get_logger({"GUI", "StorageControl", "Subsystem"});
+
 Subsystem::Subsystem(const Glib::ustring& name, TreeNode *parent) :
     Glib::ObjectBase("Subsystem"),
     TreeNode(parent),
@@ -90,11 +92,21 @@ void Subsystem::setup_groups(const Glib::ustring &name)
 
 void Subsystem::handle_requirement_change(const guint initial_index, const guint removed_count, const guint added_count)
 {
+    subsystem_logger->debug("Handling requirements change: " + std::to_string(added_count) + " additions and " +
+            std::to_string(removed_count) + " deletions at position " + std::to_string(initial_index) + '.');
+
+    handle_requirement_deletions(initial_index, removed_count);
+    handle_requirement_additions(initial_index, added_count);
+}
+
+// ReSharper disable once CppDFAUnreachableFunctionCall - False positive. Function is in callback cycle.
+void Subsystem::handle_requirement_deletions(const guint initial_index, const guint removed_count)
+{
     /*
      * First handle removed requirements, making use of the deleted requirements records. Notice that this doesn't use
      * the model at all, as the Requirements have already been erased and moved into the deleted records map.
      */
-    // TODO: efficiently remove multiple records with splice. See insertion logic below.
+    // TODO: efficiently remove multiple records with splice. See insertion logic.
 
     for (guint remove_count_i = 0; remove_count_i < removed_count; ++remove_count_i) {
         const auto deleted_item = steal_deleted_object(initial_index + remove_count_i);
@@ -102,20 +114,32 @@ void Subsystem::handle_requirement_change(const guint initial_index, const guint
         // Remove from analysis groups.
         if (deleted_item->is_analysis_ready()) {
             const auto analysis_group_count = analysis_groups->get_n_items();
-            for (guint analysis_group_index = 0; analysis_group_index < analysis_group_count; ++analysis_group_index)
-                analysis_groups->get_item(analysis_group_index)->delete_object(deleted_item);
+
+            for (guint analysis_group_index = 0; analysis_group_index < analysis_group_count; ++analysis_group_index) {
+                const auto &analysis_group = analysis_groups->get_item(analysis_group_index);
+                subsystem_logger->debug("Propagating deletion of \"" + deleted_item->property_name().get_value() +
+                        "\" to Analysis Group \"" + analysis_group->property_name().get_value() + "\".");
+                analysis_group->delete_object(deleted_item);
+            }
         }
 
         // Remove from test groups.
         if (deleted_item->has_tests()) {
             const auto test_group_count = test_groups->get_n_items();
-            for (guint test_group_index = 0; test_group_index < test_group_count; ++test_group_index)
-                test_groups->get_item(test_group_index)->delete_object(deleted_item);
+
+            for (guint test_group_index = 0; test_group_index < test_group_count; ++test_group_index) {
+                const auto &test_group = test_groups->get_item(test_group_index);
+                subsystem_logger->debug("Propagating deletion of \"" + deleted_item->property_name().get_value() +
+                        "\" to Test Group \"" + test_group->property_name().get_value() + "\".");
+                test_group->delete_object(deleted_item);
+            }
         }
     }
+}
 
-    // Then handle new requirements by distributing across the default analysis and test groups.
-
+// ReSharper disable once CppDFAUnreachableFunctionCall - False positive. Function is in callback cycle.
+void Subsystem::handle_requirement_additions(const guint initial_index, const guint added_count) const
+{
     const auto default_analysis_group = analysis_groups->get_item(0);
     const auto default_test_group = test_groups->get_item(0);
 
@@ -123,12 +147,18 @@ void Subsystem::handle_requirement_change(const guint initial_index, const guint
         const auto candidate = get_object_by_index(initial_index);
 
         // Distribute to default analysis group, if it has an OK formula.
-        if (candidate->is_analysis_ready())
+        if (candidate->is_analysis_ready()) {
+            subsystem_logger->debug("Propagating addition of \"" + candidate->property_name().get_value() +
+                "\" to default Analysis Group.");
             default_analysis_group->insert_object(candidate);
+        }
 
         // Distribute to default test group, if it has at least one test.
-        if (candidate->has_tests())
+        if (candidate->has_tests()) {
+            subsystem_logger->debug("Propagating addition of \"" + candidate->property_name().get_value() +
+                "\" to default Test Group.");
             default_test_group->insert_object(candidate);
+        }
     }
 
     else if (added_count > 1) {
@@ -143,11 +173,17 @@ void Subsystem::handle_requirement_change(const guint initial_index, const guint
         for (guint added_list_i = initial_index; added_list_i < added_count; ++added_list_i) {
             const auto candidate = get_object_by_index(added_list_i + initial_index);
 
-            if (candidate->is_analysis_ready())
+            if (candidate->is_analysis_ready()) {
+                subsystem_logger->debug("Propagating addition of \"" + candidate->property_name().get_value() +
+                    "\" to default Analysis Group.");
                 analysis_additions.push_back(candidate);
+            }
 
-            if (candidate->has_tests())
+            if (candidate->has_tests()) {
+                subsystem_logger->debug("Propagating addition of \"" + candidate->property_name().get_value() +
+                    "\" to default Test Group.");
                 testing_additions.push_back(candidate);
+            }
         }
 
         default_analysis_group->insert_object(analysis_additions);

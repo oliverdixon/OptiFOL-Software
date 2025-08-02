@@ -26,7 +26,7 @@
 namespace optifol
 {
 
-class Requirement;
+class Test;
 
 /**
  * @class TestListenerBase
@@ -53,11 +53,11 @@ public:
     /**
      * @brief Given a Requirement with an associated Test object, determine whether a stored TestResult matches the test
      *  specification of the Requirement. If it does, share the TestResult with the Requirement.
-     * @param requirement The Requirement to consider sharing the TestResult
+     * @param candidate The Requirement to consider sharing the TestResult
      * @throws SemanticException if the Requirement refused the TestResult
      * @see Requirement::emplace_test_result
      */
-    void endow_requirement(const Requirement &requirement);
+    void endow_test(Test &candidate);
 
 protected:
     /**

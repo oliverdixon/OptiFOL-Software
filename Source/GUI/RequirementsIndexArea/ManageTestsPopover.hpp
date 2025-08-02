@@ -24,7 +24,7 @@
 #include "../../DereferencingEqualityFunctor.hpp"
 #include "../../UserTesting/Discovery/DiscoveryTestExecutable.hpp"
 #include "../../UserTesting/Discovery/TestSpecificationEntry.hpp"
-#include "../../UserTesting/Execution/TargetTestExecutableBase.hpp"
+#include "../../UserTesting/Execution/TestExecutable.hpp"
 
 namespace optifol
 {

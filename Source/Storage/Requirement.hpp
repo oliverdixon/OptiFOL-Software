@@ -20,7 +20,7 @@
 #include "../IR/MutableVariants/Sentences/IMutableSentence.hpp"
 #include "../IR/Sentences/SentenceRoot.hpp"
 #include "../IR/SymbolRepository.hpp"
-#include "../UserTesting/GUIModelling/Test.hpp"
+#include "../UserTesting/Modelling/Test.hpp"
 #include "../Visitors/MutableTargets/RepositoryBuildingVisitor.hpp"
 #include "FOLLexer.hpp"
 #include "StorageObjectBase.hpp"

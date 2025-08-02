@@ -17,7 +17,7 @@
 #include <giomm/liststore.h>
 #include <gtkmm/singleselection.h>
 
-#include "../UserTesting/GUIModelling/TestGroup.hpp"
+#include "../UserTesting/Modelling/TestGroup.hpp"
 #include "AnalysisGroup.hpp"
 #include "Requirement.hpp"
 #include "StorageObjectBase.hpp"
@@ -30,6 +30,15 @@ namespace optifol
  * @class Subsystem
  * @brief The Subsystem storage object forms the second level of the Optifol object hierarchy; it belongs to a Project,
  *  and consists of many individual requirements.
+ * @details The Subsystem holds a great amount of responsibility. It is the single-owning repository for much of the
+ *  storage hierarchy. In particular, it creates and persists the following objects:
+ *  <ul>
+ *      <li>Requirement objects in the flat structure;</li>
+ *      <li>AnalysisGroup objects; and</li>
+ *      <li>TestGroup objects.</li>
+ *  </ul>
+ *  Therefore to handle changes in its base set of Requirement objects, changes must be propagated to all relevant
+ *  AnalysisGroup and TestGroup grouping structures.
  */
 class Subsystem : public StorageObjectBase,
                   public TreeNode,
@@ -107,6 +116,12 @@ private:
      * @param added_count The number of Requirement objects added to the list
      */
     void handle_requirement_change(guint initial_index, guint removed_count, guint added_count);
+
+    void handle_requirement_deletions(guint initial_index, guint removed_count);
+
+    void handle_requirement_additions(guint initial_index, guint added_count) const;
+
+    static const log4cxx::LoggerPtr subsystem_logger;
 
     Glib::RefPtr<Gio::ListStore<AnalysisGroup>> analysis_groups = Gio::ListStore<AnalysisGroup>::create();
     Glib::RefPtr<Gio::ListStore<TestGroup>> test_groups = Gio::ListStore<TestGroup>::create();

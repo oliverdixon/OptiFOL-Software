@@ -15,7 +15,6 @@
 
 #include "../GTKHelpers.hpp"
 #include "../Logging.hpp"
-#include "../UserTesting/Google/GoogleTestFactory.hpp"
 #include "TestingArea.hpp"
 
 namespace optifol
@@ -41,29 +40,11 @@ void TestingRunTestsPopover::confirm_button_clicked() noexcept
 {
     // TODO URGENT: verify noexcept property of this and the lambda.
     const auto selected_test_group = testing_area.get_selection();
-    const auto begin = selected_test_group->begin_executable_groups();
-    const auto end = selected_test_group->end_executable_groups();
+    const auto begin = selected_test_group->begin_execution_groups();
+    const auto end = selected_test_group->end_execution_groups();
 
-    for (std::remove_const_t<decltype(begin)> exe_group_it = begin; exe_group_it != end; ++exe_group_it) {
-        auto [executor, listener] = GoogleTestFactory::execute_test_group(
-            exe_group_it->first,
-            "FOLParserTest.*", // TODO URGENT: take test specification from TestGroup.
-            [this, executable_name = exe_group_it->first](const int pid)
-            {
-                if (test_runner_pool.erase(executable_name) != 1)
-                    // We should always be removing exactly one executor instance, as this is the process-exit callback.
-                    popover_logger->warn("Test runner pool failed integrity check: more than one entry for executable "
-                        + executable_name + " running under PID " + std::to_string(pid) + '.');
-
-                if (test_runner_pool.empty())
-                    // Once all test executables have completed, spin over the Requirements and assign TestResults.
-                    distribute_test_results();
-            }
-        );
-
-        test_runner_pool.emplace(exe_group_it->first, std::move(executor));
-        listener_pool.push_back(std::move(listener));
-    }
+    for (std::remove_const_t<decltype(begin)> exe_group_it = begin; exe_group_it != end; ++exe_group_it)
+        exe_group_it->get()->run();
 }
 
 void TestingRunTestsPopover::cancel_button_clicked() const noexcept
@@ -86,22 +67,6 @@ void TestingRunTestsPopover::show_popover() const noexcept
         popover_logger->error("Could not discover the selected Test Group entry.");
         popover_logger->error(selection_error.what());
     }
-}
-
-void TestingRunTestsPopover::distribute_test_results() const noexcept
-{
-    testing_area.get_selection()->for_each(
-        [this](const Requirement & requirement)
-        {
-            try {
-                for (const auto& result_group : listener_pool)
-                    result_group->endow_requirement(requirement);
-            } catch (const SemanticException& semantic_exception) {
-                popover_logger->warn("Could not assign TestResult to Requirement in active group-under-test.");
-                popover_logger->warn(semantic_exception.what());
-            }
-        }
-    );
 }
 
 } // namespace optifol

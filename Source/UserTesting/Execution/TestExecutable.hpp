@@ -27,26 +27,30 @@ class DiscoveryTestExecutable;
 class TestResult;
 
 /**
- * @class TargetTestExecutableBase
- * @brief Provides a common base for runnable test executables provided by a software unit-testing framework. The
- *  TargetTestExecutableBase is a StorageObjectBase such that its main attributes are accessed via the Glib types and
- *  properties system.
+ * @class TestExecutable
+ * @brief Describes a framework-agnostic test executable provided by a software unit-testing system. The TestExecutable
+ *  is a StorageObjectBase such that its main attributes are accessed via the Glib types and properties system.
  * @see DiscoveryTestExecutable for the non-runnable discovery equivalent.
  */
-class TargetTestExecutableBase : public StorageObjectBase
+class TestExecutable : public StorageObjectBase
 {
 public:
     /**
-     * @brief Create a new TargetTestExecutableBase without metadata.
+     * @brief Create a new TargetTestExecutableBase with a name.
+     * @param executable_path The path of the test executable.
      */
-    TargetTestExecutableBase() = default;
+    explicit TestExecutable(const Glib::ustring &executable_path);
 
     /**
      * @brief TargetTestExecutableBase
+     * @param executable_path The path of the test executable.
      * @param cobject Glib C object
      * @param builder Gtk::Builder template
      */
-    TargetTestExecutableBase(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &builder);
+    TestExecutable(
+            const Glib::ustring &executable_path, BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &builder);
+
+    bool operator==(const TestExecutable & other) const noexcept;
 
 private:
     Glib::RefPtr<Gio::FileMonitor> file_monitor;

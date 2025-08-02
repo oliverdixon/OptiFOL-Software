@@ -16,7 +16,7 @@
 
 #include "../../Storage/StorageObjectBase.hpp"
 #include "../Discovery/TestSpecificationEntry.hpp"
-#include "../Execution/TargetTestExecutableBase.hpp"
+#include "../Execution/TestExecutable.hpp"
 #include "../Execution/TestResult.hpp"
 #include "ITestModelNode.hpp"
 
@@ -45,9 +45,9 @@ public:
      */
     void emplace_result(std::shared_ptr<TestResult> test_result);
 
-    void share_test_executable(std::shared_ptr<TargetTestExecutableBase> shared_exe);
+    void share_test_executable(std::shared_ptr<TestExecutable> shared_exe);
 
-    [[nodiscard]] const TargetTestExecutableBase *observe_test_executable() const noexcept;
+    [[nodiscard]] const TestExecutable *observe_test_executable() const noexcept;
 
     [[nodiscard]] Glib::PropertyProxy<Glib::ustring> property_fixture();
 
@@ -62,7 +62,7 @@ public:
 private:
     void instantiate_from_specification(std::shared_ptr<TestSpecificationEntry> spec);
 
-    std::shared_ptr<TargetTestExecutableBase> target_executable;
+    std::shared_ptr<TestExecutable> target_executable;
     Glib::Property<Glib::ustring> target_executable_name;
     Glib::Property<Glib::ustring> fixture;
     Glib::Property<std::shared_ptr<TestResult>> result;

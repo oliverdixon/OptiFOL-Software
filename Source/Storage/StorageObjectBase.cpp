@@ -19,8 +19,6 @@
 
 #include "StorageObjectBase.hpp"
 
-#include "../LegacyWrappers.hpp"
-
 namespace optifol
 {
 

@@ -13,7 +13,6 @@
 
 #include "Test.hpp"
 #include "../../Exceptions/SemanticException.hpp"
-#include "../Execution/GoogleTestExecutable.hpp"
 
 namespace optifol
 {
@@ -59,17 +58,17 @@ void Test::emplace_result(std::shared_ptr<TestResult> test_result)
     result.set_value(std::move(test_result));
 }
 
-void Test::share_test_executable(std::shared_ptr<TargetTestExecutableBase> shared_exe)
+void Test::share_test_executable(std::shared_ptr<TestExecutable> shared_exe)
 {
     target_executable = std::move(shared_exe);
 
-    if (shared_exe == nullptr)
-        target_executable_name.set_value("");
+    if (target_executable == nullptr)
+        target_executable_name.set_value(""); // TODO log. Or maybe even throw an exception!
     else
         target_executable_name.set_value(target_executable->property_name().get_value());
 }
 
-const TargetTestExecutableBase *Test::observe_test_executable() const noexcept
+const TestExecutable *Test::observe_test_executable() const noexcept
 {
     return target_executable.get();
 }
@@ -101,7 +100,8 @@ Glib::PropertyProxy_ReadOnly<std::shared_ptr<TestResult>> Test::property_result(
 
 void Test::instantiate_from_specification(std::shared_ptr<TestSpecificationEntry> spec)
 {
-    share_test_executable(std::make_shared<GoogleTestExecutable>(
+    // TODO: don't create a new test executable each time.
+    share_test_executable(std::make_shared<TestExecutable>(
             spec->property_executable().get_value()->property_name().get_value()));
     property_fixture().set_value(spec->property_fixture().get_value()->property_name().get_value());
     property_name().set_value(spec->property_name().get_value());

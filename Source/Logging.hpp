@@ -24,7 +24,7 @@ class Logging
 public:
     static log4cxx::LoggerPtr get_logger();
 
-    static log4cxx::LoggerPtr get_logger(const char * name);
+    static log4cxx::LoggerPtr get_logger(const char *name);
 
     static log4cxx::LoggerPtr get_logger(std::vector<std::string> &&name);
 
@@ -35,10 +35,10 @@ private:
         ~LifecycleManager();
 
     private:
-        static const char * const properties_file;
+        static const char *const properties_file;
     } manager;
 };
 
-}
+} // namespace optifol
 
 #endif

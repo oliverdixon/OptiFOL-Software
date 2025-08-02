@@ -10,7 +10,7 @@
 #include <iostream>
 
 #include "../../UserTesting/Discovery/GoogleTestDiscoveryExecutable.hpp"
-#include "../../UserTesting/GUIModelling/Test.hpp"
+#include "../../UserTesting/Modelling/Test.hpp"
 #include "../GTKHelpers.hpp"
 #include "../Logging.hpp"
 #include "ManageTestsPopover.hpp"

@@ -12,7 +12,7 @@
  */
 
 #include "TestingArea.hpp"
-#include "../../UserTesting/GUIModelling/TestGroup.hpp"
+#include "../../UserTesting/Modelling/TestGroup.hpp"
 #include "../GTKHelpers.hpp"
 
 namespace optifol
@@ -113,17 +113,63 @@ void TestingArea::configure_columns() const
             } else if (gtk_id == "test_target_executable") {
 
                 factory->signal_setup().connect(sigc::bind(&GTKHelpers::setup_label, false));
-                // TODO: bind
+                factory->signal_bind().connect([](const Glib::RefPtr<Gtk::ListItem> & list_item) -> void
+                {
+                    const auto label = dynamic_cast<Gtk::Label *>(list_item->get_child());
+                    const auto typed_test = std::dynamic_pointer_cast<Test>(list_item->get_item());
+
+                    if (label == nullptr || typed_test == nullptr)
+                        return;
+
+                    Glib::Binding::bind_property(
+                        typed_test->property_target_executable_name(),
+                        label->property_label(),
+                        Glib::Binding::Flags::SYNC_CREATE
+                    );
+                });
 
             } else if (gtk_id == "test_fixture") {
 
                 factory->signal_setup().connect(sigc::bind(&GTKHelpers::setup_label, false));
-                // TODO: bind
+                factory->signal_bind().connect([](const Glib::RefPtr<Gtk::ListItem> & list_item) -> void
+                {
+                    const auto label = dynamic_cast<Gtk::Label *>(list_item->get_child());
+                    const auto typed_test = std::dynamic_pointer_cast<Test>(list_item->get_item());
+
+                    if (label == nullptr || typed_test == nullptr)
+                        return;
+
+                    Glib::Binding::bind_property(
+                        typed_test->property_fixture(),
+                        label->property_label(),
+                        Glib::Binding::Flags::SYNC_CREATE
+                    );
+                });
 
             } else if (gtk_id == "test_status") {
 
                 factory->signal_setup().connect(sigc::bind(&GTKHelpers::setup_label, false));
-                // TODO: bind
+                factory->signal_bind().connect([](const Glib::RefPtr<Gtk::ListItem> & list_item) -> void
+                {
+                    const auto label = dynamic_cast<Gtk::Label *>(list_item->get_child());
+                    const auto typed_test = std::dynamic_pointer_cast<Test>(list_item->get_item());
+
+                    if (label == nullptr || typed_test == nullptr)
+                        return;
+
+                    Glib::Binding::bind_property(
+                        typed_test->property_result(),
+                        label->property_label(),
+                        Glib::Binding::Flags::SYNC_CREATE,
+                        [](const std::shared_ptr<TestResult> &result) -> std::optional<Glib::ustring>
+                        {
+                            if (result == nullptr)
+                                return "Unknown";
+
+                            return result->has_passed() ? "Passed" : "Failed";
+                        }
+                    );
+                });
 
             } else
                 // Jump out here if unrecognised, so all further code can assume a factory was configured.

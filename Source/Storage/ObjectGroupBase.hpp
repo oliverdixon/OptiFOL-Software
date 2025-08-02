@@ -28,6 +28,7 @@ namespace optifol
  * @brief Provide a common CRTP interface for all structures grouping objects in a mutable list for iteration, but also
  *  require fast lookup. The base provides a skeleton set of observing and mutating operations on the model to make
  *  optimal use of the dual-storage (list and map) model.
+ * @tparam Derived The IHashable type to store.
  *
  * @details
  *  The ObjectGroupBase provides two important data structures:
@@ -40,7 +41,7 @@ namespace optifol
  *  using the <i>libsigc++</i> callbacks provided natively by Gtkmm.
  */
 template<typename Derived>
-    requires std::derived_from<Derived, StorageObjectBase>
+    requires std::derived_from<Derived, IHashable>
 class ObjectGroupBase
 {
 public:
@@ -71,7 +72,6 @@ public:
     void insert_object(Glib::RefPtr<Derived> new_object)
     {
         model->append(new_object);
-        // Safely assume that the object was appended to the end of the list...
         index_map[new_object] = model->get_n_items() - 1;
     }
 
@@ -113,14 +113,14 @@ public:
     /**
      * @brief Delete the given object from the model.
      * @param slated_object The object to delete.
-     * @throws std::runtime_error The given object was not within the model.
+     * @return Was an object deleted?
      */
-    void delete_object(const Glib::RefPtr<Derived> &slated_object)
+    bool delete_object(const Glib::RefPtr<Derived> &slated_object)
     {
         // Locate the object in the map, which will provide its index in the linear model.
         const auto index_it = index_map.find(slated_object);
         if (index_it == index_map.cend())
-            throw std::runtime_error("Slated object is not in the mapped model.");
+            return false;
 
         /*
          * Record as a deletion and remove from the linear model. The removal from the linear model will likely trigger
@@ -155,6 +155,7 @@ public:
                 --it.second;
 
         index_map.erase(index_it);
+        return true;
     }
 
     /**

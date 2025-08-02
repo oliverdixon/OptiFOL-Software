@@ -22,25 +22,18 @@ void TestListenerBase::accept_result(std::unique_ptr<TestResult> &&test_result)
     received_test_blob.emplace(std::move(test_result));
 }
 
-void TestListenerBase::endow_requirement(const Requirement & requirement)
+void TestListenerBase::endow_test(Test &candidate)
 {
-    const auto requirement_tests = requirement.get_tests();
-    const auto test_count = requirement_tests->get_n_items();
+    // TestResults are keyed on the fixture and test name. If a Test demands one that is in our blob, share it.
+    const auto result_it = received_test_blob.find(std::make_pair(
+        candidate.property_fixture().get_value(),
+        candidate.property_name().get_value()
+    ));
 
-    for (guint test_index = 0; test_index < test_count; ++test_index) {
-        const auto& test = requirement_tests->get_item(test_index);
-        if (test == nullptr)
-            continue;
+    if (result_it != received_test_blob.cend())
+        candidate.emplace_result(*result_it);
 
-        // TestResults are keyed on the fixture and test name. If a Test demands one that is in our blob, share it.
-        const auto result_it = received_test_blob.find(std::make_pair(
-            test->property_fixture().get_value(),
-            test->property_name().get_value()
-        ));
-
-        if (result_it != received_test_blob.cend())
-            test->emplace_result(*result_it);
-    }
+    // TODO log.
 }
 
 } // namespace optifol

@@ -59,7 +59,7 @@ struct DereferencingEqualityFunctor
      * @return Do LHS and RHS resolve to equal objects?
      */
     template<class ObjectType>
-    bool operator()(PointerType lhs, ObjectType &&rhs) const
+    bool operator()(PointerType& lhs, ObjectType& rhs) const
     {
         return std::forward<BaseType>(*lhs) == std::forward<ObjectType>(rhs);
     }
@@ -87,7 +87,6 @@ struct DereferencingEqualityFunctor
     {
         return std::forward<ObjectType>(lhs) == std::forward<BaseType>(*rhs);
     }
-
 
     /**
      * @brief Perform a transparent equality check for the given LHS and given RHS

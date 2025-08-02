@@ -148,8 +148,6 @@ add_library(OptifolCommon OBJECT
         Source/Visitors/MutableTargets/Sentences/CNFNormalisers/QuantifierExtractingVisitor.hpp
         Source/Visitors/MutableTargets/Sentences/CNFNormalisers/SkolemIntroducingVisitor.cpp
         Source/Visitors/MutableTargets/Sentences/CNFNormalisers/SkolemIntroducingVisitor.hpp
-        Source/LegacyWrappers.cpp
-        Source/LegacyWrappers.hpp
         Source/Optifol.hpp
         Source/Logging.hpp
         Source/Logging.cpp
@@ -360,26 +358,22 @@ add_executable(OptifolGUI
         Source/UserTesting/Execution/PayloadManagement/TestListenerBase.hpp
         Source/UserTesting/Execution/PayloadManagement/GoogleTestListener.cpp
         Source/UserTesting/Execution/PayloadManagement/GoogleTestListener.hpp
-        Source/UserTesting/GUIModelling/Test.cpp
-        Source/UserTesting/GUIModelling/Test.hpp
+        Source/UserTesting/Modelling/Test.cpp
+        Source/UserTesting/Modelling/Test.hpp
         Source/GUI/ProcessExecutor.cpp
         Source/GUI/ProcessExecutor.hpp
-        Source/UserTesting/GUIModelling/TestGroup.cpp
-        Source/UserTesting/GUIModelling/TestGroup.hpp
+        Source/UserTesting/Modelling/TestGroup.cpp
+        Source/UserTesting/Modelling/TestGroup.hpp
         Source/Storage/ObjectGroupBase.hpp
         Source/GUI/TestingArea/TestingRunTestsPopover.cpp
         Source/GUI/TestingArea/TestingRunTestsPopover.hpp
-        Source/UserTesting/Google/GoogleTestFactory.cpp
-        Source/UserTesting/Google/GoogleTestFactory.hpp
         Source/GUI/StreamingProcessExecutor.cpp
         Source/GUI/StreamingProcessExecutor.hpp
         Source/UserTesting/Execution/PayloadManagement/TestListenerBase.cpp
-        Source/UserTesting/Execution/TargetTestExecutableBase.cpp
-        Source/UserTesting/Execution/TargetTestExecutableBase.hpp
+        Source/UserTesting/Execution/TestExecutable.cpp
+        Source/UserTesting/Execution/TestExecutable.hpp
         Source/GUI/RequirementsIndexArea/ManageTestsPopover.cpp
         Source/GUI/RequirementsIndexArea/ManageTestsPopover.hpp
-        Source/UserTesting/Execution/GoogleTestExecutable.cpp
-        Source/UserTesting/Execution/GoogleTestExecutable.hpp
         Source/UserTesting/Discovery/DiscoveryTestExecutable.cpp
         Source/UserTesting/Discovery/DiscoveryTestExecutable.hpp
         Source/UserTesting/Discovery/TestSpecificationEntry.cpp
@@ -388,7 +382,11 @@ add_executable(OptifolGUI
         Source/UserTesting/Discovery/DiscoveryTestFixture.hpp
         Source/UserTesting/Discovery/GoogleTestDiscoveryExecutable.cpp
         Source/UserTesting/Discovery/GoogleTestDiscoveryExecutable.hpp
-        Source/UserTesting/GUIModelling/ITestModelNode.hpp
+        Source/UserTesting/Modelling/ITestModelNode.hpp
+        Source/UserTesting/Modelling/ExecutionGroup.cpp
+        Source/UserTesting/Modelling/ExecutionGroup.hpp
+        Source/UserTesting/Modelling/GoogleExecutionGroup.cpp
+        Source/UserTesting/Modelling/GoogleExecutionGroup.hpp
 )
 
 set(COMMON_COMPILER_OPTIONS

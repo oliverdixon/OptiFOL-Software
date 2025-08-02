@@ -23,14 +23,14 @@ namespace optifol
 
 Logging::LifecycleManager Logging::manager;
 
-const char * const Logging::LifecycleManager::properties_file = "Resources/log4cxx.xml";
+const char *const Logging::LifecycleManager::properties_file = "Resources/log4cxx.xml";
 
 log4cxx::LoggerPtr Logging::get_logger()
 {
     return log4cxx::LogManager::getRootLogger();
 }
 
-log4cxx::LoggerPtr Logging::get_logger(const char * name)
+log4cxx::LoggerPtr Logging::get_logger(const char *name)
 {
     return log4cxx::Logger::getLogger(name);
 }
@@ -48,8 +48,7 @@ log4cxx::LoggerPtr Logging::get_logger(std::vector<std::string> &&name)
 
 Logging::LifecycleManager::LifecycleManager()
 {
-    if (log4cxx::xml::DOMConfigurator::configure(properties_file) ==
-            log4cxx::spi::ConfigurationStatus::NotConfigured) {
+    if (log4cxx::xml::DOMConfigurator::configure(properties_file) == log4cxx::spi::ConfigurationStatus::NotConfigured) {
         // If we couldn't load the custom configurator, send events to the console.
         log4cxx::BasicConfigurator::configure();
         LOG4CXX_WARN(get_logger(), "Could not load logging properties file at " << properties_file);
@@ -61,4 +60,4 @@ Logging::LifecycleManager::~LifecycleManager()
     log4cxx::LogManager::shutdown();
 }
 
-}
+} // namespace optifol

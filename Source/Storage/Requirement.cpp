@@ -39,7 +39,7 @@ std::istringstream Requirement::lexer_input_stream;
 FOLLexer Requirement::lexer{Requirement::lexer_input_stream, std::cerr};
 FOLParser Requirement::parser{&Requirement::lexer};
 
-const log4cxx::LoggerPtr Requirement::req_logger = Logging::get_logger({"GUI", "RequirementControl"});
+const log4cxx::LoggerPtr Requirement::req_logger = Logging::get_logger({"GUI", "StorageControl", "Requirement"});
 
 const log4cxx::LoggerPtr Requirement::cnf_logger = Logging::get_logger({"LogicServices", "CNFNormalisation"});
 const log4cxx::LoggerPtr Requirement::parse_logger = Logging::get_logger({"LogicServices", "FormalParsing"});
