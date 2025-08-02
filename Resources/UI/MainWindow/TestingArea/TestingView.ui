@@ -128,7 +128,7 @@ To prepare Test Groups, select a Subsystem from the left-hand <i>Project Explore
                             <child>
                                 <object class="GtkColumnViewColumn">
                                     <property name="id">test_requirement_name</property>
-                                    <property name="title">Requirement</property>
+                                    <property name="title">Requirement/Test Name</property>
                                     <property name="resizable">TRUE</property>
                                 </object>
                             </child>

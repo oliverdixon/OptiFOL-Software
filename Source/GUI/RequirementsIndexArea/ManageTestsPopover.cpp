@@ -9,11 +9,12 @@
 
 #include <iostream>
 
-#include "ManageTestsPopover.hpp"
 #include "../../UserTesting/Test.hpp"
 #include "../GTKHelpers.hpp"
 #include "../Logging.hpp"
 #include "GoogleTestDiscoveryExecutable.hpp"
+#include "ManageTestsPopover.hpp"
+#include "RequirementsIndexArea.hpp"
 
 namespace optifol
 {
@@ -33,7 +34,6 @@ ManageTestsPopover::ManageTestsPopover(Gtk::Builder &builder) :
     confirm_button->signal_clicked().connect(sigc::mem_fun(*this, &ManageTestsPopover::confirm_button_clicked));
     new_test_button->signal_clicked().connect(sigc::mem_fun(*this, &ManageTestsPopover::new_test_clicked));
 
-    selection_model->set_model(test_spec_model);
     selection_model->set_autoselect(false);
     selection_model->set_can_unselect(true);
 
@@ -69,18 +69,13 @@ ManageTestsPopover::ManageTestsPopover(Gtk::Builder &builder) :
     }
 }
 
-Glib::RefPtr<Gio::ListStore<Test>> ManageTestsPopover::get_aggregate_tests() const
+void ManageTestsPopover::set_model(const Glib::RefPtr<Gio::ListStore<TestSpecificationEntry>> &model)
 {
-    const auto spec_count = test_spec_model->get_n_items();
-    Glib::RefPtr<Gio::ListStore<Test>> model = Gio::ListStore<Test>::create();
-
-    for (guint spec_index = 0; spec_index < spec_count; ++spec_index)
-        model->append(Glib::make_refptr_for_instance(new Test(*test_spec_model->get_item(spec_index))));
-
-    return model;
+    test_spec_model = model;
+    selection_model->set_model(test_spec_model);
 }
 
-void ManageTestsPopover::confirm_button_clicked()
+void ManageTestsPopover::confirm_button_clicked() const
 {
     popover->popdown();
 }
@@ -212,15 +207,15 @@ void ManageTestsPopover::bind_test_name(const Glib::RefPtr<Gtk::ListItem> &list_
 
     Glib::Binding::bind_property(
         test_combo->property_selected_item(),
-        test_spec->property_test(),
+        test_spec->property_name(),
         Glib::Binding::Flags::SYNC_CREATE,
         [](const Glib::RefPtr<Glib::ObjectBase> &selected_item) -> std::optional<Glib::ustring>
         {
-            const auto &typed_entry = dynamic_cast<Glib::ustring *>(selected_item.get());
+            const auto &typed_entry = dynamic_cast<Gtk::StringObject *>(selected_item.get());
             if (typed_entry == nullptr)
                 return {};
 
-            return *typed_entry;
+            return typed_entry->get_string();
         }
     );
 }

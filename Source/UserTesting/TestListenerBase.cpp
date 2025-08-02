@@ -22,27 +22,25 @@ void TestListenerBase::accept_result(std::unique_ptr<TestResult> &&test_result)
     received_test_blob.emplace(std::move(test_result));
 }
 
-void TestListenerBase::endow_requirement(Requirement& requirement)
+void TestListenerBase::endow_requirement(const Requirement & requirement)
 {
-    const auto &test = requirement.observe_test();
+    const auto requirement_tests = requirement.get_tests();
+    const auto test_count = requirement_tests->get_n_items();
 
-    if (test.has_value() == false)
-        // Filter out Requirements without associated tests. (Shouldn't ever happen, but isn't worth logging.)
-        return;
+    for (guint test_index = 0; test_index < test_count; ++test_index) {
+        const auto& test = requirement_tests->get_item(test_index);
+        if (test == nullptr)
+            continue;
 
-    const auto &glib_suite_name = test->property_fixture().get_value();
-    const auto &glib_test_name = test->property_name().get_value();
+        // TestResults are keyed on the fixture and test name. If a Test demands one that is in our blob, share it.
+        const auto result_it = received_test_blob.find(std::make_pair(
+            test->property_fixture().get_value(),
+            test->property_name().get_value()
+        ));
 
-#if 0 // TODO URGENT
-    // TestResults are keyed on the fixture and test name. If the Requirement demands one that is in our blob, share it.
-    const auto it = received_test_blob.find(std::make_pair(
-        Glib::UStringView(glib_suite_name),
-        Glib::UStringView(glib_test_name)
-    ));
-
-    if (it != received_test_blob.cend())
-        requirement.emplace_test_result(*it);
-#endif
+        if (result_it != received_test_blob.cend())
+            test->emplace_result(*result_it);
+    }
 }
 
 } // namespace optifol

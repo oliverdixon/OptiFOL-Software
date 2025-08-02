@@ -132,7 +132,7 @@ case :
         std::unique_ptr<TestResult> borrowed_result;
 
         while ((borrowed_result = self.steal_next_pending_result()) != nullptr) {
-            borrowed_result->populate_test_suite_name($3);
+            borrowed_result->populate_test_fixture_name($3);
             self.push_result(std::move(borrowed_result));
         }
     }

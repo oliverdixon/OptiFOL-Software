@@ -27,7 +27,7 @@ Subsystem::Subsystem(const Glib::ustring& name, TreeNode *parent) :
     setup_groups(name);
 }
 
-Subsystem::Subsystem(const Glib::ustring& name, BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &builder,
+Subsystem::Subsystem(const Glib::ustring &name, BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &builder,
         TreeNode *parent) :
     Glib::ObjectBase("Subsystem"),
     StorageObjectBase(cobject, builder),
@@ -66,7 +66,7 @@ void Subsystem::duplicate_requirement(const Requirement &requirement)
         requirement.property_statement().get_value(),
         requirement.property_description().get_value(),
         requirement.property_priority().get_value(),
-        requirement.get_tests()
+        requirement.get_test_specs()
     );
 }
 
@@ -118,7 +118,7 @@ void Subsystem::handle_requirement_change(const guint initial_index, const guint
         }
 
         // Remove from test groups.
-        if (deleted_it->second->observe_test().has_value()) {
+        if (deleted_it->second->get_tests()->get_n_items() > 0) {
             const auto test_group_count = test_groups->get_n_items();
             for (guint test_group_index = 0; test_group_index < test_group_count; ++test_group_index)
                 test_groups->get_item(test_group_index)->delete_requirement(deleted_it->second);
@@ -143,8 +143,8 @@ void Subsystem::handle_requirement_change(const guint initial_index, const guint
         if (candidate->is_analysis_ready())
             default_analysis_group->insert_requirement(candidate);
 
-        // Distribute to default test group, if it has a test.
-        if (candidate->observe_test().has_value())
+        // Distribute to default test group, if it has at least one test.
+        if (candidate->get_tests()->get_n_items() > 0)
             default_test_group->insert_requirement(candidate);
     }
 
@@ -163,7 +163,7 @@ void Subsystem::handle_requirement_change(const guint initial_index, const guint
             if (candidate->is_analysis_ready())
                 analysis_additions.push_back(candidate);
 
-            if (candidate->observe_test().has_value())
+            if (candidate->get_tests()->get_n_items() > 0)
                 testing_additions.push_back(candidate);
         }
 

@@ -12,7 +12,7 @@
  */
 
 #include "TestingArea.hpp"
-#include "../../Storage/TestGroup.hpp"
+#include "../../UserTesting/TestGroup.hpp"
 #include "../GTKHelpers.hpp"
 #include "../ProcessExecutor.hpp"
 
@@ -55,7 +55,7 @@ void TestingArea::select_model(const Glib::RefPtr<Subsystem> &new_subsystem)
 
     active_subsystem = new_subsystem;
     tree_model = Gtk::TreeListModel::create(active_subsystem->get_test_groups(),
-        sigc::ptr_fun(&TestGroup::get_expanded_list<TestGroup>), true, true);
+        sigc::ptr_fun(&ITestModelNode::get_given_tree), true);
     selection_model->set_model(tree_model);
 }
 
@@ -94,22 +94,6 @@ Glib::RefPtr<TestGroup> TestingArea::get_selection() const
     return selected_group;
 }
 
-std::optional<std::pair<const std::optional<Test> &, Gtk::Label *>> TestingArea::bind_helper(
-        const Glib::RefPtr<Gtk::ListItem> &list_item)
-{
-    const auto requirement = std::dynamic_pointer_cast<Requirement>(list_item->get_item());
-
-    if (requirement == nullptr)
-        return std::nullopt;
-
-    const auto label = dynamic_cast<Gtk::Label *>(list_item->get_child());
-
-    if (label == nullptr)
-        return std::nullopt;
-
-    return std::make_pair(std::cref(requirement->observe_test()), label);
-}
-
 void TestingArea::configure_columns() const
 {
     const auto columns = test_groups_view->get_columns();
@@ -131,48 +115,17 @@ void TestingArea::configure_columns() const
             } else if (gtk_id == "test_target_executable") {
 
                 factory->signal_setup().connect(sigc::bind(&GTKHelpers::setup_label, false));
-                factory->signal_bind().connect([](const Glib::RefPtr<Gtk::ListItem> & list_item)
-                {
-                    const auto [requirement, label] = Requirement::requirement_bind_helper(*list_item);
-                    GTKHelpers::bind_any_property(
-                        sigc::mem_fun(&Test::property_target_executable_name),
-                        *requirement->observe_test(), label);
-                });
+                // TODO: bind
 
             } else if (gtk_id == "test_suite") {
 
                 factory->signal_setup().connect(sigc::bind(&GTKHelpers::setup_label, false));
-                factory->signal_bind().connect([](const Glib::RefPtr<Gtk::ListItem> & list_item)
-                {
-                    const auto [requirement, label] = Requirement::requirement_bind_helper(*list_item);
-                    GTKHelpers::bind_any_property(
-                        sigc::mem_fun(static_cast<TestGetter<Glib::ustring>>(&Test::property_fixture)),
-                        *requirement->observe_test(), label);
-                });
+                // TODO: bind
 
             } else if (gtk_id == "test_status") {
 
                 factory->signal_setup().connect(sigc::bind(&GTKHelpers::setup_label, false));
-                factory->signal_bind().connect([](const Glib::RefPtr<Gtk::ListItem> & list_item) -> void
-                {
-                    const auto [requirement, label] = Requirement::requirement_bind_helper(*list_item);
-                    const auto& test = requirement->observe_test();
-                    if (label == nullptr || test.has_value() == false)
-                        return;
-
-                    Glib::Binding::bind_property(
-                        test->property_result(),
-                        label->property_label(),
-                        Glib::Binding::Flags::SYNC_CREATE,
-                        [](const std::shared_ptr<TestResult> &result) -> std::optional<Glib::ustring>
-                        {
-                            if (result == nullptr)
-                                return "Unknown";
-
-                            return result->has_passed() ? "Passed" : "Failed";
-                        }
-                    );
-                });
+                // TODO: bind
 
             } else
                 // Jump out here if unrecognised, so all further code can assume a factory was configured.
@@ -187,30 +140,6 @@ void TestingArea::configure_selection_model() const
 {
     selection_model->set_autoselect(false);
     selection_model->set_can_unselect(true);
-
-#if 0
-    selection_model->signal_selection_changed().connect(
-        [this](const guint position, const guint n_items)
-        {
-            if (n_items == 0)
-                context_menu.disable_action("new_test_group");
-            else
-                context_menu.enable_action("new_test_group");
-        }
-    );
-
-    selection_model->signal_items_changed().connect(
-        [this](guint, const guint removed, guint)
-        {
-            if (removed > 0) {
-                // If anything was removed from the model, just disable everything out of an abundance of caution.
-                context_menu.disable_action("new_test_group");
-                context_menu.disable_action("run_tests");
-                selection_model->unselect_all();
-            }
-        }
-    );
-#endif
 }
 
 } // namespace optifol

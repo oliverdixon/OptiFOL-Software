@@ -91,7 +91,7 @@ void TestingRunTestsPopover::show_popover() const noexcept
 void TestingRunTestsPopover::distribute_test_results() const noexcept
 {
     testing_area.get_selection()->for_each(
-        [this](Requirement& requirement)
+        [this](const Requirement & requirement)
         {
             try {
                 for (const auto& result_group : listener_pool)

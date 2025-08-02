@@ -57,7 +57,7 @@ public:
      * @throws SemanticException if the Requirement refused the TestResult
      * @see Requirement::emplace_test_result
      */
-    void endow_requirement(Requirement &requirement);
+    void endow_requirement(const Requirement &requirement);
 
 protected:
     /**

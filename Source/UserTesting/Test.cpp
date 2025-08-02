@@ -19,7 +19,7 @@
 namespace optifol
 {
 
-Test::Test(const TestSpecificationEntry& template_specification) :
+Test::Test(std::shared_ptr<TestSpecificationEntry> template_specification) :
     Glib::ObjectBase("Test"),
     target_executable_name(*this, "Test-target-executable-name"),
     fixture(*this, "Test-test-fixture"),
@@ -28,7 +28,7 @@ Test::Test(const TestSpecificationEntry& template_specification) :
     instantiate_from_specification(template_specification);
 }
 
-Test::Test(const TestSpecificationEntry& template_specification, BaseObjectType *cobject,
+Test::Test(std::shared_ptr<TestSpecificationEntry> template_specification, BaseObjectType *cobject,
         const Glib::RefPtr<Gtk::Builder> &builder) :
     Glib::ObjectBase("Test"),
     StorageObjectBase(cobject, builder),
@@ -37,6 +37,11 @@ Test::Test(const TestSpecificationEntry& template_specification, BaseObjectType 
     result(*this, "Test-result")
 {
     instantiate_from_specification(template_specification);
+}
+
+Glib::RefPtr<Gtk::TreeListModel> Test::get_tree() const noexcept
+{
+    return nullptr;
 }
 
 void Test::emplace_result(const std::shared_ptr<TestResult> &test_result)
@@ -55,7 +60,7 @@ void Test::emplace_result(const std::shared_ptr<TestResult> &test_result)
     result.set_value(test_result);
 }
 
-void Test::share_test_executable(std::shared_ptr<TargetTestExecutableBase> shared_exe)
+void Test::share_test_executable(const std::shared_ptr<TargetTestExecutableBase>& shared_exe)
 {
     target_executable = shared_exe;
 
@@ -95,12 +100,23 @@ Glib::PropertyProxy_ReadOnly<std::shared_ptr<TestResult>> Test::property_result(
     return result.get_proxy();
 }
 
-void Test::instantiate_from_specification(const TestSpecificationEntry &template_specification)
+void Test::instantiate_from_specification(std::shared_ptr<TestSpecificationEntry> spec)
 {
-    share_test_executable(std::make_shared<GoogleTestExecutable>(template_specification.property_executable().
-        get_value()->property_name().get_value()));
-    property_fixture().set_value(template_specification.property_fixture().get_value()->property_name().get_value());
-    property_name().set_value(template_specification.property_name().get_value());
+    share_test_executable(std::make_shared<GoogleTestExecutable>(spec->property_executable().get_value()->property_name().get_value()));
+    property_fixture().set_value(spec->property_fixture().get_value()->property_name().get_value());
+    property_name().set_value(spec->property_name().get_value());
+
+    spec->property_name().signal_changed().connect([this, spec]
+    {
+        property_name().set_value(spec->property_name().get_value());
+    });
+
+    spec->property_fixture().signal_changed().connect([this, spec]
+    {
+        property_fixture().set_value(spec->property_fixture().get_value()->property_name().get_value());
+    });
+
+    // TODO URGENT: executable
 }
 
 } // namespace optifol

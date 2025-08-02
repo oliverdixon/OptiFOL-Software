@@ -21,6 +21,7 @@ namespace optifol
 {
 
 class Requirement;
+class DiscoveryTestExecutable;
 
 class TargetTestExecutableBase : public StorageObjectBase
 {

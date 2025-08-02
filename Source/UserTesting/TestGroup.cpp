@@ -31,6 +31,11 @@ TestGroup::TestGroup(const Glib::ustring &name, BaseObjectType *cobject, const G
     property_name().set_value(name);
 }
 
+Glib::RefPtr<Gtk::TreeListModel> TestGroup::get_tree() const noexcept
+{
+    return tests_tree;
+}
+
 decltype(TestGroup::grouped_executables)::const_iterator TestGroup::begin_executable_groups() const noexcept
 {
     return grouped_executables.cbegin();
@@ -43,6 +48,7 @@ decltype(TestGroup::grouped_executables)::const_iterator TestGroup::end_executab
 
 void TestGroup::handle_requirement_change(const guint initial_index, const guint removed_count, const guint added_count)
 {
+#if 0 // TODO URGENT - We must handle changes in the Requirement model, else the TestGroup will have dangling refs.
     // First remove all deleted Requirements from the grouped executable map.
 
     for (guint remove_count_i = 0; remove_count_i < removed_count; ++remove_count_i) {
@@ -59,7 +65,6 @@ void TestGroup::handle_requirement_change(const guint initial_index, const guint
                 "\" was present in the Test Group deletion records but did not have an associated Test.");
 
         // Locate the group in which the Requirement was stored, keyed by its target executable.
-#if 0 // TODO URGENT
         const auto executable_group_it = grouped_executables.find(deleted_req_test->property_target_executable_name().
             get_value());
 
@@ -75,7 +80,6 @@ void TestGroup::handle_requirement_change(const guint initial_index, const guint
         }
 
         deleted_requirements.erase(deleted_it);
-#endif
     }
 
     // Then handle new Requirements by grouping according to the executable name.
@@ -89,7 +93,6 @@ void TestGroup::handle_requirement_change(const guint initial_index, const guint
             throw std::runtime_error("The incoming Requirement \"" + requirement->property_name().get_value() + "\""
                 " does not have an associated Test.");
 
-#if 0 // TODO URGENT
         // Get the executable group with which the incoming Requirement should be associated, creating if needed.
         const auto& executable_name = requirement_test->property_target_executable_name().get_value();
         auto executable_group_it = grouped_executables.find(executable_name);
@@ -99,8 +102,8 @@ void TestGroup::handle_requirement_change(const guint initial_index, const guint
 
         // Insert the incoming Requirement into the suitable executable group.
         executable_group_it->second.insert(std::move(requirement));
-#endif
     }
+#endif
 }
 
 void TestGroup::record_slated_requirement(const Glib::RefPtr<Requirement> slated_requirement, const guint old_index)

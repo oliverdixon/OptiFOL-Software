@@ -56,12 +56,6 @@ public:
     [[nodiscard]] Glib::PropertyProxy<Glib::RefPtr<DiscoveryTestFixture>> property_fixture();
 
     /**
-     * @brief Retrieves a read-write proxy for the test name property.
-     * @return A read-write proxy for the test name.
-     */
-    [[nodiscard]] Glib::PropertyProxy<Glib::ustring> property_test();
-
-    /**
      * @brief Retrieves a read-only proxy for the DiscoveryTestExecutable executable property.
      * @return A read-only proxy for the executable.
      */
@@ -73,12 +67,6 @@ public:
      */
     [[nodiscard]] Glib::PropertyProxy_ReadOnly<Glib::RefPtr<DiscoveryTestFixture>> property_fixture() const;
 
-    /**
-     * @brief Retrieves a read-only proxy for the test name property.
-     * @return A read-only proxy for the test name.
-     */
-    [[nodiscard]] Glib::PropertyProxy_ReadOnly<Glib::ustring> property_test() const;
-
 private:
     /**
      * @brief Establish callbacks such that the internal intra-model state stays correctly synchronised.
@@ -88,8 +76,6 @@ private:
     Glib::Property<Glib::RefPtr<DiscoveryTestExecutable>> executable;
 
     Glib::Property<Glib::RefPtr<DiscoveryTestFixture>> fixture;
-
-    Glib::Property<Glib::ustring> test;
 };
 
 } // namespace optifol

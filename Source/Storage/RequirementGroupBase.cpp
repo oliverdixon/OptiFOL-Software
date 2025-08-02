@@ -23,6 +23,11 @@ RequirementGroupBase::RequirementGroupBase(sigc::slot<void(guint, guint, guint)>
     model->signal_items_changed().connect(std::move(changed_callback));
 }
 
+Glib::RefPtr<Gio::ListModel> RequirementGroupBase::get_tree_model() const noexcept
+{
+    return model;
+}
+
 void RequirementGroupBase::insert_requirement(const Glib::RefPtr<Requirement> &new_requirement)
 {
     model->append(new_requirement);

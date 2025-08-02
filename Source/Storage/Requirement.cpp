@@ -47,18 +47,18 @@ const log4cxx::LoggerPtr Requirement::parse_logger = Logging::get_logger({"Logic
 const log4cxx::LoggerPtr Requirement::integration_logger = Logging::get_logger({"LogicServices", "SystemIntegration"});
 
 Requirement::Requirement(std::string &&name, std::string &&statement, std::string &&description, const guint priority,
-        const Glib::RefPtr<Gio::ListStore<Test>>& tests, std::nullptr_t) :
+        Glib::RefPtr<Gio::ListStore<TestSpecificationEntry>>&& tests, std::nullptr_t) :
     Glib::ObjectBase("Requirement"),
     statement(*this, "Requirement-statement"),
     normalised_statement(*this, "Requirement-normalised"),
     description(*this, "Requirement-description"),
     priority(*this, "Requirement-priority")
 {
-    setup_properties(std::move(name), std::move(statement), std::move(description), priority, tests);
+    setup_properties(std::move(name), std::move(statement), std::move(description), priority, std::move(tests));
 }
 
 Requirement::Requirement(std::string &&name, std::string &&statement, std::string &&description, const guint priority,
-        const Glib::RefPtr<Gio::ListStore<Test>>& tests, SymbolRepository &system_repository) :
+        Glib::RefPtr<Gio::ListStore<TestSpecificationEntry>>&& tests, SymbolRepository &system_repository) :
     Glib::ObjectBase("Requirement"),
     statement(*this, "Requirement-statement"),
     normalised_statement(*this, "Requirement-normalised"),
@@ -66,11 +66,11 @@ Requirement::Requirement(std::string &&name, std::string &&statement, std::strin
     priority(*this, "Requirement-priority"),
     repository_building_visitor(system_repository)
 {
-    setup_properties(std::move(name), std::move(statement), std::move(description), priority, tests);
+    setup_properties(std::move(name), std::move(statement), std::move(description), priority, std::move(tests));
 }
 
 Requirement::Requirement(std::string &&name, std::string &&statement, std::string &&description, const guint priority,
-        const Glib::RefPtr<Gio::ListStore<Test>>& tests, BaseObjectType *cobject,
+        Glib::RefPtr<Gio::ListStore<TestSpecificationEntry>>&& tests, BaseObjectType *cobject,
         const Glib::RefPtr<Gtk::Builder> &builder, SymbolRepository &system_repository) :
     Glib::ObjectBase("Requirement"),
     StorageObjectBase(cobject, builder),
@@ -80,7 +80,12 @@ Requirement::Requirement(std::string &&name, std::string &&statement, std::strin
     priority(*this, "Requirement-priority"),
     repository_building_visitor(system_repository)
 {
-    setup_properties(std::move(name), std::move(statement), std::move(description), priority, tests);
+    setup_properties(std::move(name), std::move(statement), std::move(description), priority, std::move(tests));
+}
+
+Glib::RefPtr<Gtk::TreeListModel> Requirement::get_tree() const noexcept
+{
+    return tests_tree;
 }
 
 bool Requirement::operator==(const Requirement & other) const noexcept
@@ -113,6 +118,11 @@ Glib::RefPtr<Gio::ListStore<Test>> Requirement::get_tests() const noexcept
     return tests;
 }
 
+Glib::RefPtr<Gio::ListStore<TestSpecificationEntry>> Requirement::get_test_specs() const noexcept
+{
+    return test_specs;
+}
+
 Glib::PropertyProxy_ReadOnly<Glib::ustring> Requirement::property_statement() const
 {
     return statement.get_proxy();
@@ -143,11 +153,6 @@ std::string_view Requirement::observe_latex_statement() const noexcept
     return latex_input_statement;
 }
 
-const std::optional<Test> &Requirement::observe_test() const noexcept
-{
-    return test;
-}
-
 std::pair<const Requirement *, Gtk::Label *> Requirement::requirement_bind_helper(Gtk::ListItem &list_item)
 {
     const auto &requirement = std::dynamic_pointer_cast<const Requirement>(list_item.get_item());
@@ -168,15 +173,18 @@ bool Requirement::is_analysis_ready() const noexcept
 
 void Requirement::setup_properties(std::string &&requirement_name, std::string &&requirement_statement,
         std::string &&requirement_description, const guint requirement_priority,
-        const Glib::RefPtr<Gio::ListStore<Test>> &requirement_tests)
+        Glib::RefPtr<Gio::ListStore<TestSpecificationEntry>> &&requirement_tests)
 {
     property_statement().signal_changed().connect(sigc::mem_fun(*this, &Requirement::handle_statement_change));
+    test_specs->signal_items_changed().connect(sigc::mem_fun(*this, &Requirement::handle_test_spec_change));
 
     property_name().set_value(std::move(requirement_name));
     property_statement().set_value(std::move(requirement_statement));
     property_description().set_value(std::move(requirement_description));
     property_priority().set_value(requirement_priority);
-    tests = requirement_tests;
+    test_specs = std::move(requirement_tests);
+
+    handle_test_spec_change(0, 0, test_specs->get_n_items()); // On first setup, all items are new.
 }
 
 void Requirement::handle_statement_change()
@@ -222,6 +230,21 @@ void Requirement::handle_statement_change()
     property_normalised().set_value(serialiser_stream.str());
 
     req_logger->debug("Successfully updated FOL statement for requirement \"" + property_name().get_value() + "\".");
+}
+
+void Requirement::handle_test_spec_change(const guint position, const guint removed_count, const guint added_count)
+    const
+{
+    std::vector<std::shared_ptr<Test>> new_tests;
+    new_tests.reserve(added_count);
+
+    for (guint spec_index = position; spec_index < added_count; ++spec_index) {
+        const auto& spec = test_specs->get_item(spec_index);
+        if (spec != nullptr)
+            new_tests.push_back(std::make_shared<Test>(spec));
+    }
+
+    tests->splice(position, removed_count, new_tests);
 }
 
 std::unique_ptr<IMutableSentence> Requirement::cnf_normalise(std::unique_ptr<IMutableSentence> &&sentence)

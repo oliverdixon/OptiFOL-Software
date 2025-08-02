@@ -15,6 +15,7 @@
 #define TEST_HPP
 
 #include "../Storage/StorageObjectBase.hpp"
+#include "ITestModelNode.hpp"
 #include "TargetTestExecutableBase.hpp"
 #include "TestResult.hpp"
 #include "TestSpecificationEntry.hpp"
@@ -26,13 +27,16 @@ namespace optifol
  * @class Test
  * @brief The Test storage object denotes a single unit test to be executed against a testable target executable.
  */
-class Test : public StorageObjectBase
+class Test : public StorageObjectBase,
+             public ITestModelNode
 {
 public:
-    explicit Test(const TestSpecificationEntry& template_specification);
+    explicit Test(std::shared_ptr<TestSpecificationEntry> template_specification);
 
-    Test(const TestSpecificationEntry& template_specification, BaseObjectType *cobject,
-        const Glib::RefPtr<Gtk::Builder> &builder);
+    Test(std::shared_ptr<TestSpecificationEntry> template_specification, BaseObjectType *cobject,
+            const Glib::RefPtr<Gtk::Builder> &builder);
+
+    [[nodiscard]] Glib::RefPtr<Gtk::TreeListModel> get_tree() const noexcept override;
 
     /**
      * @brief Accept a shared TestResult object to indicate the last-known result of the Test.
@@ -41,9 +45,9 @@ public:
      */
     void emplace_result(const std::shared_ptr<TestResult> &test_result);
 
-    void share_test_executable(std::shared_ptr<TargetTestExecutableBase> shared_exe);
+    void share_test_executable(const std::shared_ptr<TargetTestExecutableBase> &shared_exe);
 
-    [[nodiscard]] const TargetTestExecutableBase * observe_test_executable() const noexcept;
+    [[nodiscard]] const TargetTestExecutableBase *observe_test_executable() const noexcept;
 
     [[nodiscard]] Glib::PropertyProxy<Glib::ustring> property_fixture();
 
@@ -56,7 +60,7 @@ public:
     [[nodiscard]] Glib::PropertyProxy_ReadOnly<std::shared_ptr<TestResult>> property_result() const;
 
 private:
-    void instantiate_from_specification(const TestSpecificationEntry& template_specification);
+    void instantiate_from_specification(std::shared_ptr<TestSpecificationEntry> spec);
 
     std::shared_ptr<TargetTestExecutableBase> target_executable;
     Glib::Property<Glib::ustring> target_executable_name;

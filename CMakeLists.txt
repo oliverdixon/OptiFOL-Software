@@ -364,8 +364,8 @@ add_executable(OptifolGUI
         Source/UserTesting/Test.hpp
         Source/GUI/ProcessExecutor.cpp
         Source/GUI/ProcessExecutor.hpp
-        Source/Storage/TestGroup.cpp
-        Source/Storage/TestGroup.hpp
+        Source/UserTesting/TestGroup.cpp
+        Source/UserTesting/TestGroup.hpp
         Source/Storage/RequirementGroupBase.hpp
         Source/Storage/RequirementGroupBase.cpp
         Source/GUI/TestingArea/TestingRunTestsPopover.cpp
@@ -389,6 +389,7 @@ add_executable(OptifolGUI
         Source/UserTesting/DiscoveryTestFixture.hpp
         Source/UserTesting/Google/GoogleTestDiscoveryExecutable.cpp
         Source/UserTesting/Google/GoogleTestDiscoveryExecutable.hpp
+        Source/UserTesting/ITestModelNode.hpp
 )
 
 set(COMMON_COMPILER_OPTIONS

@@ -8,6 +8,7 @@
 //
 
 #include "TargetTestExecutableBase.hpp"
+#include "DiscoveryTestExecutable.hpp"
 
 namespace optifol
 {

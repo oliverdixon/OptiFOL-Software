@@ -50,22 +50,13 @@ public:
      */
     virtual ~RequirementGroupBase() = default;
 
-    /**
-     * @brief Expose the Gio::ListModel representing the child elements of a node in a tree structure.
-     * @tparam Grouping The parent grouping type, such as TestGroup or AnalysisGroup.
-     * @param item The list item dynamically castable to the Grouping.
-     * @return The Gio::ListModel containing the child elements of the given item of type Grouping. If the node is a
-     * leaf and will never contain children, @ref std::nullptr_t is returned; if the node is temporarily empty, a
-     * well-formed empty Gtk::ListModel is returned.
-     */
-    template<class Grouping>
-        requires std::derived_from<Grouping, RequirementGroupBase>
+    template<class Grouping> requires std::derived_from<Grouping, RequirementGroupBase>
     static Glib::RefPtr<Gio::ListModel> get_expanded_list(const Glib::RefPtr<Glib::ObjectBase> &item)
     {
         const auto candidate = std::dynamic_pointer_cast<Grouping>(item);
 
         if (candidate != nullptr)
-            return candidate->model;
+            return candidate->get_tree_model();
 
         return nullptr;
     }
@@ -117,8 +108,11 @@ public:
      */
     void for_each(const std::function<void(Requirement &)> &function) const;
 
-private:
+protected:
     Glib::RefPtr<Gio::ListStore<Requirement>> model = Gio::ListStore<Requirement>::create();
+
+private:
+    virtual Glib::RefPtr<Gio::ListModel> get_tree_model() const noexcept;
 
     std::unordered_map<Glib::RefPtr<Requirement>, guint, std::hash<Requirement>,
             DereferencingEqualityFunctor<Glib::RefPtr<Requirement>, Requirement>>

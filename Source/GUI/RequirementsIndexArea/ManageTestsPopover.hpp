@@ -37,8 +37,7 @@ class ManageTestsPopover
 public:
     explicit ManageTestsPopover(Gtk::Builder& builder);
 
-    // TODO: this is inefficient. We need to take the difference on the Requirement and only construct necessary Test objects.
-    Glib::RefPtr<Gio::ListStore<Test>> get_aggregate_tests() const;
+    void set_model(const Glib::RefPtr<Gio::ListStore<TestSpecificationEntry>>& model);
 
 private:
     static const char * const popover_name;
@@ -47,7 +46,7 @@ private:
     /**
      * @brief Handle a click of the <i>Confirm</i> by hiding the popover.
      */
-    void confirm_button_clicked();
+    void confirm_button_clicked() const;
 
     void new_test_clicked() const;
 
@@ -71,8 +70,7 @@ private:
     Gtk::ColumnView * const view;
 
     Glib::RefPtr<Gtk::SingleSelection> selection_model = Gtk::SingleSelection::create();
-    Glib::RefPtr<Gio::ListStore<TestSpecificationEntry>> test_spec_model =
-        Gio::ListStore<TestSpecificationEntry>::create();
+    Glib::RefPtr<Gio::ListStore<TestSpecificationEntry>> test_spec_model;
 
     std::unordered_set<
         Glib::RefPtr<DiscoveryTestExecutable>,

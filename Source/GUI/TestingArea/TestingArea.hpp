@@ -14,11 +14,9 @@
 #ifndef TESTINGAREA_HPP
 #define TESTINGAREA_HPP
 
-#include <glibmm/binding.h>
 #include <glibmm/refptr.h>
 #include <gtkmm/columnview.h>
 #include <gtkmm/label.h>
-#include <gtkmm/listitem.h>
 #include <gtkmm/singleselection.h>
 #include <gtkmm/treelistmodel.h>
 
@@ -106,18 +104,6 @@ public:
     Glib::RefPtr<TestGroup> get_selection() const;
 
 private:
-    template<typename ReturnType>
-    using TestGetter = Glib::PropertyProxy_ReadOnly<ReturnType> (Test::*)() const;
-
-    /**
-     * @brief Provide a Test-Gtk::Label @ref std::pair to assist the GTK bind functions for the given Requirement
-     *  Gtk::ListItem.
-     * @param list_item The Gtk::ListItem with a Requirement as its child.
-     * @return The optional Test detained by the Requirement, and the corresponding Gtk::Label for the Gtk::ListItem.
-     */
-    static std::optional<std::pair<const std::optional<Test>&, Gtk::Label *>> bind_helper(
-        const Glib::RefPtr<Gtk::ListItem> &list_item);
-
     void configure_columns() const;
 
     void configure_selection_model() const;

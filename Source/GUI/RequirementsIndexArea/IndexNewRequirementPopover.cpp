@@ -38,39 +38,48 @@ IndexNewRequirementPopover::IndexNewRequirementPopover(Gtk::Builder &builder, Re
     edit_tests_button(GTKHelpers::get_widget<Gtk::MenuButton>(popover_name, builder, "new_requirement_manage_tests")),
     edit_tests_popover(GTKHelpers::get_widget<Gtk::Popover>(popover_name, builder, "manage_tests_popover"))
 {
+    edit_tests_button->set_popover(*edit_tests_popover);
+
     confirm_button->signal_clicked().connect(sigc::mem_fun(*this, &IndexNewRequirementPopover::confirm_button_clicked));
     cancel_button->signal_clicked().connect(sigc::mem_fun(*this, &IndexNewRequirementPopover::cancel_button_clicked));
-    edit_tests_button->set_popover(*edit_tests_popover);
+    my_popover->signal_show().connect(sigc::mem_fun(*this, &IndexNewRequirementPopover::popover_shown));
 }
 
-void IndexNewRequirementPopover::confirm_button_clicked() const
+void IndexNewRequirementPopover::confirm_button_clicked()
 {
     my_popover->popdown();
+
     index_area.observe_active_subsystem()->build_requirement(
         name_entry->get_text(),
         statement_entry->get_text(),
         description_entry->get_buffer()->get_text(),
         priority_entry->get_selected(),
-        manage_tests_popover.get_aggregate_tests()
+        std::move(test_specification)
     );
 
     popover_logger->info("Created new subsystem requirement with name \"" + name_entry->get_text() + "\".");
     clear_inputs();
 }
 
-void IndexNewRequirementPopover::cancel_button_clicked() const
+void IndexNewRequirementPopover::cancel_button_clicked()
 {
     my_popover->popdown();
     clear_inputs();
 }
 
+void IndexNewRequirementPopover::popover_shown()
+{
+    manage_tests_popover.set_model(test_specification);
+}
+
 // ReSharper disable once CppDFAUnreachableFunctionCall - False positive: called from button-click callback.
-void IndexNewRequirementPopover::clear_inputs() const
+void IndexNewRequirementPopover::clear_inputs()
 {
     name_entry->set_text("");
     description_entry->get_buffer()->set_text("");
     statement_entry->set_text("");
     priority_entry->set_selected(0);
+    test_specification = Gio::ListStore<TestSpecificationEntry>::create();
 }
 
 } // namespace optifol

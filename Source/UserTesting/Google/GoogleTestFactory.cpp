@@ -14,7 +14,7 @@
 #include <vector>
 
 #include "../../GUI/StreamingProcessExecutor.hpp"
-#include "../../Storage/TestGroup.hpp"
+#include "../TestGroup.hpp"
 #include "GoogleTestFactory.hpp"
 #include "GoogleTestListener.hpp"
 

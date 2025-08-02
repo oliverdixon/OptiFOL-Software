@@ -14,14 +14,14 @@
 #ifndef REQUIREMENT_HPP
 #define REQUIREMENT_HPP
 
+#include <gtkmm/treelistmodel.h>
 #include <log4cxx/logger.h>
 
 #include "../IR/MutableVariants/Sentences/IMutableSentence.hpp"
 #include "../IR/Sentences/SentenceRoot.hpp"
 #include "../IR/SymbolRepository.hpp"
-#include "../Visitors/MutableTargets/RepositoryBuildingVisitor.hpp"
-
 #include "../UserTesting/Test.hpp"
+#include "../Visitors/MutableTargets/RepositoryBuildingVisitor.hpp"
 #include "FOLLexer.hpp"
 #include "StorageObjectBase.hpp"
 
@@ -31,7 +31,7 @@ namespace Gtk
 class ListItem;
 class Label;
 
-}
+} // namespace Gtk
 
 namespace optifol
 {
@@ -40,8 +40,8 @@ namespace optifol
  * @class Requirement
  * @brief The Requirement storage object is the atomic unit of measure in Optifol. It belongs to a single Subsystem.
  */
-class Requirement :
-        public StorageObjectBase
+class Requirement : public StorageObjectBase,
+                    public ITestModelNode
 {
 public:
     /**
@@ -56,7 +56,7 @@ public:
      *  the wider system. Logical analysis will produce unexpected results.
      */
     explicit Requirement(std::string&& name, std::string&& statement, std::string&& description, guint priority,
-        const Glib::RefPtr<Gio::ListStore<Test>>& tests, std::nullptr_t system_repository);
+        Glib::RefPtr<Gio::ListStore<TestSpecificationEntry>>&& tests, std::nullptr_t system_repository);
 
     /**
      * @brief Create a new Requirement with the given name and register in the Glib GType system
@@ -68,7 +68,7 @@ public:
      *  Requirement
      */
     explicit Requirement(std::string&& name, std::string&& statement, std::string&& description, guint priority,
-        const Glib::RefPtr<Gio::ListStore<Test>>& tests, SymbolRepository& system_repository);
+        Glib::RefPtr<Gio::ListStore<TestSpecificationEntry>>&& tests, SymbolRepository& system_repository);
 
     /**
      * @brief Create a new Requirement with the given name and register in the Glib GType system
@@ -82,15 +82,17 @@ public:
      *  Requirement
      */
     Requirement(std::string&& name, std::string&& statement, std::string&& description, guint priority,
-        const Glib::RefPtr<Gio::ListStore<Test>>& tests, BaseObjectType* cobject,
+        Glib::RefPtr<Gio::ListStore<TestSpecificationEntry>>&& tests, BaseObjectType* cobject,
         const Glib::RefPtr<Gtk::Builder>& builder, SymbolRepository& system_repository);
+
+    [[nodiscard]] Glib::RefPtr<Gtk::TreeListModel> get_tree() const noexcept override;
 
     /**
      * @brief Compare two Requirement objects for semantic equality
      * @param other The Requirement with which to compare.
      * @return Is the current Requirement equivalent to the given other Requirement?
      */
-    bool operator==(const Requirement & other) const noexcept;
+    bool operator==(const Requirement &other) const noexcept;
 
     /**
      * @brief Get a read-write proxy for the 'statement' property
@@ -117,6 +119,8 @@ public:
     [[nodiscard]] Glib::PropertyProxy<Glib::ustring> property_normalised();
 
     [[nodiscard]] Glib::RefPtr<Gio::ListStore<Test>> get_tests() const noexcept;
+
+    [[nodiscard]] Glib::RefPtr<Gio::ListStore<TestSpecificationEntry>> get_test_specs() const noexcept;
 
     /**
      * @brief Get a read-only proxy for the 'statement' property
@@ -146,8 +150,6 @@ public:
 
     [[nodiscard]] std::string_view observe_latex_statement() const noexcept;
 
-    [[nodiscard]] const std::optional<Test>& observe_test() const noexcept;
-
     static std::pair<const Requirement *, Gtk::Label *> requirement_bind_helper(Gtk::ListItem &list_item);
 
     /**
@@ -175,7 +177,7 @@ private:
      * @param sentence The sentence to serialise
      * @return The @ref std::string representation of the plain-text serialised sentence
      */
-    static std::string text_serialise(const IMutableSentence * sentence);
+    static std::string text_serialise(const IMutableSentence *sentence);
 
     /**
      * @brief Helper to push the given IMutableSentence node through a LaTeX-text serialisation pipeline
@@ -193,12 +195,14 @@ private:
      */
     void setup_properties(std::string &&requirement_name, std::string &&requirement_statement,
             std::string &&requirement_description, guint requirement_priority,
-            const Glib::RefPtr<Gio::ListStore<Test>> &requirement_tests);
+            Glib::RefPtr<Gio::ListStore<TestSpecificationEntry>> &&requirement_tests);
 
     /**
      * @brief Handle a change in the Requirement statement by re-parsing and updating internal state where necessary.
      */
     void handle_statement_change();
+
+    void handle_test_spec_change(guint position, guint removed_count, guint added_count) const;
 
     /**
      * @brief Transform the given mutable IR node tree into an immutable equivalent, populating the symbol repository in
@@ -213,8 +217,11 @@ private:
     Glib::Property<Glib::ustring> description;
     Glib::Property<guint> priority;
 
+    Glib::RefPtr<Gio::ListStore<TestSpecificationEntry>> test_specs = Gio::ListStore<TestSpecificationEntry>::create();
     Glib::RefPtr<Gio::ListStore<Test>> tests = Gio::ListStore<Test>::create();
-    std::optional<Test> test; // TODO URGENT: remove
+    Glib::RefPtr<Gtk::TreeListModel> tests_tree =
+            Gtk::TreeListModel::create(tests, &ITestModelNode::get_given_tree, true);
+
     std::unique_ptr<IMutableSentence> original_ast;
     std::unique_ptr<SentenceRoot> prepared_ast;
 
@@ -228,6 +235,6 @@ private:
     static FOLParser parser;
 };
 
-}
+} // namespace optifol
 
 #endif

@@ -128,12 +128,8 @@ void AnalysisArea::select_model(const Glib::RefPtr<Subsystem> &subsystem_model)
     on_off_widgets.second->set_visible(true);
 
     active_subsystem = subsystem_model;
-    tree_model = Gtk::TreeListModel::create(
-        active_subsystem->get_analysis_groups(),
-        sigc::ptr_fun(&AnalysisGroup::get_expanded_list<AnalysisGroup>),
-        true,
-        true
-    );
+    tree_model = Gtk::TreeListModel::create(active_subsystem->get_analysis_groups(),
+        sigc::ptr_fun(&RequirementGroupBase::get_expanded_list<AnalysisGroup>));
     selection_model->set_model(tree_model);
 }
 

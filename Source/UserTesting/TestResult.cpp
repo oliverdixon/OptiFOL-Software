@@ -40,12 +40,12 @@ std::size_t TestResult::hash() const noexcept
     return hash_combine(std::hash<std::string>{}(fixture_name), std::hash<std::string>{}(test_name));
 }
 
-void TestResult::populate_test_suite_name(const std::string &suite_name)
+void TestResult::populate_test_fixture_name(const std::string &incoming_fixture_name)
 {
-    this->fixture_name = suite_name;
+    fixture_name = incoming_fixture_name;
 }
 
-std::string TestResult::get_test_name() const noexcept
+Glib::ustring TestResult::get_test_name() const noexcept
 {
     return test_name;
 }
@@ -70,9 +70,9 @@ bool TestResult::operator==(const TestResult &other) const noexcept
     return test_name == other.test_name && fixture_name == other.fixture_name;
 }
 
-bool TestResult::operator==(const std::pair<std::string_view, std::string_view>& names) const noexcept
+bool TestResult::operator==(const std::pair<Glib::ustring, Glib::ustring>& names) const noexcept
 {
-    return names.first == fixture_name.c_str() && names.second == test_name;
+    return names.first == fixture_name && names.second == test_name;
 }
 
 } // namespace optifol

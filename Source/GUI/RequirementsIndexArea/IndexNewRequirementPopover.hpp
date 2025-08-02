@@ -95,17 +95,19 @@ private:
     /**
      * @brief Handle a click of the <i>Confirm</i> by attempting to create a Requirement with the given characteristics.
      */
-    void confirm_button_clicked() const;
+    void confirm_button_clicked();
 
     /**
      * @brief Handle a click of the <i>Cancel</i> button by discarding all input and closing the popover.
      */
-    void cancel_button_clicked() const;
+    void cancel_button_clicked();
+
+    void popover_shown();
 
     /**
      * @brief Clear all user fields in the popover
      */
-    void clear_inputs() const;
+    void clear_inputs();
 
     static const char * const popover_name;
     static const log4cxx::LoggerPtr popover_logger;
@@ -123,6 +125,8 @@ private:
     ManageTestsPopover manage_tests_popover;
     Gtk::MenuButton * const edit_tests_button;
     Gtk::Popover * const edit_tests_popover;
+    Glib::RefPtr<Gio::ListStore<TestSpecificationEntry>> test_specification =
+        Gio::ListStore<TestSpecificationEntry>::create();
 };
 
 } // namespace optifol

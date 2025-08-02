@@ -43,9 +43,9 @@ public:
 
     [[nodiscard]] std::size_t hash() const noexcept override;
 
-    void populate_test_suite_name(const std::string &suite_name);
+    void populate_test_fixture_name(const std::string &incoming_fixture_name);
 
-    [[nodiscard]] std::string get_test_name() const noexcept;
+    [[nodiscard]] Glib::ustring get_test_name() const noexcept;
 
     [[nodiscard]] bool has_passed() const noexcept;
 
@@ -55,15 +55,15 @@ public:
 
     bool operator==(const TestResult & other) const noexcept;
 
-    bool operator==(const std::pair<std::string_view, std::string_view>& names) const noexcept;
+    bool operator==(const std::pair<Glib::ustring, Glib::ustring>& names) const noexcept;
 
 private:
-    const std::string test_name;
+    const Glib::ustring test_name;
+    Glib::ustring fixture_name; // Cannot be const, as parsers may load the fixture metadata after its results.
+
     const bool passed;
     const std::size_t execution_time;
-
     std::vector<Partial> partial_results;
-    Glib::ustring fixture_name;
 };
 
 } // namespace optifol
@@ -78,10 +78,10 @@ struct std::hash<optifol::TestResult>
         return object->hash();
     }
 
-    std::size_t operator()(const std::pair<std::string_view, std::string_view>& names) const noexcept
+    std::size_t operator()(const std::pair<Glib::ustring, Glib::ustring>& names) const noexcept
     {
-        return optifol::IHashable::hash_combine(std::hash<std::string_view>{}(names.first),
-            std::hash<std::string_view>{}(names.second));
+        return optifol::IHashable::hash_combine(std::hash<std::string>{}(names.first),
+            std::hash<std::string>{}(names.second));
     }
 
     std::size_t operator()(const optifol::TestResult & object) const noexcept
