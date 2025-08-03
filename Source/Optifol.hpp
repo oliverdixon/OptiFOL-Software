@@ -14,6 +14,12 @@
 #ifndef OPTIFOL_HPP
 #define OPTIFOL_HPP
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wmacro-redefined" // Redefinition is intentional.
+#define RAPIDJSON_PARSE_ERROR_NORETURN(parse_error_code, offset) \
+    throw optifol::ParseError(#parse_error_code)
+#pragma clang diagnostic pop
+
 /**
  * @namespace optifol
  * @brief The Optifol namespace contains the vast majority of the symbols defined by the Optifol client application

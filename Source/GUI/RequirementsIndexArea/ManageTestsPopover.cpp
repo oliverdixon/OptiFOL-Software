@@ -3,13 +3,16 @@
  * 2025 Oliver Dixon <od641@york.ac.uk>
  */
 
-//
-// Created by owd on 7/29/25.
-//
-
-#include <iostream>
+/**
+ * @file
+ * @brief Class specification for the ManageTestsPopover GUI popover
+ * @author Oliver Dixon
+ * @date 2025-08-02
+ * @version Development
+ */
 
 #include "../../UserTesting/Discovery/GoogleTestDiscoveryExecutable.hpp"
+#include "../../UserTesting/Discovery/DiscoveryTestFixture.hpp"
 #include "../../UserTesting/Modelling/Test.hpp"
 #include "../GTKHelpers.hpp"
 #include "../Logging.hpp"

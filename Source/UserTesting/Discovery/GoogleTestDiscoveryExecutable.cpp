@@ -11,15 +11,20 @@
  * @version Development
  */
 
-#include "GoogleTestDiscoveryExecutable.hpp"
-
 #include <cassert>
 #include <fstream>
-#include <rapidjson/document.h>
 #include <rapidjson/istreamwrapper.h>
+
+#include "../../Exceptions/ParseError.hpp"
+#include "../Logging.hpp"
+#include "DiscoveryTestFixture.hpp"
+#include "GoogleTestDiscoveryExecutable.hpp"
 
 namespace optifol
 {
+
+const log4cxx::LoggerPtr GoogleTestDiscoveryExecutable::logger =
+        Logging::get_logger({"UserTesting", "Discovery", "GoogleTest"});
 
 GoogleTestDiscoveryExecutable::GoogleTestDiscoveryExecutable(const Glib::ustring &executable_path) :
     Glib::ObjectBase("GoogleTestDiscoveryExecutable"),
@@ -34,6 +39,18 @@ GoogleTestDiscoveryExecutable::GoogleTestDiscoveryExecutable(
     DiscoveryTestExecutable(executable_path, cobject, builder)
 {
     start_discovery();
+}
+
+GoogleTestDiscoveryExecutable::~GoogleTestDiscoveryExecutable()
+{
+    if (discovery_executor != nullptr)
+        logger->error("Google Test discovery executable for \"" + property_name().get_value() + "\" is being "
+            "destructed with an unhandled subprocess. Discovery will be incomplete.");
+
+    if (discovery_tmp_file_path.has_value())
+        logger->error("Google Test discovery executable for \"" + property_name().get_value() + "\" is being "
+            "destructed with an unresolved temporary file at \"" + *discovery_tmp_file_path +
+            "\". Discovery will be incomplete.");
 }
 
 void GoogleTestDiscoveryExecutable::start_discovery()
@@ -54,45 +71,78 @@ void GoogleTestDiscoveryExecutable::start_discovery()
     );
 }
 
-void GoogleTestDiscoveryExecutable::discovery_done_callback(const int exit_code)
+void GoogleTestDiscoveryExecutable::discovery_done_callback(const int exit_code) noexcept
 {
-    std::ignore = exit_code;
     assert(discovery_tmp_file_path.has_value());
 
-    discovery_executor.reset();
-    std::ifstream discovery_file_stream{*discovery_tmp_file_path};
-    // TODO document if failed to open.
+    if (exit_code != 0) {
+        logger->error("Discovery sub-process exited with non-zero exit code; no parsing attempted.");
+        std::remove(discovery_tmp_file_path->c_str());
+        discovery_tmp_file_path.reset();
+        return;
+    }
 
-    rapidjson::IStreamWrapper json_stream{discovery_file_stream};
-    rapidjson::Document document;
-    document.ParseStream(json_stream);
+    try {
+        discovery_executor.reset();
+        std::ifstream discovery_file_stream;
+        discovery_file_stream.exceptions(discovery_file_stream.exceptions() | std::ios::failbit);
+        discovery_file_stream.open(*discovery_tmp_file_path);
 
-    const auto& fixtures = document["testsuites"];
-    assert(fixtures.IsArray());
+        rapidjson::IStreamWrapper json_stream{discovery_file_stream};
+        rapidjson::Document document;
+        document.ParseStream(json_stream); // May invoke RAPIDJSON_PARSE_ERROR_NORETURN.
+        parse_json_payload(document);
+    } catch (const ParseError &parse_error) {
+        logger->error("Parse failed for Google Test discovery executable \"" + property_name().get_value() + "\".");
+        logger->error(parse_error.what());
+    } catch (const std::ios_base::failure &stream_error) {
+        logger->error("Could not open file \"" + *discovery_tmp_file_path + "\" due to system error.");
+        logger->error(stream_error.what());
+    }
 
-    // TODO URGENT make this all more robust. Don't do asserts. Throw exceptions.
-    for (const auto& fixture : fixtures.GetArray()) {
-        assert(fixture.IsObject());
-        const auto& fixture_name = fixture["name"];
-        assert(fixture_name.IsString());
-        const auto& fixture_tests = fixture["testsuite"];
-        assert(fixture_tests.IsArray());
+    if (std::remove(discovery_tmp_file_path->c_str()) != 0)
+        logger->warn("Could not remove temporary discovery file \"" + *discovery_tmp_file_path + "\".");
+
+    discovery_tmp_file_path.reset();
+}
+// ReSharper disable once CppDFAUnreachableFunctionCall - False positive. Called from discovery_done_callback.
+void GoogleTestDiscoveryExecutable::parse_json_payload(const rapidjson::Document &document) const
+{
+    const auto& fixtures = document.FindMember("testsuites");
+    if (fixtures == document.MemberEnd() || fixtures->value.IsArray() == false)
+        throw ParseError("Test suites array not found.");
+
+    for (const auto& fixture : fixtures->value.GetArray()) {
+        if (fixture.IsObject() == false)
+            throw ParseError("Fixture located, but is not an object.");
+
+        const auto fixture_name = fixture.FindMember("name");
+        if (fixture_name == fixture.MemberEnd() || fixture_name->value.IsString() == false)
+            throw ParseError("Fixture name not found.");
+
+        const auto fixture_tests = fixture.FindMember("testsuite");
+        if (fixture_tests == fixture.MemberEnd() || fixture_tests->value.IsArray() == false)
+            throw ParseError("Fixture tests not present for \"" + std::string(fixture_name->value.GetString()) +
+                "\".");
 
         const auto modelled_fixture = Glib::make_refptr_for_instance(
-            new DiscoveryTestFixture(fixture_name.GetString()));
+            new DiscoveryTestFixture(fixture_name->value.GetString()));
 
-        for (const auto& test : fixture_tests.GetArray()) {
-            assert(test.IsObject());
-            const auto& test_name = test["name"];
-            assert(test_name.IsString());
-            modelled_fixture->add_test(test_name.GetString());
+        for (const auto& test : fixture_tests->value.GetArray()) {
+            if (fixture.IsObject() == false)
+                throw ParseError("Test located in \"" + std::string(fixture_name->value.GetString()) +
+                    "\", but is not an object.");
+
+            const auto test_name = test.FindMember("name");
+            if (test_name == test.MemberEnd() || test_name->value.IsString() == false)
+                throw ParseError("Test located in \"" + std::string(fixture_name->value.GetString()) +
+                    "\", but it does not have a declared name.");
+
+            modelled_fixture->add_test(test_name->value.GetString());
         }
 
         add_fixture(modelled_fixture);
     }
-
-    std::remove(discovery_tmp_file_path->c_str());
-    discovery_tmp_file_path.reset();
 }
 
 } // namespace optifol

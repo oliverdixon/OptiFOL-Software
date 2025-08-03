@@ -12,22 +12,25 @@
  */
 
 #include "DiscoveryTestExecutable.hpp"
+#include "DiscoveryTestFixture.hpp"
 
 namespace optifol
 {
 
-DiscoveryTestExecutable::DiscoveryTestExecutable(const Glib::ustring &name) :
-    Glib::ObjectBase("DiscoveryTestExecutable")
+DiscoveryTestExecutable::DiscoveryTestExecutable(const Glib::ustring &executable_path) :
+    Glib::ObjectBase("DiscoveryTestExecutable"),
+    fixtures(Gio::ListStore<DiscoveryTestFixture>::create())
 {
-    property_name().set_value(name);
+    property_name().set_value(executable_path);
 }
 
 DiscoveryTestExecutable::DiscoveryTestExecutable(
-        const Glib::ustring &name, BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &builder) :
+        const Glib::ustring &executable_path, BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &builder) :
     Glib::ObjectBase("DiscoveryTestExecutable"),
-    StorageObjectBase(cobject, builder)
+    StorageObjectBase(cobject, builder),
+    fixtures(Gio::ListStore<DiscoveryTestFixture>::create())
 {
-    property_name().set_value(name);
+    property_name().set_value(executable_path);
 }
 
 Glib::RefPtr<Gio::ListStore<DiscoveryTestFixture>> DiscoveryTestExecutable::get_fixture_model() const noexcept
@@ -40,9 +43,9 @@ Glib::RefPtr<DiscoveryTestFixture> DiscoveryTestExecutable::get_default_fixture(
     return fixtures->get_item(0);
 }
 
-void DiscoveryTestExecutable::add_fixture(const Glib::RefPtr<DiscoveryTestFixture> &fixture) const
+void DiscoveryTestExecutable::add_fixture(Glib::RefPtr<DiscoveryTestFixture> fixture) const
 {
-    fixtures->append(fixture);
+    fixtures->append(std::move(fixture));
 }
 
 bool DiscoveryTestExecutable::operator==(const DiscoveryTestExecutable &other) const
@@ -50,9 +53,9 @@ bool DiscoveryTestExecutable::operator==(const DiscoveryTestExecutable &other) c
     return property_name().get_value() == other.property_name().get_value();
 }
 
-bool DiscoveryTestExecutable::operator==(const Glib::ustring &other_name) const
+bool DiscoveryTestExecutable::operator==(const Glib::ustring &other_executable_path) const
 {
-    return property_name().get_value() == other_name;
+    return property_name().get_value() == other_executable_path;
 }
 
 } // namespace optifol

@@ -36,7 +36,8 @@ IndexNewRequirementPopover::IndexNewRequirementPopover(Gtk::Builder &builder, Re
     priority_entry(GTKHelpers::get_widget<Gtk::DropDown>(popover_name, builder, "new_requirement_property_priority")),
     manage_tests_popover(builder),
     edit_tests_button(GTKHelpers::get_widget<Gtk::MenuButton>(popover_name, builder, "new_requirement_manage_tests")),
-    edit_tests_popover(GTKHelpers::get_widget<Gtk::Popover>(popover_name, builder, "manage_tests_popover"))
+    edit_tests_popover(GTKHelpers::get_widget<Gtk::Popover>(popover_name, builder, "manage_tests_popover")),
+    test_specification(Gio::ListStore<TestSpecificationEntry>::create())
 {
     edit_tests_button->set_popover(*edit_tests_popover);
 

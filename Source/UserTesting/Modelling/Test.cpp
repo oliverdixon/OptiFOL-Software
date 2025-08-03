@@ -12,6 +12,7 @@
  */
 
 #include "Test.hpp"
+#include "../Discovery/DiscoveryTestFixture.hpp"
 #include "../../Exceptions/SemanticException.hpp"
 
 namespace optifol

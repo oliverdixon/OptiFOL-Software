@@ -125,8 +125,7 @@ private:
     ManageTestsPopover manage_tests_popover;
     Gtk::MenuButton * const edit_tests_button;
     Gtk::Popover * const edit_tests_popover;
-    Glib::RefPtr<Gio::ListStore<TestSpecificationEntry>> test_specification =
-        Gio::ListStore<TestSpecificationEntry>::create();
+    Glib::RefPtr<Gio::ListStore<TestSpecificationEntry>> test_specification;
 };
 
 } // namespace optifol

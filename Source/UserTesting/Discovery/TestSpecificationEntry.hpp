@@ -22,11 +22,13 @@ namespace optifol
 
 /**
  * @class TestSpecificationEntry
- * @brief Provides a GObject container for aggregation of discovered tests with a DiscoveryTestExecutable,
- *  DiscoveryTestFixture, and Glib::ustring test name. Discovered tests are sole metadata objects containing printable
- *  data returned from test discovery. Note that the <code>name</code> property from StorageObjectBase is used to encode
- *  the test name.
- * @see Test for the runnable non-discovery counterpart.
+ * @brief Provides a GObject container for description of a test specification. A test specification can be used to
+ *  construct a Test and holds a test executable, a fixture, and a test name.
+ * @details Test specifications are useful during the <i>discovery</i> phase of user testing. In particular, the user
+ *  selects a test executable provided by a unit-testing framework (e.g. Google Test), the executable is queried either
+ *  from the file-system or from an internal cache, and string models are constructed to detain the available fixtures
+ *  and tests thereof. These properties are encoded by classes DiscoveryTestExecutable and DiscoveryTestFixture
+ *  respectively, and held under shared ownership by the test specification.
  */
 class TestSpecificationEntry : public StorageObjectBase
 {

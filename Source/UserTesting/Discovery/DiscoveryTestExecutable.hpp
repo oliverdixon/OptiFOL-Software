@@ -15,33 +15,76 @@
 #define DISCOVERYTESTEXECUTABLE_HPP
 
 #include <giomm/liststore.h>
+
 #include "../../Storage/StorageObjectBase.hpp"
-#include "DiscoveryTestFixture.hpp"
 
 namespace optifol
 {
 
+class DiscoveryTestFixture;
+
+/**
+ * @class DiscoveryTestExecutable
+ * @brief Describes a testing framework-agnostic executable used to discover and model software unit fixtures and tests
+ *  thereof. Derived classes populate the executable with fixtures during or after framework-dependent discovery, and
+ *  consumers query the model from the base class.
+ */
 class DiscoveryTestExecutable : public StorageObjectBase
 {
 public:
+    /**
+     * @brief Retrieves the fixtures model to use in a Gtk::DropDown or Gtk::ListView.
+     * @return A ref-counted pointer to the fixtures model, containing a single entry for each fixture within the
+     *  discovered executable.
+     */
     Glib::RefPtr<Gio::ListStore<DiscoveryTestFixture>> get_fixture_model() const noexcept;
 
+    /**
+     * @brief Retrieves the first fixture object available within the discovered executable.
+     * @return A ref-counted pointer to the first entry in the fixtures model.
+     */
     Glib::RefPtr<DiscoveryTestFixture> get_default_fixture() const;
 
+    /**
+     * @brief Compare the test executable with an object of the same type.
+     * @param other The other test executable.
+     * @return Do the test executable objects refer to the same executable? Equality is determined by path.
+     */
     bool operator==(const DiscoveryTestExecutable & other) const;
 
-    bool operator==(const Glib::ustring& other_name) const;
+    /**
+     * @brief Compare the test executable with the given exectable path.
+     * @param other_executable_path The path of another executable on the file-system.
+     * @return Does the test executable object and executable at the given path refer to the same executable?
+     */
+    bool operator==(const Glib::ustring& other_executable_path) const;
 
 protected:
-    explicit DiscoveryTestExecutable(const Glib::ustring& name);
+    /**
+     * @brief Construct a new framework-agnostic test executable. Note that for the base constructor, no discovery is
+     *  performed and an empty fixture model is instantiated.
+     * @param executable_path The path of the executable to be subject to discovery.
+     */
+    explicit DiscoveryTestExecutable(const Glib::ustring& executable_path);
 
-    DiscoveryTestExecutable(const Glib::ustring& name, BaseObjectType *cobject,
+    /**
+     * @brief Construct a new framework-agnostic test executable. Note that for the base constructor, no discovery is
+     *  performed and an empty fixture model is instantiated.
+     * @param executable_path The path of the executable to be subject to discovery.
+     * @param cobject Glib C object.
+     * @param builder Existing Gtk::Builder instance.
+     */
+    DiscoveryTestExecutable(const Glib::ustring& executable_path, BaseObjectType *cobject,
         const Glib::RefPtr<Gtk::Builder> &builder);
 
-    void add_fixture(const Glib::RefPtr<DiscoveryTestFixture>& fixture) const;
+    /**
+     * @brief Share a new fixture with the model. The shared fixture is appended to the internal model.
+     * @param fixture The fixture to share.
+     */
+    void add_fixture(Glib::RefPtr<DiscoveryTestFixture> fixture) const;
 
 private:
-    Glib::RefPtr<Gio::ListStore<DiscoveryTestFixture>> fixtures = Gio::ListStore<DiscoveryTestFixture>::create();
+    const Glib::RefPtr<Gio::ListStore<DiscoveryTestFixture>> fixtures;
 };
 
 } // namespace optifol
