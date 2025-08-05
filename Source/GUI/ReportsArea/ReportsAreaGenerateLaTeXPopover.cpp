@@ -12,7 +12,6 @@
  */
 
 #include <fstream>
-#include <cassert>
 
 #include "ReportsAreaGenerateLaTeXPopover.hpp"
 #include "../GTKHelpers.hpp"
@@ -53,32 +52,28 @@ ReportsAreaGenerateLaTeXPopover::ReportsAreaGenerateLaTeXPopover(
 
 void ReportsAreaGenerateLaTeXPopover::confirm_button_clicked()
 {
-    assert(latex_executor.has_value() == false); // We only run one LaTeX sub-process at once.
     confirm_button->set_sensitive(false);
-
-    update_requirements_csv();
     buffer->set_text("");
 
-    latex_executor.emplace(
-        "",
-        std::vector<std::string>{
-            "latexmk",
-            "-pdf",
-            "-interaction=nonstopmode",
-            "-outdir=" + output_directory->get_path(),
-            "Resources/ReportTemplates/LaTeX/report.tex"
-        },
-        std::vector{
-            "PATH=" + Glib::getenv("PATH"),
-            "TEXINPUTS=.:" + output_directory->get_path() + ":"
-        },
-        buffer,
-        [this](const int)
+    generator.emplace(output_directory);
+
+    reports_area.observe_active_subsystem()->for_each(
+        [this](const Requirement &requirement)
         {
-            latex_executor.reset();
+            generator->add_requirement(requirement);
+        });
+
+    const auto test_groups = reports_area.observe_active_subsystem()->get_test_groups();
+    const auto test_group_count = test_groups->get_n_items();
+    for (guint test_group_index = 0; test_group_index < test_group_count; ++test_group_index)
+        generator->add_test_group(*test_groups->get_item(test_group_index));
+
+    generator->generate(buffer,
+        [this]
+        {
+            generator.reset();
             confirm_button->set_sensitive();
-        }
-    );
+        });
 }
 
 void ReportsAreaGenerateLaTeXPopover::cancel_button_clicked()
@@ -92,7 +87,6 @@ void ReportsAreaGenerateLaTeXPopover::clear_inputs()
 {
     output_directory_entry->set_text("");
     buffer->set_text("");
-    index_csv = nullptr;
     output_directory = nullptr;
 }
 
@@ -120,24 +114,6 @@ void ReportsAreaGenerateLaTeXPopover::open_directory_finished(const Glib::RefPtr
 
     // Always update the read-only text entry with the up-to-date output directory path
     output_directory_entry->set_text(output_directory == nullptr ? "" : output_directory->get_path());
-}
-
-// ReSharper disable once CppDFAUnreachableFunctionCall - False positive: called from button-click callback.
-void ReportsAreaGenerateLaTeXPopover::update_requirements_csv() const
-{
-    const auto csv_path = output_directory->get_path() + "/index.csv";
-    popover_logger->info("Writing CSV requirements index for consumption by LaTeX template at " + csv_path + '.');
-
-    std::ofstream file_stream(csv_path);
-    reports_area.observe_active_subsystem()->for_each(
-            [&file_stream](const Requirement &requirement)
-            {
-                file_stream << requirement.property_name().get_value() << ','
-                            << requirement.property_description().get_value() << ',' << '$'
-                            << requirement.observe_latex_statement() << '$' << '\n';
-            });
-
-    file_stream.flush();
 }
 
 void ReportsAreaGenerateLaTeXPopover::show_details_toggled() const

@@ -23,7 +23,9 @@ namespace optifol
 
 void LaTeXSerialisationVisitor::visit(const MutableSentenceRoot &node)
 {
+    latex << '$';
     node.observe_sentence()->accept(*this);
+    latex << '$';
 }
 
 void LaTeXSerialisationVisitor::visit(const MutableIdentity &node)

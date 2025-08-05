@@ -27,9 +27,6 @@ namespace optifol
  * @brief Provides a ProcessExecutor with the capability to capture <code>stdout</code> and <code>stderr</code> streams
  *  from the sub-process and write the colour-formatted lines to a Gtk::TextBuffer.
  * @see ProcessExecutor for semantics of external sub-process management.
- *
- * @todo Due to buffering, stderr and stdout lines may not appear on the buffer in the order in which they were sent
- *   from the sub-process. This is a known issue and will be fixed.
  */
 class StreamingProcessExecutor :
         public ProcessExecutor

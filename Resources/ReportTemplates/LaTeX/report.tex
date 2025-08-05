@@ -5,7 +5,7 @@
 	total={10in, 7.5in},
 	includeheadfoot
 ]{geometry}
-\usepackage{fancyhdr, datetime2, booktabs, xltabular, csvsimple-l3, amssymb}
+\usepackage{fancyhdr, datetime2, booktabs, xltabular, amssymb, underscore}
 
 \title{Project Subsystem Requirements Report}
 \author{Optifol User}
@@ -37,6 +37,7 @@
 	\fancyhead[R]{\thedate}
 }
 
+\NewDocumentCommand{\optifolescaped}{v}{#1}
 \renewcommand\headrulewidth{0pt}
 \pagestyle{main}
 
@@ -51,30 +52,10 @@
 	\thispagestyle{front}
 	\section{Index of Requirements}
     \DTMsetstyle{tabulardate}%
-	\begin{xltabular}{\linewidth}{>{\ttfamily}lXXlllll}%
-		\toprule\normalfont%
-            \textbf{Name}&%
-            \textbf{Description}&%
-            \textbf{Statement}&%
-            \textbf{Priority}&%
-            \textbf{Test}&%
-            \textbf{Stakeholder}&%
-            \textbf{Created}&%
-            \textbf{Modified}%
-        \\\midrule\endhead%
-		\bottomrule\endfoot%
-        \csvreader[
-            late after line=\\,
-            head=false,
-            respect none
-        ]{index.csv}%
-        {1=\Name, 2=\Description, 3=\Statement}%
-        {%
-            \Name & \Description & \Statement
-        }%
-	\end{xltabular}%
+	\input{index.tex}
     \clearpage
 	\section{Results of Logical Analysis}
 	\clearpage
 	\section{Automated Tests}
+	\input{tests.tex}
 \end{document}

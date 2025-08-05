@@ -25,7 +25,7 @@
 #include <gtkmm/textbuffer.h>
 #include <log4cxx/logger.h>
 
-#include "../StreamingProcessExecutor.hpp"
+#include "../../Reporting/LaTeXReportGenerator.hpp"
 
 namespace optifol
 {
@@ -153,17 +153,6 @@ private:
     void open_directory_finished(const Glib::RefPtr<Gio::AsyncResult> &result);
 
     /**
-     * @brief Produce a CSV in the output directory detaining the requirements index, for consumption by the LaTeX
-     *  template
-     * @warning The fields written to the CSV are unescaped and will probably be interpreted by the LaTeX compiler in
-     *  verbatim, i.e. as executable candidates. This is a known issue and needs to be fixed with moderate urgency.
-     * @todo Only regenerate where necessary (hashing and timestamping?), as these could be huge
-     * @todo Use Glib file interface, not @ref std::ofstream
-     * @todo As above, escape CSV fields or modify TeX template to not interpret as "normal" (command) characters
-     */
-    void update_requirements_csv() const;
-
-    /**
      * @brief Handle a toggle of the <i>Show Details</i> button by showing or hiding the latexmk/pdflatex output
      */
     void show_details_toggled() const;
@@ -181,9 +170,8 @@ private:
     const Glib::RefPtr<Gtk::FileDialog> open_dialog;
     Gtk::CheckButton * const show_details_check;
 
-    Glib::RefPtr<Gio::File> index_csv;
     Glib::RefPtr<Gio::File> output_directory;
-    std::optional<StreamingProcessExecutor> latex_executor;
+    std::optional<LaTeXReportGenerator> generator;
 };
 
 } // namespace optifol

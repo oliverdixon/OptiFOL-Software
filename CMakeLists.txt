@@ -387,6 +387,11 @@ add_executable(OptifolGUI
         Source/UserTesting/Modelling/ExecutionGroup.hpp
         Source/UserTesting/Modelling/GoogleExecutionGroup.cpp
         Source/UserTesting/Modelling/GoogleExecutionGroup.hpp
+        Source/Reporting/IReportGenerator.hpp
+        Source/Reporting/LaTeXReportGenerator.cpp
+        Source/Reporting/LaTeXReportGenerator.hpp
+        Source/Reporting/HTMLReportGenerator.cpp
+        Source/Reporting/HTMLReportGenerator.hpp
 )
 
 set(COMMON_COMPILER_OPTIONS
