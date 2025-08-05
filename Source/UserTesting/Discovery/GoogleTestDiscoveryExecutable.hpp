@@ -68,6 +68,8 @@ private:
      *  the DiscoveryTestExecutable base class, and and deletes the temporary file.
      * @param exit_code The exit code of the executable.
      * @pre @ref discovery_tmp_file_path is populated.
+     * @post @ref discovery_tmp_file_path is unpopulated, incdicating removal of the temporary file.
+     * @post @ref discovery_executor is unpopulated, indicating completion of the G-Test sub-process.
      */
     void discovery_done_callback(int exit_code) noexcept;
 

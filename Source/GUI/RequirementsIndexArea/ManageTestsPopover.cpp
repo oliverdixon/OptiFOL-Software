@@ -36,6 +36,8 @@ ManageTestsPopover::ManageTestsPopover(Gtk::Builder &builder) :
 {
     confirm_button->signal_clicked().connect(sigc::mem_fun(*this, &ManageTestsPopover::confirm_button_clicked));
     new_test_button->signal_clicked().connect(sigc::mem_fun(*this, &ManageTestsPopover::new_test_clicked));
+    duplicate_test_button->signal_clicked().connect(sigc::mem_fun(*this, &ManageTestsPopover::duplicate_test_clicked));
+    delete_test_button->signal_clicked().connect(sigc::mem_fun(*this, &ManageTestsPopover::delete_test_clicked));
 
     selection_model->set_autoselect(false);
     selection_model->set_can_unselect(true);
@@ -78,11 +80,25 @@ void ManageTestsPopover::set_model(const Glib::RefPtr<Gio::ListStore<TestSpecifi
     selection_model->set_model(test_spec_model);
 }
 
+std::string ManageTestsPopover::format_test_summary(const Gio::ListModel &test_model) noexcept
+{
+    const auto test_count = test_model.get_n_items();
+
+    if (test_count == 0)
+        return "";
+
+    if (test_count == 1)
+        return "1 test defined";
+
+    return std::to_string(test_count) + " tests defined";
+}
+
 void ManageTestsPopover::confirm_button_clicked() const
 {
     popover->popdown();
 }
 
+// ReSharper disable once CppDFAUnreachableFunctionCall - False positive. Invoked from callbacks.
 void ManageTestsPopover::new_test_clicked() const
 {
     test_spec_model->append(Glib::make_refptr_for_instance<TestSpecificationEntry>(new TestSpecificationEntry()));
@@ -91,6 +107,23 @@ void ManageTestsPopover::new_test_clicked() const
 void ManageTestsPopover::delete_test_clicked() const
 {
     test_spec_model->remove(selection_model->get_selected());
+}
+
+void ManageTestsPopover::duplicate_test_clicked() const
+{
+    const auto untyped_selection = selection_model->get_selected_item();
+
+    if (untyped_selection == nullptr) {
+        new_test_clicked();
+        return;
+    }
+
+    const auto typed_selection = dynamic_cast<const TestSpecificationEntry *>(untyped_selection.get());
+
+    if (typed_selection == nullptr)
+        new_test_clicked();
+    else
+        test_spec_model->append(Glib::make_refptr_for_instance(new TestSpecificationEntry(*typed_selection)));
 }
 
 void ManageTestsPopover::setup_fixtures_combo(const Glib::RefPtr<Gtk::ListItem> &list_item)

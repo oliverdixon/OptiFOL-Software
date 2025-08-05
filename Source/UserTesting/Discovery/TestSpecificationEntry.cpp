@@ -33,6 +33,14 @@ TestSpecificationEntry::TestSpecificationEntry(BaseObjectType *cobject, const Gl
     setup_sync_callbacks();
 }
 
+TestSpecificationEntry::TestSpecificationEntry(const TestSpecificationEntry &template_entry) :
+    Glib::ObjectBase("TestSpecificationEntry"),
+    executable(*this, "TestSpecificationEntry-executable", template_entry.property_executable().get_value()),
+    fixture(*this, "TestSpecificationEntry-fixture", template_entry.property_fixture().get_value())
+{
+    property_name().set_value(template_entry.property_name().get_value());
+}
+
 Glib::PropertyProxy<Glib::RefPtr<DiscoveryTestExecutable>> TestSpecificationEntry::property_executable()
 {
     return executable.get_proxy();

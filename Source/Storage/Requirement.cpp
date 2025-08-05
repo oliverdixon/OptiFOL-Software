@@ -39,7 +39,7 @@ std::istringstream Requirement::lexer_input_stream;
 FOLLexer Requirement::lexer{Requirement::lexer_input_stream, std::cerr};
 FOLParser Requirement::parser{&Requirement::lexer};
 
-const log4cxx::LoggerPtr Requirement::req_logger = Logging::get_logger({"GUI", "StorageControl", "Requirement"});
+const log4cxx::LoggerPtr Requirement::control_logger = Logging::get_logger({"GUI", "StorageControl", "Requirement"});
 
 const log4cxx::LoggerPtr Requirement::cnf_logger = Logging::get_logger({"LogicServices", "CNFNormalisation"});
 const log4cxx::LoggerPtr Requirement::parse_logger = Logging::get_logger({"LogicServices", "FormalParsing"});
@@ -190,7 +190,7 @@ void Requirement::handle_statement_change()
         latex_input_statement.clear();
         prepared_ast.reset();
 
-        req_logger->debug("Removed FOL statement from requirement \"" + property_name().get_value() + "\".");
+        control_logger->debug("Removed FOL statement from requirement \"" + property_name().get_value() + "\".");
         return;
     }
 
@@ -220,7 +220,8 @@ void Requirement::handle_statement_change()
     prepared_ast->serialise(serialiser_stream);
     property_normalised().set_value(serialiser_stream.str());
 
-    req_logger->debug("Successfully updated FOL statement for requirement \"" + property_name().get_value() + "\".");
+    control_logger->debug("Successfully updated FOL statement for requirement \"" +
+        property_name().get_value() + "\".");
 }
 
 void Requirement::handle_test_spec_change(const guint position, const guint removed_count, const guint added_count)
@@ -231,7 +232,9 @@ void Requirement::handle_test_spec_change(const guint position, const guint remo
 
     for (guint spec_index = position; spec_index < added_count; ++spec_index) {
         const auto& spec = test_specs->get_item(spec_index);
-        if (spec != nullptr)
+        if (spec == nullptr || spec->property_executable().get_value() == nullptr)
+            control_logger->warn("Ignoring invalid test specification at index " + std::to_string(spec_index));
+        else
             new_tests.push_back(Glib::make_refptr_for_instance(new Test(spec)));
     }
 

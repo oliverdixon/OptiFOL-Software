@@ -95,6 +95,7 @@
                             <property name="orientation">horizontal</property>
                             <child>
                                 <object class="GtkEntry" id="new_requirement_test_count">
+                                    <property name="placeholder-text">No tests defined</property>
                                     <property name="sensitive">FALSE</property>
                                 </object>
                             </child>

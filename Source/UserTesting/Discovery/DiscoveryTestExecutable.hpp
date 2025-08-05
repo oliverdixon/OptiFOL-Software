@@ -17,11 +17,10 @@
 #include <giomm/liststore.h>
 
 #include "../../Storage/StorageObjectBase.hpp"
+#include "DiscoveryTestFixture.hpp"
 
 namespace optifol
 {
-
-class DiscoveryTestFixture;
 
 /**
  * @class DiscoveryTestExecutable

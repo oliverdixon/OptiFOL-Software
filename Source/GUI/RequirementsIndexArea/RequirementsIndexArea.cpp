@@ -114,8 +114,7 @@ RequirementsIndexArea::RequirementsIndexArea(Gtk::Builder& builder) :
                 factory->signal_bind().connect(sigc::ptr_fun(&RequirementsIndexArea::on_bind_property_priority));
             } else if (gtk_id == "requirement_test") {
                 factory->signal_setup().connect(sigc::bind(&GTKHelpers::setup_label, false));
-                // TODO URGENT
-                // factory->signal_bind().connect(sigc::ptr_fun(&RequirementsIndexArea::on_bind_property_test_input));
+                factory->signal_bind().connect(sigc::ptr_fun(&RequirementsIndexArea::on_bind_property_test));
             } else if (gtk_id == "requirement_created") {
                 factory->signal_setup().connect(sigc::bind(&GTKHelpers::setup_label, false));
                 factory->signal_bind().connect(sigc::ptr_fun(&StorageObjectBase::bind_creation_time));
@@ -212,6 +211,23 @@ void RequirementsIndexArea::on_bind_property_priority(const Glib::RefPtr<Gtk::Li
     if (label != nullptr && item != nullptr)
         Glib::Binding::bind_property(
                 item->property_priority(), label->property_label(), Glib::Binding::Flags::SYNC_CREATE);
+}
+
+void RequirementsIndexArea::on_bind_property_test(const Glib::RefPtr<Gtk::ListItem> &list_item)
+{
+    auto label = dynamic_cast<Gtk::Label *>(list_item->get_child());
+    const auto item = std::dynamic_pointer_cast<Requirement>(list_item->get_item());
+
+    if (label != nullptr && item != nullptr) {
+        const auto typed_tests = item->get_tests();
+        if (typed_tests != nullptr) {
+            label->set_text(ManageTestsPopover::format_test_summary(*typed_tests));
+            typed_tests->signal_items_changed().connect([label, typed_tests](guint, guint, guint) noexcept
+            {
+                label->set_text(ManageTestsPopover::format_test_summary(*typed_tests));
+            });
+        }
+    }
 }
 
 void RequirementsIndexArea::on_bind_property_normalised(const Glib::RefPtr<Gtk::ListItem> &list_item)

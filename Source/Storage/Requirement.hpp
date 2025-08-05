@@ -167,7 +167,7 @@ public:
     [[nodiscard]] bool has_tests() const noexcept;
 
 private:
-    static const log4cxx::LoggerPtr req_logger;
+    static const log4cxx::LoggerPtr control_logger;
     static const log4cxx::LoggerPtr parse_logger;
     static const log4cxx::LoggerPtr cnf_logger;
     static const log4cxx::LoggerPtr integration_logger;

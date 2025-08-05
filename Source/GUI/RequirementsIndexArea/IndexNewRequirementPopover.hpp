@@ -72,6 +72,11 @@ class RequirementsIndexArea;
  *          <td>Text entry area for the FOL statement of the new Requirement</td>
  *      </tr>
  *      <tr>
+ *          <td>Gtk::Entry</td>
+ *          <td><code>new_requirement_test_count</code></td>
+ *          <td>Read-only area for the test summary of the new Requirement</td>
+ *      </tr>
+ *      <tr>
  *          <td>Gtk::DropDown</td>
  *          <td><code>new_requirement_property_priority</code></td>
  *          <td>Text entry area for the optional associated test(s) of the new Requirement</td>
@@ -95,19 +100,19 @@ private:
     /**
      * @brief Handle a click of the <i>Confirm</i> by attempting to create a Requirement with the given characteristics.
      */
-    void confirm_button_clicked();
+    void confirm_button_clicked() noexcept;
 
     /**
      * @brief Handle a click of the <i>Cancel</i> button by discarding all input and closing the popover.
      */
-    void cancel_button_clicked();
+    void cancel_button_clicked() noexcept;
 
-    void popover_shown();
+    void popover_shown() noexcept;
 
     /**
      * @brief Clear all user fields in the popover
      */
-    void clear_inputs();
+    void clear_inputs() noexcept;
 
     static const char * const popover_name;
     static const log4cxx::LoggerPtr popover_logger;
@@ -120,6 +125,7 @@ private:
     Gtk::Entry * const name_entry;
     Gtk::TextView * const description_entry;
     Gtk::Entry * const statement_entry;
+    Gtk::Entry * const test_summary;
     Gtk::DropDown * const priority_entry;
 
     ManageTestsPopover manage_tests_popover;

@@ -42,6 +42,14 @@ public:
 
     void set_model(const Glib::RefPtr<Gio::ListStore<TestSpecificationEntry>>& model);
 
+    /**
+     * @brief Provide a human-readable summary of a model containing tests or specifications thereof.
+     * @param test_model The test model to query.
+     * @see Test
+     * @see TestSpecificationEntry
+     */
+    static std::string format_test_summary(const Gio::ListModel &test_model) noexcept;
+
 private:
     static const char * const popover_name;
     static const log4cxx::LoggerPtr popover_logger;
@@ -54,6 +62,8 @@ private:
     void new_test_clicked() const;
 
     void delete_test_clicked() const;
+
+    void duplicate_test_clicked() const;
 
     static void setup_fixtures_combo(const Glib::RefPtr<Gtk::ListItem> &list_item);
 

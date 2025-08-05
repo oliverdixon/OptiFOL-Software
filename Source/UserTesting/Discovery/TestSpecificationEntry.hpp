@@ -47,6 +47,13 @@ public:
     TestSpecificationEntry(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &builder);
 
     /**
+     * @brief Copy-construct a TestSpecificationEntry from the given template entry.
+     * @param template_entry The entry to clone.
+     * @todo URGENT TODO doesn't work! :)
+     */
+    TestSpecificationEntry(const TestSpecificationEntry& template_entry);
+
+    /**
      * @brief Retrieves a read-write proxy for the DiscoveryTestExecutable executable property.
      * @return A read-write proxy for the executable.
      */

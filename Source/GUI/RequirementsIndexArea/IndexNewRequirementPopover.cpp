@@ -33,6 +33,7 @@ IndexNewRequirementPopover::IndexNewRequirementPopover(Gtk::Builder &builder, Re
     description_entry(
             GTKHelpers::get_widget<Gtk::TextView>(popover_name, builder, "new_requirement_property_description")),
     statement_entry(GTKHelpers::get_widget<Gtk::Entry>(popover_name, builder, "new_requirement_property_sentence")),
+    test_summary(GTKHelpers::get_widget<Gtk::Entry>(popover_name, builder, "new_requirement_test_count")),
     priority_entry(GTKHelpers::get_widget<Gtk::DropDown>(popover_name, builder, "new_requirement_property_priority")),
     manage_tests_popover(builder),
     edit_tests_button(GTKHelpers::get_widget<Gtk::MenuButton>(popover_name, builder, "new_requirement_manage_tests")),
@@ -44,9 +45,13 @@ IndexNewRequirementPopover::IndexNewRequirementPopover(Gtk::Builder &builder, Re
     confirm_button->signal_clicked().connect(sigc::mem_fun(*this, &IndexNewRequirementPopover::confirm_button_clicked));
     cancel_button->signal_clicked().connect(sigc::mem_fun(*this, &IndexNewRequirementPopover::cancel_button_clicked));
     my_popover->signal_show().connect(sigc::mem_fun(*this, &IndexNewRequirementPopover::popover_shown));
+    test_specification->signal_items_changed().connect([this](guint, guint, guint) noexcept
+    {
+        test_summary->set_text(ManageTestsPopover::format_test_summary(*test_specification));
+    });
 }
 
-void IndexNewRequirementPopover::confirm_button_clicked()
+void IndexNewRequirementPopover::confirm_button_clicked() noexcept
 {
     my_popover->popdown();
 
@@ -59,27 +64,30 @@ void IndexNewRequirementPopover::confirm_button_clicked()
     );
 
     popover_logger->info("Created new subsystem requirement with name \"" + name_entry->get_text() + "\".");
+
+    // Clear down the inputs for the next entry. This includes the recently moved tests specification model.
     clear_inputs();
 }
 
-void IndexNewRequirementPopover::cancel_button_clicked()
+void IndexNewRequirementPopover::cancel_button_clicked() noexcept
 {
     my_popover->popdown();
     clear_inputs();
 }
 
-void IndexNewRequirementPopover::popover_shown()
+void IndexNewRequirementPopover::popover_shown() noexcept
 {
     manage_tests_popover.set_model(test_specification);
 }
 
 // ReSharper disable once CppDFAUnreachableFunctionCall - False positive: called from button-click callback.
-void IndexNewRequirementPopover::clear_inputs()
+void IndexNewRequirementPopover::clear_inputs() noexcept
 {
     name_entry->set_text("");
     description_entry->get_buffer()->set_text("");
     statement_entry->set_text("");
     priority_entry->set_selected(0);
+    test_summary->set_text("");
     test_specification = Gio::ListStore<TestSpecificationEntry>::create();
 }
 
