@@ -11,21 +11,19 @@
  * @version Development
  */
 
-#include "LaTeXReportGenerator.hpp"
-
-#include <assert.h>
+#include <cassert>
 #include <giomm/file.h>
-#include <giomm/resource.h>
 #include <glibmm/miscutils.h>
 
+#include "LaTeXReportGenerator.hpp"
 #include "../Storage/Requirement.hpp"
 #include "../UserTesting/Modelling/TestGroup.hpp"
 
 namespace optifol
 {
 
-LaTeXReportGenerator::LaTeXReportGenerator(const Glib::RefPtr<Gio::File> output_directory) :
-    output_directory(std::move(output_directory)),
+LaTeXReportGenerator::LaTeXReportGenerator(const Glib::RefPtr<Gio::File>& output_directory) :
+    output_directory(output_directory),
     index_file(Gio::File::create_for_path(this->output_directory->get_path() + "/index.tex")->append_to()),
     tests_file(Gio::File::create_for_path(this->output_directory->get_path() + "/tests.tex")->append_to())
 {
@@ -89,7 +87,7 @@ void LaTeXReportGenerator::add_test_group(const TestGroup &test_group)
     });
 }
 
-void LaTeXReportGenerator::generate(const Glib::RefPtr<Gtk::TextBuffer> &output, sigc::slot<void()> &&finished_callback)
+void LaTeXReportGenerator::generate(Glib::RefPtr<Gtk::TextBuffer> output, sigc::slot<void()> &&finished_callback)
 {
     assert(index_file->is_closed() == false);
     assert(tests_file->is_closed() == false);

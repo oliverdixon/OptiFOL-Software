@@ -3,9 +3,13 @@
  * 2025 Oliver Dixon <od641@york.ac.uk>
  */
 
-//
-// Created by owd on 8/2/25.
-//
+/**
+ * @file
+ * @brief Class implementation for the Google Test execution group
+ * @author Oliver Dixon
+ * @date 2025-08-08
+ * @version Development
+ */
 
 #include "GoogleExecutionGroup.hpp"
 
@@ -28,6 +32,14 @@ void GoogleExecutionGroup::run()
 {
     // TODO URGENT: what if executable doesn't exist? How to express on UI?
 
+    if (is_empty()) {
+        // TODO: log warning
+        return;
+    }
+
+    if (cache_ok == false)
+        invalidate_cache();
+
     /*
      * TODO: if the binding fails due to the port number being taken, we should continue to try until we (a) hit the
      *  max, or (b) find an unused port and bind successfully. The bound port may not be the same as the one passed, so
@@ -38,7 +50,7 @@ void GoogleExecutionGroup::run()
         "",
         std::vector<std::string>{
             get_executable_name(),
-            "--gtest_filter=" + filter_line,
+            "--gtest_filter=" + filter_line_cache,
             "--gtest_stream_result_to=127.0.0.1:" + std::to_string(port_number)
         },
         std::vector<std::string>{},
@@ -56,34 +68,36 @@ void GoogleExecutionGroup::add_test(Glib::RefPtr<Test> new_test)
     if (check_eligibility(*new_test) == false)
         throw SemanticException("The Test does not match to the GoogleExecutionGroup.");
 
-    decltype(filter_line)::const_iterator before_it;
-
-    if (filter_line.empty())
-        before_it = filter_line.cbegin();
-    else
-        before_it = --filter_line.cend();
-
-    filter_line += new_test->property_fixture().get_value() + component_separator +
-        new_test->property_name().get_value() + pattern_separator;
-
-    tests.emplace(std::move(new_test), std::make_pair(before_it, --filter_line.cend()));
+    tests.push_front(std::move(new_test));
+    cache_ok = false;
 }
 
-void GoogleExecutionGroup::remove_test(Glib::RefPtr<Test> target_test)
+void GoogleExecutionGroup::remove_test(const Glib::RefPtr<Test> &target_test)
 {
-    const auto it = tests.find(std::move(target_test));
-    if (it != tests.cend()) {
-        filter_line.replace(it->second.first, it->second.second, {});
-        tests.erase(it);
-    }
+    tests.remove(target_test);
+    cache_ok = false;
+}
+
+std::size_t GoogleExecutionGroup::is_empty() const noexcept
+{
+    return tests.empty();
 }
 
 void GoogleExecutionGroup::distribute_results(const int exit_code) const
 {
     std::ignore = exit_code;
-
     for (auto& test : tests)
-        listener->endow_test(*test.first);
+        listener->endow_test(*test);
+}
+
+void GoogleExecutionGroup::invalidate_cache()
+{
+    filter_line_cache.clear();
+
+    for (const auto& test : tests)
+        filter_line_cache += test->property_fixture().get_value() + '.' + test->property_name().get_value() + ':';
+
+    cache_ok = true;
 }
 
 } // namespace optifol

@@ -37,7 +37,7 @@ public:
      * @brief Construct a new LaTeXReportGenerator at the given root.
      * @param output_directory The root directory for LaTeX generated and auxiliary files.
      */
-    explicit LaTeXReportGenerator(Glib::RefPtr<Gio::File> output_directory);
+    explicit LaTeXReportGenerator(const Glib::RefPtr<Gio::File>& output_directory);
 
     /**
      * @brief Disable the copy-constructor as objects have locks on external system resources.
@@ -57,7 +57,7 @@ public:
      * @pre The requirements index LaTeX file is open for writing.
      * @pre The tests report LaTeX file is open for writing.
      */
-    void generate(const Glib::RefPtr<Gtk::TextBuffer> &output, sigc::slot<void()> &&finished_callback) override;
+    void generate(Glib::RefPtr<Gtk::TextBuffer> output, sigc::slot<void()> &&finished_callback) override;
 
 private:
     /**

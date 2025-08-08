@@ -50,7 +50,7 @@ public:
      * @param output The Gtk::TextBuffer to which compilation output should be streamed.
      * @param finished_callback The callback to execute upon completion of the asynchronous generation.
      */
-    virtual void generate(const Glib::RefPtr<Gtk::TextBuffer> &output, sigc::slot<void()> &&finished_callback) = 0;
+    virtual void generate(Glib::RefPtr<Gtk::TextBuffer> output, sigc::slot<void()> &&finished_callback) = 0;
 };
 
 } // namespace optifol

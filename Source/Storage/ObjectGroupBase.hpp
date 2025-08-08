@@ -200,21 +200,25 @@ public:
 
 protected:
     /**
-     * @brief Construct a ObjectGroupBase without a callback for model changes.
+     * @brief Construct a ObjectGroupBase.
      */
-    ObjectGroupBase() = default;
+    ObjectGroupBase()
+    {
+        model->signal_items_changed().connect(sigc::mem_fun(*this, &ObjectGroupBase::handle_object_change));
+    }
 
     /**
-     * @brief Construct a ObjectGroupBase with a callback to indicate insertions and/or deletions from a fixed
-     *  point in the list.
-     *
-     * @param changed_callback The slot for a handler to process insertions and/or deletions. Arguments provided are the
-     *  fixed initial list index; the number of removed elements; and the number of added elements. In the case of
-     *  deletions, callbacks can use @ref steal_deleted_object.
+     * @brief Handle insertions and/or deletions in the flat linear model.
+     * @param initial_index The index at which insertions/deleted started.
+     * @param removed_count The number of objects removed from the list.
+     * @param added_count The number of objects added to the list.
      */
-    explicit ObjectGroupBase(sigc::slot<void(guint, guint, guint)> &&changed_callback)
+    virtual void handle_object_change(const guint initial_index,
+        const guint removed_count, const guint added_count) noexcept
     {
-        model->signal_items_changed().connect(std::move(changed_callback));
+        std::ignore = initial_index;
+        std::ignore = removed_count;
+        std::ignore = added_count;
     }
 
     Glib::RefPtr<Gio::ListStore<Derived>> model = Gio::ListStore<Derived>::create();

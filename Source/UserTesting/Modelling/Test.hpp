@@ -36,6 +36,8 @@ public:
     Test(std::shared_ptr<TestSpecificationEntry> template_specification, BaseObjectType *cobject,
             const Glib::RefPtr<Gtk::Builder> &builder);
 
+    [[nodiscard]] bool operator==(const Test & other) const;
+
     [[nodiscard]] Glib::RefPtr<Gtk::TreeListModel> get_tree() const noexcept override;
 
     /**

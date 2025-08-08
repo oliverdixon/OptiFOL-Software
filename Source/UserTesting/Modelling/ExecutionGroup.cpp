@@ -3,9 +3,13 @@
  * 2025 Oliver Dixon <od641@york.ac.uk>
  */
 
-//
-// Created by owd on 8/2/25.
-//
+/**
+ * @file
+ * @brief Class implementation for the framework-agnostic execution group
+ * @author Oliver Dixon
+ * @date 2025-08-08
+ * @version Development
+ */
 
 #include "ExecutionGroup.hpp"
 #include "Test.hpp"

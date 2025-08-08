@@ -3,9 +3,13 @@
  * 2025 Oliver Dixon <od641@york.ac.uk>
  */
 
-//
-// Created by owd on 8/2/25.
-//
+/**
+ * @file
+ * @brief Class specification for the framework-agnostic execution group
+ * @author Oliver Dixon
+ * @date 2025-08-08
+ * @version Development
+ */
 
 #ifndef EXECUTIONGROUP_HPP
 #define EXECUTIONGROUP_HPP
@@ -31,9 +35,11 @@ public:
 
     virtual void add_test(Glib::RefPtr<Test> new_test) = 0;
 
-    virtual void remove_test(Glib::RefPtr<Test> target_test) = 0;
+    virtual void remove_test(const Glib::RefPtr<Test> &target_test) = 0;
 
     virtual void run() = 0;
+
+    [[nodiscard]] virtual std::size_t is_empty() const noexcept = 0;
 
     [[nodiscard]] bool operator==(const TestExecutable& other) const;
 
@@ -44,7 +50,7 @@ public:
 protected:
     explicit ExecutionGroup(const TestExecutable& executable);
 
-    bool check_eligibility(const Test& test) const;
+    [[nodiscard]] bool check_eligibility(const Test& test) const;
 
 private:
     const TestExecutable& executable;

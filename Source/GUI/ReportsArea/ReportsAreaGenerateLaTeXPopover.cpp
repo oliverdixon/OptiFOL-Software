@@ -69,11 +69,11 @@ void ReportsAreaGenerateLaTeXPopover::confirm_button_clicked()
         generator->add_test_group(*test_groups->get_item(test_group_index));
 
     generator->generate(buffer,
-        [this]
-        {
-            generator.reset();
-            confirm_button->set_sensitive();
-        });
+            [this]
+            {
+                generator.reset();
+                confirm_button->set_sensitive();
+            });
 }
 
 void ReportsAreaGenerateLaTeXPopover::cancel_button_clicked()

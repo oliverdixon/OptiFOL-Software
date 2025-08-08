@@ -109,17 +109,21 @@ private:
      */
     void setup_groups(const Glib::ustring &name);
 
+    void handle_object_change(guint initial_index, guint removed_count, guint added_count) noexcept override;
+
     /**
-     * @brief Handle insertions and/or deletions in the flat Requirement index model
-     * @param initial_index The index at which insertions/deleted started
-     * @param removed_count The number of Requirement objects removed from the list
-     * @param added_count The number of Requirement objects added to the list
+     * @brief Propagate Requirement model deletions to the analysis and test groups.
+     * @param initial_index The index at which the deletion started.
+     * @param removed_count The number of deletions from the initial index.
      */
-    void handle_requirement_change(guint initial_index, guint removed_count, guint added_count);
+    void handle_requirement_deletions(guint initial_index, guint removed_count) noexcept;
 
-    void handle_requirement_deletions(guint initial_index, guint removed_count);
-
-    void handle_requirement_additions(guint initial_index, guint added_count) const;
+    /**
+     * @brief Propagate Requirement model additions to the analysis and test groups.
+     * @param initial_index The index at which the addition started.
+     * @param added_count The number of additions from the initial index.
+     */
+    void handle_requirement_additions(guint initial_index, guint added_count) const noexcept;
 
     static const log4cxx::LoggerPtr subsystem_logger;
 

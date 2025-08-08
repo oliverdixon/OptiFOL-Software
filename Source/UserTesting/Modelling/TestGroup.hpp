@@ -42,11 +42,11 @@ public:
 private:
     static const log4cxx::LoggerPtr testgroup_logger;
 
-    void handle_test_change(guint initial_index, guint removed_count, guint added_count);
+    void handle_object_change(guint initial_index, guint removed_count, guint added_count) noexcept override;
 
-    void handle_test_deletions(guint initial_index, guint removed_count);
+    void handle_test_deletions(guint initial_index, guint removed_count) noexcept;
 
-    void handle_test_additions(guint initial_index, guint added_count);
+    void handle_test_additions(guint initial_index, guint added_count) noexcept;
 
     Glib::RefPtr<Gtk::TreeListModel> tests_tree =
             Gtk::TreeListModel::create(model, &ITestModelNode::get_given_tree, true);

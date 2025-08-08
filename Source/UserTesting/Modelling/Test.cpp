@@ -38,6 +38,13 @@ Test::Test(std::shared_ptr<TestSpecificationEntry> template_specification, BaseO
     instantiate_from_specification(std::move(template_specification));
 }
 
+bool Test::operator==(const Test &other) const
+{
+    return property_target_executable_name().get_value() == other.property_target_executable_name().get_value() &&
+        property_fixture().get_value() == other.property_fixture().get_value() &&
+        property_name().get_value() == other.property_name().get_value();
+}
+
 Glib::RefPtr<Gtk::TreeListModel> Test::get_tree() const noexcept
 {
     return nullptr;
