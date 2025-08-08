@@ -28,6 +28,12 @@ TestingArea::TestingArea(Gtk::Builder &builder) :
         GTKHelpers::get_object<Gio::Menu>(area_name, builder, "test_groups_context_menu"),
         {
             {
+                "new_test_group",
+                GTKHelpers::get_widget<Gtk::MenuButton>(area_name, builder, "new_test_group"),
+                GTKHelpers::get_widget<Gtk::Popover>(area_name, builder, "new_test_group_popover"),
+                true
+            },
+            {
                 "run_tests",
                 GTKHelpers::get_widget<Gtk::MenuButton>(area_name, builder, "run_tests"),
                 GTKHelpers::get_widget<Gtk::Popover>(area_name, builder, "run_tests_popover"),
@@ -39,6 +45,7 @@ TestingArea::TestingArea(Gtk::Builder &builder) :
         GTKHelpers::get_widget<Gtk::Widget>(area_name, builder, "testing_advice_unselected"),
         GTKHelpers::get_widget<Gtk::Widget>(area_name, builder, "testing_content")
     ),
+    new_tests_popover(builder, *this),
     run_tests_popover(builder, *this)
 {
     configure_selection_model();
@@ -67,7 +74,7 @@ void TestingArea::deselect_model()
     selection_model->set_model(nullptr);
 }
 
-Subsystem *TestingArea::observe_active_subsystem() noexcept
+Subsystem *TestingArea::get_active_subsystem() noexcept
 {
     return active_subsystem.get();
 }
@@ -107,13 +114,13 @@ void TestingArea::configure_columns() const
             if (gtk_id == "test_requirement_name") {
 
                 factory->signal_setup().connect(sigc::bind(&GTKHelpers::setup_expandable_label, false));
-                factory->signal_bind().connect([this](const Glib::RefPtr<Gtk::ListItem> &list_item)
+                factory->signal_bind().connect([this](const Glib::RefPtr<Gtk::ListItem> &list_item) noexcept
                         { StorageObjectBase::bind_name_property_expandable(list_item, tree_model); });
 
             } else if (gtk_id == "test_target_executable") {
 
                 factory->signal_setup().connect(sigc::bind(&GTKHelpers::setup_label, false));
-                factory->signal_bind().connect([](const Glib::RefPtr<Gtk::ListItem> & list_item) -> void
+                factory->signal_bind().connect([](const Glib::RefPtr<Gtk::ListItem> & list_item) noexcept -> void
                 {
                     const auto label = dynamic_cast<Gtk::Label *>(list_item->get_child());
                     const auto typed_test = std::dynamic_pointer_cast<Test>(list_item->get_item());
@@ -131,7 +138,7 @@ void TestingArea::configure_columns() const
             } else if (gtk_id == "test_fixture") {
 
                 factory->signal_setup().connect(sigc::bind(&GTKHelpers::setup_label, false));
-                factory->signal_bind().connect([](const Glib::RefPtr<Gtk::ListItem> & list_item) -> void
+                factory->signal_bind().connect([](const Glib::RefPtr<Gtk::ListItem> & list_item) noexcept -> void
                 {
                     const auto label = dynamic_cast<Gtk::Label *>(list_item->get_child());
                     const auto typed_test = std::dynamic_pointer_cast<Test>(list_item->get_item());
@@ -149,7 +156,7 @@ void TestingArea::configure_columns() const
             } else if (gtk_id == "test_status") {
 
                 factory->signal_setup().connect(sigc::bind(&GTKHelpers::setup_label, false));
-                factory->signal_bind().connect([](const Glib::RefPtr<Gtk::ListItem> & list_item) -> void
+                factory->signal_bind().connect([](const Glib::RefPtr<Gtk::ListItem> & list_item) noexcept -> void
                 {
                     const auto label = dynamic_cast<Gtk::Label *>(list_item->get_child());
                     const auto typed_test = std::dynamic_pointer_cast<Test>(list_item->get_item());
@@ -161,7 +168,7 @@ void TestingArea::configure_columns() const
                         typed_test->property_result(),
                         label->property_label(),
                         Glib::Binding::Flags::SYNC_CREATE,
-                        [](const std::shared_ptr<TestResult> &result) -> std::optional<Glib::ustring>
+                        [](const std::shared_ptr<TestResult> &result) noexcept -> std::optional<Glib::ustring>
                         {
                             if (result == nullptr)
                                 return "Unknown";

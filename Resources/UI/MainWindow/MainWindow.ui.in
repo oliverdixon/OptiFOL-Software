@@ -109,6 +109,7 @@
     ${DELETE_ANALYSIS_GROUP_POPOVER}
 
     <!-- Testing and compliance area popovers -->
+    ${NEW_TEST_GROUP_POPOVER}
     ${RUN_TESTS_POPOVER}
 
     <!-- Releases and reports popovers -->

@@ -24,6 +24,7 @@
 #include "../../UserTesting/Execution/PayloadManagement/GoogleTestListener.hpp"
 #include "../ContextButtonCorrespondence.hpp"
 #include "../IWindowArea.hpp"
+#include "TestingNewTestGroupPopover.hpp"
 #include "TestingRunTestsPopover.hpp"
 
 namespace optifol
@@ -34,65 +35,90 @@ namespace optifol
  * @brief Manage the <i>Testing and Compliance</i> area
  *
  * @details
- *  <p>
- *      The <i>Testing and Compliance</i> area provides controls for aggregating existing Requirement objects into
- *      TestGroup objects, and then executing unit test frameworks over the groups. The results of Requirement-wise unit
- *      tests can be reviewed in the area, or exported to a report using the <i>Releases and Reports</i> area
- *      capabilities. The following GTK elements are expected from the given Gtk::Builder:
- *      <table>
- *          <tr>
- *              <th>GTK C++ Class</th>
- *              <th>Unique Identifier</th>
- *              <th>Purpose</th>
- *          </tr>
- *          <tr>
- *              <td>Gtk::Widget (abstract)</td>
- *              <td><code>testing_advice_unselected</code></td>
- *              <td>Advice to display when the area is unavailable</td>
- *          </tr>
- *          <tr>
- *              <td>Gtk::ColumnView</td>
- *              <td><code>test_groups_view</code></td>
- *              <td>Table to display nested TestGroup content</td>
- *          </tr>
- *          <tr>
- *              <td>Gtk::MenuButton</td>
- *              <td><code>run_tests</code></td>
- *              <td>Button for executing the external testing framework on the selected TestGroup</td>
- *          </tr>
- *          <tr>
- *              <td>GtkColumnViewColumn</td>
- *              <td><code>test_requirement_name</code></td>
- *              <td>Table column to display the name of the Requirement associated with the Test</td>
- *          </tr>
- *          <tr>
- *              <td>GtkColumnViewColumn</td>
- *              <td><code>test_target_executable</code></td>
- *              <td>Table column to display the target executable of the Test</td>
- *          </tr>
- *          <tr>
- *              <td>GtkColumnViewColumn</td>
- *              <td><code>test_fixture</code></td>
- *              <td>Table column to display the test fixture of the Test</td>
- *          </tr>
- *          <tr>
- *              <td>GtkColumnViewColumn</td>
- *              <td><code>test_status</code></td>
- *              <td>Table column to display the iconised result of the lastest Test run</td>
- *          </tr>
- *      </table>
- *  </p>
+ *  The <i>Testing and Compliance</i> area provides controls for aggregating existing Requirement objects into
+ *  TestGroup objects, and then executing unit test frameworks over the groups. The results of Requirement-wise unit
+ *  tests can be reviewed in the area, or exported to a report using the <i>Releases and Reports</i> area
+ *  capabilities. The following GTK elements are expected from the given Gtk::Builder:
+ *  <table>
+ *      <tr>
+ *          <th>GTK C++ Class</th>
+ *          <th>Unique Identifier</th>
+ *          <th>Purpose</th>
+ *      </tr>
+ *      <tr>
+ *          <td>Gtk::Widget (abstract)</td>
+ *          <td><code>testing_advice_unselected</code></td>
+ *          <td>Advice to display when the area is unavailable</td>
+ *      </tr>
+ *      <tr>
+ *          <td>Gtk::Widget (abstract)</td>
+ *          <td><code>testing_content</code></td>
+ *          <td>Replacement to <code>testing_advice_unselected</code>, containing all active content</td>
+ *      </tr>
+ *      <tr>
+ *          <td>Gtk::ColumnView</td>
+ *          <td><code>test_groups_view</code></td>
+ *          <td>Table to display nested TestGroup content</td>
+ *      </tr>
+ *      <tr>
+ *          <td>Gtk::Popover</td>
+ *          <td><code>run_tests_popover</code></td>
+ *          <td>Popover for executing the Test items in the selected TestGroup</td>
+ *      </tr>
+ *      <tr>
+ *          <td>Gtk::MenuButton</td>
+ *          <td><code>run_tests</code></td>
+ *          <td>Button for executing the external testing framework on the selected TestGroup</td>
+ *      </tr>
+ *      <tr>
+ *          <td>Gtk::ColumnViewColumn</td>
+ *          <td><code>test_requirement_name</code></td>
+ *          <td>Table column to display the name of the Requirement associated with the Test</td>
+ *      </tr>
+ *      <tr>
+ *          <td>Gtk::ColumnViewColumn</td>
+ *          <td><code>test_target_executable</code></td>
+ *          <td>Table column to display the target executable of the Test</td>
+ *      </tr>
+ *      <tr>
+ *          <td>Gtk::ColumnViewColumn</td>
+ *          <td><code>test_fixture</code></td>
+ *          <td>Table column to display the test fixture of the Test</td>
+ *      </tr>
+ *      <tr>
+ *          <td>Gtk::ColumnViewColumn</td>
+ *          <td><code>test_status</code></td>
+ *          <td>Table column to display the iconised result of the lastest Test run</td>
+ *      </tr>
+ *      <tr>
+ *          <td>Gtk::Popover</td>
+ *          <td><code>new_test_group_popover</code></td>
+ *          <td>Popover for creating a new TestGroup</td>
+ *      </tr>
+ *      <tr>
+ *          <td>Gtk::MenuButton</td>
+ *          <td><code>new_test_group</code></td>
+ *          <td>Button for opening <code>new_test_group_popover</code></td>
+ *      </tr>
+ *  </table>
+ *  A @ref std::runtime_error will be thrown by the class constructor if any of these are inaccessible in the expected
+ *  type instantiations.
  */
 class TestingArea : public IWindowArea
 {
 public:
+    /**
+     * @brief Construct a new popover manager, registering callbacks on elements loaded by the given builder
+     * @param builder A GTK builder containing popover UI elements
+     * @throws std::runtime_error A required GTK element/widget could not be loaded from the given builder
+     */
     explicit TestingArea(Gtk::Builder &builder);
 
     void select_model(const Glib::RefPtr<Subsystem> &new_subsystem) override;
 
     void deselect_model() override;
 
-    Subsystem *observe_active_subsystem() noexcept override;
+    Subsystem *get_active_subsystem() noexcept override;
 
     const Subsystem *observe_active_subsystem() const noexcept override;
 
@@ -104,11 +130,14 @@ public:
     Glib::RefPtr<TestGroup> get_selection() const;
 
 private:
-    template<typename ReturnType>
-    using TestGetter = Glib::PropertyProxy_ReadOnly<ReturnType> (Test::*)() const;
-
+    /**
+     * @brief Configure Gtk::ColumnViewColumn objects in the @ref test_groups_view.
+     */
     void configure_columns() const;
 
+    /**
+     * @brief Configure the @ref selection_model.
+     */
     void configure_selection_model() const;
 
     static const log4cxx::LoggerPtr area_logger;
@@ -122,6 +151,7 @@ private:
     Glib::RefPtr<Gtk::SingleSelection> selection_model = Gtk::SingleSelection::create();
     Glib::RefPtr<Gtk::TreeListModel> tree_model;
 
+    TestingNewTestGroupPopover new_tests_popover;
     TestingRunTestsPopover run_tests_popover;
 };
 

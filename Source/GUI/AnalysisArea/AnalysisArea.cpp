@@ -143,7 +143,7 @@ void AnalysisArea::deselect_model()
     selection_model->set_model(nullptr);
 }
 
-Subsystem *AnalysisArea::observe_active_subsystem() noexcept
+Subsystem *AnalysisArea::get_active_subsystem() noexcept
 {
     return active_subsystem.get();
 }

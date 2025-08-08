@@ -89,7 +89,7 @@ void StorageObjectBase::bind_modification_time(const Glib::RefPtr<Gtk::ListItem>
 }
 
 void StorageObjectBase::bind_name_property_expandable(
-        const Glib::RefPtr<Gtk::ListItem> &list_item, const Glib::RefPtr<Gtk::TreeListModel> &tree_model)
+        const Glib::RefPtr<Gtk::ListItem> &list_item, const Glib::RefPtr<Gtk::TreeListModel> &tree_model) noexcept
 {
     const auto position = list_item->get_position();
     const auto model_item = std::dynamic_pointer_cast<StorageObjectBase>(list_item->get_item());

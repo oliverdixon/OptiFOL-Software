@@ -253,6 +253,7 @@ set(MAINWINDOW_RESOURCE_COMPONENTS
         ${RESOURCE_DIR}/UI/MainWindow/AnalysisArea/DeleteAnalysisGroupPopover.ui
 
         ${RESOURCE_DIR}/UI/MainWindow/TestingArea/TestingView.ui
+        ${RESOURCE_DIR}/UI/MainWindow/TestingArea/NewTestGroupPopover.ui
         ${RESOURCE_DIR}/UI/MainWindow/TestingArea/RunTests.ui
 
         ${RESOURCE_DIR}/UI/MainWindow/ReportsArea/ReportsArea.ui
@@ -392,6 +393,8 @@ add_executable(OptifolGUI
         Source/Reporting/LaTeXReportGenerator.hpp
         Source/Reporting/HTMLReportGenerator.cpp
         Source/Reporting/HTMLReportGenerator.hpp
+        Source/GUI/TestingArea/TestingNewTestGroupPopover.cpp
+        Source/GUI/TestingArea/TestingNewTestGroupPopover.hpp
 )
 
 set(COMMON_COMPILER_OPTIONS

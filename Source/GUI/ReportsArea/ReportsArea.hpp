@@ -92,7 +92,7 @@ public:
 
     void deselect_model() override;
 
-    Subsystem *observe_active_subsystem() noexcept override;
+    Subsystem *get_active_subsystem() noexcept override;
 
     const Subsystem *observe_active_subsystem() const noexcept override;
 

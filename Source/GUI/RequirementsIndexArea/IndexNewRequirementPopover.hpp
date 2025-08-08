@@ -19,7 +19,6 @@
 #include <gtkmm/entry.h>
 #include <gtkmm/textview.h>
 
-#include "../ContextButtonCorrespondence.hpp"
 #include "ManageTestsPopover.hpp"
 
 namespace optifol
@@ -81,6 +80,16 @@ class RequirementsIndexArea;
  *          <td><code>new_requirement_property_priority</code></td>
  *          <td>Text entry area for the optional associated test(s) of the new Requirement</td>
  *      </tr>
+ *      <tr>
+ *          <td>Gtk::Popover</td>
+ *          <td><code>manage_tests_popover</code></td>
+ *          <td>Popover for managing tests</td>
+ *      </tr>
+ *      <tr>
+ *          <td>Gtk::MenuButton</td>
+ *          <td><code>new_requirement_manage_tests</code></td>
+ *          <td>Button for activating <code>manage_tests_popover</code> popover</td>
+ *      </tr>
  *  </table>
  *  A @ref std::runtime_error will be thrown by the class constructor if any of these are inaccessible in the expected
  *  type instantiations.
@@ -100,19 +109,28 @@ private:
     /**
      * @brief Handle a click of the <i>Confirm</i> by attempting to create a Requirement with the given characteristics.
      */
-    void confirm_button_clicked() noexcept;
+    void confirm_button_clicked();
 
     /**
      * @brief Handle a click of the <i>Cancel</i> button by discarding all input and closing the popover.
      */
-    void cancel_button_clicked() noexcept;
+    void cancel_button_clicked() const;
 
+    /**
+     * @brief Handle a show of the popover by selecting the correct test specification model for the
+     *  @ref manage_tests_popover.
+     */
     void popover_shown() noexcept;
 
     /**
-     * @brief Clear all user fields in the popover
+     * @brief Clear all user fields in the popover.
      */
-    void clear_inputs() noexcept;
+    void clear_inputs();
+
+    /**
+     * @brief Handle a new committed Requirement name by enabling the <i>Confirm</i> button.
+     */
+    void name_entry_changed() const noexcept;
 
     static const char * const popover_name;
     static const log4cxx::LoggerPtr popover_logger;
@@ -121,7 +139,6 @@ private:
 
     Gtk::Popover * const my_popover;
     Gtk::Button * const confirm_button;
-    Gtk::Button * const cancel_button;
     Gtk::Entry * const name_entry;
     Gtk::TextView * const description_entry;
     Gtk::Entry * const statement_entry;
@@ -129,8 +146,6 @@ private:
     Gtk::DropDown * const priority_entry;
 
     ManageTestsPopover manage_tests_popover;
-    Gtk::MenuButton * const edit_tests_button;
-    Gtk::Popover * const edit_tests_popover;
     Glib::RefPtr<Gio::ListStore<TestSpecificationEntry>> test_specification;
 };
 

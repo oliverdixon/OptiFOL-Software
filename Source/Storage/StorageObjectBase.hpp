@@ -116,7 +116,7 @@ public:
      *  delegation
      */
     static void bind_name_property_expandable(
-            const Glib::RefPtr<Gtk::ListItem> &list_item, const Glib::RefPtr<Gtk::TreeListModel> &tree_model);
+            const Glib::RefPtr<Gtk::ListItem> &list_item, const Glib::RefPtr<Gtk::TreeListModel> &tree_model) noexcept;
 
 protected:
     /**

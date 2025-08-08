@@ -91,7 +91,6 @@ RequirementsIndexArea::RequirementsIndexArea(Gtk::Builder& builder) :
 
     const auto columns = view->get_columns();
     const auto column_count = columns->get_n_items();
-    guint processed_columns = 0;
 
     for (guint position = 0; position < column_count; ++position) {
         Glib::RefPtr<Gtk::ColumnViewColumn> column = nullptr;
@@ -126,14 +125,8 @@ RequirementsIndexArea::RequirementsIndexArea(Gtk::Builder& builder) :
                 continue;
 
             column->set_factory(factory);
-            ++processed_columns;
         }
     }
-
-#if 0 // TODO remaining fields
-    if (processed_columns < column_count)
-        assert(0);
-#endif
 }
 
 void RequirementsIndexArea::select_model(const Glib::RefPtr<Subsystem> &new_subsystem)
@@ -154,7 +147,7 @@ void RequirementsIndexArea::deselect_model()
     selection_model->set_model(nullptr);
 }
 
-Subsystem *RequirementsIndexArea::observe_active_subsystem() noexcept
+Subsystem *RequirementsIndexArea::get_active_subsystem() noexcept
 {
     return active_subsystem.get();
 }

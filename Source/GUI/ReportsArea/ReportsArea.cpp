@@ -55,7 +55,7 @@ void ReportsArea::deselect_model()
     active_subsystem = nullptr;
 }
 
-Subsystem *ReportsArea::observe_active_subsystem() noexcept
+Subsystem *ReportsArea::get_active_subsystem() noexcept
 {
     return active_subsystem.get();
 }

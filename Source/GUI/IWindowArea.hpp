@@ -70,12 +70,17 @@ public:
     virtual void deselect_model() = 0;
 
     /**
+     * @brief Retrieves a mutating raw pointer to the active Subsystem loaded into the area
+     * @return The mutating pointer, designed to be use for transitory single-threaded use only due to lack of
+     *  documented lifetime guarantees.
+     */
+    virtual Subsystem *get_active_subsystem() noexcept = 0;
+
+    /**
      * @brief Retrieves an observing raw pointer to the active Subsystem loaded into the area
      * @return The observing pointer, designed to be use for transitory single-threaded use only due to lack of
      *  documented lifetime guarantees.
      */
-    virtual Subsystem *observe_active_subsystem() noexcept = 0;
-
     virtual const Subsystem *observe_active_subsystem() const noexcept = 0;
 };
 

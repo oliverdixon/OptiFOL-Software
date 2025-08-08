@@ -22,7 +22,7 @@
 namespace optifol
 {
 
-const char *const ManageTestsPopover::popover_name = "New Requirement Popover";
+const char *const ManageTestsPopover::popover_name = "Manage Tests Popover";
 const log4cxx::LoggerPtr ManageTestsPopover::popover_logger =
         Logging::get_logger({"GUI", "RequirementsIndex", "NewRequirement", "TestManagement"});
 
@@ -46,7 +46,6 @@ ManageTestsPopover::ManageTestsPopover(Gtk::Builder &builder) :
 
     const auto columns = view->get_columns();
     const auto column_count = columns->get_n_items();
-    guint processed_columns = 0;
 
     for (guint position = 0; position < column_count; ++position) {
         Glib::RefPtr<Gtk::ColumnViewColumn> column = nullptr;
@@ -69,12 +68,11 @@ ManageTestsPopover::ManageTestsPopover(Gtk::Builder &builder) :
                 continue;
 
             column->set_factory(factory);
-            ++processed_columns;
         }
     }
 }
 
-void ManageTestsPopover::set_model(const Glib::RefPtr<Gio::ListStore<TestSpecificationEntry>> &model)
+void ManageTestsPopover::set_model(const Glib::RefPtr<Gio::ListStore<TestSpecificationEntry>> &model) noexcept
 {
     test_spec_model = model;
     selection_model->set_model(test_spec_model);
@@ -180,7 +178,7 @@ void ManageTestsPopover::bind_test_executable(const Glib::RefPtr<Gtk::ListItem> 
     ));
 }
 
-void ManageTestsPopover::bind_test_fixture(const Glib::RefPtr<Gtk::ListItem> &list_item)
+void ManageTestsPopover::bind_test_fixture(const Glib::RefPtr<Gtk::ListItem> &list_item) noexcept
 {
     const auto fixture_combo = dynamic_cast<Gtk::DropDown *>(list_item->get_child());
     const auto test_spec = std::dynamic_pointer_cast<TestSpecificationEntry>(list_item->get_item());
@@ -197,7 +195,7 @@ void ManageTestsPopover::bind_test_fixture(const Glib::RefPtr<Gtk::ListItem> &li
         test_spec->property_executable(),
         fixture_combo->property_model(),
         Glib::Binding::Flags::SYNC_CREATE,
-        [](const Glib::RefPtr<DiscoveryTestExecutable> &exe) -> std::optional<Glib::RefPtr<Gio::ListModel>>
+        [](const Glib::RefPtr<DiscoveryTestExecutable> &exe) noexcept -> std::optional<Glib::RefPtr<Gio::ListModel>>
         {
             if (exe == nullptr)
                 return {};
@@ -211,7 +209,7 @@ void ManageTestsPopover::bind_test_fixture(const Glib::RefPtr<Gtk::ListItem> &li
         fixture_combo->property_selected_item(),
         test_spec->property_fixture(),
         Glib::Binding::Flags::SYNC_CREATE,
-        [](const Glib::RefPtr<Glib::ObjectBase> &selected_item)
+        [](const Glib::RefPtr<Glib::ObjectBase> &selected_item) noexcept
                 -> std::optional<Glib::RefPtr<DiscoveryTestFixture>>
         {
             const auto &typed_entry = std::dynamic_pointer_cast<DiscoveryTestFixture>(selected_item);
@@ -223,7 +221,7 @@ void ManageTestsPopover::bind_test_fixture(const Glib::RefPtr<Gtk::ListItem> &li
     );
 }
 
-void ManageTestsPopover::bind_test_name(const Glib::RefPtr<Gtk::ListItem> &list_item)
+void ManageTestsPopover::bind_test_name(const Glib::RefPtr<Gtk::ListItem> &list_item) noexcept
 {
     const auto test_combo = dynamic_cast<Gtk::DropDown *>(list_item->get_child());
     const auto test_spec = std::dynamic_pointer_cast<TestSpecificationEntry>(list_item->get_item());
@@ -232,7 +230,7 @@ void ManageTestsPopover::bind_test_name(const Glib::RefPtr<Gtk::ListItem> &list_
         test_spec->property_fixture(),
         test_combo->property_model(),
         Glib::Binding::Flags::SYNC_CREATE,
-        [](const Glib::RefPtr<DiscoveryTestFixture> &fixture) -> std::optional<Glib::RefPtr<Gtk::StringList>>
+        [](const Glib::RefPtr<DiscoveryTestFixture> &fixture) noexcept -> std::optional<Glib::RefPtr<Gtk::StringList>>
         {
             if (fixture == nullptr)
                 return {};
@@ -245,7 +243,7 @@ void ManageTestsPopover::bind_test_name(const Glib::RefPtr<Gtk::ListItem> &list_
         test_combo->property_selected_item(),
         test_spec->property_name(),
         Glib::Binding::Flags::SYNC_CREATE,
-        [](const Glib::RefPtr<Glib::ObjectBase> &selected_item) -> std::optional<Glib::ustring>
+        [](const Glib::RefPtr<Glib::ObjectBase> &selected_item) noexcept -> std::optional<Glib::ustring>
         {
             const auto &typed_entry = dynamic_cast<Gtk::StringObject *>(selected_item.get());
             if (typed_entry == nullptr)
