@@ -24,6 +24,7 @@
 #include "../../UserTesting/Execution/PayloadManagement/GoogleTestListener.hpp"
 #include "../ContextButtonCorrespondence.hpp"
 #include "../IWindowArea.hpp"
+#include "TestingCopyToTestGroupPopover.hpp"
 #include "TestingNewTestGroupPopover.hpp"
 #include "TestingRunTestsPopover.hpp"
 
@@ -129,6 +130,8 @@ public:
      */
     Glib::RefPtr<TestGroup> get_selection() const;
 
+    guint get_selection_index() const;
+
 private:
     /**
      * @brief Configure Gtk::ColumnViewColumn objects in the @ref test_groups_view.
@@ -152,6 +155,7 @@ private:
     Glib::RefPtr<Gtk::TreeListModel> tree_model;
 
     TestingNewTestGroupPopover new_tests_popover;
+    TestingCopyToTestGroupPopover copy_requirement_popover;
     TestingRunTestsPopover run_tests_popover;
 };
 

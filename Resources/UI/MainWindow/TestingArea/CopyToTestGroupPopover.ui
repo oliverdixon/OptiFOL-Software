@@ -1,0 +1,115 @@
+<!--
+  - Copyright (c) All Rights Reserved
+  - 2025 Oliver Dixon <od641@york.ac.uk>
+  -->
+
+<object class="GtkPopover" id="copy_to_test_group_popover">
+    <property name="child">
+        <object class="GtkBox">
+            <style>
+                <class name="optifol_grid_dialog" />
+            </style>
+            <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
+            <child>
+                <object class="GtkGrid">
+                    <style>
+                        <class name="optifol_grid_dialog" />
+                    </style>
+
+                    <child>
+                        <object class="GtkLabel">
+                            <property name="label">Current Test Group</property>
+                            <property name="halign">GTK_ALIGN_END</property>
+                            <layout>
+                                <property name="column">0</property>
+                                <property name="row">0</property>
+                            </layout>
+                        </object>
+                    </child>
+                    <child>
+                        <object class="GtkDropDown" id="copy_to_test_group_current_group">
+                            <style>
+                                <class name="optifol_boxed" />
+                                <class name="optifol_combo_box" />
+                            </style>
+                            <layout>
+                                <property name="column">1</property>
+                                <property name="row">0</property>
+                            </layout>
+                        </object>
+                    </child>
+
+                    <child>
+                        <object class="GtkLabel">
+                            <property name="label">Requirement Name</property>
+                            <property name="halign">GTK_ALIGN_END</property>
+                            <layout>
+                                <property name="column">0</property>
+                                <property name="row">1</property>
+                            </layout>
+                        </object>
+                    </child>
+                    <child>
+                        <object class="GtkDropDown" id="copy_to_test_group_requirement">
+                            <style>
+                                <class name="optifol_boxed" />
+                                <class name="optifol_combo_box" />
+                            </style>
+                            <layout>
+                                <property name="column">1</property>
+                                <property name="row">1</property>
+                            </layout>
+                        </object>
+                    </child>
+
+                    <child>
+                        <object class="GtkLabel">
+                            <property name="label">New Test Group</property>
+                            <property name="halign">GTK_ALIGN_END</property>
+                            <layout>
+                                <property name="column">0</property>
+                                <property name="row">2</property>
+                            </layout>
+                        </object>
+                    </child>
+                    <child>
+                        <object class="GtkDropDown" id="copy_to_test_group_new_group">
+                            <style>
+                                <class name="optifol_boxed" />
+                                <class name="optifol_combo_box" />
+                            </style>
+                            <layout>
+                                <property name="column">1</property>
+                                <property name="row">2</property>
+                            </layout>
+                        </object>
+                    </child>
+
+                </object>
+            </child>
+            <child>
+                <object class="GtkSeparator" />
+            </child>
+            <child>
+                <object class="GtkBox">
+                    <property name="halign">GTK_ALIGN_END</property>
+                    <style>
+                        <class name="optifol_grid_dialog" />
+                    </style>
+                    <child>
+                        <object class="GtkButton" id="copy_to_test_group_cancel">
+                            <property name="icon-name">window-close-symbolic</property>
+                            <property name="tooltip-text">Cancel Requirement Copy</property>
+                        </object>
+                    </child>
+                    <child>
+                        <object class="GtkButton" id="copy_to_test_group_confirm">
+                            <property name="icon-name">emblem-ok-symbolic</property>
+                            <property name="tooltip-text">Confirm Requirement Copy</property>
+                        </object>
+                    </child>
+                </object>
+            </child>
+        </object>
+    </property>
+</object>

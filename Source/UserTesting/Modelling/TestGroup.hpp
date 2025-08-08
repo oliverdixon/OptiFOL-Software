@@ -39,6 +39,12 @@ public:
 
     decltype(execution_groups)::const_iterator end_execution_groups() const noexcept;
 
+    /**
+     * @brief Bind the name of the TestGroup to a Gtk::Label.
+     * @param item A Gtk::ListItem with a Gtk::Label child and TestGroup item.
+     */
+    static void bind_name_to_label(const Glib::RefPtr<Gtk::ListItem>& item) noexcept;
+
 private:
     static const log4cxx::LoggerPtr testgroup_logger;
 

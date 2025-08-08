@@ -110,6 +110,7 @@
 
     <!-- Testing and compliance area popovers -->
     ${NEW_TEST_GROUP_POPOVER}
+    ${COPY_TO_TEST_GROUP_POPOVER}
     ${RUN_TESTS_POPOVER}
 
     <!-- Releases and reports popovers -->

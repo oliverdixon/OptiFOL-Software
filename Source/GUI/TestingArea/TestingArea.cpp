@@ -34,6 +34,12 @@ TestingArea::TestingArea(Gtk::Builder &builder) :
                 true
             },
             {
+                "copy_to_test_group",
+                GTKHelpers::get_widget<Gtk::MenuButton>(area_name, builder, "copy_to_test_group"),
+                GTKHelpers::get_widget<Gtk::Popover>(area_name, builder, "copy_to_test_group_popover"),
+                true
+            },
+            {
                 "run_tests",
                 GTKHelpers::get_widget<Gtk::MenuButton>(area_name, builder, "run_tests"),
                 GTKHelpers::get_widget<Gtk::Popover>(area_name, builder, "run_tests_popover"),
@@ -46,6 +52,7 @@ TestingArea::TestingArea(Gtk::Builder &builder) :
         GTKHelpers::get_widget<Gtk::Widget>(area_name, builder, "testing_content")
     ),
     new_tests_popover(builder, *this),
+    copy_requirement_popover(builder, *this),
     run_tests_popover(builder, *this)
 {
     configure_selection_model();
@@ -97,6 +104,11 @@ Glib::RefPtr<TestGroup> TestingArea::get_selection() const
         throw std::runtime_error("Selected item is not a Test Group.");
 
     return selected_group;
+}
+
+guint TestingArea::get_selection_index() const
+{
+    return selection_model->get_selected();
 }
 
 void TestingArea::configure_columns() const

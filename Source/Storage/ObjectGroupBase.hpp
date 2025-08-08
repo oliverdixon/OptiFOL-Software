@@ -16,6 +16,7 @@
 
 #include <giomm/liststore.h>
 #include <gtkmm/singleselection.h>
+#include <gtkmm/dropdown.h>
 
 #include "../DereferencingEqualityFunctor.hpp"
 #include "StorageObjectBase.hpp"
@@ -185,6 +186,15 @@ public:
     void populate_selection_model(Gtk::SingleSelection &target_selection_model) const
     {
         target_selection_model.set_model(model);
+    }
+
+    /**
+     * @brief Populate the given Gtk::SingleSelection selection model with the internal model.
+     * @param target_dropdown The Gtk::DropDown element to populate with the current list model.
+     */
+    void populate_dropdown_model(Gtk::DropDown &target_dropdown) const
+    {
+        target_dropdown.set_model(model);
     }
 
     /**

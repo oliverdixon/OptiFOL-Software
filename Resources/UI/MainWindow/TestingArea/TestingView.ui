@@ -63,7 +63,7 @@ To prepare Test Groups, select a Subsystem from the left-hand <i>Project Explore
                         <object class="GtkSeparator"/>
                     </child>
                     <child>
-                        <object class="GtkMenuButton">
+                        <object class="GtkMenuButton" id="copy_to_test_group">
                             <property name="icon-name">edit-copy-symbolic</property>
                             <property name="tooltip-text">Copy Selected Requirement to Test Group</property>
                             <property name="sensitive">FALSE</property>

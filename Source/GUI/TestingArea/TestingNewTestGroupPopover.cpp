@@ -12,7 +12,6 @@
  */
 
 #include "TestingNewTestGroupPopover.hpp"
-
 #include "../GTKHelpers.hpp"
 #include "../Logging.hpp"
 #include "TestingArea.hpp"

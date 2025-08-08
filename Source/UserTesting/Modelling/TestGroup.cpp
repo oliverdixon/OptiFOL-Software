@@ -11,8 +11,10 @@
  * @version Development
  */
 
-#include "TestGroup.hpp"
+#include <gtkmm/label.h>
+#include <gtkmm/listitem.h>
 
+#include "TestGroup.hpp"
 #include "../../Exceptions/SemanticException.hpp"
 #include "../Logging.hpp"
 #include "GoogleExecutionGroup.hpp"
@@ -48,6 +50,16 @@ decltype(TestGroup::execution_groups)::const_iterator TestGroup::begin_execution
 decltype(TestGroup::execution_groups)::const_iterator TestGroup::end_execution_groups() const noexcept
 {
     return execution_groups.cend();
+}
+
+void TestGroup::bind_name_to_label(const Glib::RefPtr<Gtk::ListItem> &item) noexcept
+{
+    const auto target_label = dynamic_cast<Gtk::Label *>(item->get_child());
+    const auto typed_group = std::dynamic_pointer_cast<TestGroup>(item->get_item());
+    if (target_label == nullptr || typed_group == nullptr)
+        return;
+
+    target_label->set_text(typed_group->property_name().get_value());
 }
 
 void TestGroup::handle_object_change(const guint initial_index, const guint removed_count,
