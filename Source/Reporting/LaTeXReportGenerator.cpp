@@ -32,24 +32,16 @@ LaTeXReportGenerator::LaTeXReportGenerator(const Glib::RefPtr<Gio::File>& output
 
 void LaTeXReportGenerator::add_requirement(const Requirement &requirement)
 {
-    index_file->write(requirement.property_name().get_value() + '&');
-    index_file->write(requirement.property_description().get_value() + '&');
-
-    const auto latex_statement = requirement.observe_latex_statement();
-    if (latex_statement.empty())
-        index_file->write("\\emph{Not provided.}");
-    else
-        index_file->write(std::string(latex_statement));
-
-    index_file->write('&' + serialise_time(requirement.property_creation_time().get_value()));
-    index_file->write('&' + serialise_time(requirement.property_modified_time().get_value()));
-
-    index_file->write("\\\\");
+    write_property(*index_file, requirement.property_name());
+    write_property(*index_file, requirement.property_description());
+    write_property(*index_file, std::string(requirement.observe_latex_statement()), true);
+    write_property(*index_file, serialise_time(requirement.property_creation_time().get_value()), true);
+    write_property(*index_file, serialise_time(requirement.property_modified_time().get_value()), true, true);
 }
 
 void LaTeXReportGenerator::add_test_group(const TestGroup &test_group)
 {
-    tests_file->write("\\subsection{" + test_group.property_name().get_value() + '}');
+    tests_file->write("\n\\subsection{" + test_group.property_name().get_value() + '}');
     test_group.for_each([this](const Requirement& requirement)
     {
         tests_file->write("\\subsubsection{" + requirement.property_name().get_value() + "}");
@@ -64,26 +56,24 @@ void LaTeXReportGenerator::add_test_group(const TestGroup &test_group)
 		\bottomrule\endfoot%
 )");
 
-        const auto tests = requirement.get_tests();
+        const auto tests = requirement.observe_tests();
         const auto test_count = tests->get_n_items();
 
         for (guint test_index = 0; test_index < test_count; ++test_index) {
             const auto test = tests->get_item(test_index);
             const auto result = test->property_result().get_value();
 
-            tests_file->write("\\optifolescaped|" + test->property_name().get_value() + "|&");
-            tests_file->write("\\optifolescaped|" + test->property_target_executable_name().get_value() + "|&");
-            tests_file->write("\\optifolescaped|" + test->property_fixture().get_value() + "|&");
+            write_property(*tests_file, test->property_name());
+            write_property(*tests_file, test->property_target_executable_name());
+            write_property(*tests_file, test->property_fixture().get_value());
 
             if (result == nullptr)
-                tests_file->write("Unknown");
+                write_property(*tests_file, "", true, true);
             else
-                tests_file->write(result->has_passed() ? "Passed" : "Failed");
-
-            tests_file->write("\\\\");
+                write_property(*tests_file, result->has_passed() ? "Passed" : "Failed", true, true);
         }
 
-        tests_file->write(R"(\end{xltabular}%)");
+        tests_file->write("\\end{xltabular}%\n");
     });
 }
 
@@ -127,8 +117,7 @@ void LaTeXReportGenerator::start_requirements() const
 {
     assert(index_file->is_closed() == false);
 
-    index_file->write(R"(
-\begin{xltabular}{\linewidth}{>{\ttfamily}lXXll}%
+    index_file->write(R"(\begin{xltabular}{\linewidth}{lXXll}%
 		\toprule\normalfont%
             \textbf{Name}&%
             \textbf{Description}&%
@@ -144,10 +133,23 @@ void LaTeXReportGenerator::end_requirements() const
 {
     assert(index_file->is_closed() == false);
 
-    index_file->write(R"(\end{xltabular}%)");
+    index_file->write("\\end{xltabular}%\n");
     index_file->close();
 
     assert(index_file->is_closed() == true);
+}
+
+void LaTeXReportGenerator::write_property(Gio::FileOutputStream &output_stream, const std::string &string,
+    const bool verbatim, const bool eol) noexcept
+{
+    assert(output_stream.is_closed() == false);
+
+    if (string.empty())
+        output_stream.write("\\emph{Not provided.}");
+    else
+        output_stream.write(verbatim ? string : "\\optifolescaped|" + string + '|');
+
+    output_stream.write(eol ? "\\\\\n" : "&");
 }
 
 std::string LaTeXReportGenerator::serialise_time(const StorageObjectBase::TimeT &time)

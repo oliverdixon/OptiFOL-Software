@@ -113,6 +113,11 @@ Glib::PropertyProxy<Glib::ustring> Requirement::property_normalised()
     return normalised_statement.get_proxy();
 }
 
+const Gio::ListStore<Test> *Requirement::observe_tests() const noexcept
+{
+    return tests.get();
+}
+
 Glib::RefPtr<Gio::ListStore<Test>> Requirement::get_tests() const noexcept
 {
     return tests;

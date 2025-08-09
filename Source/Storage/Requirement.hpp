@@ -121,6 +121,8 @@ public:
      */
     [[nodiscard]] Glib::PropertyProxy<Glib::ustring> property_normalised();
 
+    [[nodiscard]] const Gio::ListStore<Test> * observe_tests() const noexcept;
+
     [[nodiscard]] Glib::RefPtr<Gio::ListStore<Test>> get_tests() const noexcept;
 
     [[nodiscard]] Glib::RefPtr<Gio::ListStore<TestSpecificationEntry>> get_test_specs() const noexcept;

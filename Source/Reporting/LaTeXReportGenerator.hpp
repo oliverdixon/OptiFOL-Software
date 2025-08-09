@@ -20,6 +20,12 @@
 #include "../Storage/StorageObjectBase.hpp"
 #include "IReportGenerator.hpp"
 
+template<typename Candidate>
+concept SerialisableProperty = requires(const Glib::PropertyProxy_ReadOnly<Candidate> candidate)
+{
+    { candidate.get_value() } -> std::convertible_to<Glib::ustring>;
+};
+
 namespace optifol
 {
 
@@ -71,6 +77,34 @@ private:
      * @pre The requirements stream is open for writing.
      */
     void end_requirements() const;
+
+    /**
+     * @brief Serialise a single Glib property to the given LaTeX output stream.
+     * @tparam PropertyType The property type
+     * @param output_stream The destination output stream, open for writing.
+     * @param property The string to serialise.
+     * @param verbatim Should the string be passed in verbatim to the TeX interpreter, or wrapped in a escaping
+     *  environment?
+     * @param eol Should an end-of-line (EOL) marker be appended to the field?
+     */
+    template<SerialisableProperty PropertyType>
+    static void write_property(Gio::FileOutputStream& output_stream,
+        const Glib::PropertyProxy_ReadOnly<PropertyType> property, const bool verbatim = false, const bool eol = false)
+    {
+        write_property(output_stream, property.get_value(), verbatim, eol);
+    }
+
+    /**
+     * @brief Serialise a string to the given LaTeX output stream.
+     * @param output_stream The destination output stream, open for writing.
+     * @param string The string to serialise.
+     * @param verbatim Should the string be passed in verbatim to the TeX interpreter, or wrapped in a escaping
+     *  environment?
+     * @param eol Should an end-of-line (EOL) marker be appended to the field?
+     * @pre The output stream is open for writing.
+     */
+    static void write_property(Gio::FileOutputStream& output_stream, const std::string& string, bool verbatim = false,
+        bool eol = false) noexcept;
 
     /**
      * @brief Serialises a time point to the LaTeX <code>datetime2</code> format.
