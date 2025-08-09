@@ -25,6 +25,7 @@
 #include "../ContextButtonCorrespondence.hpp"
 #include "../IWindowArea.hpp"
 #include "TestingCopyToTestGroupPopover.hpp"
+#include "TestingMoveToTestGroupPopover.hpp"
 #include "TestingNewTestGroupPopover.hpp"
 #include "TestingRunTestsPopover.hpp"
 
@@ -101,6 +102,26 @@ namespace optifol
  *          <td><code>new_test_group</code></td>
  *          <td>Button for opening <code>new_test_group_popover</code></td>
  *      </tr>
+ *      <tr>
+ *          <td>Gtk::Popover</td>
+ *          <td><code>copy_to_test_group_popover</code></td>
+ *          <td>Popover for copying a Requirement to a new TestGroup</td>
+ *      </tr>
+ *      <tr>
+ *          <td>Gtk::MenuButton</td>
+ *          <td><code>copy_to_test_group</code></td>
+ *          <td>Button for opening <code>copy_to_test_group_popover</code></td>
+ *      </tr>
+ *      <tr>
+ *          <td>Gtk::Popover</td>
+ *          <td><code>move_to_test_group_popover</code></td>
+ *          <td>Popover for moving a Requirement between TestGroup objects</td>
+ *      </tr>
+ *      <tr>
+ *          <td>Gtk::MenuButton</td>
+ *          <td><code>move_to_test_group</code></td>
+ *          <td>Button for opening <code>move_to_test_group_popover</code></td>
+ *      </tr>
  *  </table>
  *  A @ref std::runtime_error will be thrown by the class constructor if any of these are inaccessible in the expected
  *  type instantiations.
@@ -122,6 +143,8 @@ public:
     Subsystem *get_active_subsystem() noexcept override;
 
     const Subsystem *observe_active_subsystem() const noexcept override;
+
+    Glib::RefPtr<Gtk::TreeListRow> get_selected_row() noexcept;
 
     Glib::RefPtr<const Gtk::TreeListRow> get_selected_row() const noexcept;
 
@@ -158,6 +181,7 @@ private:
 
     TestingNewTestGroupPopover new_tests_popover;
     TestingCopyToTestGroupPopover copy_requirement_popover;
+    TestingMoveToTestGroupPopover move_requirement_popover;
     TestingRunTestsPopover run_tests_popover;
 };
 

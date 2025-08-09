@@ -40,6 +40,12 @@ TestingArea::TestingArea(Gtk::Builder &builder) :
                 true
             },
             {
+                "move_to_test_group",
+                GTKHelpers::get_widget<Gtk::MenuButton>(area_name, builder, "move_to_test_group"),
+                GTKHelpers::get_widget<Gtk::Popover>(area_name, builder, "move_to_test_group_popover"),
+                true
+            },
+            {
                 "run_tests",
                 GTKHelpers::get_widget<Gtk::MenuButton>(area_name, builder, "run_tests"),
                 GTKHelpers::get_widget<Gtk::Popover>(area_name, builder, "run_tests_popover"),
@@ -53,6 +59,7 @@ TestingArea::TestingArea(Gtk::Builder &builder) :
     ),
     new_tests_popover(builder, *this),
     copy_requirement_popover(builder, *this),
+    move_requirement_popover(builder, *this),
     run_tests_popover(builder, *this)
 {
     configure_selection_model();
@@ -90,6 +97,11 @@ Subsystem *TestingArea::get_active_subsystem() noexcept
 const Subsystem *TestingArea::observe_active_subsystem() const noexcept
 {
     return active_subsystem.get();
+}
+
+Glib::RefPtr<Gtk::TreeListRow> TestingArea::get_selected_row() noexcept
+{
+    return tree_model->get_row(selection_model->get_selected());
 }
 
 Glib::RefPtr<const Gtk::TreeListRow> TestingArea::get_selected_row() const noexcept

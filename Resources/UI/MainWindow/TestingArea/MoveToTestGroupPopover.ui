@@ -3,7 +3,7 @@
   - 2025 Oliver Dixon <od641@york.ac.uk>
   -->
 
-<object class="GtkPopover" id="copy_to_test_group_popover">
+<object class="GtkPopover" id="move_to_test_group_popover">
     <property name="child">
         <object class="GtkBox">
             <style>
@@ -27,7 +27,7 @@
                         </object>
                     </child>
                     <child>
-                        <object class="GtkEntry" id="copy_to_test_group_requirement">
+                        <object class="GtkEntry" id="move_to_test_group_requirement">
                             <property name="sensitive">FALSE</property>
                             <layout>
                                 <property name="column">1</property>
@@ -47,7 +47,7 @@
                         </object>
                     </child>
                     <child>
-                        <object class="GtkDropDown" id="copy_to_test_group_new_group">
+                        <object class="GtkDropDown" id="move_to_test_group_new_group">
                             <style>
                                 <class name="optifol_boxed" />
                                 <class name="optifol_combo_box" />
@@ -71,15 +71,15 @@
                         <class name="optifol_grid_dialog" />
                     </style>
                     <child>
-                        <object class="GtkButton" id="copy_to_test_group_cancel">
+                        <object class="GtkButton" id="move_to_test_group_cancel">
                             <property name="icon-name">window-close-symbolic</property>
-                            <property name="tooltip-text">Cancel Requirement Copy</property>
+                            <property name="tooltip-text">Cancel Requirement Move</property>
                         </object>
                     </child>
                     <child>
-                        <object class="GtkButton" id="copy_to_test_group_confirm">
+                        <object class="GtkButton" id="move_to_test_group_confirm">
                             <property name="icon-name">emblem-ok-symbolic</property>
-                            <property name="tooltip-text">Confirm Requirement Copy</property>
+                            <property name="tooltip-text">Confirm Requirement Move</property>
                         </object>
                     </child>
                 </object>

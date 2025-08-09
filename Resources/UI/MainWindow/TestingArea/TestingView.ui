@@ -46,9 +46,9 @@ To prepare Test Groups, select a Subsystem from the left-hand <i>Project Explore
                         </object>
                     </child>
                     <child>
-                        <object class="GtkMenuButton" id="edit_test_group">
+                        <object class="GtkMenuButton" id="rename_test_group">
                             <property name="icon-name">document-edit-symbolic</property>
-                            <property name="tooltip-text">Edit Test Group</property>
+                            <property name="tooltip-text">Rename Test Group</property>
                             <property name="sensitive">FALSE</property>
                         </object>
                     </child>
@@ -70,16 +70,9 @@ To prepare Test Groups, select a Subsystem from the left-hand <i>Project Explore
                         </object>
                     </child>
                     <child>
-                        <object class="GtkMenuButton">
+                        <object class="GtkMenuButton" id="move_to_test_group">
                             <property name="icon-name">go-bottom-symbolic</property>
                             <property name="tooltip-text">Move Selected Requirement to Test Group</property>
-                            <property name="sensitive">FALSE</property>
-                        </object>
-                    </child>
-                    <child>
-                        <object class="GtkMenuButton">
-                            <property name="icon-name">list-remove-symbolic</property>
-                            <property name="tooltip-text">Remove Selected Requirement from Test Group</property>
                             <property name="sensitive">FALSE</property>
                         </object>
                     </child>
