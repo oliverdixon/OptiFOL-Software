@@ -21,8 +21,6 @@
 #include <gtkmm/textview.h>
 #include <log4cxx/logger.h>
 
-#include "../ProcessExecutor.hpp"
-
 namespace optifol
 {
 
@@ -67,7 +65,8 @@ class TestingArea;
  *      </tr>
  *  </table>
  *  A @ref std::runtime_error will be thrown by the class constructor if any of these are inaccessible in the expected
- *  type instantiations. */
+ *  type instantiations.
+ */
 class TestingRunTestsPopover
 {
 public:

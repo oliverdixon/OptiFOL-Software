@@ -33,6 +33,8 @@ public:
 
     TestGroup(const Glib::ustring &name, BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &builder);
 
+    [[nodiscard]] bool operator==(const TestGroup & other) const noexcept;
+
     [[nodiscard]] Glib::RefPtr<Gtk::TreeListModel> get_tree() const noexcept override;
 
     decltype(execution_groups)::const_iterator begin_execution_groups() const noexcept;

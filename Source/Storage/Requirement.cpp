@@ -14,6 +14,7 @@
 #include "Requirement.hpp"
 
 #include <gtkmm/label.h>
+#include <gtkmm/listitem.h>
 
 #include "../Exceptions/SemanticException.hpp"
 #include "../Logging.hpp"
@@ -160,6 +161,16 @@ bool Requirement::is_analysis_ready() const noexcept
 bool Requirement::has_tests() const noexcept
 {
     return tests->get_n_items() > 0;
+}
+
+void Requirement::bind_name_to_label(const Glib::RefPtr<Gtk::ListItem> &item) noexcept
+{
+    const auto target_label = dynamic_cast<Gtk::Label *>(item->get_child());
+    const auto typed_group = dynamic_cast<const Requirement *>(item->get_item().get());
+    if (target_label == nullptr || typed_group == nullptr)
+        return;
+
+    target_label->set_text(typed_group->property_name().get_value());
 }
 
 void Requirement::setup_properties(std::string &&requirement_name, std::string &&requirement_statement,

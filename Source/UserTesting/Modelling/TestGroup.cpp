@@ -37,6 +37,11 @@ TestGroup::TestGroup(const Glib::ustring &name, BaseObjectType *cobject, const G
     property_name().set_value(name);
 }
 
+bool TestGroup::operator==(const TestGroup &other) const noexcept
+{
+    return property_name().get_value() == other.property_name().get_value();
+}
+
 Glib::RefPtr<Gtk::TreeListModel> TestGroup::get_tree() const noexcept
 {
     return tests_tree;
@@ -55,7 +60,7 @@ decltype(TestGroup::execution_groups)::const_iterator TestGroup::end_execution_g
 void TestGroup::bind_name_to_label(const Glib::RefPtr<Gtk::ListItem> &item) noexcept
 {
     const auto target_label = dynamic_cast<Gtk::Label *>(item->get_child());
-    const auto typed_group = std::dynamic_pointer_cast<TestGroup>(item->get_item());
+    const auto typed_group = dynamic_cast<const TestGroup *>(item->get_item().get());
     if (target_label == nullptr || typed_group == nullptr)
         return;
 

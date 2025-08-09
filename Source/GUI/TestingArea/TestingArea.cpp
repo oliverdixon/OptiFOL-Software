@@ -67,7 +67,8 @@ void TestingArea::select_model(const Glib::RefPtr<Subsystem> &new_subsystem)
     on_off_widgets.second->set_visible(true);
 
     active_subsystem = new_subsystem;
-    tree_model = Gtk::TreeListModel::create(active_subsystem->get_test_groups(), &ITestModelNode::get_given_tree, true);
+    tree_model = Gtk::TreeListModel::create(active_subsystem->get_test_groups(), &ITestModelNode::get_given_tree,
+        true, true);
     selection_model->set_model(tree_model);
 }
 
@@ -89,6 +90,11 @@ Subsystem *TestingArea::get_active_subsystem() noexcept
 const Subsystem *TestingArea::observe_active_subsystem() const noexcept
 {
     return active_subsystem.get();
+}
+
+Glib::RefPtr<const Gtk::TreeListRow> TestingArea::get_selected_row() const noexcept
+{
+    return tree_model->get_row(selection_model->get_selected());
 }
 
 Glib::RefPtr<TestGroup> TestingArea::get_selection() const

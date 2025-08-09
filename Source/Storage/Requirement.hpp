@@ -166,6 +166,8 @@ public:
      */
     [[nodiscard]] bool has_tests() const noexcept;
 
+    static void bind_name_to_label(const Glib::RefPtr<Gtk::ListItem> &item) noexcept;
+
 private:
     static const log4cxx::LoggerPtr control_logger;
     static const log4cxx::LoggerPtr parse_logger;

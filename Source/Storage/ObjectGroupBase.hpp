@@ -185,7 +185,8 @@ public:
      */
     void populate_selection_model(Gtk::SingleSelection &target_selection_model) const
     {
-        target_selection_model.set_model(model);
+        if (target_selection_model.get_model() != model)
+            target_selection_model.set_model(model);
     }
 
     /**
@@ -194,7 +195,8 @@ public:
      */
     void populate_dropdown_model(Gtk::DropDown &target_dropdown) const
     {
-        target_dropdown.set_model(model);
+        if (target_dropdown.get_model() != model)
+            target_dropdown.set_model(model);
     }
 
     /**

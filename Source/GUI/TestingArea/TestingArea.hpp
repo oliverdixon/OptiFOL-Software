@@ -123,6 +123,8 @@ public:
 
     const Subsystem *observe_active_subsystem() const noexcept override;
 
+    Glib::RefPtr<const Gtk::TreeListRow> get_selected_row() const noexcept;
+
     /**
      * @brief Gets the selected TestGroup object in the model view.
      * @return The single selected TestGroup object in the model view.
