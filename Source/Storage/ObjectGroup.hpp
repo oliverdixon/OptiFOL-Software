@@ -127,7 +127,7 @@ public:
      * @param slated_object The object to delete.
      * @return Was an object deleted?
      */
-    bool delete_object(const Glib::RefPtr<Derived> &slated_object)
+    bool delete_object(const Glib::RefPtr<Derived> slated_object)
     {
         // Locate the object in the map, which will provide its index in the linear model.
         const auto index_it = index_map.find(slated_object);

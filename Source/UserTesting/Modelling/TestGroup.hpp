@@ -52,6 +52,21 @@ public:
 private:
     void handle_requirement_model_change(guint initial_index, guint removed_count, guint added_count) noexcept;
 
+    // TODO: document. Should also be noexcept, but need to verify downstream.
+    void deregister_test_results(Glib::RefPtr<Test> test);
+
+    void deregister_test_executable(const Glib::RefPtr<Test> &test);
+
+    void register_test_results(const Glib::RefPtr<Test>& test);
+
+    /**
+     * @brief Allocate the incoming Test to the suitable ExecutionGroup, determined by the Test's target executable
+     *  property. A new ExecutionGroup is created if one does not already exist.
+     * @param test The Test to register in the execution model.
+     * @throws std::runtime_error if the Test could not be added.
+     */
+    void register_test_executable(const Glib::RefPtr<Test>& test);
+
     void handle_test_deletions(guint initial_index, guint removed_count) noexcept;
 
     void handle_test_additions(guint initial_index, guint added_count) noexcept;
@@ -64,6 +79,9 @@ private:
             Gtk::TreeListModel::create(get_model(), &ITestModelNode::get_given_tests_tree, true);
 
     ObjectGroup<Test> results_model;
+
+    std::unordered_map<Glib::RefPtr<Test>, sigc::connection, std::hash<Test>,
+        DereferencingEqualityFunctor<Glib::RefPtr<Test>, Test>> registered_callbacks;
 
     Glib::RefPtr<Gtk::TreeListModel> results_tree =
             Gtk::TreeListModel::create(results_model.get_model(), &ITestModelNode::get_given_results_tree, true);
