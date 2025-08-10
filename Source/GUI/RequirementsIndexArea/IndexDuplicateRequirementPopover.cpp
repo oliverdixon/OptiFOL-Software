@@ -41,15 +41,22 @@ IndexDuplicateRequirementPopover::IndexDuplicateRequirementPopover(
     my_popover->signal_show().connect(sigc::mem_fun(*this, &IndexDuplicateRequirementPopover::show_popover));
 }
 
-void IndexDuplicateRequirementPopover::confirm_button_clicked() const
+void IndexDuplicateRequirementPopover::confirm_button_clicked() const noexcept
 {
     my_popover->popdown();
 
-    const auto subsystem = index_area.get_active_subsystem();
-    subsystem->duplicate_requirement(*index_area.get_selection());
+    try {
+        const auto subsystem = index_area.get_active_subsystem();
+        subsystem->duplicate_requirement(*index_area.get_selection());
 
-    popover_logger->info("Duplicated new subsystem requirement with name \"" + new_name_entry->get_text() +
-        "\" from existing \"" + old_name_entry->get_text() + "\".");
+        popover_logger->info("Duplicated new Subsystem Requirement with name \"" + new_name_entry->get_text() +
+            "\" from existing \"" + old_name_entry->get_text() + "\".");
+    } catch (const std::runtime_error& error) {
+        popover_logger->error("Could not duplicate Subsystem Requirement with name \"" + new_name_entry->get_text() +
+            "\".");
+        popover_logger->error(error.what());
+    }
+
     clear_inputs();
 }
 

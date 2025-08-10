@@ -54,19 +54,24 @@ IndexNewRequirementPopover::IndexNewRequirementPopover(Gtk::Builder &builder, Re
     clear_inputs();
 }
 
-void IndexNewRequirementPopover::confirm_button_clicked()
+void IndexNewRequirementPopover::confirm_button_clicked() noexcept
 {
     my_popover->popdown();
 
-    index_area.get_active_subsystem()->build_requirement(
-        name_entry->get_text(),
-        statement_entry->get_text(),
-        description_entry->get_buffer()->get_text(),
-        priority_entry->get_selected(),
-        std::move(test_specification)
-    );
+    try {
+        index_area.get_active_subsystem()->build_requirement(
+            name_entry->get_text(),
+            statement_entry->get_text(),
+            description_entry->get_buffer()->get_text(),
+            priority_entry->get_selected(),
+            std::move(test_specification)
+        );
 
-    popover_logger->info("Created new subsystem requirement with name \"" + name_entry->get_text() + "\".");
+        popover_logger->info("Created new Subsystem Requirement with name \"" + name_entry->get_text() + "\".");
+    } catch (const std::runtime_error& error) {
+        popover_logger->error("Could not create Subsystem Requirement with name \"" + name_entry->get_text() + "\".");
+        popover_logger->error(error.what());
+    }
 }
 
 void IndexNewRequirementPopover::cancel_button_clicked() const

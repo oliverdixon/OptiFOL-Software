@@ -69,6 +69,7 @@ TestingArea::TestingArea(Gtk::Builder &builder) :
         GTKHelpers::get_widget<Gtk::Widget>(area_name, builder, "testing_advice_unselected"),
         GTKHelpers::get_widget<Gtk::Widget>(area_name, builder, "testing_content")
     ),
+    testing_failed_view(builder),
     new_test_group_popover(builder, *this),
     rename_test_group_popover(builder, *this),
     delete_test_group_popover(builder, *this),
@@ -88,9 +89,10 @@ void TestingArea::select_model(const Glib::RefPtr<Subsystem> &new_subsystem)
     on_off_widgets.second->set_visible(true);
 
     active_subsystem = new_subsystem;
-    tree_model = Gtk::TreeListModel::create(active_subsystem->get_test_groups(), &ITestModelNode::get_given_tree,
-        true, true);
+    tree_model = Gtk::TreeListModel::create(active_subsystem->get_test_groups(),
+        &ITestModelNode::get_given_tests_tree, true, true);
     selection_model->set_model(tree_model);
+    testing_failed_view.select_model(new_subsystem);
 }
 
 void TestingArea::deselect_model()
@@ -101,6 +103,7 @@ void TestingArea::deselect_model()
     active_subsystem = nullptr;
     tree_model = nullptr;
     selection_model->set_model(nullptr);
+    testing_failed_view.deselect_model();
 }
 
 Subsystem *TestingArea::get_active_subsystem() noexcept
@@ -153,6 +156,20 @@ Glib::RefPtr<Requirement> TestingArea::get_selected_requirement()
         throw std::runtime_error("Popover could not find a suitable Requirement.");
 
     return requirement;
+}
+
+std::optional<Glib::ustring> TestingArea::bind_test_result(const std::shared_ptr<TestResult> &result) noexcept
+{
+    if (result == nullptr)
+        return "Unknown";
+
+    try {
+        return std::string(result->has_passed() ? "Passed" : "Failed") + " in " +
+            std::to_string(result->get_execution_time()) + " ms";
+    } catch (...) {
+        area_logger->error("Could not format Test Result string due to system error.");
+        return "Unknown error in evaluation";
+    }
 }
 
 void TestingArea::configure_columns() const
@@ -224,13 +241,7 @@ void TestingArea::configure_columns() const
                         typed_test->property_result(),
                         label->property_label(),
                         Glib::Binding::Flags::SYNC_CREATE,
-                        [](const std::shared_ptr<TestResult> &result) noexcept -> std::optional<Glib::ustring>
-                        {
-                            if (result == nullptr)
-                                return "Unknown";
-
-                            return result->has_passed() ? "Passed" : "Failed";
-                        }
+                        sigc::ptr_fun(&TestingArea::bind_test_result)
                     );
                 });
 

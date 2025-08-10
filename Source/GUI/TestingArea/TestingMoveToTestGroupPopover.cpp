@@ -58,8 +58,8 @@ void TestingMoveToTestGroupPopover::confirm_button_clicked() const noexcept
             return;
         }
 
+        target_test_group->insert_object(requirement); // Do this first, in case it throws an exception.
         source_test_group->delete_object(requirement);
-        target_test_group->insert_object(requirement);
 
         popover_logger->debug("Moved Requirement \"" + requirement->property_name().get_value() +
             "\" from Test Group \"" + source_test_group->property_name().get_value() + "\" into Test Group \"" +

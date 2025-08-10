@@ -84,7 +84,7 @@ private:
     /**
      * @brief Handle a click of the <i>Confirm</i> by attempting to duplicate the named Requirement.
      */
-    void confirm_button_clicked() const;
+    void confirm_button_clicked() const noexcept;
 
     /**
      * @brief Handle a click of the <i>Cancel</i> button by discarding all input and closing the popover.

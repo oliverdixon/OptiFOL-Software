@@ -5,14 +5,14 @@
 
 /**
  * @file
- * @brief Class specification for the object grouping base
+ * @brief Class specification for the dual object grouping model
  * @author Oliver Dixon
  * @date 2025-07-26
  * @version Development
  */
 
-#ifndef OBJECTGROUPBASE_HPP
-#define OBJECTGROUPBASE_HPP
+#ifndef OBJECTGROUP_HPP
+#define OBJECTGROUP_HPP
 
 #include <giomm/liststore.h>
 #include <gtkmm/singleselection.h>
@@ -25,7 +25,7 @@ namespace optifol
 {
 
 /**
- * @class ObjectGroupBase
+ * @class ObjectGroup
  * @brief Provide a common CRTP interface for all structures grouping objects in a mutable list for iteration, but also
  *  require fast lookup. The base provides a skeleton set of observing and mutating operations on the model to make
  *  optimal use of the dual-storage (list and map) model.
@@ -43,22 +43,29 @@ namespace optifol
  */
 template<typename Derived>
     requires std::derived_from<Derived, IHashable>
-class ObjectGroupBase
+class ObjectGroup
 {
 public:
+    ObjectGroup() = default;
+
+    explicit ObjectGroup(sigc::slot<void(guint, guint, guint)>&& model_changed_callback)
+    {
+        model->signal_items_changed().connect(std::move(model_changed_callback));
+    }
+
     /**
      * @brief Destruct the ObjectGroupBase.
      */
-    virtual ~ObjectGroupBase() = default;
+    virtual ~ObjectGroup() = default;
 
     /**
      * @brief Retrieves the untyped Gio::ListModel from a static context; this is required for GUI integration.
      * @param untyped_item The Glib-enforced argument containing the object representing the object group.
      * @return The Gio::ListModel held by the object group, or the null pointer if no such model could be retrieved.
      */
-    static Glib::RefPtr<Gio::ListModel> get_model(const Glib::RefPtr<Glib::ObjectBase> &untyped_item)
+    static Glib::RefPtr<Gio::ListModel> get_model_callback(const Glib::RefPtr<Glib::ObjectBase> &untyped_item)
     {
-        const auto object_group = dynamic_cast<const ObjectGroupBase *>(untyped_item.get());
+        const auto object_group = dynamic_cast<const ObjectGroup *>(untyped_item.get());
 
         if (object_group != nullptr)
             return object_group->model;
@@ -69,9 +76,13 @@ public:
     /**
      * @brief Insert a new single object into the model.
      * @param new_object The constructed object to insert into the models.
+     * @throws std::runtime_error if the new object already exists in the model.
      */
     void insert_object(Glib::RefPtr<Derived> new_object)
     {
+        if (contains_exact(new_object.get()))
+            throw std::runtime_error("Object already exists in model.");
+
         model->append(new_object);
         index_map[new_object] = model->get_n_items() - 1;
     }
@@ -160,6 +171,22 @@ public:
     }
 
     /**
+     * @brief Determines if the model contains a reference to the given object. The comparison is exact in the sense
+     *  that pointer addresses are compared, and does not use <code>Derived::operator==(const Derived&)</code>. This is
+     *  useful when working with <code>Derived</code> types adjacent to @ref std::shared_ptr.
+     * @param search_address The address of the item to query in the model.
+     * @return Does the model already detain an item with the given address?
+     */
+    bool contains_exact(const Derived * search_address)
+    {
+        const auto it = index_map.find(*search_address);
+        if (it == index_map.cend())
+            return false;
+
+        return it->first.get() == search_address;
+    }
+
+    /**
      * @brief Steal a recently deleted object from the cache. After this operation, the object is no longer present in
      *  any of the models, including the deletion cache.
      * @param old_index The index of the object in the linear model prior to its deletion.
@@ -210,32 +237,14 @@ public:
             function(*model->get_item(index));
     }
 
-protected:
-    /**
-     * @brief Construct a ObjectGroupBase.
-     */
-    ObjectGroupBase()
+    Glib::RefPtr<Gio::ListStore<Derived>> get_model() const noexcept
     {
-        model->signal_items_changed().connect(sigc::mem_fun(*this, &ObjectGroupBase::handle_object_change));
+        return model;
     }
-
-    /**
-     * @brief Handle insertions and/or deletions in the flat linear model.
-     * @param initial_index The index at which insertions/deleted started.
-     * @param removed_count The number of objects removed from the list.
-     * @param added_count The number of objects added to the list.
-     */
-    virtual void handle_object_change(const guint initial_index,
-        const guint removed_count, const guint added_count) noexcept
-    {
-        std::ignore = initial_index;
-        std::ignore = removed_count;
-        std::ignore = added_count;
-    }
-
-    Glib::RefPtr<Gio::ListStore<Derived>> model = Gio::ListStore<Derived>::create();
 
 private:
+    Glib::RefPtr<Gio::ListStore<Derived>> model = Gio::ListStore<Derived>::create();
+
     /**
      * @brief Mapping of hashable objects present in the models, associated with their respective indices in the linear
      *  @ref model.
@@ -253,4 +262,4 @@ private:
 
 } // namespace optifol
 
-#endif // OBJECTGROUPBASE_HPP
+#endif // OBJECTGROUP_HPP

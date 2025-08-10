@@ -17,7 +17,6 @@
 #include <chrono>
 #include <glibmm/object.h>
 #include <glibmm/property.h>
-#include <gtkmm/builder.h>
 
 #include "../IHashable.hpp"
 
@@ -27,6 +26,7 @@ namespace Gtk
 class TreeListModel;
 class ListItem;
 class Label;
+class Builder;
 
 }
 

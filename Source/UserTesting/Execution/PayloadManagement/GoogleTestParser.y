@@ -64,8 +64,8 @@
 %token Message
 %token TestEnd
 
-%type <TestResult::Partial> partial_test
-%type <std::vector<TestResult::Partial>> partial_test_list
+%type <Glib::RefPtr<PartialTestResult>> partial_test
+%type <std::vector<Glib::RefPtr<PartialTestResult>>> partial_test_list
 
 %start program_entry
 
@@ -190,7 +190,7 @@ partial_test :
     TestPartial File Literal Line Literal Message Literal
     {
         try {
-            $$ = TestResult::Partial($3, std::stoi($5), $7);
+            $$ = Glib::make_refptr_for_instance(new PartialTestResult($3, std::stoi($5), $7));
 
             if (logger->isDebugEnabled())
                 logger->debug("Parsed partial test result in file \"" + $3 +"\" at line " + $5 + '.');

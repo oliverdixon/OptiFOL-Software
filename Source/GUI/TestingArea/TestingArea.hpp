@@ -26,6 +26,7 @@
 #include "../IWindowArea.hpp"
 #include "TestingCopyToTestGroupPopover.hpp"
 #include "TestingDeleteTestGroupPopover.hpp"
+#include "TestingFailedView.hpp"
 #include "TestingMoveToTestGroupPopover.hpp"
 #include "TestingNewTestGroupPopover.hpp"
 #include "TestingRenameTestGroupPopover.hpp"
@@ -142,7 +143,7 @@ class TestingArea : public IWindowArea
 {
 public:
     /**
-     * @brief Construct a new popover manager, registering callbacks on elements loaded by the given builder
+     * @brief Construct a new area manager, registering callbacks on elements loaded by the given builder
      * @param builder A GTK builder containing popover UI elements
      * @throws std::runtime_error A required GTK element/widget could not be loaded from the given builder
      */
@@ -178,6 +179,16 @@ public:
 
 private:
     /**
+     * @brief Format a string encoding the TestResult passed state and execution time.
+     * @param result An owning container of the TestResult to format.
+     * @return A string describing the TestResult passed state and execution time.
+     * @note The semantics of this function is poor. Ownership of the argument is not shared by the function. It is
+     *  required by the calling conventions of GTKmm. Ditto for the return type being encoded in @ref std::optional.
+     * @post The return value is such that @ref std::optional::has_value returns <code>true</code>.
+     */
+    static std::optional<Glib::ustring> bind_test_result(const std::shared_ptr<TestResult> &result) noexcept;
+
+    /**
      * @brief Configure Gtk::ColumnViewColumn objects in the @ref test_groups_view.
      */
     void configure_columns() const;
@@ -197,6 +208,8 @@ private:
     Glib::RefPtr<Subsystem> active_subsystem;
     Glib::RefPtr<Gtk::SingleSelection> selection_model = Gtk::SingleSelection::create();
     Glib::RefPtr<Gtk::TreeListModel> tree_model;
+
+    TestingFailedView testing_failed_view;
 
     TestingNewTestGroupPopover new_test_group_popover;
     TestingRenameTestGroupPopover rename_test_group_popover;

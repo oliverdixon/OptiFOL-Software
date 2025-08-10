@@ -26,11 +26,6 @@ endfunction()
 
 ######################################
 ## Optifol Generated Object Library ##
-##                                  ##
-## Requires:                        ##
-##  - flex executable               ##
-##  - bison executable              ##
-##  - gtkmm headers >= 4.0          ##
 ######################################
 
 # The "generated" object library controls the invocation of all non-GTK code-generators required for Optifol. Namely:
@@ -103,9 +98,6 @@ set_source_files_properties(
 
 ###################################
 ## Optifol Common Object Library ##
-##                               ##
-## Requires:                     ##
-##  - gtkmm headers >= 4.0       ##
 ###################################
 
 add_library(OptifolCommon OBJECT
@@ -201,23 +193,116 @@ add_library(OptifolCommon OBJECT
         Source/UserTesting/Execution/TestResult.cpp
         Source/UserTesting/Execution/TestResult.hpp
         Source/DereferencingEqualityFunctor.hpp
+        Source/GUI/MainWindow.cpp
+        Source/GUI/MainWindow.hpp
+        Source/GUI/Application.cpp
+        Source/GUI/Application.hpp
+        Source/GUI/GTKHelpers.hpp
+        Source/Storage/TreeNode.cpp
+        Source/Storage/TreeNode.hpp
+        Source/Storage/Project.cpp
+        Source/Storage/Project.hpp
+        Source/Storage/Subsystem.cpp
+        Source/Storage/Subsystem.hpp
+        Source/Storage/StorageObjectBase.hpp
+        Source/GUI/ProjectHierarchyPane/ProjectHierarchyPane.cpp
+        Source/GUI/ProjectHierarchyPane/ProjectHierarchyPane.hpp
+        Source/GUI/RequirementsIndexArea/RequirementsIndexArea.cpp
+        Source/GUI/RequirementsIndexArea/RequirementsIndexArea.hpp
+        Source/GUI/ContextButtonCorrespondence.cpp
+        Source/GUI/ContextButtonCorrespondence.hpp
+        Source/Storage/Requirement.cpp
+        Source/Storage/Requirement.hpp
+        Source/Storage/StorageObjectBase.cpp
+        Source/GUI/AnalysisArea/AnalysisArea.cpp
+        Source/GUI/AnalysisArea/AnalysisArea.hpp
+        Source/Storage/AnalysisGroup.cpp
+        Source/Storage/AnalysisGroup.hpp
+        Source/GUI/ReportsArea/ReportsArea.cpp
+        Source/GUI/ReportsArea/ReportsArea.hpp
+        Source/GUI/ReportsArea/ReportsAreaGenerateLaTeXPopover.cpp
+        Source/GUI/ReportsArea/ReportsAreaGenerateLaTeXPopover.hpp
+        Source/GUI/TestingArea/TestingArea.cpp
+        Source/GUI/TestingArea/TestingArea.hpp
+        Source/GUI/IWindowArea.hpp
+        Source/GUI/AnalysisArea/AnalysisAreaNewAnalysisGroupPopover.cpp
+        Source/GUI/AnalysisArea/AnalysisAreaNewAnalysisGroupPopover.hpp
+        Source/GUI/RequirementsIndexArea/IndexNewRequirementPopover.cpp
+        Source/GUI/RequirementsIndexArea/IndexNewRequirementPopover.hpp
+        Source/GUI/RequirementsIndexArea/IndexEditRequirementPopover.cpp
+        Source/GUI/RequirementsIndexArea/IndexEditRequirementPopover.hpp
+        Source/GUI/RequirementsIndexArea/IndexDuplicateRequirementPopover.cpp
+        Source/GUI/RequirementsIndexArea/IndexDuplicateRequirementPopover.hpp
+        Source/GUI/RequirementsIndexArea/IndexDeleteRequirementPopover.cpp
+        Source/GUI/RequirementsIndexArea/IndexDeleteRequirementPopover.hpp
+        Source/UserTesting/Execution/PayloadManagement/TestListenerBase.hpp
+        Source/UserTesting/Execution/PayloadManagement/GoogleTestListener.cpp
+        Source/UserTesting/Execution/PayloadManagement/GoogleTestListener.hpp
+        Source/UserTesting/Modelling/Test.cpp
+        Source/UserTesting/Modelling/Test.hpp
+        Source/GUI/ProcessExecutor.cpp
+        Source/GUI/ProcessExecutor.hpp
+        Source/UserTesting/Modelling/TestGroup.cpp
+        Source/UserTesting/Modelling/TestGroup.hpp
+        Source/Storage/ObjectGroup.hpp
+        Source/GUI/TestingArea/TestingRunTestsPopover.cpp
+        Source/GUI/TestingArea/TestingRunTestsPopover.hpp
+        Source/GUI/StreamingProcessExecutor.cpp
+        Source/GUI/StreamingProcessExecutor.hpp
+        Source/UserTesting/Execution/PayloadManagement/TestListenerBase.cpp
+        Source/UserTesting/Execution/TestExecutable.cpp
+        Source/UserTesting/Execution/TestExecutable.hpp
+        Source/GUI/RequirementsIndexArea/ManageTestsPopover.cpp
+        Source/GUI/RequirementsIndexArea/ManageTestsPopover.hpp
+        Source/UserTesting/Discovery/DiscoveryTestExecutable.cpp
+        Source/UserTesting/Discovery/DiscoveryTestExecutable.hpp
+        Source/UserTesting/Discovery/TestSpecificationEntry.cpp
+        Source/UserTesting/Discovery/TestSpecificationEntry.hpp
+        Source/UserTesting/Discovery/DiscoveryTestFixture.cpp
+        Source/UserTesting/Discovery/DiscoveryTestFixture.hpp
+        Source/UserTesting/Discovery/GoogleTestDiscoveryExecutable.cpp
+        Source/UserTesting/Discovery/GoogleTestDiscoveryExecutable.hpp
+        Source/UserTesting/Modelling/ITestModelNode.hpp
+        Source/UserTesting/Modelling/ExecutionGroup.cpp
+        Source/UserTesting/Modelling/ExecutionGroup.hpp
+        Source/UserTesting/Modelling/GoogleExecutionGroup.cpp
+        Source/UserTesting/Modelling/GoogleExecutionGroup.hpp
+        Source/Reporting/IReportGenerator.hpp
+        Source/Reporting/LaTeXReportGenerator.cpp
+        Source/Reporting/LaTeXReportGenerator.hpp
+        Source/Reporting/HTMLReportGenerator.cpp
+        Source/Reporting/HTMLReportGenerator.hpp
+        Source/GUI/TestingArea/TestingNewTestGroupPopover.cpp
+        Source/GUI/TestingArea/TestingNewTestGroupPopover.hpp
+        Source/GUI/TestingArea/TestingCopyToTestGroupPopover.cpp
+        Source/GUI/TestingArea/TestingCopyToTestGroupPopover.hpp
+        Source/GUI/TestingArea/TestingCopyMovePopoverBase.cpp
+        Source/GUI/TestingArea/TestingCopyMovePopoverBase.hpp
+        Source/GUI/TestingArea/TestingMoveToTestGroupPopover.cpp
+        Source/GUI/TestingArea/TestingMoveToTestGroupPopover.hpp
+        Source/GUI/TestingArea/TestingDeleteTestGroupPopover.cpp
+        Source/GUI/TestingArea/TestingDeleteTestGroupPopover.hpp
+        Source/GUI/TestingArea/TestingRenameTestGroupPopover.cpp
+        Source/GUI/TestingArea/TestingRenameTestGroupPopover.hpp
+        Source/GUI/TestingArea/TestingFailedView.cpp
+        Source/GUI/TestingArea/TestingFailedView.hpp
+        Source/UserTesting/Execution/PartialTestResult.cpp
+        Source/UserTesting/Execution/PartialTestResult.hpp
 )
 
 target_include_directories(OptifolCommon PRIVATE
+        Source/Interpreter/
+        Source/UserTesting/Execution/PayloadManagement
         ${GENERATED_INCLUDE_DIR}
 )
 
 target_include_directories(OptifolCommon SYSTEM PRIVATE
         ${GTKMM_INCLUDE_DIRS}
+        ${RAPIDJSON_INCLUDE_DIRS}
 )
 
 ########################################
 ## Optifol GUI Application Executable ##
-##                                    ##
-## Requires:                          ##
-##  - glib-compile-resources          ##
-##  - awk                             ##
-##  - gtkmm >= 4.0                    ##
 ########################################
 
 find_program(GLIB_COMPILE_RESOURCES NAMES glib-compile-resources REQUIRED)
@@ -318,97 +403,6 @@ set_source_files_properties(
 add_executable(OptifolGUI
         ${RESOURCE_OUT}
         Source/GUI/GUIDriver.cpp
-        Source/GUI/MainWindow.cpp
-        Source/GUI/MainWindow.hpp
-        Source/GUI/Application.cpp
-        Source/GUI/Application.hpp
-        Source/GUI/GTKHelpers.hpp
-        Source/Storage/TreeNode.cpp
-        Source/Storage/TreeNode.hpp
-        Source/Storage/Project.cpp
-        Source/Storage/Project.hpp
-        Source/Storage/Subsystem.cpp
-        Source/Storage/Subsystem.hpp
-        Source/Storage/StorageObjectBase.hpp
-        Source/GUI/ProjectHierarchyPane/ProjectHierarchyPane.cpp
-        Source/GUI/ProjectHierarchyPane/ProjectHierarchyPane.hpp
-        Source/GUI/RequirementsIndexArea/RequirementsIndexArea.cpp
-        Source/GUI/RequirementsIndexArea/RequirementsIndexArea.hpp
-        Source/GUI/ContextButtonCorrespondence.cpp
-        Source/GUI/ContextButtonCorrespondence.hpp
-        Source/Storage/Requirement.cpp
-        Source/Storage/Requirement.hpp
-        Source/Storage/StorageObjectBase.cpp
-        Source/GUI/AnalysisArea/AnalysisArea.cpp
-        Source/GUI/AnalysisArea/AnalysisArea.hpp
-        Source/Storage/AnalysisGroup.cpp
-        Source/Storage/AnalysisGroup.hpp
-        Source/GUI/ReportsArea/ReportsArea.cpp
-        Source/GUI/ReportsArea/ReportsArea.hpp
-        Source/GUI/ReportsArea/ReportsAreaGenerateLaTeXPopover.cpp
-        Source/GUI/ReportsArea/ReportsAreaGenerateLaTeXPopover.hpp
-        Source/GUI/TestingArea/TestingArea.cpp
-        Source/GUI/TestingArea/TestingArea.hpp
-        Source/GUI/IWindowArea.hpp
-        Source/GUI/AnalysisArea/AnalysisAreaNewAnalysisGroupPopover.cpp
-        Source/GUI/AnalysisArea/AnalysisAreaNewAnalysisGroupPopover.hpp
-        Source/GUI/RequirementsIndexArea/IndexNewRequirementPopover.cpp
-        Source/GUI/RequirementsIndexArea/IndexNewRequirementPopover.hpp
-        Source/GUI/RequirementsIndexArea/IndexEditRequirementPopover.cpp
-        Source/GUI/RequirementsIndexArea/IndexEditRequirementPopover.hpp
-        Source/GUI/RequirementsIndexArea/IndexDuplicateRequirementPopover.cpp
-        Source/GUI/RequirementsIndexArea/IndexDuplicateRequirementPopover.hpp
-        Source/GUI/RequirementsIndexArea/IndexDeleteRequirementPopover.cpp
-        Source/GUI/RequirementsIndexArea/IndexDeleteRequirementPopover.hpp
-        Source/UserTesting/Execution/PayloadManagement/TestListenerBase.hpp
-        Source/UserTesting/Execution/PayloadManagement/GoogleTestListener.cpp
-        Source/UserTesting/Execution/PayloadManagement/GoogleTestListener.hpp
-        Source/UserTesting/Modelling/Test.cpp
-        Source/UserTesting/Modelling/Test.hpp
-        Source/GUI/ProcessExecutor.cpp
-        Source/GUI/ProcessExecutor.hpp
-        Source/UserTesting/Modelling/TestGroup.cpp
-        Source/UserTesting/Modelling/TestGroup.hpp
-        Source/Storage/ObjectGroupBase.hpp
-        Source/GUI/TestingArea/TestingRunTestsPopover.cpp
-        Source/GUI/TestingArea/TestingRunTestsPopover.hpp
-        Source/GUI/StreamingProcessExecutor.cpp
-        Source/GUI/StreamingProcessExecutor.hpp
-        Source/UserTesting/Execution/PayloadManagement/TestListenerBase.cpp
-        Source/UserTesting/Execution/TestExecutable.cpp
-        Source/UserTesting/Execution/TestExecutable.hpp
-        Source/GUI/RequirementsIndexArea/ManageTestsPopover.cpp
-        Source/GUI/RequirementsIndexArea/ManageTestsPopover.hpp
-        Source/UserTesting/Discovery/DiscoveryTestExecutable.cpp
-        Source/UserTesting/Discovery/DiscoveryTestExecutable.hpp
-        Source/UserTesting/Discovery/TestSpecificationEntry.cpp
-        Source/UserTesting/Discovery/TestSpecificationEntry.hpp
-        Source/UserTesting/Discovery/DiscoveryTestFixture.cpp
-        Source/UserTesting/Discovery/DiscoveryTestFixture.hpp
-        Source/UserTesting/Discovery/GoogleTestDiscoveryExecutable.cpp
-        Source/UserTesting/Discovery/GoogleTestDiscoveryExecutable.hpp
-        Source/UserTesting/Modelling/ITestModelNode.hpp
-        Source/UserTesting/Modelling/ExecutionGroup.cpp
-        Source/UserTesting/Modelling/ExecutionGroup.hpp
-        Source/UserTesting/Modelling/GoogleExecutionGroup.cpp
-        Source/UserTesting/Modelling/GoogleExecutionGroup.hpp
-        Source/Reporting/IReportGenerator.hpp
-        Source/Reporting/LaTeXReportGenerator.cpp
-        Source/Reporting/LaTeXReportGenerator.hpp
-        Source/Reporting/HTMLReportGenerator.cpp
-        Source/Reporting/HTMLReportGenerator.hpp
-        Source/GUI/TestingArea/TestingNewTestGroupPopover.cpp
-        Source/GUI/TestingArea/TestingNewTestGroupPopover.hpp
-        Source/GUI/TestingArea/TestingCopyToTestGroupPopover.cpp
-        Source/GUI/TestingArea/TestingCopyToTestGroupPopover.hpp
-        Source/GUI/TestingArea/TestingCopyMovePopoverBase.cpp
-        Source/GUI/TestingArea/TestingCopyMovePopoverBase.hpp
-        Source/GUI/TestingArea/TestingMoveToTestGroupPopover.cpp
-        Source/GUI/TestingArea/TestingMoveToTestGroupPopover.hpp
-        Source/GUI/TestingArea/TestingDeleteTestGroupPopover.cpp
-        Source/GUI/TestingArea/TestingDeleteTestGroupPopover.hpp
-        Source/GUI/TestingArea/TestingRenameTestGroupPopover.cpp
-        Source/GUI/TestingArea/TestingRenameTestGroupPopover.hpp
 )
 
 set(COMMON_COMPILER_OPTIONS
@@ -436,12 +430,6 @@ target_link_libraries(OptifolGUI PRIVATE
         ${LOG4CXX_LIBRARIES}
 )
 
-target_include_directories(OptifolGUI PRIVATE
-        Source/Interpreter/
-        Source/UserTesting/Execution/PayloadManagement
-        ${GENERATED_INCLUDE_DIR}
-)
-
 target_include_directories(OptifolGUI SYSTEM PRIVATE
         ${GTKMM_INCLUDE_DIRS}
         ${RAPIDJSON_INCLUDE_DIRS}
@@ -451,10 +439,6 @@ utils_strip(OptifolGUI)
 
 ##########################################
 ## Optifol Google Test Suite Executable ##
-##                                      ##
-## Requires:                            ##
-##  - Google Test (acquired)            ##
-##  - gtkmm >= 4.0                      ##
 ##########################################
 
 include(GoogleTest)
@@ -482,7 +466,10 @@ target_include_directories(OptifolTesting PRIVATE
         Source/Interpreter/
         Source/UserTesting/Google/
 )
+
 target_include_directories(OptifolTesting SYSTEM PRIVATE
+        ${GTKMM_INCLUDE_DIRS}
+        ${RAPIDJSON_INCLUDE_DIRS}
         ${GENERATED_INCLUDE_DIR}
 )
 
@@ -492,6 +479,7 @@ target_link_libraries(OptifolTesting PRIVATE
         log4cxx
         GTest::gtest_main
         ${GTKMM_LIBRARIES}
+        ${LOG4CXX_LIBRARIES}
 )
 
 target_compile_options(OptifolTesting PRIVATE
@@ -503,10 +491,6 @@ gtest_discover_tests(OptifolTesting)
 
 ######################################
 ## Optifol Documentation Generation ##
-##                                  ##
-## Requires:                        ##
-##  - Doxygen                       ##
-##  - wget                          ##
 ######################################
 
 # TODO 1: wrap external tagfile support into a function

@@ -32,6 +32,7 @@ To prepare Test Groups, select a Subsystem from the left-hand <i>Project Explore
     <child>
         <object class="GtkBox" id="testing_content">
             <property name="orientation">vertical</property>
+
             <child>
                 <object class="GtkBox">
                     <property name="halign">GTK_ALIGN_FILL</property>
@@ -113,43 +114,82 @@ To prepare Test Groups, select a Subsystem from the left-hand <i>Project Explore
                     </child>
                 </object>
             </child>
+
             <child>
-                <object class="GtkScrolledWindow">
-                    <property name="vexpand">TRUE</property>
+                <object class="GtkPaned">
+                    <property name="orientation">vertical</property>
+                    <property name="position">400</property>
                     <child>
-                        <object class="GtkColumnView" id="test_groups_view">
+                        <object class="GtkScrolledWindow">
+                            <property name="vexpand">TRUE</property>
                             <child>
-                                <object class="GtkColumnViewColumn">
-                                    <property name="id">test_requirement_name</property>
-                                    <property name="title">Requirement/Test Name</property>
-                                    <property name="resizable">TRUE</property>
+                                <object class="GtkColumnView" id="test_groups_view">
+                                    <child>
+                                        <object class="GtkColumnViewColumn">
+                                            <property name="id">test_requirement_name</property>
+                                            <property name="title">Test Case Name</property>
+                                            <property name="resizable">TRUE</property>
+                                        </object>
+                                    </child>
+                                    <child>
+                                        <object class="GtkColumnViewColumn">
+                                            <property name="id">test_target_executable</property>
+                                            <property name="title">Target Executable</property>
+                                            <property name="resizable">TRUE</property>
+                                        </object>
+                                    </child>
+                                    <child>
+                                        <object class="GtkColumnViewColumn">
+                                            <property name="id">test_fixture</property>
+                                            <property name="title">Test Fixture</property>
+                                            <property name="resizable">TRUE</property>
+                                        </object>
+                                    </child>
+                                    <child>
+                                        <object class="GtkColumnViewColumn">
+                                            <property name="id">test_status</property>
+                                            <property name="title">Test Status</property>
+                                            <property name="resizable">TRUE</property>
+                                        </object>
+                                    </child>
                                 </object>
                             </child>
+                        </object>
+                    </child>
+                    <child>
+                        <object class="GtkScrolledWindow" id="test_groups_failed_container">
+                            <property name="vexpand">TRUE</property>
+                            <property name="visible">FALSE</property>
                             <child>
-                                <object class="GtkColumnViewColumn">
-                                    <property name="id">test_target_executable</property>
-                                    <property name="title">Target Executable</property>
-                                    <property name="resizable">TRUE</property>
-                                </object>
-                            </child>
-                            <child>
-                                <object class="GtkColumnViewColumn">
-                                    <property name="id">test_fixture</property>
-                                    <property name="title">Test Fixture</property>
-                                    <property name="resizable">TRUE</property>
-                                </object>
-                            </child>
-                            <child>
-                                <object class="GtkColumnViewColumn">
-                                    <property name="id">test_status</property>
-                                    <property name="title">Test Status</property>
-                                    <property name="resizable">TRUE</property>
+                                <object class="GtkColumnView" id="test_groups_failed_view">
+                                    <child>
+                                        <object class="GtkColumnViewColumn">
+                                            <property name="id">failed_test_message</property>
+                                            <property name="title">Failed Test Message</property>
+                                            <property name="resizable">TRUE</property>
+                                        </object>
+                                    </child>
+                                    <child>
+                                        <object class="GtkColumnViewColumn">
+                                            <property name="id">failed_test_source_file</property>
+                                            <property name="title">Source File</property>
+                                            <property name="resizable">TRUE</property>
+                                        </object>
+                                    </child>
+                                    <child>
+                                        <object class="GtkColumnViewColumn">
+                                            <property name="id">failed_test_source_line</property>
+                                            <property name="title">Source Line</property>
+                                            <property name="resizable">TRUE</property>
+                                        </object>
+                                    </child>
                                 </object>
                             </child>
                         </object>
                     </child>
                 </object>
             </child>
+
         </object>
     </child>
 </object>

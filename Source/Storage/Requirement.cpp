@@ -83,7 +83,12 @@ Requirement::Requirement(std::string &&name, std::string &&statement, std::strin
     setup_properties(std::move(name), std::move(statement), std::move(description), priority, std::move(tests));
 }
 
-Glib::RefPtr<Gtk::TreeListModel> Requirement::get_tree() const noexcept
+Glib::RefPtr<Gtk::TreeListModel> Requirement::get_tests_tree() const noexcept
+{
+    return tests_tree;
+}
+
+Glib::RefPtr<Gtk::TreeListModel> Requirement::get_results_tree() const noexcept
 {
     return tests_tree;
 }

@@ -42,7 +42,7 @@ namespace optifol
  */
 class Subsystem : public StorageObjectBase,
                   public TreeNode,
-                  public ObjectGroupBase<Requirement>
+                  public ObjectGroup<Requirement>
 {
 public:
     /**
@@ -94,6 +94,7 @@ public:
     /**
      * @brief Duplicate the given Requirement and append to the index.
      * @param requirement The Requirement to duplicate.
+     * @throws std::runtime_error if the duplicated Requirement could not be created.
      */
     void duplicate_requirement(const Requirement &requirement);
 
@@ -109,7 +110,7 @@ private:
      */
     void setup_groups(const Glib::ustring &name);
 
-    void handle_object_change(guint initial_index, guint removed_count, guint added_count) noexcept override;
+    void handle_requirement_model_change(guint initial_index, guint removed_count, guint added_count) noexcept;
 
     /**
      * @brief Propagate Requirement model deletions to the analysis and test groups.

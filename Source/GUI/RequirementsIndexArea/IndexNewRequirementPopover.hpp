@@ -109,7 +109,7 @@ private:
     /**
      * @brief Handle a click of the <i>Confirm</i> by attempting to create a Requirement with the given characteristics.
      */
-    void confirm_button_clicked();
+    void confirm_button_clicked() noexcept;
 
     /**
      * @brief Handle a click of the <i>Cancel</i> button by discarding all input and closing the popover.

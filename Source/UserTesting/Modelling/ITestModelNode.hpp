@@ -38,13 +38,22 @@ public:
      * @param node The ITestModelNode, wrapped in a Glib::ObjectBase.
      * @return The tree, or an empty Glib::RefPtr for a leaf node or node of incorrect type.
      */
-    static Glib::RefPtr<Gtk::TreeListModel> get_given_tree(const Glib::RefPtr<Glib::ObjectBase>& node) noexcept
+    static Glib::RefPtr<Gtk::TreeListModel> get_given_tests_tree(const Glib::RefPtr<Glib::ObjectBase>& node) noexcept
     {
         const auto typed_node = dynamic_cast<ITestModelNode *>(node.get());
         if (typed_node == nullptr)
             return nullptr;
 
-        return typed_node->get_tree();
+        return typed_node->get_tests_tree();
+    }
+
+    static Glib::RefPtr<Gtk::TreeListModel> get_given_results_tree(const Glib::RefPtr<Glib::ObjectBase>& node) noexcept
+    {
+        const auto typed_node = dynamic_cast<ITestModelNode *>(node.get());
+        if (typed_node == nullptr)
+            return nullptr;
+
+        return typed_node->get_results_tree();
     }
 
 private:
@@ -52,7 +61,9 @@ private:
      * @brief Retrieve the Gtk::TreeListModel containing the children of the derived type from a non-static context.
      * @return The tree, or an empty Glib::RefPtr for a leaf node.
      */
-    [[nodiscard]] virtual Glib::RefPtr<Gtk::TreeListModel> get_tree() const noexcept = 0;
+    [[nodiscard]] virtual Glib::RefPtr<Gtk::TreeListModel> get_tests_tree() const noexcept = 0;
+
+    [[nodiscard]] virtual Glib::RefPtr<Gtk::TreeListModel> get_results_tree() const noexcept = 0;
 };
 
 } // namespace optifol

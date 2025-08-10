@@ -34,8 +34,8 @@ class TestResult;
  *  single implementation-defined port number. Client connections on TCP are accepted and continue to be read into a
  *  large per-connection internal buffer until the connection is closed on the socket. Individual TestResult objects are
  *  confined into an owning container and stored internally. Once the streaming has completed, callers can execute
- *  @ref TestListenerBase::endow_requirement to provide ref-counted pointers to all Requirements with Test objects
- *  relevant to the streamed TestResult records.
+ *  @ref TestListenerBase::endow_test to provide ref-counted pointers to Test objects relevant to the streamed
+ *  TestResult records.
  *
  * @see @ref GoogleTestLexer.l for the expected token format of the Google Test Payload
  * @see @ref GoogleTestParser.y for the expected grammar of the Google Test payload

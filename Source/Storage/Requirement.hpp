@@ -88,7 +88,9 @@ public:
         Glib::RefPtr<Gio::ListStore<TestSpecificationEntry>>&& tests, BaseObjectType* cobject,
         const Glib::RefPtr<Gtk::Builder>& builder, SymbolRepository& system_repository);
 
-    [[nodiscard]] Glib::RefPtr<Gtk::TreeListModel> get_tree() const noexcept override;
+    [[nodiscard]] Glib::RefPtr<Gtk::TreeListModel> get_tests_tree() const noexcept override;
+
+    [[nodiscard]] Glib::RefPtr<Gtk::TreeListModel> get_results_tree() const noexcept override;
 
     /**
      * @brief Compare two Requirement objects for semantic equality
@@ -233,7 +235,7 @@ private:
     Glib::RefPtr<Gio::ListStore<TestSpecificationEntry>> test_specs = Gio::ListStore<TestSpecificationEntry>::create();
     const Glib::RefPtr<Gio::ListStore<Test>> tests = Gio::ListStore<Test>::create();
     const Glib::RefPtr<Gtk::TreeListModel> tests_tree =
-            Gtk::TreeListModel::create(tests, &ITestModelNode::get_given_tree, true);
+            Gtk::TreeListModel::create(tests, &ITestModelNode::get_given_tests_tree, true);
 
     std::unique_ptr<IMutableSentence> original_ast;
     std::unique_ptr<SentenceRoot> prepared_ast;

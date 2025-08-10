@@ -33,7 +33,7 @@ class Test;
  * @brief Provides a test-framework-agnostic listener to accept network-streamed payloads describing results of
  *  automated tests. Asynchronous network operations are provided by the Glib socket abstraction layers. Received
  *  TestResult objects are stored by the listener in a blob and can be distributed (through shared ownership) to
- *  relevant Requirement objects with @ref endow_requirement.
+ *  relevant Test objects with @ref endow_test.
  */
 class TestListenerBase
 {

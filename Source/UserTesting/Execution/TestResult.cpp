@@ -19,25 +19,29 @@
 namespace optifol
 {
 
-TestResult::Partial::Partial(std::string file, const std::size_t line, std::string message) :
-    file(std::move(file)),
-    line(line),
-    message(std::move(message))
-{
-}
-
 TestResult::TestResult(Glib::ustring test_name, const bool passed, const std::size_t execution_time,
-        std::vector<Partial> &&partial_results) :
+        std::vector<Glib::RefPtr<PartialTestResult>> &&partial_results) :
     test_name(std::move(test_name)),
     passed(passed),
-    execution_time(execution_time),
-    partial_results(std::move(partial_results))
+    execution_time(execution_time)
 {
+    for (const auto& partial_result : partial_results)
+        this->partial_results->append(partial_result);
 }
 
 std::size_t TestResult::hash() const noexcept
 {
     return hash_combine(std::hash<std::string>{}(fixture_name), std::hash<std::string>{}(test_name));
+}
+
+Glib::RefPtr<Gtk::TreeListModel> TestResult::get_tests_tree() const noexcept
+{
+    return nullptr;
+}
+
+Glib::RefPtr<Gtk::TreeListModel> TestResult::get_results_tree() const noexcept
+{
+    return partial_results_tree;
 }
 
 void TestResult::populate_test_fixture_name(const std::string &incoming_fixture_name)

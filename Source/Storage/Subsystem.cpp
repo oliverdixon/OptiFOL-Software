@@ -23,7 +23,8 @@ const log4cxx::LoggerPtr Subsystem::subsystem_logger = Logging::get_logger({"GUI
 
 Subsystem::Subsystem(const Glib::ustring& name, TreeNode *parent) :
     Glib::ObjectBase("Subsystem"),
-    TreeNode(parent)
+    TreeNode(parent),
+    ObjectGroup(sigc::mem_fun(*this, &Subsystem::handle_requirement_model_change))
 {
     setup_groups(name);
 }
@@ -32,7 +33,8 @@ Subsystem::Subsystem(const Glib::ustring &name, BaseObjectType *cobject, const G
         TreeNode *parent) :
     Glib::ObjectBase("Subsystem"),
     StorageObjectBase(cobject, builder),
-    TreeNode(parent)
+    TreeNode(parent),
+    ObjectGroup(sigc::mem_fun(*this, &Subsystem::handle_requirement_model_change))
 {
     setup_groups(name);
 }
@@ -88,7 +90,7 @@ void Subsystem::setup_groups(const Glib::ustring &name)
     assert(test_groups->get_n_items() == 1);
 }
 
-void Subsystem::handle_object_change(const guint initial_index, const guint removed_count, const guint added_count)
+void Subsystem::handle_requirement_model_change(const guint initial_index, const guint removed_count, const guint added_count)
     noexcept
 {
     subsystem_logger->debug("Handling requirements change: " + std::to_string(added_count) + " additions and " +

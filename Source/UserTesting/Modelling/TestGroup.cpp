@@ -25,14 +25,16 @@ namespace optifol
 const log4cxx::LoggerPtr TestGroup::testgroup_logger = Logging::get_logger({"GUI", "StorageControl", "TestGroup"});
 
 TestGroup::TestGroup(const Glib::ustring &name) :
-    Glib::ObjectBase("TestGroup")
+    Glib::ObjectBase("TestGroup"),
+    ObjectGroup(sigc::mem_fun(*this, &TestGroup::handle_requirement_model_change))
 {
     property_name().set_value(name);
 }
 
 TestGroup::TestGroup(const Glib::ustring &name, BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &builder) :
     Glib::ObjectBase("TestGroup"),
-    StorageObjectBase(cobject, builder)
+    StorageObjectBase(cobject, builder),
+    ObjectGroup(sigc::mem_fun(*this, &TestGroup::handle_requirement_model_change))
 {
     property_name().set_value(name);
 }
@@ -42,9 +44,14 @@ bool TestGroup::operator==(const TestGroup &other) const noexcept
     return property_name().get_value() == other.property_name().get_value();
 }
 
-Glib::RefPtr<Gtk::TreeListModel> TestGroup::get_tree() const noexcept
+Glib::RefPtr<Gtk::TreeListModel> TestGroup::get_tests_tree() const noexcept
 {
     return tests_tree;
+}
+
+Glib::RefPtr<Gtk::TreeListModel> TestGroup::get_results_tree() const noexcept
+{
+    return results_tree;
 }
 
 decltype(TestGroup::execution_groups)::const_iterator TestGroup::begin_execution_groups() const noexcept
@@ -67,7 +74,7 @@ void TestGroup::bind_name_to_label(const Glib::RefPtr<Gtk::ListItem> &item) noex
     target_label->set_text(typed_group->property_name().get_value());
 }
 
-void TestGroup::handle_object_change(const guint initial_index, const guint removed_count,
+void TestGroup::handle_requirement_model_change(const guint initial_index, const guint removed_count,
     const guint added_count) noexcept
 {
     testgroup_logger->debug("Handling requirements change: " + std::to_string(added_count) + " additions and " +
@@ -90,20 +97,28 @@ void TestGroup::handle_test_deletions(const guint initial_index, const guint rem
             if (deleted_test_count == 0)
                 continue; // Nothing to do...
 
+            // Remove the tests from the failed model, if happen to exist.
+            for (guint deleted_test_index = 0; deleted_test_index < deleted_test_count; ++deleted_test_index) {
+                const auto test = deleted_tests->get_item(deleted_test_index);
+                if (results_model.delete_object(test))
+                    testgroup_logger->info("Removed Test \"" + test->property_name().get_value() +
+                        "\" from the failed results model.");
+            }
+
             // Remove all requirement tests from all execution groups.
             for (auto exe_group_it = execution_groups.cbegin(); exe_group_it != execution_groups.cend(); ) {
                 for (guint deleted_test_index = 0; deleted_test_index < deleted_test_count; ++deleted_test_index) {
                     const auto test = deleted_tests->get_item(deleted_test_index);
                     (*exe_group_it)->remove_test(test);
 
-                    testgroup_logger->debug("Removed Test \"" + test->property_name().get_value() +
+                    testgroup_logger->info("Removed Test \"" + test->property_name().get_value() +
                         "\" from Execution Group for \"" +
                         test->observe_test_executable()->property_name().get_value() + "\".");
                 }
 
                 // If the execution group is now empty, remove it.
                 if ((*exe_group_it)->is_empty()) {
-                    testgroup_logger->debug("Removed empty Execution Group for \"" +
+                    testgroup_logger->info("Removed empty Execution Group for \"" +
                         (*exe_group_it)->get_executable_name() + "\".");
                     execution_groups.erase(exe_group_it++);
                 } else
@@ -124,25 +139,26 @@ void TestGroup::handle_test_additions(const guint initial_index, const guint add
         try {
             // Get the Tests from the incoming Requirement.
             const auto& tests = get_object_by_index(added_count_i + initial_index)->get_tests();
-            const auto test_count = tests->get_n_items();
+            const auto added_test_count = tests->get_n_items();
 
-            // For each test, add it to the corresponding execution group.
-            for (guint test_index = 0; test_index < test_count; ++test_index) {
-                const auto test = tests->get_item(test_index);
+            // For each test, add it to the corresponding execution group and setup a signal handler to receive results.
+            for (guint added_test_index = 0; added_test_index < added_test_count; ++added_test_index) {
+                const auto test = tests->get_item(added_test_index);
+                test->property_result().signal_changed().connect(
+                    sigc::bind(sigc::mem_fun(*this, &TestGroup::handle_incoming_result), test));
 
                 try {
                     const auto group_it = execution_groups.find(*test->observe_test_executable());
-
                     if (group_it == execution_groups.cend()) {
                         // The first test we've seen using this executable. Create a new execution group.
                         execution_groups.emplace(std::make_unique<GoogleExecutionGroup>(test));
-                        testgroup_logger->debug("Created new Execution Group for executable \"" +
+                        testgroup_logger->info("Created new Execution Group for executable \"" +
                             test->observe_test_executable()->property_name().get_value() + "\".");
                     } else
                         // We've seen this executable before. Add it to the existing execution group.
                         group_it->get()->add_test(test);
 
-                    testgroup_logger->debug("Added Test \"" + test->property_name().get_value() +
+                    testgroup_logger->info("Added Test \"" + test->property_name().get_value() +
                         "\" to Execution Group for \"" + test->observe_test_executable()->property_name().get_value() +
                         "\".");
                 } catch (const SemanticException& semantic_exception) {
@@ -157,6 +173,43 @@ void TestGroup::handle_test_additions(const guint initial_index, const guint add
                 "\".");
             testgroup_logger->error(global_error.what());
         }
+}
+
+void TestGroup::handle_incoming_result(const std::shared_ptr<Test> &owning_test) noexcept
+{
+    if (owning_test == nullptr) {
+        testgroup_logger->error("Test Group \"" + property_name().get_value() +
+            "\" was informed on result of non-existent Test.");
+        return;
+    }
+
+    const auto test_already_exists = results_model.contains_exact(owning_test.get());
+    const auto result = owning_test->property_result().get_value().get();
+
+    if (result == nullptr || result->get_results_tree()->get_n_items() == 0) {
+        if (test_already_exists) {
+            results_model.delete_object(owning_test);
+            testgroup_logger->info("Removed Test \"" + owning_test->property_name().get_value() +
+                "\" from the failed model for the Test Group \"" + property_name().get_value() + "\".");
+        }
+
+        return;
+    }
+
+    // The test has partial results, so add it to the results model if it doesn't already exist.
+    if (test_already_exists == false) {
+        try {
+            results_model.insert_object(owning_test);
+            testgroup_logger->info("Added Test \"" + owning_test->property_name().get_value() +
+                "\" to the failed model for the Test Group \"" + property_name().get_value() + "\".");
+        } catch (const std::runtime_error& error) {
+            testgroup_logger->error("Could not add Test \"" + owning_test->property_name().get_value() +
+                "\" to the failed model for the Test Group \"" + property_name().get_value() + "\".");
+            testgroup_logger->error(error.what());
+        }
+    } else
+        testgroup_logger->debug("Received valid failure result for Test \"" + owning_test->property_name().get_value() +
+            "\", but it already exists in the model for Test Group \"" + property_name().get_value() + "\".");
 }
 
 } // namespace optifol

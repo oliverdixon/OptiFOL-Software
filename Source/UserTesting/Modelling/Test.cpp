@@ -45,12 +45,20 @@ bool Test::operator==(const Test &other) const
         property_name().get_value() == other.property_name().get_value();
 }
 
-Glib::RefPtr<Gtk::TreeListModel> Test::get_tree() const noexcept
+Glib::RefPtr<Gtk::TreeListModel> Test::get_tests_tree() const noexcept
 {
     return nullptr;
 }
 
-void Test::emplace_result(std::shared_ptr<TestResult> test_result)
+Glib::RefPtr<Gtk::TreeListModel> Test::get_results_tree() const noexcept
+{
+    if (result.get_value() == nullptr)
+        return {};
+
+    return result.get_value()->get_results_tree();
+}
+
+void Test::emplace_result(const std::shared_ptr<TestResult>& test_result)
 {
     const auto &given_fixture_name = test_result->copy_fixture_name();
     const auto &expected_fixture_name = fixture.get_value();
@@ -63,10 +71,10 @@ void Test::emplace_result(std::shared_ptr<TestResult> test_result)
         throw SemanticException("Incoming test result was from a different test: \"" + test_result->copy_test_name() +
                 "\", but needed \"" + property_name().get_value() + "\".");
 
-    result.set_value(std::move(test_result));
+    result.set_value(test_result);
 }
 
-void Test::share_test_executable(std::shared_ptr<TestExecutable> shared_exe)
+void Test::accept_test_executable(std::shared_ptr<TestExecutable> shared_exe)
 {
     target_executable = std::move(shared_exe);
 
@@ -109,7 +117,7 @@ Glib::PropertyProxy_ReadOnly<std::shared_ptr<TestResult>> Test::property_result(
 void Test::instantiate_from_specification(std::shared_ptr<TestSpecificationEntry> spec)
 {
     // TODO: don't create a new test executable each time.
-    share_test_executable(std::make_shared<TestExecutable>(
+    accept_test_executable(std::make_shared<TestExecutable>(
             spec->property_executable().get_value()->property_name().get_value()));
     property_fixture().set_value(spec->property_fixture().get_value()->property_name().get_value());
     property_name().set_value(spec->property_name().get_value());

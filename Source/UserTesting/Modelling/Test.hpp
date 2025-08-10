@@ -38,16 +38,18 @@ public:
 
     [[nodiscard]] bool operator==(const Test & other) const;
 
-    [[nodiscard]] Glib::RefPtr<Gtk::TreeListModel> get_tree() const noexcept override;
+    [[nodiscard]] Glib::RefPtr<Gtk::TreeListModel> get_tests_tree() const noexcept override;
+
+    [[nodiscard]] Glib::RefPtr<Gtk::TreeListModel> get_results_tree() const noexcept override;
 
     /**
      * @brief Accept a shared TestResult object to indicate the last-known result of the Test.
      * @param test_result The TestResult to share.
      * @throws SemanticException if the TestResult was not appropriate or relevant to the Test.
      */
-    void emplace_result(std::shared_ptr<TestResult> test_result);
+    void emplace_result(const std::shared_ptr<TestResult>& test_result);
 
-    void share_test_executable(std::shared_ptr<TestExecutable> shared_exe);
+    void accept_test_executable(std::shared_ptr<TestExecutable> shared_exe);
 
     [[nodiscard]] const TestExecutable *observe_test_executable() const noexcept;
 
