@@ -21,7 +21,7 @@ namespace optifol
 
 class RequirementsIndexArea;
 
-class IndexEditRequirementPopover
+class IndexEditRequirementPopover : public sigc::trackable
 {
 public:
     /**

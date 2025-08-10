@@ -34,6 +34,18 @@ TestingArea::TestingArea(Gtk::Builder &builder) :
                 true
             },
             {
+                "rename_test_group",
+                GTKHelpers::get_widget<Gtk::MenuButton>(area_name, builder, "rename_test_group"),
+                GTKHelpers::get_widget<Gtk::Popover>(area_name, builder, "rename_test_group_popover"),
+                true
+            },
+            {
+                "delete_test_group",
+                GTKHelpers::get_widget<Gtk::MenuButton>(area_name, builder, "delete_test_group"),
+                GTKHelpers::get_widget<Gtk::Popover>(area_name, builder, "delete_test_group_popover"),
+                true
+            },
+            {
                 "copy_to_test_group",
                 GTKHelpers::get_widget<Gtk::MenuButton>(area_name, builder, "copy_to_test_group"),
                 GTKHelpers::get_widget<Gtk::Popover>(area_name, builder, "copy_to_test_group_popover"),
@@ -57,7 +69,9 @@ TestingArea::TestingArea(Gtk::Builder &builder) :
         GTKHelpers::get_widget<Gtk::Widget>(area_name, builder, "testing_advice_unselected"),
         GTKHelpers::get_widget<Gtk::Widget>(area_name, builder, "testing_content")
     ),
-    new_tests_popover(builder, *this),
+    new_test_group_popover(builder, *this),
+    rename_test_group_popover(builder, *this),
+    delete_test_group_popover(builder, *this),
     copy_requirement_popover(builder, *this),
     move_requirement_popover(builder, *this),
     run_tests_popover(builder, *this)
@@ -109,24 +123,36 @@ Glib::RefPtr<const Gtk::TreeListRow> TestingArea::get_selected_row() const noexc
     return tree_model->get_row(selection_model->get_selected());
 }
 
-Glib::RefPtr<TestGroup> TestingArea::get_selection() const
+Glib::RefPtr<TestGroup> TestingArea::get_selected_test_group()
 {
-    const auto selected_item = selection_model->get_selected_item();
+    auto selected_row = get_selected_row();
+    if (selected_row == nullptr)
+        throw std::runtime_error("Popover was made available despite no suitable Test Group selection.");
 
-    if (selected_item == nullptr)
-        throw std::runtime_error("No item selected in the selection model.");
+    while (selected_row->get_depth() > 0)
+        selected_row = selected_row->get_parent();
 
-    const auto selected_group = std::dynamic_pointer_cast<TestGroup>(selected_item);
+    const auto test_group = std::dynamic_pointer_cast<TestGroup>(selected_row->get_item());
+    if (test_group == nullptr)
+        throw std::runtime_error("Popover could not find a suitable Test Group.");
 
-    if (selected_group == nullptr)
-        throw std::runtime_error("Selected item is not a Test Group.");
-
-    return selected_group;
+    return test_group;
 }
 
-guint TestingArea::get_selection_index() const
+Glib::RefPtr<Requirement> TestingArea::get_selected_requirement()
 {
-    return selection_model->get_selected();
+    auto selected_row = get_selected_row();
+    if (selected_row == nullptr || selected_row->get_depth() == 0)
+        throw std::runtime_error("Popover was made available despite no suitable Requirement selection.");
+
+    while (selected_row->get_depth() > 1)
+        selected_row = selected_row->get_parent();
+
+    const auto requirement = std::dynamic_pointer_cast<Requirement>(selected_row->get_item());
+    if (requirement == nullptr)
+        throw std::runtime_error("Popover could not find a suitable Requirement.");
+
+    return requirement;
 }
 
 void TestingArea::configure_columns() const

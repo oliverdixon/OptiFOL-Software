@@ -18,6 +18,8 @@ DELETE_ANALYSIS_GROUP_POPOVER=./AnalysisArea/DeleteAnalysisGroupPopover.ui
 
 TESTING_VIEW=./TestingArea/TestingView.ui
 NEW_TEST_GROUP_POPOVER=./TestingArea/NewTestGroupPopover.ui
+RENAME_TEST_GROUP_POPOVER=./TestingArea/RenameTestGroupPopover.ui
+DELETE_TEST_GROUP_POPOVER=./TestingArea/DeleteTestGroupPopover.ui
 COPY_TO_TEST_GROUP_POPOVER=./TestingArea/CopyToTestGroupPopover.ui
 MOVE_TO_TEST_GROUP_POPOVER=./TestingArea/MoveToTestGroupPopover.ui
 RUN_TESTS_POPOVER=./TestingArea/RunTests.ui

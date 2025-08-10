@@ -25,8 +25,10 @@
 #include "../ContextButtonCorrespondence.hpp"
 #include "../IWindowArea.hpp"
 #include "TestingCopyToTestGroupPopover.hpp"
+#include "TestingDeleteTestGroupPopover.hpp"
 #include "TestingMoveToTestGroupPopover.hpp"
 #include "TestingNewTestGroupPopover.hpp"
+#include "TestingRenameTestGroupPopover.hpp"
 #include "TestingRunTestsPopover.hpp"
 
 namespace optifol
@@ -122,6 +124,16 @@ namespace optifol
  *          <td><code>move_to_test_group</code></td>
  *          <td>Button for opening <code>move_to_test_group_popover</code></td>
  *      </tr>
+ *      <tr>
+ *          <td>Gtk::Popover</td>
+ *          <td><code>delete_test_group_popover</code></td>
+ *          <td>Popover for deleting a TestGroup</td>
+ *      </tr>
+ *      <tr>
+ *          <td>Gtk::MenuButton</td>
+ *          <td><code>delete_test_group</code></td>
+ *          <td>Button for opening <code>delete_test_group_popover</code></td>
+ *      </tr>
  *  </table>
  *  A @ref std::runtime_error will be thrown by the class constructor if any of these are inaccessible in the expected
  *  type instantiations.
@@ -149,13 +161,20 @@ public:
     Glib::RefPtr<const Gtk::TreeListRow> get_selected_row() const noexcept;
 
     /**
-     * @brief Gets the selected TestGroup object in the model view.
-     * @return The single selected TestGroup object in the model view.
-     * @throws std::runtime_error There was no suitable TestGroup object selected.
+     * @brief Copies the ref-counted pointer to the selected TestGroup. If a Requirement or Test is selected, the owning
+     *  TestGroup is returned.
+     * @return The owning TestGroup of the selected object.
+     * @throws std::runtime_error There is no selected object.
      */
-    Glib::RefPtr<TestGroup> get_selection() const;
+    Glib::RefPtr<TestGroup> get_selected_test_group();
 
-    guint get_selection_index() const;
+    /**
+     * @brief Copies the ref-counted pointer to the selected Requirement. If a Test is selected, the owning Requirement
+     *  is returned.
+     * @return The owning Requirement of the selected Test.
+     * @throws std::runtime_error There is no selected object, or the selected object is unsuitable.
+     */
+    Glib::RefPtr<Requirement> get_selected_requirement();
 
 private:
     /**
@@ -179,7 +198,9 @@ private:
     Glib::RefPtr<Gtk::SingleSelection> selection_model = Gtk::SingleSelection::create();
     Glib::RefPtr<Gtk::TreeListModel> tree_model;
 
-    TestingNewTestGroupPopover new_tests_popover;
+    TestingNewTestGroupPopover new_test_group_popover;
+    TestingRenameTestGroupPopover rename_test_group_popover;
+    TestingDeleteTestGroupPopover delete_test_group_popover;
     TestingCopyToTestGroupPopover copy_requirement_popover;
     TestingMoveToTestGroupPopover move_requirement_popover;
     TestingRunTestsPopover run_tests_popover;

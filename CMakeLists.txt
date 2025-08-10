@@ -254,6 +254,8 @@ set(MAINWINDOW_RESOURCE_COMPONENTS
 
         ${RESOURCE_DIR}/UI/MainWindow/TestingArea/TestingView.ui
         ${RESOURCE_DIR}/UI/MainWindow/TestingArea/NewTestGroupPopover.ui
+        ${RESOURCE_DIR}/UI/MainWindow/TestingArea/RenameTestGroupPopover.ui
+        ${RESOURCE_DIR}/UI/MainWindow/TestingArea/DeleteTestGroupPopover.ui
         ${RESOURCE_DIR}/UI/MainWindow/TestingArea/CopyToTestGroupPopover.ui
         ${RESOURCE_DIR}/UI/MainWindow/TestingArea/MoveToTestGroupPopover.ui
         ${RESOURCE_DIR}/UI/MainWindow/TestingArea/RunTests.ui
@@ -403,6 +405,10 @@ add_executable(OptifolGUI
         Source/GUI/TestingArea/TestingCopyMovePopoverBase.hpp
         Source/GUI/TestingArea/TestingMoveToTestGroupPopover.cpp
         Source/GUI/TestingArea/TestingMoveToTestGroupPopover.hpp
+        Source/GUI/TestingArea/TestingDeleteTestGroupPopover.cpp
+        Source/GUI/TestingArea/TestingDeleteTestGroupPopover.hpp
+        Source/GUI/TestingArea/TestingRenameTestGroupPopover.cpp
+        Source/GUI/TestingArea/TestingRenameTestGroupPopover.hpp
 )
 
 set(COMMON_COMPILER_OPTIONS

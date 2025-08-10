@@ -39,7 +39,7 @@ TestingRunTestsPopover::TestingRunTestsPopover(Gtk::Builder &builder, TestingAre
 void TestingRunTestsPopover::confirm_button_clicked() noexcept
 {
     // TODO URGENT: verify noexcept property of this and the lambda.
-    const auto selected_test_group = testing_area.get_selection();
+    const auto selected_test_group = testing_area.get_selected_test_group();
     const auto begin = selected_test_group->begin_execution_groups();
     const auto end = selected_test_group->end_execution_groups();
 
@@ -62,7 +62,7 @@ void TestingRunTestsPopover::clear_inputs() const noexcept
 void TestingRunTestsPopover::show_popover() const noexcept
 {
     try {
-        test_group_name_entry->set_text(testing_area.get_selection()->property_name().get_value());
+        test_group_name_entry->set_text(testing_area.get_selected_test_group()->property_name().get_value());
     } catch (const std::runtime_error& selection_error) {
         popover_logger->error("Could not discover the selected Test Group entry.");
         popover_logger->error(selection_error.what());

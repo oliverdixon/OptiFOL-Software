@@ -54,7 +54,7 @@ void TestingCopyMovePopoverBase::popover_show() const noexcept
 
     // Get the selected requirement. If a test is selected, use its parent requirement by walking the tree.
     try {
-        const auto selected_requirement = get_selected_requirement();
+        const auto selected_requirement = testing_area.get_selected_requirement();
         requirement_entry->set_text(selected_requirement->property_name().get_value());
     } catch (const std::runtime_error& exception) {
         popover_logger->error(exception.what());
@@ -65,38 +65,6 @@ void TestingCopyMovePopoverBase::popover_show() const noexcept
 void TestingCopyMovePopoverBase::cancel_button_clicked() const noexcept
 {
     my_popover->popdown();
-}
-
-Glib::RefPtr<TestGroup> TestingCopyMovePopoverBase::get_selected_test_group() const
-{
-    auto selected_row = testing_area.get_selected_row();
-    if (selected_row == nullptr)
-        throw std::runtime_error("Popover was made available despite no suitable Test Group selection.");
-
-    while (selected_row->get_depth() > 0)
-        selected_row = selected_row->get_parent();
-
-    const auto test_group = std::dynamic_pointer_cast<TestGroup>(selected_row->get_item());
-    if (test_group == nullptr)
-        throw std::runtime_error("Popover could not find a suitable Test Group.");
-
-    return test_group;
-}
-
-Glib::RefPtr<Requirement> TestingCopyMovePopoverBase::get_selected_requirement() const
-{
-    auto selected_row = testing_area.get_selected_row();
-    if (selected_row == nullptr || selected_row->get_depth() == 0)
-        throw std::runtime_error("Popover was made available despite no suitable Requirement selection.");
-
-    while (selected_row->get_depth() > 1)
-        selected_row = selected_row->get_parent();
-
-    const auto requirement = std::dynamic_pointer_cast<Requirement>(selected_row->get_item());
-    if (requirement == nullptr)
-        throw std::runtime_error("Popover could not find a suitable Requirement.");
-
-    return requirement;
 }
 
 Glib::RefPtr<Gtk::SignalListItemFactory> TestingCopyMovePopoverBase::configure_combo_box_factory(

@@ -62,7 +62,7 @@ class RequirementsIndexArea;
  *      </tr>
  *  </table>
  */
-class IndexDeleteRequirementPopover
+class IndexDeleteRequirementPopover : public sigc::trackable
 {
 public:
     /**

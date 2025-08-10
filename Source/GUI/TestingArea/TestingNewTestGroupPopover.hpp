@@ -17,8 +17,8 @@
 #include <gtkmm/builder.h>
 #include <gtkmm/button.h>
 #include <gtkmm/entry.h>
-
-#include "../AnalysisArea/AnalysisAreaNewAnalysisGroupPopover.hpp"
+#include <gtkmm/popover.h>
+#include <log4cxx/logger.h>
 
 namespace optifol
 {
@@ -62,7 +62,7 @@ class TestingArea;
  *      </tr>
  *  </table>
  */
-class TestingNewTestGroupPopover
+class TestingNewTestGroupPopover : public sigc::trackable
 {
 public:
     TestingNewTestGroupPopover(Gtk::Builder& builder, TestingArea& testing_area);

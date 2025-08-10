@@ -64,7 +64,7 @@ class AnalysisArea;
  *  A @ref std::runtime_error will be thrown by the class constructor if any of these are inaccessible in the expected
  *  type instantiations.
  */
-class AnalysisAreaNewAnalysisGroupPopover
+class AnalysisAreaNewAnalysisGroupPopover : public sigc::trackable
 {
 public:
     /**

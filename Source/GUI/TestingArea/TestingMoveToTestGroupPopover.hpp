@@ -14,6 +14,8 @@
 #ifndef OPTIFOL_TESTINGMOVETOTESTGROUPPOPOVER_HPP
 #define OPTIFOL_TESTINGMOVETOTESTGROUPPOPOVER_HPP
 
+#include <gtkmm/builder.h>
+
 #include "TestingCopyMovePopoverBase.hpp"
 
 namespace optifol

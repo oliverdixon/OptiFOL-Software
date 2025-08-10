@@ -71,6 +71,22 @@
                 <attribute name="action">win.new_test_group</attribute>
             </item>
             <item>
+                <attribute name="label">Rename Test Group</attribute>
+                <attribute name="action">win.rename_test_group</attribute>
+            </item>
+            <item>
+                <attribute name="label">Delete Test Group</attribute>
+                <attribute name="action">win.delete_test_group</attribute>
+            </item>
+            <item>
+                <attribute name="label">Copy Requirement to Test Group</attribute>
+                <attribute name="action">win.copy_to_test_group</attribute>
+            </item>
+            <item>
+                <attribute name="label">Move Requirement to Test Group</attribute>
+                <attribute name="action">win.move_to_test_group</attribute>
+            </item>
+            <item>
                 <attribute name="label">Run Tests for Selected Test Group</attribute>
                 <attribute name="action">win.run_tests</attribute>
             </item>
@@ -110,6 +126,8 @@
 
     <!-- Testing and compliance area popovers -->
     ${NEW_TEST_GROUP_POPOVER}
+    ${RENAME_TEST_GROUP_POPOVER}
+    ${DELETE_TEST_GROUP_POPOVER}
     ${COPY_TO_TEST_GROUP_POPOVER}
     ${MOVE_TO_TEST_GROUP_POPOVER}
     ${RUN_TESTS_POPOVER}

@@ -109,7 +109,7 @@ class ReportsArea;
  *      completion.
  *  </p>
  */
-class ReportsAreaGenerateLaTeXPopover
+class ReportsAreaGenerateLaTeXPopover : public sigc::trackable
 {
 public:
     /**

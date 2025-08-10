@@ -39,7 +39,7 @@ void TestingCopyToTestGroupPopover::confirm_button_clicked() const noexcept
     my_popover->popdown();
 
     try {
-        const auto requirement = get_selected_requirement();
+        const auto requirement = testing_area.get_selected_requirement();
         const auto target_test_group = dynamic_cast<TestGroup *>(new_test_group_dropdown->get_selected_item().get());
 
         if (requirement == nullptr) {

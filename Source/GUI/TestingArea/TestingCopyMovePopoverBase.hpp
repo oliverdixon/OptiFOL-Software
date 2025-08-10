@@ -14,7 +14,6 @@
 #ifndef OPTIFOL_TESTINGCOPYMOVEPOPOVERBASE_HPP
 #define OPTIFOL_TESTINGCOPYMOVEPOPOVERBASE_HPP
 
-#include <gtkmm/builder.h>
 #include <gtkmm/button.h>
 #include <gtkmm/dropdown.h>
 #include <gtkmm/entry.h>
@@ -34,12 +33,13 @@ class TestGroup;
  * @brief Provides a common base for GTK popovers providing functionality to copy or move Requirement objects between
  *  TestGroup objects. Default callbacks are provided, but inheritors must implement the <i>Confirm</i> action.
  */
-class TestingCopyMovePopoverBase
+class TestingCopyMovePopoverBase : public sigc::trackable
 {
 public:
     /**
      * @brief Destruct the TestingCopyMovePopoverBase instance.
      */
+    // ReSharper disable once CppHidingFunction
     virtual ~TestingCopyMovePopoverBase() = default;
 
 protected:
@@ -76,22 +76,6 @@ protected:
      * @brief Handle a click of the <i>Cancel</i> button by hiding the popover.
      */
     void cancel_button_clicked() const noexcept;
-
-    /**
-     * @brief Copies the ref-counted pointer to the selected TestGroup. If a Requirement or Test is selected, the owning
-     *  TestGroup is returned.
-     * @return The owning TestGroup of the selected object.
-     * @throws std::runtime_error There is no selected object.
-     */
-    Glib::RefPtr<TestGroup> get_selected_test_group() const;
-
-    /**
-     * @brief Copies the ref-counted pointer to the selected Requirement. If a Test is selected, the owning Requirement
-     *  is returned.
-     * @return The owning Requirement of the selected Test.
-     * @throws std::runtime_error There is no selected object, or the selected object is unsuitable.
-     */
-    Glib::RefPtr<Requirement> get_selected_requirement() const;
 
     /**
      * @brief Creates, configures, and returns a GTK factory for a Gtk::DropDown with a given bind function.
