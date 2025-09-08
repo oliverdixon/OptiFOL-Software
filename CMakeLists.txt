@@ -169,7 +169,6 @@ add_library(OptifolCommon OBJECT
         Source/IR/Terms/Variable.hpp
         Source/IR/Terms/Function.cpp
         Source/IR/Terms/Function.hpp
-        Source/IR/Terms/IProcessedTerm.cpp
         Source/IR/Terms/IProcessedTerm.hpp
         Source/CompositeSerialisationHelpers.hpp
         Source/IR/Sentences/BinaryConnected.cpp

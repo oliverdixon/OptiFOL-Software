@@ -25,6 +25,7 @@ class Function;
 class ITerm;
 class Variable;
 class Predicate;
+class Constant;
 
 /**
  * @class UnificationVisitor
@@ -65,19 +66,21 @@ class Predicate;
 class UnificationVisitor
 {
 public:
-
-    /**
-     * @brief Attempt to unify two predicates
-     * @details To unify two predicates, they must have matching names, argument vectors of equal lengths, and
-     *  pairwise-unifiable arguments.
-     * @param predicate_lhs The LHS predicate
-     * @param predicate_rhs The RHS predicate
-     * @return Can the predicates be unified?
-     */
     [[nodiscard]] bool visit(const Predicate &predicate_lhs, const Predicate &predicate_rhs);
 
+    [[nodiscard]] bool visit(const Variable &variable_lhs, const Constant &constant_rhs);
+
+    [[nodiscard]] bool visit(const Variable &variable_lhs, const Function &function_rhs);
+
+    [[nodiscard]] bool visit(const Variable &variable_lhs, const Variable &variable_rhs);
+
+    [[nodiscard]] bool visit(const Function &function_lhs, const Function &function_rhs);
+
+    const std::optional<Substitution> &observe_substitutions() const;
+
+private:
     /**
-     * @brief Attempt to unify a variable with a non-variable generic term
+     * @brief Attempt to unify a variable with a non-variable/"generic" term.
      * @details
      *  <p>
      *      To unify a variable with a generic term, they must be one of the following:
@@ -96,51 +99,13 @@ public:
      * @return Can the variable and term be unified?
      * @todo Add occurs check to avoid cycles in the substitution map.
      */
-    [[nodiscard]] bool visit(const Variable &variable_lhs, const IProcessedTerm &generic_term_rhs);
+    [[nodiscard]] bool variable_generic(const Variable &variable_lhs, const IProcessedTerm &generic_term_rhs);
 
-    /**
-     * @brief Attempt to unify two variables
-     * @details To unify two variables, consider the process for unifying a variable and non-variable term. The process
-     *  is identical, except for an additional check to ensure that the other (RHS) variable is not chain-ununifiable.
-     *  See UnificationVisitor::visit(const MutableVariable &, IMutableTerm &).
-     * @param variable_lhs The LHS variable
-     * @param variable_rhs The RHS variable
-     * @return Can the variables be unified?
-     * @todo Add occurs check to avoid cycles in the substitution map.
-     */
-    [[nodiscard]] bool visit(const Variable &variable_lhs, const Variable &variable_rhs);
-
-    /**
-     * @brief Attempt to unify two functions
-     * @details To unify two functions, refer to the process for unifying two predicates defined in
-     *  UnificationVisitor::visit(const MutablePredicate&, const MutablePredicate&); it is isomorphic from predicates
-     *  (sentence instantiations) to functions (term instantiations).
-     * @param function_lhs The LHS function
-     * @param function_rhs The RHS function
-     * @return Can the functions be unified?
-     */
-    [[nodiscard]] bool visit(const Function &function_lhs, const Function &function_rhs);
-
-    /**
-     * @brief Constant base-case to catch attempts to unify a generic term with a function
-     * @param generic_term_lhs The LHS generic term
-     * @param function_rhs The RHS generic function
-     * @return Always false; these types are not eligible unification candidates.
-     */
-    [[nodiscard]] static bool visit(const IProcessedTerm &generic_term_lhs, const Function &function_rhs);
-
-    /**
-     * @brief Constant base-case to catch attempts to unify non-specialised generic terms
-     * @param generic_term_lhs The LHS generic term
-     * @param generic_term_rhs The RHS generic term
-     * @return Always false; these types are not eligible unification candidates.
-     */
-    [[nodiscard]] static bool visit(const IProcessedTerm &generic_term_lhs, const IProcessedTerm &generic_term_rhs);
-
-    const std::optional<Substitution> &observe_substitutions() const;
-
-private:
     void register_substitution(const Variable &bound_key, const IProcessedTerm &bound_value);
+
+    static bool occurs_check(const Variable& variable_lhs, const Variable& variable_rhs);
+
+    static bool occurs_check(const Variable& variable_lhs, const Function& function_rhs);
 
     std::optional<Substitution> substitutions;
 };

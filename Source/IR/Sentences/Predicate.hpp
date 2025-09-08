@@ -69,14 +69,10 @@ public:
      */
     [[nodiscard]] const std::vector<const IProcessedTerm *> &observe_arguments() const noexcept;
 
-    /**
-     * @brief Accept a visitation from a UnificationVisitor for predicate-unification.
-     * @param visitor The instance of a UnificationVisitor to use
-     * @param target The Predicate with which unification should be attempted
-     * @return Did the UnificationVisitor report a successful unification?
-     * @see TransparentlyHashable for rationale
-     */
-    bool accept(UnificationVisitor &visitor, const Predicate &target) const;
+    [[nodiscard]] bool accept(UnificationVisitor &unification_visitor, const IProcessedSentence &sentence) const
+        override;
+
+    [[nodiscard]] bool accept(UnificationVisitor &unification_visitor, const Predicate &predicate) const override;
 
 private:
     const std::string name;

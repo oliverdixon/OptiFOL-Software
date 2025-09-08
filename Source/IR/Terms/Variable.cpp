@@ -13,6 +13,8 @@
 
 #include "Variable.hpp"
 
+#include "../../Visitors/RegularTargets/Unification/UnificationVisitor.hpp"
+
 namespace optifol
 {
 
@@ -38,6 +40,26 @@ std::string_view Variable::get_disambiguated_name() const
         return *disambiguated_name;
 
     return name;
+}
+
+bool Variable::accept(UnificationVisitor &unification_visitor, const IProcessedTerm &term) const
+{
+    return term.accept(unification_visitor, *this);
+}
+
+bool Variable::accept(UnificationVisitor &unification_visitor, const Constant &constant) const
+{
+    return unification_visitor.visit(*this, constant);
+}
+
+bool Variable::accept(UnificationVisitor &unification_visitor, const Function &function) const
+{
+    return unification_visitor.visit(*this, function);
+}
+
+bool Variable::accept(UnificationVisitor &unification_visitor, const Variable &variable) const
+{
+    return unification_visitor.visit(*this, variable);
 }
 
 } // namespace optifol

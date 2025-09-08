@@ -21,6 +21,10 @@ namespace optifol
 
 class RepositoryBuildingVisitor;
 
+class Constant;
+class Function;
+class Variable;
+
 /**
  * @class IProcessedTerm
  * @brief An IProcessedTerm is an ITerm that has undergone the lexing, parsing, and normalisation pipeline and is now
@@ -32,22 +36,6 @@ class RepositoryBuildingVisitor;
 class IProcessedTerm : public ITerm
 {
 public:
-    /**
-     * @brief Accept a UnificationVisitor request for unification with a generic IProcessedTerm
-     * @param visitor The UnificationVisitor instance conducting the unification
-     * @param target The target node with which unification should be attempted
-     * @return Did the UnificationVisitor indicate successful unification?
-     */
-    virtual bool accept(UnificationVisitor &visitor, const IProcessedTerm &target) const;
-
-    /**
-     * @brief Accept a UnificationVisitor request for unification with a Function term
-     * @param visitor The UnificationVisitor instance conducting the unification
-     * @param target The target node with which unification should be attempted
-     * @return Did the UnificationVisitor indicate successful unification?
-     */
-    virtual bool accept(UnificationVisitor &visitor, const Function &target) const;
-
     /**
      * @brief Test hash-based equality with another IProcessedTerm, wrapped in a @ref std::unique_ptr
      * @param other The owning container of the IProcessedTerm with which equality should be tested
@@ -61,6 +49,29 @@ public:
     bool operator==(const IProcessedTerm &other) const noexcept
     {
         return other.hash() == hash();
+    }
+
+    [[nodiscard]] virtual bool accept(UnificationVisitor &unification_visitor, const IProcessedTerm &term) const = 0;
+
+    [[nodiscard]] virtual bool accept(UnificationVisitor &unification_visitor, const Constant &constant) const
+    {
+        std::ignore = unification_visitor;
+        std::ignore = constant;
+        return false;
+    }
+
+    [[nodiscard]] virtual bool accept(UnificationVisitor &unification_visitor, const Function &function) const
+    {
+        std::ignore = unification_visitor;
+        std::ignore = function;
+        return false;
+    }
+
+    [[nodiscard]] virtual bool accept(UnificationVisitor &unification_visitor, const Variable &variable) const
+    {
+        std::ignore = unification_visitor;
+        std::ignore = variable;
+        return false;
     }
 };
 

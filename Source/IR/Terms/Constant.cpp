@@ -14,6 +14,7 @@
 #include "Constant.hpp"
 
 #include "../../Visitors/MutableTargets/RepositoryBuildingVisitor.hpp"
+#include "../../Visitors/RegularTargets/Unification/UnificationVisitor.hpp"
 
 namespace optifol
 {
@@ -31,6 +32,16 @@ std::string Constant::to_string() const
 std::string_view Constant::get_disambiguated_name() const
 {
     return name;
+}
+
+bool Constant::accept(UnificationVisitor &unification_visitor, const IProcessedTerm &term) const
+{
+    return term.accept(unification_visitor, *this);
+}
+
+bool Constant::accept(UnificationVisitor &unification_visitor, const Variable &variable) const
+{
+    return unification_visitor.visit(variable, *this);
 }
 
 } // namespace optifol

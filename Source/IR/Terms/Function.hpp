@@ -54,6 +54,10 @@ public:
      */
     [[nodiscard]] const std::vector<const IProcessedTerm *> &observe_arguments() const noexcept;
 
+    [[nodiscard]] bool accept(UnificationVisitor &unification_visitor, const IProcessedTerm &term) const override;
+    [[nodiscard]] bool accept(UnificationVisitor &unification_visitor, const Function &function) const override;
+    [[nodiscard]] bool accept(UnificationVisitor &unification_visitor, const Variable &variable) const override;
+
 private:
     const std::string name;
     const std::vector<const IProcessedTerm *> arguments;

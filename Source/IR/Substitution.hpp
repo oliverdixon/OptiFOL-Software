@@ -43,7 +43,7 @@ private:
 public:
     Substitution() = default;
 
-    explicit Substitution(std::initializer_list<std::pair<const Variable &, const IProcessedTerm &>> entries);
+    Substitution(std::initializer_list<std::pair<const Variable &, const IProcessedTerm &>> entries);
 
     // TODO
     std::unordered_map<std::reference_wrapper<const Variable>, std::reference_wrapper<const IProcessedTerm>,

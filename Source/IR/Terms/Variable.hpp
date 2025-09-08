@@ -48,6 +48,11 @@ public:
 
     [[nodiscard]] std::string_view get_disambiguated_name() const override;
 
+    [[nodiscard]] bool accept(UnificationVisitor &unification_visitor, const IProcessedTerm &term) const override;
+    [[nodiscard]] bool accept(UnificationVisitor &unification_visitor, const Constant &constant) const override;
+    [[nodiscard]] bool accept(UnificationVisitor &unification_visitor, const Function &function) const override;
+    [[nodiscard]] bool accept(UnificationVisitor &unification_visitor, const Variable &variable) const override;
+
 private:
     const std::string name;
     const std::optional<std::string> disambiguated_name;

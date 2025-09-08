@@ -14,6 +14,7 @@
 #include "Function.hpp"
 
 #include "../../CompositeSerialisationHelpers.hpp"
+#include "../../Visitors/RegularTargets/Unification/UnificationVisitor.hpp"
 
 namespace optifol
 {
@@ -33,6 +34,21 @@ Function::Function(std::string name, std::vector<const IProcessedTerm *> &&argum
 const std::vector<const IProcessedTerm *> &Function::observe_arguments() const noexcept
 {
     return arguments;
+}
+
+bool Function::accept(UnificationVisitor &unification_visitor, const IProcessedTerm &term) const
+{
+    return term.accept(unification_visitor, *this);
+}
+
+bool Function::accept(UnificationVisitor &unification_visitor, const Function &function) const
+{
+    return unification_visitor.visit(*this, function);
+}
+
+bool Function::accept(UnificationVisitor &unification_visitor, const Variable &variable) const
+{
+    return unification_visitor.visit(variable, *this);
 }
 
 std::string Function::to_string() const

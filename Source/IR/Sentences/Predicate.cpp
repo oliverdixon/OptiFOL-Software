@@ -45,11 +45,6 @@ std::ostream &Predicate::serialise(std::ostream &ostream) const
             ostream, name, arguments.cbegin(), arguments.cend(), is_negative_polarity());
 }
 
-bool Predicate::accept(UnificationVisitor &visitor, const Predicate &target) const
-{
-    return visitor.visit(*this, target);
-}
-
 std::size_t Predicate::hash() const noexcept
 {
     return composite_hash(name, arguments.cbegin(), arguments.cend(), is_negative_polarity());
@@ -63,6 +58,16 @@ std::string_view Predicate::get_name() const noexcept
 const std::vector<const IProcessedTerm *> &Predicate::observe_arguments() const noexcept
 {
     return arguments;
+}
+
+bool Predicate::accept(UnificationVisitor &unification_visitor, const IProcessedSentence &sentence) const
+{
+    return sentence.accept(unification_visitor, *this);
+}
+
+bool Predicate::accept(UnificationVisitor &unification_visitor, const Predicate &predicate) const
+{
+    return unification_visitor.visit(*this, predicate);
 }
 
 } // namespace optifol

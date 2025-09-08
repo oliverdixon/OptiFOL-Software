@@ -24,25 +24,29 @@ namespace optifol
 class UnificationTest :
         public testing::Test
 {
-    // TODO does something need to be here?
+protected:
+    std::unique_ptr<UnificationVisitor> unification_visitor;
+
+    void SetUp() override
+    {
+        unification_visitor.reset(new UnificationVisitor());
+    }
 };
 
 TEST_F(UnificationTest, Predicate)
 {
-    UnificationVisitor unification_visitor;
+    const Function c("C");
+    const Function d("D");
+    const Variable x("x");
 
-    const Function john("John");
-    const Function jane("Jane");
-    const Variable xvar("x");
+    const Predicate p1("P", { &c, &x });
+    const Predicate p2("P", { &c, &d });
 
-    const Predicate john_knows_x("Knows", { &john, &xvar });
-    const Predicate john_knows_jane("Knows", { &john, &jane });
-
-    EXPECT_TRUE(john_knows_x.accept(unification_visitor, john_knows_jane));
-    EXPECT_TRUE(unification_visitor.observe_substitutions().has_value());
+    EXPECT_TRUE(p1.accept(*unification_visitor, p2));
+    EXPECT_TRUE(unification_visitor->observe_substitutions().has_value());
     EXPECT_EQ(
-        *unification_visitor.observe_substitutions(),
-        Substitution({ { xvar, jane } })
+        unification_visitor->observe_substitutions(),
+        Substitution({ { x, d } })
     );
 }
 
