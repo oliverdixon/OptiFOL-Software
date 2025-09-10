@@ -5,14 +5,14 @@
 
 /**
  * @file
- * @brief Class specification for the Predicate IR node
+ * @brief Class specification for the Literal IR node
  * @author Oliver Dixon
  * @date 2025-06-15
  * @version Development
  */
 
-#ifndef PREDICATE_HPP
-#define PREDICATE_HPP
+#ifndef LITERAL_HPP
+#define LITERAL_HPP
 
 #include <vector>
 
@@ -25,30 +25,30 @@ class IProcessedTerm;
 class UnificationVisitor;
 
 /**
- * @class Predicate
- * @brief A Predicate represents a non-owning IR node sentence consisting of a display name and zero to many arguments,
+ * @class Literal
+ * @brief A Literal represents a non-owning IR node sentence consisting of a display name and zero to many arguments,
  *  all of which are referenced from the centralised SymbolRepository.
  * @see MutablePredicate for the unprocessed, argument-owning dual.
  */
-class Predicate : public IProcessedSentence
+class Literal : public IProcessedSentence
 {
 public:
     /**
      * @brief Create a signed predicate with an initial set of referenced arguments
-     * @param name Predicate display name
+     * @param name Literal display name
      * @param arguments Set of non-owning pointers to immutable arguments
      * @param is_positive Should the predicate be instantiated with a positive polarity?
      */
-    explicit Predicate(
+    explicit Literal(
             std::string name, std::initializer_list<const IProcessedTerm *> arguments = {}, bool is_positive = true);
 
     /**
      * @brief Create a signed predicate with an initial set of referenced arguments
-     * @param name Predicate display name
+     * @param name Literal display name
      * @param arguments Set of non-owning pointers to immutable arguments
      * @param is_positive Should the predicate be instantiated with a positive polarity?
      */
-    explicit Predicate(
+    explicit Literal(
             std::string name, std::vector<const IProcessedTerm *>&& arguments, bool is_positive = true);
 
     [[nodiscard]] bool is_negative_polarity() const noexcept override;
@@ -72,7 +72,7 @@ public:
     [[nodiscard]] bool accept(UnificationVisitor &unification_visitor, const IProcessedSentence &sentence) const
         override;
 
-    [[nodiscard]] bool accept(UnificationVisitor &unification_visitor, const Predicate &predicate) const override;
+    [[nodiscard]] bool accept(UnificationVisitor &unification_visitor, const Literal &predicate) const override;
 
 private:
     const std::string name;

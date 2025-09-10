@@ -17,9 +17,8 @@
 #include "../../../Visitors/MutableTargets/Observers/IObservingNodeVisitor.hpp"
 #include "../../../Visitors/MutableTargets/RepositoryBuildingVisitor.hpp"
 #include "../../../Visitors/MutableTargets/Sentences/MutatingSentenceVisitorBase.hpp"
-#include "../../Sentences/Predicate.hpp"
+#include "../../Sentences/Literal.hpp"
 #include "../Terms/IMutableTerm.hpp"
-#include "../Terms/MutableVariable.hpp"
 
 namespace optifol
 {

@@ -58,27 +58,28 @@ Requirement::Requirement(std::string &&name, std::string &&statement, std::strin
 }
 
 Requirement::Requirement(std::string &&name, std::string &&statement, std::string &&description, const guint priority,
-        Glib::RefPtr<Gio::ListStore<TestSpecificationEntry>>&& tests, SymbolRepository &system_repository) :
+        Glib::RefPtr<Gio::ListStore<TestSpecificationEntry>>&& tests,
+        std::shared_ptr<SymbolRepository> system_repository) :
     Glib::ObjectBase("Requirement"),
     statement(*this, "Requirement-statement"),
     normalised_statement(*this, "Requirement-normalised"),
     description(*this, "Requirement-description"),
     priority(*this, "Requirement-priority"),
-    repository_building_visitor(system_repository)
+    repository_building_visitor(std::move(system_repository))
 {
     setup_properties(std::move(name), std::move(statement), std::move(description), priority, std::move(tests));
 }
 
 Requirement::Requirement(std::string &&name, std::string &&statement, std::string &&description, const guint priority,
         Glib::RefPtr<Gio::ListStore<TestSpecificationEntry>>&& tests, BaseObjectType *cobject,
-        const Glib::RefPtr<Gtk::Builder> &builder, SymbolRepository &system_repository) :
+        const Glib::RefPtr<Gtk::Builder> &builder, std::shared_ptr<SymbolRepository> system_repository) :
     Glib::ObjectBase("Requirement"),
     StorageObjectBase(cobject, builder),
     statement(*this, "Requirement-statement"),
     normalised_statement(*this, "Requirement-normalised"),
     description(*this, "Requirement-description"),
     priority(*this, "Requirement-priority"),
-    repository_building_visitor(system_repository)
+    repository_building_visitor(std::move(system_repository))
 {
     setup_properties(std::move(name), std::move(statement), std::move(description), priority, std::move(tests));
 }

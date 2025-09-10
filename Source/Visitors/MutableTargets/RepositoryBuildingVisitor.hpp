@@ -22,7 +22,7 @@ namespace optifol
 {
 
 class MutablePredicate;
-class Predicate;
+class Literal;
 class MutableQuantified;
 class Quantified;
 class MutableSentenceRoot;
@@ -138,17 +138,9 @@ class RepositoryBuildingVisitor final
 public:
     /**
      * @brief Create a RepositoryBuildingVisitor with a corresponding SymbolRepository for trans-formula symbol storage
-     * @param symbol_repository A mutable SymbolRepository baseline with a lifetime guaranteed to extend that of the
-     *  visitor.
+     * @param symbol_repository A mutable SymbolRepository
      */
-    explicit RepositoryBuildingVisitor(SymbolRepository &symbol_repository);
-
-    /**
-     * @brief Create a new RepositoryBuildingVisitor templated from the current object, using the same global symbol
-     *  repository reference but discarding any transitory state.
-     * @return The constructed visitor instance.
-     */
-    [[nodiscard]] RepositoryBuildingVisitor clone_from_template() const;
+    explicit RepositoryBuildingVisitor(std::shared_ptr<SymbolRepository> symbol_repository);
 
     /**
      * @brief Gets the human-readable visitor name
@@ -162,7 +154,7 @@ public:
 
     [[nodiscard]] const Identity *visit(MutableIdentity &node);
 
-    [[nodiscard]] const Predicate *visit(MutablePredicate &node);
+    [[nodiscard]] const Literal *visit(MutablePredicate &node);
 
     [[nodiscard]] const Variable *visit(const MutableVariable &node) const;
 
@@ -179,7 +171,7 @@ private:
 
     static const char *visitor_name;
 
-    SymbolRepository &symbol_repository;
+    std::shared_ptr<SymbolRepository> symbol_repository;
 };
 
 } // namespace optifol

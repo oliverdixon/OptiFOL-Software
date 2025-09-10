@@ -16,7 +16,7 @@ namespace optifol
 {
 
 class UnificationVisitor;
-class Predicate;
+class Literal;
 
 class IProcessedSentence : public ISentence
 {
@@ -28,7 +28,7 @@ public:
         return false;
     }
 
-    [[nodiscard]] virtual bool accept(UnificationVisitor &unification_visitor, const Predicate &predicate) const
+    [[nodiscard]] virtual bool accept(UnificationVisitor &unification_visitor, const Literal &predicate) const
     {
         std::ignore = unification_visitor;
         std::ignore = predicate;

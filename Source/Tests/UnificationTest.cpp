@@ -13,7 +13,7 @@
 
 #include <gtest/gtest.h>
 
-#include "../IR/Sentences/Predicate.hpp"
+#include "../IR/Sentences/Literal.hpp"
 #include "../IR/Terms/Function.hpp"
 #include "../IR/Terms/Variable.hpp"
 #include "../Visitors/RegularTargets/Unification/UnificationVisitor.hpp"
@@ -31,6 +31,15 @@ protected:
     {
         unification_visitor.reset(new UnificationVisitor());
     }
+
+    template<typename Iterator>
+    static bool are_substitution_sets_equal(const Iterator given_begin, const Iterator given_end,
+        const std::unordered_map<const Variable *, const IProcessedTerm *>& expected_map)
+    {
+        const std::unordered_map<const Variable *, const IProcessedTerm *> given_map(given_begin, given_end);
+        return given_map == expected_map;
+    }
+
 };
 
 TEST_F(UnificationTest, Predicate)
@@ -39,15 +48,14 @@ TEST_F(UnificationTest, Predicate)
     const Function d("D");
     const Variable x("x");
 
-    const Predicate p1("P", { &c, &x });
-    const Predicate p2("P", { &c, &d });
+    const Literal p1("P", { &c, &x });
+    const Literal p2("P", { &c, &d });
 
     EXPECT_TRUE(p1.accept(*unification_visitor, p2));
-    EXPECT_TRUE(unification_visitor->observe_substitutions().has_value());
-    EXPECT_EQ(
-        unification_visitor->observe_substitutions(),
-        Substitution({ { x, d } })
-    );
+
+    const std::unordered_map<const Variable *, const IProcessedTerm *> expected_subs{{&x, &d}};
+    EXPECT_TRUE(are_substitution_sets_equal(unification_visitor->get_substitutions_cbegin(),
+        unification_visitor->get_substitutions_cend(), expected_subs));
 }
 
 }

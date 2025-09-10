@@ -70,7 +70,8 @@ public:
      *  Requirement
      */
     explicit Requirement(std::string&& name, std::string&& statement, std::string&& description, guint priority,
-        Glib::RefPtr<Gio::ListStore<TestSpecificationEntry>>&& tests, SymbolRepository& system_repository);
+        Glib::RefPtr<Gio::ListStore<TestSpecificationEntry>>&& tests,
+        std::shared_ptr<SymbolRepository> system_repository);
 
     /**
      * @brief Create a new Requirement with the given name and register in the Glib GType system
@@ -86,7 +87,7 @@ public:
      */
     Requirement(std::string&& name, std::string&& statement, std::string&& description, guint priority,
         Glib::RefPtr<Gio::ListStore<TestSpecificationEntry>>&& tests, BaseObjectType* cobject,
-        const Glib::RefPtr<Gtk::Builder>& builder, SymbolRepository& system_repository);
+        const Glib::RefPtr<Gtk::Builder>& builder, std::shared_ptr<SymbolRepository> system_repository);
 
     [[nodiscard]] Glib::RefPtr<Gtk::TreeListModel> get_tests_tree() const noexcept override;
 

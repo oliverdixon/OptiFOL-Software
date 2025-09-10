@@ -14,9 +14,12 @@
 #ifndef UNIFICATIONVISITOR_H
 #define UNIFICATIONVISITOR_H
 
-#include <optional>
+#include <unordered_map>
+#include <unordered_set>
 
-#include "../../../IR/Substitution.hpp"
+#include "../../../DereferencingEqualityFunctor.hpp"
+#include "../../../IR/Terms/IProcessedTerm.hpp"
+#include "../../../IR/Terms/Variable.hpp"
 
 namespace optifol
 {
@@ -24,8 +27,10 @@ namespace optifol
 class Function;
 class ITerm;
 class Variable;
-class Predicate;
+class Literal;
 class Constant;
+
+class SymbolRepository;
 
 /**
  * @class UnificationVisitor
@@ -65,8 +70,11 @@ class Constant;
  */
 class UnificationVisitor
 {
+    std::unordered_map<const Variable *, const IProcessedTerm *, std::hash<Variable>,
+        DereferencingEqualityFunctor<const Variable *, const Variable>> substitutions;
+
 public:
-    [[nodiscard]] bool visit(const Predicate &predicate_lhs, const Predicate &predicate_rhs);
+    [[nodiscard]] bool visit(const Literal &predicate_lhs, const Literal &predicate_rhs);
 
     [[nodiscard]] bool visit(const Variable &variable_lhs, const Constant &constant_rhs);
 
@@ -76,24 +84,21 @@ public:
 
     [[nodiscard]] bool visit(const Function &function_lhs, const Function &function_rhs);
 
-    const std::optional<Substitution> &observe_substitutions() const;
+    decltype(substitutions)::const_iterator get_substitutions_cbegin() const noexcept;
+
+    decltype(substitutions)::const_iterator get_substitutions_cend() const noexcept;
 
 private:
     /**
      * @brief Attempt to unify a variable with a non-variable/"generic" term.
      * @details
-     *  <p>
-     *      To unify a variable with a generic term, they must be one of the following:
+     *      To unify a variable with a generic term, they must be one of the following. Providing that unification is successful in the non-trivial sense, a substitution is added to the map.
      *      <ul>
      *          <li>Hash-identical: if they have the same hash, they are assumed to refer the same object. Unification
      *              is valid in the trivial sense, and an explicit substitution does not need to be recorded.</li>
      *          <li>Not chain-ununifiable: if the variable is already bound to a substitution, the bound term must be
      *              unifiable to the generic term.</li>
      *      </ul>
-     *  </p>
-     *  <p>
-     *      Providing that unification is successful in the non-trivial sense, a substitution is added to the map.
-     *  </p>
      * @param variable_lhs The LHS variable
      * @param generic_term_rhs The RHS generic term
      * @return Can the variable and term be unified?
@@ -104,10 +109,6 @@ private:
     void register_substitution(const Variable &bound_key, const IProcessedTerm &bound_value);
 
     static bool occurs_check(const Variable& variable_lhs, const Variable& variable_rhs);
-
-    static bool occurs_check(const Variable& variable_lhs, const Function& function_rhs);
-
-    std::optional<Substitution> substitutions;
 };
 
 }

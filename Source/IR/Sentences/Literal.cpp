@@ -5,13 +5,13 @@
 
 /**
  * @file
- * @brief Class implementation for the Predicate IR node
+ * @brief Class implementation for the Literal IR node
  * @author Oliver Dixon
  * @date 2025-06-15
  * @version Development
  */
 
-#include "Predicate.hpp"
+#include "Literal.hpp"
 
 #include "../../CompositeSerialisationHelpers.hpp"
 #include "../../Visitors/RegularTargets/Unification/UnificationVisitor.hpp"
@@ -19,7 +19,7 @@
 namespace optifol
 {
 
-Predicate::Predicate(
+Literal::Literal(
         std::string name, std::initializer_list<const IProcessedTerm *> arguments, const bool is_positive) :
     name(std::move(name)),
     arguments(arguments),
@@ -27,45 +27,45 @@ Predicate::Predicate(
 {
 }
 
-Predicate::Predicate(std::string name, std::vector<const IProcessedTerm *> &&arguments, bool is_positive) :
+Literal::Literal(std::string name, std::vector<const IProcessedTerm *> &&arguments, bool is_positive) :
     name(std::move(name)),
     arguments(std::move(arguments)),
     is_positive(is_positive)
 {
 }
 
-bool Predicate::is_negative_polarity() const noexcept
+bool Literal::is_negative_polarity() const noexcept
 {
     return !is_positive;
 }
 
-std::ostream &Predicate::serialise(std::ostream &ostream) const
+std::ostream &Literal::serialise(std::ostream &ostream) const
 {
     return CompositeSerialisationHelpers::stream_serialise(
             ostream, name, arguments.cbegin(), arguments.cend(), is_negative_polarity());
 }
 
-std::size_t Predicate::hash() const noexcept
+std::size_t Literal::hash() const noexcept
 {
     return composite_hash(name, arguments.cbegin(), arguments.cend(), is_negative_polarity());
 }
 
-std::string_view Predicate::get_name() const noexcept
+std::string_view Literal::get_name() const noexcept
 {
     return name;
 }
 
-const std::vector<const IProcessedTerm *> &Predicate::observe_arguments() const noexcept
+const std::vector<const IProcessedTerm *> &Literal::observe_arguments() const noexcept
 {
     return arguments;
 }
 
-bool Predicate::accept(UnificationVisitor &unification_visitor, const IProcessedSentence &sentence) const
+bool Literal::accept(UnificationVisitor &unification_visitor, const IProcessedSentence &sentence) const
 {
     return sentence.accept(unification_visitor, *this);
 }
 
-bool Predicate::accept(UnificationVisitor &unification_visitor, const Predicate &predicate) const
+bool Literal::accept(UnificationVisitor &unification_visitor, const Literal &predicate) const
 {
     return unification_visitor.visit(*this, predicate);
 }

@@ -18,8 +18,8 @@
 #include <optional>
 #include <unordered_set>
 
-#include "../IHashable.hpp"
 #include "../HashableEqualityFunctor.hpp"
+#include "../IHashable.hpp"
 #include "Sentences/ISentence.hpp"
 #include "Terms/IProcessedTerm.hpp"
 
@@ -53,8 +53,7 @@ public:
             const auto downcast_ptr = dynamic_cast<const TermType *>(find_it->get());
             if (downcast_ptr == nullptr)
                 throw std::runtime_error("Cannot add term " + std::string(term->get_disambiguated_name()) +
-                                         ": a "
-                                         "matching term of a different type already exists in the repository.");
+                        ": a matching term of a different type already exists in the repository.");
             return downcast_ptr;
         }
 
@@ -106,7 +105,7 @@ public:
     /**
      * @brief Retrieves a handle to an immutable term symbol owned by the repository
      * @param term A hash-equal ITerm to the target term
-     * @return A constant handle to the term, if a suitable match exists in the repository. Otherwise, an empty \ref
+     * @return A constant handle to the term, if a suitable match exists in the repository. Otherwise, an empty @ref
      *  std::optional.
      */
     std::optional<const IProcessedTerm *> get_symbol_handle(const IProcessedTerm &term) const;
@@ -122,7 +121,8 @@ public:
 private:
     std::unordered_set<std::unique_ptr<ISentence>, std::hash<ISentence>, HashableEqualityFunctor<ISentence>> sentences;
     std::unordered_set<std::unique_ptr<IProcessedTerm>, std::hash<IProcessedTerm>,
-            HashableEqualityFunctor<IProcessedTerm>> terms;
+            HashableEqualityFunctor<IProcessedTerm>>
+            terms;
 };
 
 } // namespace optifol

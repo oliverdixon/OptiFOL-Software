@@ -13,7 +13,8 @@
 
 #include "UnificationVisitor.hpp"
 
-#include "../../../IR/Sentences/Predicate.hpp"
+#include "../../../IR/Sentences/Literal.hpp"
+#include "../../../IR/SymbolRepository.hpp"
 #include "../../../IR/Terms/Constant.hpp"
 #include "../../../IR/Terms/Function.hpp"
 #include "../../../IR/Terms/ITerm.hpp"
@@ -22,7 +23,7 @@
 namespace optifol
 {
 
-bool UnificationVisitor::visit(const Predicate &predicate_lhs, const Predicate &predicate_rhs)
+bool UnificationVisitor::visit(const Literal &predicate_lhs, const Literal &predicate_rhs)
 {
     const auto &lhs_arguments = predicate_lhs.observe_arguments();
     const auto &rhs_arguments = predicate_rhs.observe_arguments();
@@ -56,23 +57,21 @@ bool UnificationVisitor::visit(const Variable &variable_lhs, const Variable &var
         // If atomics (e.g. variables) are trivially identical, they can be unified without an explicit substitution.
         return true;
 
-    if (substitutions.has_value()) {
-        /*
-         * If the given LHS variable already has a binding, ensure that its bound mapping can be unified with the other
-         * variable.
-         */
-        const auto &lhs_binding_it = substitutions->bindings.find(variable_lhs);
-        if (lhs_binding_it != substitutions->bindings.cend())
-            return lhs_binding_it->second.get().accept(*this, variable_rhs);
+    /*
+     * If the given LHS variable already has a binding, ensure that its bound mapping can be unified with the other
+     * variable.
+     */
+    const auto &lhs_binding_it = substitutions.find(variable_lhs);
+    if (lhs_binding_it != substitutions.cend())
+        return lhs_binding_it->second->accept(*this, variable_rhs);
 
-        /*
-         * Repeat the above check for RHS; due to static binding, we know it's a variable and not a generic term. Thus
-         * it could be a key in the substitutions map.
-         */
-        const auto &rhs_binding_it = substitutions->bindings.find(variable_rhs);
-        if (rhs_binding_it != substitutions->bindings.cend())
-            return rhs_binding_it->second.get().accept(*this, variable_lhs);
-    }
+    /*
+     * Repeat the above check for RHS; due to static binding, we know it's a variable and not a generic term. Thus
+     * it could be a key in the substitutions map.
+     */
+    const auto &rhs_binding_it = substitutions.find(variable_rhs);
+    if (rhs_binding_it != substitutions.cend())
+        return rhs_binding_it->second->accept(*this, variable_lhs);
 
     // TODO: occurs check
 
@@ -100,9 +99,16 @@ bool UnificationVisitor::visit(const Function &function_lhs, const Function &fun
     return true;
 }
 
-const std::optional<Substitution> &UnificationVisitor::observe_substitutions() const
+decltype(UnificationVisitor::substitutions)::const_iterator
+    UnificationVisitor::get_substitutions_cbegin() const noexcept
 {
-    return substitutions;
+    return substitutions.cbegin();
+}
+
+decltype(UnificationVisitor::substitutions)::const_iterator UnificationVisitor::get_substitutions_cend() const noexcept
+
+{
+    return substitutions.cend();
 }
 
 bool UnificationVisitor::variable_generic(const Variable &variable_lhs, const IProcessedTerm &generic_term_rhs)
@@ -111,15 +117,13 @@ bool UnificationVisitor::variable_generic(const Variable &variable_lhs, const IP
         // If atomics (e.g. variables) are trivially identical, they can be unified without an explicit substitution.
         return true;
 
-    if (substitutions.has_value()) {
-        /*
-         * If the given LHS variable already has a binding, ensure that its bound mapping can be unified with the other
-         * variable.
-         */
-        const auto &lhs_binding_it = substitutions->bindings.find(variable_lhs);
-        if (lhs_binding_it != substitutions->bindings.cend())
-            return lhs_binding_it->second.get().accept(*this, generic_term_rhs);
-    }
+    /*
+     * If the given LHS variable already has a binding, ensure that its bound mapping can be unified with the other
+     * variable.
+     */
+    const auto &lhs_binding_it = substitutions.find(variable_lhs);
+    if (lhs_binding_it != substitutions.cend())
+        return lhs_binding_it->second->accept(*this, generic_term_rhs);
 
     // TODO: occurs check
 
@@ -130,23 +134,12 @@ bool UnificationVisitor::variable_generic(const Variable &variable_lhs, const IP
 
 void UnificationVisitor::register_substitution(const Variable &bound_key, const IProcessedTerm &bound_value)
 {
-    const auto wrapped_variable = std::cref(bound_key);
-    // substitution_keys.push_back(wrapped_variable); // TODO value in pair will be dangling if term node is deleted.
-    if (substitutions.has_value() == false)
-        substitutions.emplace();
-    substitutions->bindings.emplace(wrapped_variable, std::ref(bound_value));
+    // URGENT TODO: register binding!
 }
 
 bool UnificationVisitor::occurs_check(const Variable &variable_lhs, const Variable &variable_rhs)
 {
     return variable_lhs == variable_rhs;
-}
-
-bool UnificationVisitor::occurs_check(const Variable &variable_lhs, const Function &function_rhs)
-{
-    const auto& arguments = function_rhs.observe_arguments();
-    for (const auto& arg : function_rhs.observe_arguments())
-        if ()
 }
 
 } // namespace optifol

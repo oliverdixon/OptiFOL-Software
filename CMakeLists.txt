@@ -154,8 +154,6 @@ add_library(OptifolCommon OBJECT
         Source/Visitors/MutableTargets/Terms/ScopedTermResolutionVisitor.hpp
         Source/Exceptions/ParseError.hpp
         Source/IHashable.hpp
-        Source/IR/Substitution.cpp
-        Source/IR/Substitution.hpp
         Source/Visitors/RegularTargets/Unification/UnificationVisitor.cpp
         Source/Visitors/RegularTargets/Unification/UnificationVisitor.hpp
         Source/IR/MutableVariants/OwningBuildable.hpp
@@ -163,8 +161,8 @@ add_library(OptifolCommon OBJECT
         Source/IR/SymbolRepository.hpp
         Source/IR/Sentences/ISentence.hpp
         Source/IR/Terms/IProcessedTerm.hpp
-        Source/IR/Sentences/Predicate.cpp
-        Source/IR/Sentences/Predicate.hpp
+        Source/IR/Sentences/Literal.cpp
+        Source/IR/Sentences/Literal.hpp
         Source/IR/Terms/Variable.cpp
         Source/IR/Terms/Variable.hpp
         Source/IR/Terms/Function.cpp
@@ -402,6 +400,10 @@ set_source_files_properties(
 add_executable(OptifolGUI
         ${RESOURCE_OUT}
         Source/GUI/GUIDriver.cpp
+        Source/Inference/KnowledgeBase.cpp
+        Source/Inference/KnowledgeBase.hpp
+        Source/Inference/Resolution.cpp
+        Source/Inference/Resolution.hpp
 )
 
 set(COMMON_COMPILER_OPTIONS
