@@ -21,35 +21,28 @@ namespace optifol
 
 /**
  * @class SentenceRoot
- * @brief A SentenceRoot denotes the root node of an immutable IR node tree. It references a single sub-sentence in a
- *  SymbolRepository that may not be mutated following construction.
- * @see MutableSentenceRoot for the mutable, owning dual
+ * @brief A SentenceRoot denotes the root node of an immutable IR node set. It contains conjunctive clauses of literals
+ *  under disjunction, where the literals are weak references to a lifetime-assured SymbolRepository.
  */
 class SentenceRoot : public IProcessedSentence
 {
-public:
-    /**
-     * @brief Creates a new immutable SentenceRoot with the given immediate child sentence and polarity
-     * @param sentence The sentence to hold immediately under the root
-     * @param is_positive Should the root node be instantiated in a positive polarity?
-     */
-    explicit SentenceRoot(const IProcessedSentence * sentence, bool is_positive = true);
+    std::vector<std::vector<const Literal *>> clauses;
 
+public:
     [[nodiscard]] bool is_negative_polarity() const noexcept override;
 
     std::ostream& serialise(std::ostream &ostream) const override;
 
     [[nodiscard]] std::size_t hash() const noexcept override;
 
-    /**
-     * @brief Retrieves an observing pointer to the detained sentence
-     * @return An observing pointer to the sentence
-     */
-    [[nodiscard]] const IProcessedSentence *observe_sentence() const noexcept;
+    void commit_clause(const std::vector<const Literal *> &literals);
+
+    decltype(clauses)::const_iterator cbegin() const noexcept;
+
+    decltype(clauses)::const_iterator cend() const noexcept;
 
 private:
-    const IProcessedSentence * const sentence;
-    bool is_positive;
+    static std::ostream& serialise_clause(std::ostream &ostream, const std::vector<const Literal *> &clause);
 };
 
 } // namespace optifol

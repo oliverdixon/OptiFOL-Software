@@ -34,4 +34,9 @@ std::optional<const ISentence *> SymbolRepository::get_symbol_handle(const ISent
     return it->get();
 }
 
+bool SymbolRepository::operator==(const SymbolRepository & other) const noexcept
+{
+    return sentences == other.sentences && terms == other.terms;
+}
+
 } // namespace optifol

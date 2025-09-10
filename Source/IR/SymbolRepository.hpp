@@ -118,6 +118,13 @@ public:
      */
     std::optional<const ISentence *> get_symbol_handle(const ISentence &sentence) const;
 
+    /**
+     * @brief Determine equality between two SymbolRepository objects according to their stored sentences and terms.
+     * @param other The SymbolRepository with which to compare elements.
+     * @return Do the SymbolRepository objects store the same items?
+     */
+    [[nodiscard]] bool operator==(const SymbolRepository & other) const noexcept;
+
 private:
     std::unordered_set<std::unique_ptr<ISentence>, std::hash<ISentence>, HashableEqualityFunctor<ISentence>> sentences;
     std::unordered_set<std::unique_ptr<IProcessedTerm>, std::hash<IProcessedTerm>,

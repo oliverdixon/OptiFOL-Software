@@ -28,7 +28,7 @@ namespace optifol
 void TextSerialiserVisitor::visit(const MutableQuantified &node)
 {
     print_polarity(&node);
-    output_stream << Quantified::get_operator_symbol(node.get_quantifier_type())
+    output_stream << MutableQuantified::get_operator_symbol(node.get_quantifier_type())
                   << node.observe_bound_term()->to_string() << ' ';
 
     node.observe_sentence()->accept(*this);

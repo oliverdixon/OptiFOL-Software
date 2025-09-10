@@ -16,6 +16,8 @@
 
 #include <string_view>
 
+#include "../../IR/Sentences/BinaryConnected.hpp"
+#include "../../IR/Sentences/SentenceRoot.hpp"
 #include "../../IR/SymbolRepository.hpp"
 
 namespace optifol
@@ -24,7 +26,6 @@ namespace optifol
 class MutablePredicate;
 class Literal;
 class MutableQuantified;
-class Quantified;
 class MutableSentenceRoot;
 class SentenceRoot;
 class MutableBinaryConnected;
@@ -37,6 +38,8 @@ class MutableFunction;
 class Function;
 class MutableConstant;
 class Constant;
+
+class IProcessedSentence;
 
 /**
  * @class RepositoryBuildingVisitor
@@ -69,12 +72,6 @@ class Constant;
  *              <th>Extractable Sentences</th>
  *          </tr>
  *          <tr>
- *              <td>MutableQuantified</td>
- *              <td>Quantified</td>
- *              <td>Bound variable</td>
- *              <td>Bound sentence</td>
- *          </tr>
- *          <tr>
  *              <td>MutableBinaryConnected</td>
  *              <td>BinaryConnected</td>
  *              <td>None</td>
@@ -94,7 +91,7 @@ class Constant;
  *          </tr>
  *          <tr>
  *              <td>MutableSentenceRoot</td>
- *              <td>SentenceRoot with ownership responsibility</td>
+ *              <td>SentenceRoot</td>
  *              <td>None</td>
  *              <td>Detained sentence</td>
  *          </tr>
@@ -102,7 +99,7 @@ class Constant;
  *      Note that the MutableSentenceRoot transformation represents a special case: the generated SentenceRoot is not
  *      registered in a SymbolRepository but instead passed within an ownership-controlled container, which becomes the
  *      responsibility of the visitor. Callers may then extract the last-generated sentence root from the visitor
- *      instance.
+ *      instance, which contains a set of literals ("clauses") under conjunction.
  *  </p>
  *  <p>
  *      Term trees are also eligible for transformation by the visitor:
@@ -148,25 +145,71 @@ public:
      */
     [[nodiscard]] static std::string_view get_visitor_name();
 
-    [[nodiscard]] const Quantified *visit(MutableQuantified &node);
+    /**
+     * @brief Placeholder visitor to build an immutable quantified item from a MutableQuantified node.
+     * @param node The quantified node.
+     * @warning
+     *  <p>
+     *      This method always fails with a bad assertion. Mutable sentences are obliged to accept visitation requests
+     *      from the RepositoryBuildingVisitor, but at present, the repository only contains expression trees in full
+     *      Conjunctive Normal Form (CNF). Predicate CNF does not permit quantifiers, and all quantifiers should have
+     *      been removed by the following visitors in the normalisation pipeline:
+     *      <ul>
+     *        <li>Universal quantifiers: UniversalEliminationVisitor; and</li>
+     *        <li>Existential quantifiers: SkolemIntroducingVisitor (where existentials are replaced with synthesised
+     *          Skolem functions provided by MutableSkolemFunction).
+     *      </ul>
+     *  </p>
+     * @return @ref std::nullptr_t
+     */
+    static const IProcessedSentence *visit(const MutableQuantified &node);
 
-    [[nodiscard]] const BinaryConnected *visit(MutableBinaryConnected &node);
+    /**
+     * @brief Transforms a MutableBinaryConnected disjunctive or conjunctive node into an equivalent BinaryConnected
+     *  node.
+     * @param node The MutableBinaryConnected node to be destroyed and used to construct the BinaryConnected equivalent.
+     * @return The BinaryConnected node, referencing symbols in the SymbolRepository equivalent to the operands of the
+     *  original MutableBinaryConnected.
+     * @pre The given MutableBinaryConnected node must be a disjunction or conjunction; the presence of any other
+     *  operator indicates a non-normalised tree.
+     */
+    const BinaryConnected *visit(MutableBinaryConnected &node);
 
-    [[nodiscard]] const Identity *visit(MutableIdentity &node);
+    /**
+     * @brief Transforms a MutableIdentity node into an Identity, registering the operand terms in the central
+     *  SymbolRepository. The Identity itself is also added to the central SymbolRepository.
+     * @param node The MutableIdentity node to be transformed into the corresponding immutable representation.
+     * @return A non-owning immutable pointer to the SymbolRepository Identity node.
+     */
+    const Identity *visit(MutableIdentity &node);
 
-    [[nodiscard]] const Literal *visit(MutablePredicate &node);
+    /**
+     * @brief Transforms a MutablePredicate node into a Literal, registering the argument terms in the central
+     *  SymbolRepository. The Literal itself is also added to the central SymbolRepository.
+     * @param node The MutablePredicate node to be transformed into the corresponding immutable representation.
+     * @return A non-owning immutable pointer to the SymbolRepository Literal node.
+     */
+    const Literal *visit(MutablePredicate &node);
 
-    [[nodiscard]] const Variable *visit(const MutableVariable &node) const;
+    const Variable *visit(const MutableVariable &node) const;
 
-    [[nodiscard]] const Function *visit(MutableFunction& node);
+    const Function *visit(MutableFunction& node);
 
-    [[nodiscard]] const Constant *visit(const MutableConstant & node) const;
+    const Constant *visit(const MutableConstant & node) const;
 
     void visit(MutableSentenceRoot &node);
 
     std::unique_ptr<SentenceRoot> take_last_root() noexcept;
 
 private:
+
+    /**
+     * @brief The working clause stores the working set of literals under disjunction for the current clause. The
+     *  working clause should be committed to the SentenceRoot @ref root node once it has been fully populated.
+     * @see SentenceRoot::commit_clause
+     */
+    std::vector<const Literal *> working_clause;
+
     std::unique_ptr<SentenceRoot> root;
 
     static const char *visitor_name;

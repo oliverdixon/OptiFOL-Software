@@ -134,7 +134,7 @@ bool UnificationVisitor::variable_generic(const Variable &variable_lhs, const IP
 
 void UnificationVisitor::register_substitution(const Variable &bound_key, const IProcessedTerm &bound_value)
 {
-    // URGENT TODO: register binding!
+    // TODO URGENT TO: register binding!
 }
 
 bool UnificationVisitor::occurs_check(const Variable &variable_lhs, const Variable &variable_rhs)

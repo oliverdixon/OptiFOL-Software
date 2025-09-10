@@ -14,19 +14,16 @@
 #include "RepositoryBuildingVisitor.hpp"
 
 #include <cassert>
-#include <iostream>
 
 #include "../../IR/MutableVariants/Sentences/MutableBinaryConnected.hpp"
 #include "../../IR/MutableVariants/Sentences/MutableIdentity.hpp"
 #include "../../IR/MutableVariants/Sentences/MutablePredicate.hpp"
-#include "../../IR/MutableVariants/Sentences/MutableQuantified.hpp"
 #include "../../IR/MutableVariants/Sentences/MutableSentenceRoot.hpp"
 #include "../../IR/MutableVariants/Terms/MutableConstant.hpp"
 #include "../../IR/MutableVariants/Terms/MutableFunction.hpp"
 #include "../../IR/MutableVariants/Terms/MutableVariable.hpp"
 #include "../../IR/Sentences/Identity.hpp"
 #include "../../IR/Sentences/Literal.hpp"
-#include "../../IR/Sentences/Quantified.hpp"
 #include "../../IR/Sentences/SentenceRoot.hpp"
 #include "../../IR/Terms/Constant.hpp"
 #include "../../IR/Terms/Function.hpp"
@@ -47,25 +44,53 @@ std::string_view RepositoryBuildingVisitor::get_visitor_name()
     return visitor_name;
 }
 
-const Quantified *RepositoryBuildingVisitor::visit(MutableQuantified &node)
+const IProcessedSentence *RepositoryBuildingVisitor::visit(const MutableQuantified &node)
 {
-    const auto bound_term = node.take_bound_term();
-    const auto repo_term = bound_term->accept(*this);
-
-    const auto bound_sentence = node.take_sentence();
-    const auto repo_sentence = bound_sentence->accept(*this);
-
-    return symbol_repository->add_symbol<Quantified>(std::make_unique<Quantified>(
-            node.get_quantifier_type(), repo_term, repo_sentence, !node.is_negative_polarity()));
+    std::ignore = node;
+    assert(false);
+    // ReSharper disable once CppDFAUnreachableCode - Not unreachable if assertions disabled.
+    return nullptr;
 }
 
 const BinaryConnected *RepositoryBuildingVisitor::visit(MutableBinaryConnected &node)
 {
+    const auto operator_type = node.get_operator_type();
+    assert(operator_type == BinaryOperatorTypes::Conjunction || operator_type == BinaryOperatorTypes::Disjunction);
+
+    /*
+     * The "manage clause" flag indicates that this function is responsible for committing and resetting the
+     * working clause member function, and that its callees are exclusively allowed to insert literals into the working
+     * clause. Note that this should be set for any conjunctive node, and if an existing non-empty working clause is
+     * present, it may be safely assumed to be fully populated and committed to the sentence root.
+     */
+    const bool managed_clause = operator_type == BinaryOperatorTypes::Conjunction;
+
+    // Create a fresh clause for the LHS operand, committing a previously populated clause if necessary.
+    if (managed_clause && !working_clause.empty()) {
+        root->commit_clause(working_clause);
+        working_clause.clear();
+    }
+
     const auto bound_lhs = node.take_lhs_operand();
     const auto repo_lhs = bound_lhs->accept(*this);
 
+    /*
+     * If the LHS recursion produced any literals under disjunction, commit the set to the sentence root, and create a
+     * fresh clause for the RHS operand.
+     */
+    if (managed_clause && !working_clause.empty()) {
+        root->commit_clause(working_clause);
+        working_clause.clear();
+    }
+
     const auto bound_rhs = node.take_rhs_operand();
     const auto repo_rhs = bound_rhs->accept(*this);
+
+    // Likewise, commit any disjunctive literals produced by the RHS recursion to the sentence root.
+    if (managed_clause && !working_clause.empty()) {
+        root->commit_clause(working_clause);
+        working_clause.clear();
+    }
 
     return symbol_repository->add_symbol<BinaryConnected>(
             std::make_unique<BinaryConnected>(node.get_operator_type(), repo_lhs, repo_rhs));
@@ -91,21 +116,24 @@ const Literal *RepositoryBuildingVisitor::visit(MutablePredicate &node)
     for (const auto &term: owned_terms)
         processed_terms.push_back(term->accept(*this));
 
-    return symbol_repository->add_symbol<Literal>(std::make_unique<Literal>(
+    // Create the Literal symbol and append to the working clause.
+    const auto new_symbol = symbol_repository->add_symbol<Literal>(std::make_unique<Literal>(
             std::string(node.get_name()), std::move(processed_terms), !node.is_negative_polarity()));
+    working_clause.push_back(new_symbol);
+    return new_symbol;
 }
 
 void RepositoryBuildingVisitor::visit(MutableSentenceRoot &node)
 {
     assert(root == nullptr);
+    root = std::make_unique<SentenceRoot>();
     const auto sentence = node.take_sentence();
+    sentence->accept(*this);
 
-    /*
-     * TODO URGENT HERE OWD: the below accept can just produce a list of literals under recursive disjunction. We're in
-     *  CNF by this point; an exception can be thrown if we encounter anything other than the expected form, as it's a
-     *  BUG.
-     */
-    root = std::make_unique<SentenceRoot>(sentence->accept(*this), !node.is_negative_polarity());
+    if (!working_clause.empty()) {
+        root->commit_clause(working_clause);
+        working_clause.clear();
+    }
 }
 
 std::unique_ptr<SentenceRoot> RepositoryBuildingVisitor::take_last_root() noexcept

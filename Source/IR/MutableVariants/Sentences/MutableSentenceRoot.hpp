@@ -24,7 +24,6 @@ namespace optifol
  * @class MutableSentenceRoot
  * @brief A MutableSentenceRoot denotes the root node of a mutable IR node tree. It owns a single sub-sentence that may
  *  be mutated and transferred.
- * @see SentenceRoot for the immutable, non-owning dual
  */
 class MutableSentenceRoot : public IMutableSentence,
                             public OwningBuildable<MutableSentenceRoot>

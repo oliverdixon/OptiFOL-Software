@@ -171,8 +171,6 @@ add_library(OptifolCommon OBJECT
         Source/CompositeSerialisationHelpers.hpp
         Source/IR/Sentences/BinaryConnected.cpp
         Source/IR/Sentences/BinaryConnected.hpp
-        Source/IR/Sentences/Quantified.cpp
-        Source/IR/Sentences/Quantified.hpp
         Source/IR/Sentences/Identity.cpp
         Source/IR/Sentences/Identity.hpp
         Source/IR/Terms/Constant.cpp
@@ -461,6 +459,7 @@ add_executable(OptifolTesting
         Source/Tests/CNFNormalisationTest.cpp
         Source/Tests/UnificationTest.cpp
         Source/Tests/GoogleTestSupport.hpp
+        Source/Tests/RepositoryBuildingTest.cpp
 )
 
 target_include_directories(OptifolTesting PRIVATE

@@ -321,7 +321,7 @@ std::unique_ptr<SentenceRoot> Requirement::populate_symbol_repository(std::uniqu
 
     // TODO: info-level integration logging as with CNF normalisation pipeline
 
-    std::ignore = mutable_root->accept(*repository_building_visitor);
+    mutable_root->accept(*repository_building_visitor);
     return repository_building_visitor->take_last_root();
 }
 

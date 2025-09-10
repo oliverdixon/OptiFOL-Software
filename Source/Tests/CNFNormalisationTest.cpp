@@ -15,7 +15,7 @@
 
 #include "../IR/MutableVariants/Sentences/MutableBinaryConnected.hpp"
 #include "../IR/MutableVariants/Sentences/MutablePredicate.hpp"
-#include "../IR/MutableVariants/Terms/IMutableTerm.hpp"
+#include "../Visitors/MutableTargets/RepositoryBuildingVisitor.hpp"
 #include "../Visitors/MutableTargets/Sentences/CNFNormalisers/DisjunctionDistributionVisitor.hpp"
 #include "../Visitors/MutableTargets/Sentences/CNFNormalisers/ImplicationEliminationVisitor.hpp"
 #include "GoogleTestSupport.hpp"
@@ -23,9 +23,23 @@
 namespace optifol
 {
 
+/**
+ * @class CNFNormalisationTest
+ * @brief The CNFNormalisationTest Google Test fixture contains tests of the CNF normalisation visitor-based pipeline.
+ * @details <p>The seven-stage pipeline is tested:</p>
+ *  <ol>
+ *      <li>ImplicationEliminationVisitor</li>
+ *      <li>DMLVisitor</li>
+ *      <li>SymbolStandardisingVisitor</li>
+ *      <li>QuantifierExtractingVisitor</li>
+ *      <li>SkolemIntroducingVisitor</li>
+ *      <li>UniversalEliminationVisitor</li>
+ *      <li>DisjunctionDistributionVisitor</li>
+ *  </ol>
+ */
 class CNFNormalisationTest : public testing::Test
 {
-public:
+protected:
     /**
      * @brief Despatches the templated CNF visitor on the given test node and verifies that the CNF-normalised result
      *  matches the expected sentence construction.
@@ -36,7 +50,6 @@ public:
      * @note The equality functor is hash-based; in particular, a commutative hash-combining function is used for
      *  binary-operand sentences. Thus the expected sentence need not pass operands to commutative operators in the same
      *  order as would be produced by the CNF Visitor.
-     * @warning If the verification fails, a Google Test assertion failure is raised.
      */
     template<typename CNFVisitor>
         requires std::derived_from<CNFVisitor, MutatingSentenceVisitorBase>

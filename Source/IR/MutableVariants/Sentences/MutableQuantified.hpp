@@ -17,7 +17,6 @@
 #include <memory>
 
 #include "../../MutableVariants/Terms/IMutableTerm.hpp"
-#include "../../Sentences/Quantified.hpp"
 #include "../OwningBuildable.hpp"
 #include "IMutableSentence.hpp"
 
@@ -25,11 +24,22 @@ namespace optifol
 {
 
 /**
+ * @class QuantifierTypes
+ * @brief The modes by which a sentence can be bound by a variable
+ */
+enum class QuantifierTypes
+{
+    Universal,
+    Existential
+};
+
+/**
  * @class MutableQuantified
  * @brief A MutableQuantified IR node owns a bound variable/term and a bound sentence ("operands"), and detains the
  *  first-order logic operator by which the sentence is bound by the variable. Metadata and operands are mutable, and
  *  owned by the instance of the IR node.
- * @see Quantified for the non-owning, immutable dual
+ * @note There is no immutable, non-owning dual of the MutableQuantified node as it may not appear in CNF-normalised
+ *  expression trees.
  */
 class MutableQuantified : public IMutableSentence,
                           public OwningBuildable<MutableQuantified>
@@ -109,6 +119,13 @@ public:
      * @see @ref std::unique_ptr::operator= for semantics of swap
      */
     void put_bound_term(std::unique_ptr<IMutableTerm> &&new_bound_term) noexcept;
+
+    /**
+     * @brief Maps a quantifier type to a human-readable string suitable for serialisation
+     * @param type Type of quantifier to serialise
+     * @return Serialised string for the given quantifier type
+     */
+    [[nodiscard]] static const char *get_operator_symbol(QuantifierTypes type);
 
 private:
     QuantifierTypes quantifier_type;

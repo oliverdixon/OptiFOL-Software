@@ -77,7 +77,7 @@ public:
      * @param visitor The repository-building visitor to invoke
      * @return An observing reference to the ISentence node added to a central SymbolRepository object
      */
-    [[nodiscard]] virtual const IProcessedSentence *accept(RepositoryBuildingVisitor &visitor) = 0;
+    virtual const IProcessedSentence *accept(RepositoryBuildingVisitor &visitor) = 0;
 };
 
 } // namespace optifol
