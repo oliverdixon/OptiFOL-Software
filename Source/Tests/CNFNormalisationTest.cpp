@@ -16,14 +16,14 @@
 #include "../IR/MutableVariants/Sentences/MutableBinaryConnected.hpp"
 #include "../IR/MutableVariants/Sentences/MutablePredicate.hpp"
 #include "../IR/MutableVariants/Terms/IMutableTerm.hpp"
+#include "../Visitors/MutableTargets/Sentences/CNFNormalisers/DisjunctionDistributionVisitor.hpp"
 #include "../Visitors/MutableTargets/Sentences/CNFNormalisers/ImplicationEliminationVisitor.hpp"
 #include "GoogleTestSupport.hpp"
 
 namespace optifol
 {
 
-class CNFNormalisationTest:
-        public testing::Test
+class CNFNormalisationTest : public testing::Test
 {
 public:
     /**
@@ -38,8 +38,9 @@ public:
      *  order as would be produced by the CNF Visitor.
      * @warning If the verification fails, a Google Test assertion failure is raised.
      */
-    template<typename CNFVisitor> requires std::derived_from<CNFVisitor, MutatingSentenceVisitorBase>
-    static void cnf_test(std::unique_ptr<IMutableSentence>&& test, std::unique_ptr<IMutableSentence>&& expected)
+    template<typename CNFVisitor>
+        requires std::derived_from<CNFVisitor, MutatingSentenceVisitorBase>
+    static void cnf_test(std::unique_ptr<IMutableSentence> &&test, std::unique_ptr<IMutableSentence> &&expected)
     {
         CNFVisitor visitor;
         test->accept(visitor);
@@ -47,6 +48,15 @@ public:
     }
 };
 
+/**
+ * @brief Tests basic non-nested functionality of the ImplicationEliminationVisitor for single-operand implications.
+ * @details
+ *  <ul>
+ *      <li>Input: @f$ P \implies Q @f$</li>
+ *      <li>Expected output: @f$ \lnot P \lor Q @f$</li>
+ *  </ul>
+ * @memberof CNFNormalisationTest
+ */
 TEST_F(CNFNormalisationTest, ImplicationElimination_Basic)
 {
     // clang-format off
@@ -63,8 +73,18 @@ TEST_F(CNFNormalisationTest, ImplicationElimination_Basic)
             MutablePredicate::build("Q")
         )
     );
+    // clang-format on
 }
 
+/**
+ * @brief Tests basic non-nested functionality of the ImplicationEliminationVisitor for dual-operand implications.
+ * @details
+ *  <ul>
+ *      <li>Input: @f$ P \iff Q @f$</li>
+ *      <li>Expected output: @f$ \left( P \lor \lnot Q \right) \land \left( \lnot P \lor Q \right) @f$</li>
+ *  </ul>
+ * @memberof CNFNormalisationTest
+ */
 TEST_F(CNFNormalisationTest, ImplicationElimination_Biconditional)
 {
     // clang-format off
@@ -89,8 +109,19 @@ TEST_F(CNFNormalisationTest, ImplicationElimination_Biconditional)
             )
         )
     );
+    // clang-format on
 }
 
+/**
+ * @brief Tests functionality of the ImplicationEliminationVisitor for nesting on a single operand.
+ * @details
+ *  <ul>
+ *      <li>Input: @f$ \left( P \implies Q \right) \iff R @f$</li>
+ *      <li>Expected output: @f$ \left( \lnot \left( \lnot P \lor Q \right) \lor R \right) \land
+ *          \left( \left( \lnot P \lor Q \right) \lor \lnot R \right) @f$</li>
+ *  </ul>
+ * @memberof CNFNormalisationTest
+ */
 TEST_F(CNFNormalisationTest, ImplicationElimination_UnaryNesting)
 {
     // clang-format off
@@ -128,8 +159,22 @@ TEST_F(CNFNormalisationTest, ImplicationElimination_UnaryNesting)
             )
         )
     );
+    // clang-format on
 }
 
+/**
+ * @brief Tests functionality of the ImplicationEliminationVisitor for nesting on both operands.
+ * @details
+ *  <ul>
+ *      <li>Input: @f$ \left( P \implies Q \right) \iff \left( R \implies S \right) @f$</li>
+ *      <li>
+ *          Expected output:
+ *          @f$ \left( \lnot \left( \lnot P \lor Q \right) \lor \left( \lnot R \lor S \right) \right) \land
+ *          \left( \left( \lnot P \lor Q \right) \lor \lnot \left( \lnot R \lor S \right) \right)@f$
+ *      </li>
+ *  </ul>
+ * @memberof CNFNormalisationTest
+ */
 TEST_F(CNFNormalisationTest, ImplicationElimination_BinaryNesting)
 {
     // clang-format off
@@ -180,6 +225,169 @@ TEST_F(CNFNormalisationTest, ImplicationElimination_BinaryNesting)
             )
         )
     );
+    // clang-format on
 }
 
+/**
+ * @brief Tests functionality of the DisjunctionDistributionVisitor for distribution over a single operand.
+ * @details
+ *  <ul>
+ *      <li>Input: @f$ P \lor \left( Q \land R \right) @f$</li>
+ *      <li>Expected output: @f$ \left( P \lor Q \right) \land \left( P \lor R \right) @f$</li>
+ *  </ul>
+ * @memberof CNFNormalisationTest
+ */
+TEST_F(CNFNormalisationTest, DisjunctionDistribution_BasicUnary)
+{
+    // clang-format off
+    cnf_test<DisjunctionDistributionVisitor>(
+        MutableBinaryConnected::build(
+            BinaryOperatorTypes::Disjunction,
+            MutablePredicate::build("P"),
+            MutableBinaryConnected::build(
+                BinaryOperatorTypes::Conjunction,
+                MutablePredicate::build("Q"),
+                MutablePredicate::build("R")
+            )
+        ),
+
+        MutableBinaryConnected::build(
+            BinaryOperatorTypes::Conjunction,
+            MutableBinaryConnected::build(
+                BinaryOperatorTypes::Disjunction,
+                MutablePredicate::build("P"),
+                MutablePredicate::build("Q")
+            ),
+            MutableBinaryConnected::build(
+                BinaryOperatorTypes::Disjunction,
+                MutablePredicate::build("P"),
+                MutablePredicate::build("R")
+            )
+        )
+    );
+    // clang-format on
 }
+
+/**
+ * @brief Tests functionality of the DisjunctionDistributionVisitor for distribution over both operands.
+ * @details
+ *  <ul>
+ *      <li>Input: @f$ \left( P \lor \left( Q \land R \right) \right) \land
+ *          \left( \left( A \land B \right) \lor C \right) @f$</li>
+ *      <li>
+ *          Expected output:
+ *          @f$ \left( \left( P \lor Q \right) \land \left( P \lor R \right) \right) \land
+ *          \left( \left( C \lor A \right) \land \left( C \lor B \right) \right) @f$
+ *      </li>
+ *  </ul>
+ * @memberof CNFNormalisationTest
+ */
+TEST_F(CNFNormalisationTest, DisjunctionDistribution_BasicBinary)
+{
+    // clang-format off
+    cnf_test<DisjunctionDistributionVisitor>(
+        MutableBinaryConnected::build(
+            BinaryOperatorTypes::Conjunction,
+            MutableBinaryConnected::build(
+                BinaryOperatorTypes::Disjunction,
+                MutablePredicate::build("P"),
+                MutableBinaryConnected::build(
+                    BinaryOperatorTypes::Conjunction,
+                    MutablePredicate::build("Q"),
+                    MutablePredicate::build("R")
+                )
+            ),
+            MutableBinaryConnected::build(
+                BinaryOperatorTypes::Disjunction,
+                MutableBinaryConnected::build(
+                    BinaryOperatorTypes::Conjunction,
+                    MutablePredicate::build("A"),
+                    MutablePredicate::build("B")
+                ),
+                MutablePredicate::build("C")
+            )
+        ),
+
+        MutableBinaryConnected::build(
+            BinaryOperatorTypes::Conjunction,
+            MutableBinaryConnected::build(
+                BinaryOperatorTypes::Conjunction,
+                MutableBinaryConnected::build(
+                    BinaryOperatorTypes::Disjunction,
+                    MutablePredicate::build("P"),
+                    MutablePredicate::build("Q")
+                ),
+                MutableBinaryConnected::build(
+                    BinaryOperatorTypes::Disjunction,
+                    MutablePredicate::build("P"),
+                    MutablePredicate::build("R")
+                )
+            ),
+            MutableBinaryConnected::build(
+                BinaryOperatorTypes::Conjunction,
+                MutableBinaryConnected::build(
+                    BinaryOperatorTypes::Disjunction,
+                    MutablePredicate::build("C"),
+                    MutablePredicate::build("A")
+                ),
+                MutableBinaryConnected::build(
+                    BinaryOperatorTypes::Disjunction,
+                    MutablePredicate::build("C"),
+                    MutablePredicate::build("B")
+                )
+            )
+        )
+    );
+    // clang-format on
+}
+
+/**
+ * @brief Tests functionality of the DisjunctionDistributionVisitor for distribution over both operands, where a
+ *  reduction is only applicable to one.
+ * @details
+ *  <ul>
+ *      <li>Input: @f$ A \land \left( P \lor \left( Q \land R \right) \right) @f$</li>
+ *      <li>Expected output: @f$ A \land \left( \left( P \lor Q \right) \land \left( P \lor R \right) \right) @f$</li>
+ *  </ul>
+ * @memberof CNFNormalisationTest
+ */
+TEST_F(CNFNormalisationTest, DisjunctionDistribution_NestedNoOp)
+{
+    // clang-format off
+    cnf_test<DisjunctionDistributionVisitor>(
+        MutableBinaryConnected::build(
+            BinaryOperatorTypes::Conjunction,
+            MutablePredicate::build("A"),
+            MutableBinaryConnected::build(
+            BinaryOperatorTypes::Disjunction,
+            MutablePredicate::build("P"),
+                MutableBinaryConnected::build(
+                    BinaryOperatorTypes::Conjunction,
+                    MutablePredicate::build("Q"),
+                    MutablePredicate::build("R")
+                )
+            )
+        ),
+
+        MutableBinaryConnected::build(
+            BinaryOperatorTypes::Conjunction,
+            MutablePredicate::build("A"),
+            MutableBinaryConnected::build(
+                BinaryOperatorTypes::Conjunction,
+                MutableBinaryConnected::build(
+                    BinaryOperatorTypes::Disjunction,
+                    MutablePredicate::build("P"),
+                    MutablePredicate::build("Q")
+                ),
+                MutableBinaryConnected::build(
+                    BinaryOperatorTypes::Disjunction,
+                    MutablePredicate::build("P"),
+                    MutablePredicate::build("R")
+                )
+            )
+        )
+    );
+    // clang-format on
+}
+
+} // namespace optifol

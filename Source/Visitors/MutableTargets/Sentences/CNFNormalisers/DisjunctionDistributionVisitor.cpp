@@ -13,13 +13,13 @@
 
 #include <cassert>
 
-#include "DisjunctionDistributionVisitor.hpp"
 #include "../../../../IR/MutableVariants/Sentences/MutableBinaryConnected.hpp"
+#include "DisjunctionDistributionVisitor.hpp"
 
 namespace optifol
 {
 
-const char * DisjunctionDistributionVisitor::visitor_name = "DisjunctionDistribution";
+const char *DisjunctionDistributionVisitor::visitor_name = "DisjunctionDistribution";
 
 std::string_view DisjunctionDistributionVisitor::get_visitor_name() const
 {
@@ -46,6 +46,8 @@ void DisjunctionDistributionVisitor::visit(MutableBinaryConnected &node)
             break;
 
         case TrackingMode::NotTracking:
+            // If there's nothing for us to do, pass both operands through the visitor without further action.
+            MutatingSentenceVisitorBase::visit(node);
             break;
         }
     else
@@ -96,8 +98,8 @@ bool DisjunctionDistributionVisitor::attempt_reduction(MutableBinaryConnected &n
          *  - RHS/RHS: The RHS operand of the second disjunct.
          */
 
-        auto destination_lhs_lhs = tracking_mode == TrackingMode::LeftMajor ?
-            node.take_rhs_operand() : node.take_lhs_operand();
+        auto destination_lhs_lhs =
+                tracking_mode == TrackingMode::LeftMajor ? node.take_rhs_operand() : node.take_lhs_operand();
         auto destination_lhs_rhs = std::move(tracked_operands.top().first);
 
         auto destination_rhs_lhs = destination_lhs_lhs->clone();
@@ -105,21 +107,11 @@ bool DisjunctionDistributionVisitor::attempt_reduction(MutableBinaryConnected &n
 
         node.set_operator_type(BinaryOperatorTypes::Conjunction);
 
-        node.put_lhs_operand(
-            std::make_unique<MutableBinaryConnected>(
-                BinaryOperatorTypes::Disjunction,
-                std::move(destination_lhs_lhs),
-                std::move(destination_lhs_rhs)
-            )
-        );
+        node.put_lhs_operand(std::make_unique<MutableBinaryConnected>(
+                BinaryOperatorTypes::Disjunction, std::move(destination_lhs_lhs), std::move(destination_lhs_rhs)));
 
-        node.put_rhs_operand(
-            std::make_unique<MutableBinaryConnected>(
-                BinaryOperatorTypes::Disjunction,
-                std::move(destination_rhs_lhs),
-                std::move(destination_rhs_rhs)
-            )
-        );
+        node.put_rhs_operand(std::make_unique<MutableBinaryConnected>(
+                BinaryOperatorTypes::Disjunction, std::move(destination_rhs_lhs), std::move(destination_rhs_rhs)));
 
         tracked_operands.pop();
         MutatingSentenceVisitorBase::visit(node);
@@ -136,4 +128,4 @@ bool DisjunctionDistributionVisitor::attempt_reduction(MutableBinaryConnected &n
     return false;
 }
 
-}
+} // namespace optifol

@@ -57,6 +57,10 @@ public:
      */
     [[nodiscard]] bool operator==(const ISentence &other) const
     {
+        /*
+         * TODO: This is a quick fix. We shouldn't be relying solely on hashes to determine equality. We need an
+         *  equality testing visitor.
+         */
         return hash() == other.hash();
     }
 
