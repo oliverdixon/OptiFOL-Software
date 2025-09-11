@@ -60,6 +60,9 @@ public:
 
     [[nodiscard]] bool is_self_nested(const IProcessedTerm &search_term) const noexcept override;
 
+    [[nodiscard]] std::variant<std::unique_ptr<IProcessedTerm>, const IProcessedTerm *> accept(
+            const UnificationApplicationVisitor &unification_application_visitor) const override;
+
 private:
     const std::string name;
     const std::vector<const IProcessedTerm *> arguments;

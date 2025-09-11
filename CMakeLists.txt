@@ -283,6 +283,12 @@ add_library(OptifolCommon OBJECT
         Source/GUI/TestingArea/TestingFailedView.hpp
         Source/UserTesting/Execution/PartialTestResult.cpp
         Source/UserTesting/Execution/PartialTestResult.hpp
+        Source/Inference/KnowledgeBase.cpp
+        Source/Inference/KnowledgeBase.hpp
+        Source/Inference/Resolution.cpp
+        Source/Inference/Resolution.hpp
+        Source/Visitors/RegularTargets/Unification/UnificationApplicationVisitor.cpp
+        Source/Visitors/RegularTargets/Unification/UnificationApplicationVisitor.hpp
 )
 
 target_include_directories(OptifolCommon PRIVATE
@@ -398,10 +404,6 @@ set_source_files_properties(
 add_executable(OptifolGUI
         ${RESOURCE_OUT}
         Source/GUI/GUIDriver.cpp
-        Source/Inference/KnowledgeBase.cpp
-        Source/Inference/KnowledgeBase.hpp
-        Source/Inference/Resolution.cpp
-        Source/Inference/Resolution.hpp
 )
 
 set(COMMON_COMPILER_OPTIONS

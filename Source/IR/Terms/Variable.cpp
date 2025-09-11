@@ -13,6 +13,7 @@
 
 #include "Variable.hpp"
 
+#include "../../Visitors/RegularTargets/Unification/UnificationApplicationVisitor.hpp"
 #include "../../Visitors/RegularTargets/Unification/UnificationVisitor.hpp"
 
 namespace optifol
@@ -42,6 +43,11 @@ std::string_view Variable::get_disambiguated_name() const
     return name;
 }
 
+bool Variable::operator==(const Variable &other) const
+{
+    return disambiguated_name == other.disambiguated_name;
+}
+
 bool Variable::accept(UnificationVisitor &unification_visitor, const IProcessedTerm &term) const
 {
     return term.accept(unification_visitor, *this);
@@ -65,6 +71,12 @@ bool Variable::accept(UnificationVisitor &unification_visitor, const Variable &v
 bool Variable::is_self_nested(const IProcessedTerm &search_term) const noexcept
 {
     return search_term == *this;
+}
+
+UnificationApplicationVisitor::VisitorReturn Variable::accept(
+        const UnificationApplicationVisitor &unification_application_visitor) const
+{
+    return unification_application_visitor.visit(*this);
 }
 
 } // namespace optifol

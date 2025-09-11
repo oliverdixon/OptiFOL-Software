@@ -20,6 +20,7 @@
 #include "../../../IR/Terms/Function.hpp"
 #include "../../../IR/Terms/ITerm.hpp"
 #include "../../../IR/Terms/Variable.hpp"
+#include "UnificationApplicationVisitor.hpp"
 
 namespace optifol
 {
@@ -64,8 +65,8 @@ bool UnificationVisitor::visit(const Variable &variable_lhs, const Variable &var
         return true;
 
     /*
-     * If the given LHS variable already has a binding, ensure that its bound mapping can be unified with the other
-     * variable.
+     * If the given LHS variable already has a binding, ensure that its bound mapping can be unified with the candidate
+     * RHS variable.
      */
     const auto &lhs_binding_it = substitutions.find(variable_lhs);
     if (lhs_binding_it != substitutions.cend())
@@ -73,14 +74,12 @@ bool UnificationVisitor::visit(const Variable &variable_lhs, const Variable &var
 
     /*
      * Repeat the above check for RHS; due to static binding, we know it's a variable and not a generic term. Thus
-     * it could be a key in the substitutions map.
+     * it could be a key in the substitutions map. Ensure that the RHS binding, if it exists, can be bound with the
+     * candidate LHS variable.
      */
     const auto &rhs_binding_it = substitutions.find(variable_rhs);
     if (rhs_binding_it != substitutions.cend())
         return rhs_binding_it->second->accept(*this, variable_lhs);
-
-    if (variable_lhs.is_self_nested(variable_rhs))
-        return false;
 
     // If all checks pass, we can do a unification between the variables. Register the replacement and indicate success.
     register_substitution(variable_lhs, variable_rhs);
@@ -132,7 +131,8 @@ bool UnificationVisitor::variable_generic(const Variable &variable_lhs, const IP
     if (lhs_binding_it != substitutions.cend())
         return lhs_binding_it->second->accept(*this, generic_term_rhs);
 
-    if (generic_term_rhs.is_self_nested(variable_lhs))
+    // Perform an 'occurs check' only when considering binding a variable to a generic, non-variable term.
+    if (occurs_check(variable_lhs, generic_term_rhs))
         return false;
 
     // If all checks pass, we can do a unification between the variables. Register the replacement and indicate success.
@@ -142,14 +142,42 @@ bool UnificationVisitor::variable_generic(const Variable &variable_lhs, const IP
 
 void UnificationVisitor::register_substitution(const Variable &bound_key, const IProcessedTerm &bound_value)
 {
-    const auto variable_it = symbol_repository->get_symbol_handle(bound_key);
-    const auto value_it = symbol_repository->get_symbol_handle(bound_value);
+    const auto variable_repo_ptr = symbol_repository->get_symbol_handle(bound_key);
+    const auto bound_repo_ptr = symbol_repository->get_symbol_handle(bound_value);
 
-    if (variable_it == nullptr || value_it == nullptr)
+    if (variable_repo_ptr == nullptr || bound_repo_ptr == nullptr)
         throw SemanticException("Attempted to register substitution for " + bound_key.to_string() + " but the "
             "Repository is incomplete.");
 
-    substitutions.emplace(variable_it, value_it);
+    substitutions.emplace(variable_repo_ptr, bound_repo_ptr);
+}
+
+bool UnificationVisitor::occurs_check(const Variable &variable_lhs, const IProcessedTerm &generic_term_rhs) const
+{
+    const UnificationApplicationVisitor applicator(substitutions, occurs_dummy_symbol_repo);
+    auto application_variant = generic_term_rhs.accept(applicator);
+
+    if (std::holds_alternative<std::unique_ptr<IProcessedTerm>>(application_variant)) {
+        /*
+         * Presence of a unique_ptr indicates that a new term was created solely to express the result of substitution.
+         * Such terms are not added to the central symbol repository by the application visitor, so we have ownership
+         * and destruct at the end of the scope once determining occurrence.
+         */
+        return std::get<std::unique_ptr<IProcessedTerm>>(application_variant)->is_self_nested(variable_lhs);
+    }
+
+    if (std::holds_alternative<const IProcessedTerm *>(application_variant)) {
+        /*
+         * Presence of a raw observing pointer indicates that an existing term was pulled from the central symbol
+         * repository, as no substitutions were applicable, or they were sufficiently trivial to express with the given
+         * immutable node. We don't have ownership of anything.
+         */
+        const auto temp_sub = std::get<const IProcessedTerm *>(application_variant);
+        return temp_sub == nullptr ? generic_term_rhs.is_self_nested(variable_lhs) :
+            temp_sub->is_self_nested(variable_lhs);
+    }
+
+    return false;
 }
 
 } // namespace optifol

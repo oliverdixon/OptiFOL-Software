@@ -14,6 +14,7 @@
 #include "Function.hpp"
 
 #include "../../CompositeSerialisationHelpers.hpp"
+#include "../../Visitors/RegularTargets/Unification/UnificationApplicationVisitor.hpp"
 #include "../../Visitors/RegularTargets/Unification/UnificationVisitor.hpp"
 
 namespace optifol
@@ -58,6 +59,12 @@ bool Function::is_self_nested(const IProcessedTerm &search_term) const noexcept
             return true;
 
     return false;
+}
+
+UnificationApplicationVisitor::VisitorReturn Function::accept(
+        const UnificationApplicationVisitor &unification_application_visitor) const
+{
+    return unification_application_visitor.visit(*this);
 }
 
 std::string Function::to_string() const

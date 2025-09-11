@@ -15,10 +15,9 @@
 #define UNIFICATIONVISITOR_H
 
 #include <unordered_map>
-#include <unordered_set>
 
 #include "../../../DereferencingEqualityFunctor.hpp"
-#include "../../../IR/Terms/IProcessedTerm.hpp"
+#include "../../../IR/SymbolRepository.hpp"
 #include "../../../IR/Terms/Variable.hpp"
 
 namespace optifol
@@ -26,7 +25,6 @@ namespace optifol
 
 class Function;
 class ITerm;
-class Variable;
 class Literal;
 class Constant;
 
@@ -39,12 +37,12 @@ class SymbolRepository;
  *  <p>
  *      For details of the Unification Problem and particulars of the canonical software implementation, see
  *      <i>Artificial Intelligence, A Modern Approach</i> by Russell and Norvig. In brief, the algorithm considers two
- *      sentences \f$p\f$ and \f$q\f$ and returns a variable substitution map \f$\theta\f$, or <i>unifier</i> if one
+ *      sentences @f$p@f$ and @f$q@f$ and returns a variable substitution map @f$\theta@f$, or <i>unifier</i> if one
  *      exists:
- *      \f[
+ *      @f[
  *          \text{Unify}(p, q) \mathrel{\vcenter{:}}= \theta \text{ such that }
  *          \text{Sub}(\theta, p) = \text{Sub}(\theta, q).
- *      \f]
+ *      @f]
  *      For brevity, the definition of our sameness metric is not elaborated here.
  *  </p>
  *  <p>
@@ -70,10 +68,13 @@ class SymbolRepository;
  */
 class UnificationVisitor
 {
-    std::unordered_map<const IProcessedTerm *, const IProcessedTerm *, std::hash<IProcessedTerm>,
-        DereferencingEqualityFunctor<const IProcessedTerm *, const IProcessedTerm>> substitutions;
+    std::unordered_map<const Variable *, const IProcessedTerm *, std::hash<Variable>,
+        DereferencingEqualityFunctor<const Variable *, const Variable>> substitutions;
 
 public:
+    using Substitution = std::optional<std::pair<const IProcessedTerm *, const IProcessedTerm *>>;
+    using SubstitutionMap = decltype(substitutions);
+
     explicit UnificationVisitor(std::shared_ptr<SymbolRepository> symbol_repository);
 
     [[nodiscard]] bool visit(const Literal &predicate_lhs, const Literal &predicate_rhs);
@@ -94,7 +95,8 @@ private:
     /**
      * @brief Attempt to unify a variable with a non-variable/"generic" term.
      * @details
-     *      To unify a variable with a generic term, they must be one of the following. Providing that unification is successful in the non-trivial sense, a substitution is added to the map.
+     *      To unify a variable with a generic term, they must be one of the following. Providing that unification is
+     *      successful in the non-trivial sense, a substitution is added to the map.
      *      <ul>
      *          <li>Hash-identical: if they have the same hash, they are assumed to refer the same object. Unification
      *              is valid in the trivial sense, and an explicit substitution does not need to be recorded.</li>
@@ -104,12 +106,51 @@ private:
      * @param variable_lhs The LHS variable
      * @param generic_term_rhs The RHS generic term
      * @return Can the variable and term be unified?
-     * @todo Add occurs check to avoid cycles in the substitution map.
      */
     [[nodiscard]] bool variable_generic(const Variable &variable_lhs, const IProcessedTerm &generic_term_rhs);
 
+    /**
+     * @brief Registers a new substitution @f$ \alpha \mapsto \beta @f$ for a Variable @f$ \alpha @f$ and generic
+     *  IProcessedTerm @f$ \beta @f$ in terms of their existing pointers in the @ref symbol_repository.
+     * @param bound_key The @f$ \alpha @f$ Variable key to bind.
+     * @param bound_value The @f$ \beta @f$ IProcessedTerm binding.
+     * @throws SemanticException if either @f$ \alpha @f$ or @f$ \beta @f$ do not exist in the @ref symbol_repository.
+     */
     void register_substitution(const Variable &bound_key, const IProcessedTerm &bound_value);
 
+    /**
+     * @brief Determines whether the LHS Variable occurs in the RHS IProcessedTerm, or any applicable substitutions
+     *  thereof.
+     * @details
+     *  <p>
+     *      A failure of the 'occurs check' procedure informs a unifier whether the introduction of a Variable
+     *      substitution will cause a cycle with itself, or with an existing substitution in the unifier @f$ \theta @f$.
+     *  </p>
+     *  <p>
+     *      If the presently generated unifier @f$ \theta = \left\{ \theta_1, \ldots, \theta_i \right\} @f$ is already
+     *      composed of @f$ i @f$ substitutions, and the occurs checker is considering the addition of a new substitution
+     *      @f$ \theta_{i+1} = \left[ \alpha \mapsto \beta \right] @f$, <code>true</code> is returned if and only if
+     *      @f$ \alpha @f$ appears in the expansion of @f$ \beta @f$ or any of the following:
+     *      @f[
+     *          \text{Sub}\left( \theta_1, \beta \right), \ldots, \text{Sub}\left( \theta_i, \beta \right).
+     *      @f]
+     *  </p>
+     * @param variable_lhs The Variable for which to search in the substituted enumeration of the RHS IProcessedTerm.
+     * @param generic_term_rhs The generic IProcessedTerm to explore under substitutions, searching for the Variable.
+     * @return Does the Variable appear in the IProcessedTerm, or any isomorphisms (under substitution) using the
+     *  presently generated substitutions?
+     */
+    [[nodiscard]] bool occurs_check(const Variable &variable_lhs, const IProcessedTerm &generic_term_rhs) const;
+
+    /**
+     * @brief A dummy SymbolRepository for tracking symbols introduced by the UnificationApplicationVisitor during
+     *  @ref occurs_check temporary substitution.
+     */
+    const std::shared_ptr<SymbolRepository> occurs_dummy_symbol_repo = std::make_shared<SymbolRepository>();
+
+    /**
+     * @brief The SymbolRepository for the environment of the unified pair, provided by the consumer.
+     */
     const std::shared_ptr<SymbolRepository> symbol_repository;
 };
 

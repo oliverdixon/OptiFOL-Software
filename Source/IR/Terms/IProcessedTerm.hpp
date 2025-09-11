@@ -19,6 +19,7 @@
 namespace optifol
 {
 
+class UnificationApplicationVisitor;
 class RepositoryBuildingVisitor;
 
 class Constant;
@@ -74,7 +75,22 @@ public:
         return false;
     }
 
+    /**
+     * @brief Determines whether the given Variable appears in the expansion of the term.
+     * @param search_term The Variable for which to search in the term.
+     * @return Does the given Variable appear in the IProcessedTerm or any trivial expansion thereof?
+     */
     [[nodiscard]] virtual bool is_self_nested(const IProcessedTerm &search_term) const noexcept = 0;
+
+    /**
+     * @brief Accept a visit from the UnificationApplicationVisitor to construct new IProcessedTerm objects by
+     *  substituting Variable instances into the term.
+     * @param unification_application_visitor The non-mutating visitor to accept.
+     * @return Any applicable productions of the UnificationApplicationVisitor.
+     * @see UnificationApplicationVisitor for the visitor context.
+     */
+    [[nodiscard]] virtual std::variant<std::unique_ptr<IProcessedTerm>, const IProcessedTerm *> accept(
+            const UnificationApplicationVisitor &unification_application_visitor) const = 0;
 };
 
 } // namespace optifol

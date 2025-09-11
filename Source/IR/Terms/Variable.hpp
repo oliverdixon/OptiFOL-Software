@@ -48,12 +48,21 @@ public:
 
     [[nodiscard]] std::string_view get_disambiguated_name() const override;
 
+    [[nodiscard]] bool operator==(const Variable & other) const;
+
     [[nodiscard]] bool accept(UnificationVisitor &unification_visitor, const IProcessedTerm &term) const override;
     [[nodiscard]] bool accept(UnificationVisitor &unification_visitor, const Constant &constant) const override;
     [[nodiscard]] bool accept(UnificationVisitor &unification_visitor, const Function &function) const override;
     [[nodiscard]] bool accept(UnificationVisitor &unification_visitor, const Variable &variable) const override;
 
+    /**
+     * @copydoc IProcessedTerm::is_self_nested
+     * @return Always false, as Variable objects are not nestable.
+     */
     [[nodiscard]] bool is_self_nested(const IProcessedTerm &search_term) const noexcept override;
+
+    std::variant<std::unique_ptr<IProcessedTerm>, const IProcessedTerm *> accept(
+            const UnificationApplicationVisitor &unification_application_visitor) const override;
 
 private:
     const std::string name;

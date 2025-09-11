@@ -41,7 +41,14 @@ public:
     [[nodiscard]] bool accept(UnificationVisitor &unification_visitor, const IProcessedTerm &term) const override;
     [[nodiscard]] bool accept(UnificationVisitor &unification_visitor, const Variable &variable) const override;
 
+    /**
+     * @copydoc IProcessedTerm::is_self_nested
+     * @return Always false, as Constant objects are not nestable.
+     */
     [[nodiscard]] bool is_self_nested(const IProcessedTerm &search_term) const noexcept override;
+
+    [[nodiscard]] std::variant<std::unique_ptr<IProcessedTerm>, const IProcessedTerm *> accept(
+            const UnificationApplicationVisitor &unification_application_visitor) const override;
 
 private:
     const std::string name;

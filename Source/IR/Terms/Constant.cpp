@@ -14,6 +14,7 @@
 #include "Constant.hpp"
 
 #include "../../Visitors/MutableTargets/RepositoryBuildingVisitor.hpp"
+#include "../../Visitors/RegularTargets/Unification/UnificationApplicationVisitor.hpp"
 #include "../../Visitors/RegularTargets/Unification/UnificationVisitor.hpp"
 
 namespace optifol
@@ -47,6 +48,12 @@ bool Constant::accept(UnificationVisitor &unification_visitor, const Variable &v
 bool Constant::is_self_nested(const IProcessedTerm &search_term) const noexcept
 {
     return false;
+}
+
+UnificationApplicationVisitor::VisitorReturn Constant::accept(
+        const UnificationApplicationVisitor &unification_application_visitor) const
+{
+    return unification_application_visitor.visit(*this);
 }
 
 } // namespace optifol

@@ -22,6 +22,7 @@
 #include "../IHashable.hpp"
 #include "Sentences/ISentence.hpp"
 #include "Terms/IProcessedTerm.hpp"
+#include "Terms/Variable.hpp"
 
 namespace optifol
 {
@@ -60,8 +61,7 @@ public:
         // Otherwise, add the new element by transferring ownership to the set.
         const auto [inserted_it, success] = terms.insert(std::move(term));
         if (!success)
-            throw std::runtime_error(
-                    "Cannot add term " + std::string(term->get_disambiguated_name()) + ": insertion failed.");
+            throw std::runtime_error("Cannot add term: insertion failed.");
 
         /*
          * This is a bit dodgy, as the compiler isn't enforcing semantics correctness of the pointer cast, as would be
@@ -72,6 +72,8 @@ public:
          */
         return static_cast<const TermType *>(inserted_it->get());
     }
+
+    const Variable *add_symbol(std::unique_ptr<Variable>&& variable);
 
     /**
      * @brief Add a sentence to the repository
@@ -118,6 +120,8 @@ public:
      */
     const ISentence *get_symbol_handle(const ISentence &sentence) const;
 
+    const Variable *get_symbol_handle(const Variable &variable) const;
+
     /**
      * @brief Determine equality between two SymbolRepository objects according to their stored sentences and terms.
      * @param other The SymbolRepository with which to compare elements.
@@ -127,9 +131,12 @@ public:
 
 private:
     std::unordered_set<std::unique_ptr<ISentence>, std::hash<ISentence>, HashableEqualityFunctor<ISentence>> sentences;
+
     std::unordered_set<std::unique_ptr<IProcessedTerm>, std::hash<IProcessedTerm>,
-            HashableEqualityFunctor<IProcessedTerm>>
-            terms;
+        HashableEqualityFunctor<IProcessedTerm>> terms;
+
+    std::unordered_set<std::unique_ptr<Variable>, std::hash<Variable>,
+        HashableEqualityFunctor<Variable>> variables;
 };
 
 } // namespace optifol
