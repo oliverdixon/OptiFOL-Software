@@ -44,4 +44,9 @@ bool Constant::accept(UnificationVisitor &unification_visitor, const Variable &v
     return unification_visitor.visit(variable, *this);
 }
 
+bool Constant::is_self_nested(const IProcessedTerm &search_term) const noexcept
+{
+    return false;
+}
+
 } // namespace optifol

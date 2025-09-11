@@ -41,6 +41,8 @@ public:
     [[nodiscard]] bool accept(UnificationVisitor &unification_visitor, const IProcessedTerm &term) const override;
     [[nodiscard]] bool accept(UnificationVisitor &unification_visitor, const Variable &variable) const override;
 
+    [[nodiscard]] bool is_self_nested(const IProcessedTerm &search_term) const noexcept override;
+
 private:
     const std::string name;
 };

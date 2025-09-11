@@ -36,7 +36,8 @@ protected:
     /**
      * @brief Despatches the RepositoryBuildingVisitor with a fresh SymbolRepository over the given IMutableSentence and
      *  compares the actual results to the expected.
-     * @param test The initial node to test, not wrapped inside of a MutableSentenceRoot.
+     * @param test The initial node to test, not wrapped inside of a MutableSentenceRoot. The tree must be normalised to
+     *  CNF.
      * @param expected The expected set of ordered clauses, each of which contains the expected set of ordered literals.
      */
     static void repo_build_test(
@@ -67,7 +68,7 @@ protected:
                 EXPECT_EQ(**actual_literal_begin, *expected_literal);
 
                 // Verify insertion into repository.
-                EXPECT_TRUE(repository->get_symbol_handle(*expected_literal).has_value());
+                EXPECT_NE(repository->get_symbol_handle(*expected_literal), nullptr);
 
                 ++actual_literal_begin;
             }

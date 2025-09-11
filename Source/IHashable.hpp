@@ -169,6 +169,11 @@ struct std::hash<Type> // NOLINT(*-dcl58-cpp) Specialising std::hash for non-sta
     {
         return unique_hashable->hash();
     }
+
+    std::size_t operator()(const Type* ptr_hashable) const
+    {
+        return ptr_hashable->hash();
+    }
 };
 
 #if __cpp_lib_chrono < 202306L

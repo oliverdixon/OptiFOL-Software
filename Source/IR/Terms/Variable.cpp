@@ -62,4 +62,9 @@ bool Variable::accept(UnificationVisitor &unification_visitor, const Variable &v
     return unification_visitor.visit(*this, variable);
 }
 
+bool Variable::is_self_nested(const IProcessedTerm &search_term) const noexcept
+{
+    return search_term == *this;
+}
+
 } // namespace optifol

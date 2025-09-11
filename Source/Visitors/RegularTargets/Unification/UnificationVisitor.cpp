@@ -13,6 +13,7 @@
 
 #include "UnificationVisitor.hpp"
 
+#include "../../../Exceptions/SemanticException.hpp"
 #include "../../../IR/Sentences/Literal.hpp"
 #include "../../../IR/SymbolRepository.hpp"
 #include "../../../IR/Terms/Constant.hpp"
@@ -22,6 +23,11 @@
 
 namespace optifol
 {
+
+UnificationVisitor::UnificationVisitor(std::shared_ptr<SymbolRepository> symbol_repository) :
+    symbol_repository(std::move(symbol_repository))
+{
+}
 
 bool UnificationVisitor::visit(const Literal &predicate_lhs, const Literal &predicate_rhs)
 {
@@ -73,7 +79,8 @@ bool UnificationVisitor::visit(const Variable &variable_lhs, const Variable &var
     if (rhs_binding_it != substitutions.cend())
         return rhs_binding_it->second->accept(*this, variable_lhs);
 
-    // TODO: occurs check
+    if (variable_lhs.is_self_nested(variable_rhs))
+        return false;
 
     // If all checks pass, we can do a unification between the variables. Register the replacement and indicate success.
     register_substitution(variable_lhs, variable_rhs);
@@ -125,7 +132,8 @@ bool UnificationVisitor::variable_generic(const Variable &variable_lhs, const IP
     if (lhs_binding_it != substitutions.cend())
         return lhs_binding_it->second->accept(*this, generic_term_rhs);
 
-    // TODO: occurs check
+    if (generic_term_rhs.is_self_nested(variable_lhs))
+        return false;
 
     // If all checks pass, we can do a unification between the variables. Register the replacement and indicate success.
     register_substitution(variable_lhs, generic_term_rhs);
@@ -134,12 +142,14 @@ bool UnificationVisitor::variable_generic(const Variable &variable_lhs, const IP
 
 void UnificationVisitor::register_substitution(const Variable &bound_key, const IProcessedTerm &bound_value)
 {
-    // TODO URGENT TO: register binding!
-}
+    const auto variable_it = symbol_repository->get_symbol_handle(bound_key);
+    const auto value_it = symbol_repository->get_symbol_handle(bound_value);
 
-bool UnificationVisitor::occurs_check(const Variable &variable_lhs, const Variable &variable_rhs)
-{
-    return variable_lhs == variable_rhs;
+    if (variable_it == nullptr || value_it == nullptr)
+        throw SemanticException("Attempted to register substitution for " + bound_key.to_string() + " but the "
+            "Repository is incomplete.");
+
+    substitutions.emplace(variable_it, value_it);
 }
 
 } // namespace optifol

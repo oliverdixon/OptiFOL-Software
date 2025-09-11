@@ -51,6 +51,15 @@ bool Function::accept(UnificationVisitor &unification_visitor, const Variable &v
     return unification_visitor.visit(variable, *this);
 }
 
+bool Function::is_self_nested(const IProcessedTerm &search_term) const noexcept
+{
+    for (const auto argument : arguments)
+        if (argument->is_self_nested(search_term))
+            return true;
+
+    return false;
+}
+
 std::string Function::to_string() const
 {
     return CompositeSerialisationHelpers::string_serialise(name, arguments.cbegin(), arguments.cend());

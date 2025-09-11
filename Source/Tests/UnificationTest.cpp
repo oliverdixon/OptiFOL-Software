@@ -14,6 +14,7 @@
 #include <gtest/gtest.h>
 
 #include "../IR/Sentences/Literal.hpp"
+#include "../IR/SymbolRepository.hpp"
 #include "../IR/Terms/Function.hpp"
 #include "../IR/Terms/Variable.hpp"
 #include "../Visitors/RegularTargets/Unification/UnificationVisitor.hpp"
@@ -29,33 +30,158 @@ protected:
 
     void SetUp() override
     {
-        unification_visitor.reset(new UnificationVisitor());
+        symbol_repository = std::make_shared<SymbolRepository>();
+        unification_visitor = std::make_unique<UnificationVisitor>(symbol_repository);
     }
 
-    template<typename Iterator>
-    static bool are_substitution_sets_equal(const Iterator given_begin, const Iterator given_end,
-        const std::unordered_map<const Variable *, const IProcessedTerm *>& expected_map)
+    template<typename TermType, class... CtorArgs>
+    const TermType * register_symbol(CtorArgs&&... ctor_args) const
     {
-        const std::unordered_map<const Variable *, const IProcessedTerm *> given_map(given_begin, given_end);
+        return symbol_repository->add_symbol(std::make_unique<TermType>(std::forward<CtorArgs>(ctor_args)...));
+    }
+
+    bool are_substitution_sets_equal(const std::unordered_map<const IProcessedTerm *,
+        const IProcessedTerm *>& expected_map) const
+    {
+        const std::unordered_map given_map(
+            unification_visitor->get_substitutions_cbegin(),
+            unification_visitor->get_substitutions_cend()
+        );
+
         return given_map == expected_map;
     }
 
+    bool is_substitution_set_empty() const noexcept
+    {
+        return unification_visitor->get_substitutions_cbegin() == unification_visitor->get_substitutions_cend();
+    }
+
+private:
+    std::shared_ptr<SymbolRepository> symbol_repository;
 };
 
-TEST_F(UnificationTest, Predicate)
+/**
+ * @brief Tests basic functionality of the UnificationVisitor for a single pair of unifiable literals with one
+ *  applicable Function / Variable substitution.
+ * @details
+ *  <ul>
+ *      <li>LHS Input: @f$ P \left( C\left(\right), x \right) @f$</li>
+ *      <li>RHS Input: @f$ P \left( C\left(\right), D\left(\right) \right) @f$</li>
+ *      <li>Expected substitutions: @f$ \left\{ D\left(\right) \mapsto x \right\} @f$</li>
+ *  </ul>
+ * @memberof UnificationTest
+ */
+TEST_F(UnificationTest, Positive_SingleBinding_FuncVar)
 {
-    const Function c("C");
-    const Function d("D");
-    const Variable x("x");
+    const auto c = register_symbol<Function>("C");
+    const auto d = register_symbol<Function>("D");
+    const auto x = register_symbol<Variable>("x");
 
-    const Literal p1("P", { &c, &x });
-    const Literal p2("P", { &c, &d });
+    const auto p1 = register_symbol<Literal>("P", std::vector<const IProcessedTerm *>{ c, x });
+    const auto p2 = register_symbol<Literal>("P", std::vector<const IProcessedTerm *>{ c, d });
 
-    EXPECT_TRUE(p1.accept(*unification_visitor, p2));
+    EXPECT_TRUE(p1->accept(*unification_visitor, *p2));
 
-    const std::unordered_map<const Variable *, const IProcessedTerm *> expected_subs{{&x, &d}};
-    EXPECT_TRUE(are_substitution_sets_equal(unification_visitor->get_substitutions_cbegin(),
-        unification_visitor->get_substitutions_cend(), expected_subs));
+    const std::unordered_map<const IProcessedTerm *, const IProcessedTerm *> expected_subs{{x, d}};
+
+    EXPECT_TRUE(are_substitution_sets_equal(expected_subs));
+}
+
+/**
+ * @brief Tests basic functionality of the UnificationVisitor for a single pair of unifiable literals with two
+ *  applicable Function / Variable substitutions.
+ * @details
+ *  <ul>
+ *      <li>LHS Input: @f$ P \left( C\left(\right), x \right) @f$</li>
+ *      <li>RHS Input: @f$ P \left( y, D\left(\right) \right) @f$</li>
+ *      <li>Expected substitutions: @f$ \left\{ D\left(\right) \mapsto x, C\left(\right) \mapsto y \right\} @f$</li>
+ *  </ul>
+ * @memberof UnificationTest
+ */
+TEST_F(UnificationTest, Positive_MultipleBindings_FuncVar)
+{
+    const auto c = register_symbol<Function>("C");
+    const auto d = register_symbol<Function>("D");
+    const auto x = register_symbol<Variable>("x");
+    const auto y = register_symbol<Variable>("y");
+
+    const auto p1 = register_symbol<Literal>("P", std::vector<const IProcessedTerm *>{ c, x });
+    const auto p2 = register_symbol<Literal>("P", std::vector<const IProcessedTerm *>{ y, d });
+
+    EXPECT_TRUE(p1->accept(*unification_visitor, *p2));
+
+    const std::unordered_map<const IProcessedTerm *, const IProcessedTerm *> expected_subs{
+        {x, d},
+        {y, c}
+    };
+
+    EXPECT_TRUE(are_substitution_sets_equal(expected_subs));
+}
+
+/**
+ * @brief Tests basic functionality of the UnificationVisitor for a single pair of unifiable literals with two
+ *  applicable Variable / Variable substitutions.
+ * @details
+ *  <ul>
+ *      <li>LHS Input: @f$ P \left( a, b \right) @f$</li>
+ *      <li>RHS Input: @f$ P \left( c, d \right) @f$</li>
+ *      <li>Expected substitutions: @f$ \left\{ a \mapsto c, b \mapsto d \right\} @f$</li>
+ *  </ul>
+ * @memberof UnificationTest
+ */
+TEST_F(UnificationTest, Positive_MultipleBindings_VarVar)
+{
+    const auto a = register_symbol<Variable>("a");
+    const auto b = register_symbol<Variable>("b");
+    const auto c = register_symbol<Variable>("c");
+    const auto d = register_symbol<Variable>("d");
+
+    const auto p1 = register_symbol<Literal>("P", std::vector<const IProcessedTerm *>{ a, b });
+    const auto p2 = register_symbol<Literal>("P", std::vector<const IProcessedTerm *>{ c, d });
+
+    EXPECT_TRUE(p1->accept(*unification_visitor, *p2));
+
+    const std::unordered_map<const IProcessedTerm *, const IProcessedTerm *> expected_subs{
+            {c, a},
+            {d, b}
+    };
+
+    EXPECT_TRUE(are_substitution_sets_equal(expected_subs));
+}
+
+/**
+ * @brief Tests basic functionality of the UnificationVisitor for a single pair of non-unifiable literals.
+ * @details
+ *  <ul>
+ *      <li>LHS Input: @f$ P \left( C\left(\right), x \right) @f$</li>
+ *      <li>RHS Input: @f$ P \left( x, D\left(\right) \right) @f$</li>
+ *  </ul>
+ * @memberof UnificationTest
+ */
+TEST_F(UnificationTest, Negative_MultipleBindings_VarVar)
+{
+    const auto x = register_symbol<Variable>("x");
+    const auto c = register_symbol<Function>("C");
+    const auto d = register_symbol<Function>("D");
+
+    const auto p1 = register_symbol<Literal>("P", std::vector<const IProcessedTerm *>{ c, x });
+    const auto p2 = register_symbol<Literal>("P", std::vector<const IProcessedTerm *>{ x, d });
+
+    EXPECT_FALSE(p1->accept(*unification_visitor, *p2));
+    // EXPECT_TRUE(is_substitution_set_empty()); TODO URGENT
+}
+
+TEST_F(UnificationTest, Negative_OccursCheck_Trivial)
+{
+    const auto x = register_symbol<Variable>("x");
+    const auto c = register_symbol<Function>("C");
+    const auto f = register_symbol<Function>("F", std::vector<const IProcessedTerm *>{ x });
+
+    const auto p1 = register_symbol<Literal>("P", std::vector<const IProcessedTerm *>{ c, x });
+    const auto p2 = register_symbol<Literal>("P", std::vector<const IProcessedTerm *>{ c, f });
+
+    EXPECT_FALSE(p1->accept(*unification_visitor, *p2));
+    // EXPECT_TRUE(is_substitution_set_empty()); TODO URGENT
 }
 
 }

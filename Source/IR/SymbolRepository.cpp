@@ -16,7 +16,7 @@
 namespace optifol
 {
 
-std::optional<const IProcessedTerm *> SymbolRepository::get_symbol_handle(const IProcessedTerm &term) const
+const IProcessedTerm *SymbolRepository::get_symbol_handle(const IProcessedTerm &term) const
 {
     const auto it = terms.find(term);
     if (it == terms.cend())
@@ -25,9 +25,9 @@ std::optional<const IProcessedTerm *> SymbolRepository::get_symbol_handle(const 
     return it->get();
 }
 
-std::optional<const ISentence *> SymbolRepository::get_symbol_handle(const ISentence &predicate) const
+const ISentence *SymbolRepository::get_symbol_handle(const ISentence &sentence) const
 {
-    const auto it = sentences.find(predicate);
+    const auto it = sentences.find(sentence);
     if (it == sentences.cend())
         return {};
 

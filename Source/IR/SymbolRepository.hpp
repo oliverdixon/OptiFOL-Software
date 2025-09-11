@@ -108,7 +108,7 @@ public:
      * @return A constant handle to the term, if a suitable match exists in the repository. Otherwise, an empty @ref
      *  std::optional.
      */
-    std::optional<const IProcessedTerm *> get_symbol_handle(const IProcessedTerm &term) const;
+    const IProcessedTerm *get_symbol_handle(const IProcessedTerm &term) const;
 
     /**
      * @brief Retrieves a handle to an immutable sentence symbol owned by the repository
@@ -116,7 +116,7 @@ public:
      * @return A constant handle to the sentence, if a suitable match exists in the repository. Otherwise, an empty
      *  @ref std::optional.
      */
-    std::optional<const ISentence *> get_symbol_handle(const ISentence &sentence) const;
+    const ISentence *get_symbol_handle(const ISentence &sentence) const;
 
     /**
      * @brief Determine equality between two SymbolRepository objects according to their stored sentences and terms.

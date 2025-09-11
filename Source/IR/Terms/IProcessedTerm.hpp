@@ -73,6 +73,8 @@ public:
         std::ignore = variable;
         return false;
     }
+
+    [[nodiscard]] virtual bool is_self_nested(const IProcessedTerm &search_term) const noexcept = 0;
 };
 
 } // namespace optifol

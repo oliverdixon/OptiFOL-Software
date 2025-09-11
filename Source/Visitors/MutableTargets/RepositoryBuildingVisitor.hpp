@@ -214,7 +214,7 @@ private:
 
     static const char *visitor_name;
 
-    std::shared_ptr<SymbolRepository> symbol_repository;
+    const std::shared_ptr<SymbolRepository> symbol_repository;
 };
 
 } // namespace optifol

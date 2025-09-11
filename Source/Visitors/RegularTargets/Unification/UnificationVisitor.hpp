@@ -70,10 +70,12 @@ class SymbolRepository;
  */
 class UnificationVisitor
 {
-    std::unordered_map<const Variable *, const IProcessedTerm *, std::hash<Variable>,
-        DereferencingEqualityFunctor<const Variable *, const Variable>> substitutions;
+    std::unordered_map<const IProcessedTerm *, const IProcessedTerm *, std::hash<IProcessedTerm>,
+        DereferencingEqualityFunctor<const IProcessedTerm *, const IProcessedTerm>> substitutions;
 
 public:
+    explicit UnificationVisitor(std::shared_ptr<SymbolRepository> symbol_repository);
+
     [[nodiscard]] bool visit(const Literal &predicate_lhs, const Literal &predicate_rhs);
 
     [[nodiscard]] bool visit(const Variable &variable_lhs, const Constant &constant_rhs);
@@ -108,7 +110,7 @@ private:
 
     void register_substitution(const Variable &bound_key, const IProcessedTerm &bound_value);
 
-    static bool occurs_check(const Variable& variable_lhs, const Variable& variable_rhs);
+    const std::shared_ptr<SymbolRepository> symbol_repository;
 };
 
 }
