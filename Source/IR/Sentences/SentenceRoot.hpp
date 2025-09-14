@@ -14,6 +14,8 @@
 #ifndef SENTENCEROOT_HPP
 #define SENTENCEROOT_HPP
 
+#include <log4cxx/logger.h>
+
 #include "IProcessedSentence.hpp"
 
 namespace optifol
@@ -37,7 +39,7 @@ public:
 
     [[nodiscard]] bool operator==(const IProcessedSentence &other) const noexcept override;
 
-    void commit_clause(const std::vector<const Literal *> &literals);
+    void add_clause(const std::vector<const Literal *> &literals);
 
     [[nodiscard]] std::vector<Clause>::const_iterator begin() const noexcept;
 

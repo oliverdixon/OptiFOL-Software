@@ -285,6 +285,8 @@ add_library(OptifolCommon OBJECT
         Source/Inference/KnowledgeBase.hpp
         Source/Visitors/RegularTargets/Unification/UnificationApplicationVisitor.cpp
         Source/Visitors/RegularTargets/Unification/UnificationApplicationVisitor.hpp
+        Source/Inference/ExpressionFactory.cpp
+        Source/Inference/ExpressionFactory.hpp
 )
 
 target_include_directories(OptifolCommon PRIVATE

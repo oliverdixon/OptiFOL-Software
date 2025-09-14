@@ -27,6 +27,11 @@ MutableSentenceRoot::MutableSentenceRoot(std::unique_ptr<IMutableSentence> &&sen
 
 std::unique_ptr<IMutableSentence> MutableSentenceRoot::clone() const
 {
+    return clone_as_root();
+}
+
+std::unique_ptr<MutableSentenceRoot> MutableSentenceRoot::clone_as_root() const
+{
     return std::make_unique<MutableSentenceRoot>(sentence->clone());
 }
 

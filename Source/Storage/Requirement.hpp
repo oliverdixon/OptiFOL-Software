@@ -52,12 +52,12 @@ public:
      * @param description The initial long-form description of the Requirement
      * @param priority The initial priority of the Requirement
      * @param tests The initial set of TestSpecificationEntry objects to template Test objects.
-     * @param system_repository A null pointer to explicitly signify the lacking SymbolRepository
+     * @param symbol_repository A null pointer to explicitly signify the lacking SymbolRepository
      * @warning As no system-wide symbol repository has been provided, this Requirement will not supply its symbols to
      *  the wider system. Logical analysis will produce unexpected results.
      */
     explicit Requirement(std::string&& name, std::string&& statement, std::string&& description, guint priority,
-        Glib::RefPtr<Gio::ListStore<TestSpecificationEntry>>&& tests, std::nullptr_t system_repository);
+        Glib::RefPtr<Gio::ListStore<TestSpecificationEntry>>&& tests, std::nullptr_t symbol_repository);
 
     /**
      * @brief Create a new Requirement with the given name and register in the Glib GType system
@@ -66,12 +66,12 @@ public:
      * @param description The initial long-form description of the Requirement
      * @param priority The initial priority of the Requirement
      * @param tests The initial set of TestSpecificationEntry objects to template Test objects.
-     * @param system_repository The system-wide symbol repository with lifetimes guaranteed to cover that of the
+     * @param symbol_repository The system-wide symbol repository with lifetimes guaranteed to cover that of the
      *  Requirement
      */
     explicit Requirement(std::string&& name, std::string&& statement, std::string&& description, guint priority,
         Glib::RefPtr<Gio::ListStore<TestSpecificationEntry>>&& tests,
-        std::shared_ptr<SymbolRepository> system_repository);
+        std::shared_ptr<SymbolRepository> symbol_repository);
 
     /**
      * @brief Create a new Requirement with the given name and register in the Glib GType system
@@ -82,12 +82,12 @@ public:
      * @param tests The initial set of TestSpecificationEntry objects to template Test objects.
      * @param cobject The C cast-item used by Glib::Object
      * @param builder Currently unused builder parameter to provide to the Glib::Object instance
-     * @param system_repository The system-wide symbol repository with lifetimes guaranteed to cover that of the
+     * @param symbol_repository The system-wide symbol repository with lifetimes guaranteed to cover that of the
      *  Requirement
      */
     Requirement(std::string&& name, std::string&& statement, std::string&& description, guint priority,
         Glib::RefPtr<Gio::ListStore<TestSpecificationEntry>>&& tests, BaseObjectType* cobject,
-        const Glib::RefPtr<Gtk::Builder>& builder, std::shared_ptr<SymbolRepository> system_repository);
+        const Glib::RefPtr<Gtk::Builder>& builder, std::shared_ptr<SymbolRepository> symbol_repository);
 
     [[nodiscard]] Glib::RefPtr<Gtk::TreeListModel> get_tests_tree() const noexcept override;
 
@@ -180,14 +180,6 @@ private:
     static const log4cxx::LoggerPtr integration_logger;
 
     /**
-     * @brief Mutate the given sentence by pushing through the CNF normalisation pipeline
-     * @param sentence An owning container, transferred to the member function, to normalise into conjunctive normal
-     *  form
-     * @return The owning container of the normalised sentence, with ownership transferred back to the caller
-     */
-    static std::unique_ptr<IMutableSentence> cnf_normalise(std::unique_ptr<IMutableSentence> &&sentence);
-
-    /**
      * @brief Helper to push the given IMutableSentence node through a plain-text serialisation pipeline
      * @param sentence The sentence to serialise
      * @return The @ref std::string representation of the plain-text serialised sentence
@@ -220,14 +212,6 @@ private:
 
     void handle_test_spec_change(guint position, guint removed_count, guint added_count) const;
 
-    /**
-     * @brief Transform the given mutable IR node tree into an immutable equivalent, populating the symbol repository in
-     *  the process
-     * @param mutable_root An owning container of the root of the mutable IR node tree
-     * @return The owning container of the root of the immutable IR tree
-     */
-    std::unique_ptr<SentenceRoot> populate_symbol_repository(std::unique_ptr<IMutableSentence> &&mutable_root);
-
     Glib::Property<Glib::ustring> statement;
     Glib::Property<Glib::ustring> normalised_statement;
     Glib::Property<Glib::ustring> description;
@@ -238,10 +222,9 @@ private:
     const Glib::RefPtr<Gtk::TreeListModel> tests_tree =
             Gtk::TreeListModel::create(tests, &ITestModelNode::get_given_tests_tree, true);
 
-    std::unique_ptr<IMutableSentence> original_ast;
+    std::unique_ptr<MutableSentenceRoot> original_ast;
     std::unique_ptr<SentenceRoot> prepared_ast;
-
-    std::optional<RepositoryBuildingVisitor> repository_building_visitor;
+    std::shared_ptr<SymbolRepository> symbol_repository;
 
     std::string formatted_input_statement;
     std::string latex_input_statement;

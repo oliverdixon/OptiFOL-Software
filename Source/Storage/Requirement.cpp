@@ -17,16 +17,10 @@
 #include <gtkmm/listitem.h>
 
 #include "../Exceptions/SemanticException.hpp"
+#include "../Inference/ExpressionFactory.hpp"
 #include "../Logging.hpp"
 #include "../Visitors/MutableTargets/Observers/LaTeXSerialisationVisitor.hpp"
 #include "../Visitors/MutableTargets/Observers/TextSerialiserVisitor.hpp"
-#include "../Visitors/MutableTargets/Sentences/CNFNormalisers/DMLVisitor.hpp"
-#include "../Visitors/MutableTargets/Sentences/CNFNormalisers/DisjunctionDistributionVisitor.hpp"
-#include "../Visitors/MutableTargets/Sentences/CNFNormalisers/ImplicationEliminationVisitor.hpp"
-#include "../Visitors/MutableTargets/Sentences/CNFNormalisers/QuantifierExtractingVisitor.hpp"
-#include "../Visitors/MutableTargets/Sentences/CNFNormalisers/SkolemIntroducingVisitor.hpp"
-#include "../Visitors/MutableTargets/Sentences/CNFNormalisers/SymbolStandardisingVisitor.hpp"
-#include "../Visitors/MutableTargets/Sentences/CNFNormalisers/UniversalEliminationVisitor.hpp"
 
 namespace optifol
 {
@@ -59,27 +53,27 @@ Requirement::Requirement(std::string &&name, std::string &&statement, std::strin
 
 Requirement::Requirement(std::string &&name, std::string &&statement, std::string &&description, const guint priority,
         Glib::RefPtr<Gio::ListStore<TestSpecificationEntry>>&& tests,
-        std::shared_ptr<SymbolRepository> system_repository) :
+        std::shared_ptr<SymbolRepository> symbol_repository) :
     Glib::ObjectBase("Requirement"),
     statement(*this, "Requirement-statement"),
     normalised_statement(*this, "Requirement-normalised"),
     description(*this, "Requirement-description"),
     priority(*this, "Requirement-priority"),
-    repository_building_visitor(std::move(system_repository))
+    symbol_repository(std::move(symbol_repository))
 {
     setup_properties(std::move(name), std::move(statement), std::move(description), priority, std::move(tests));
 }
 
 Requirement::Requirement(std::string &&name, std::string &&statement, std::string &&description, const guint priority,
         Glib::RefPtr<Gio::ListStore<TestSpecificationEntry>>&& tests, BaseObjectType *cobject,
-        const Glib::RefPtr<Gtk::Builder> &builder, std::shared_ptr<SymbolRepository> system_repository) :
+        const Glib::RefPtr<Gtk::Builder> &builder, std::shared_ptr<SymbolRepository> symbol_repository) :
     Glib::ObjectBase("Requirement"),
     StorageObjectBase(cobject, builder),
     statement(*this, "Requirement-statement"),
     normalised_statement(*this, "Requirement-normalised"),
     description(*this, "Requirement-description"),
     priority(*this, "Requirement-priority"),
-    repository_building_visitor(std::move(system_repository))
+    symbol_repository(std::move(symbol_repository))
 {
     setup_properties(std::move(name), std::move(statement), std::move(description), priority, std::move(tests));
 }
@@ -231,7 +225,7 @@ void Requirement::handle_statement_change()
 
     try {
         // Perform CNF normalisation followed by population of the symbol repository
-        prepared_ast = populate_symbol_repository(cnf_normalise(original_ast->clone()));
+        prepared_ast = ExpressionFactory::build_sentence(original_ast->clone_as_root(), symbol_repository);
     } catch (const SemanticException &) {
         cnf_logger->error("Preparation process was unsuccessful due to invalid logical semantics; "
                           "requirements will be missing.");
@@ -261,68 +255,6 @@ void Requirement::handle_test_spec_change(const guint position, const guint remo
     }
 
     tests->splice(position, removed_count, new_tests);
-}
-
-std::unique_ptr<IMutableSentence> Requirement::cnf_normalise(std::unique_ptr<IMutableSentence> &&sentence)
-{
-    if (cnf_logger->isInfoEnabled()) {
-        cnf_logger->info("Beginning CNF pipeline transformation.");
-        cnf_logger->info("Initial sentence: " + text_serialise(sentence.get()));
-    }
-
-    const std::array<std::unique_ptr<MutatingSentenceVisitorBase>, 7> visitors{
-            std::make_unique<ImplicationEliminationVisitor>(), std::make_unique<DMLVisitor>(),
-            std::make_unique<SymbolStandardisingVisitor>(), std::make_unique<QuantifierExtractingVisitor>(),
-            std::make_unique<SkolemIntroducingVisitor>(), std::make_unique<UniversalEliminationVisitor>(),
-            std::make_unique<DisjunctionDistributionVisitor>()};
-
-    if (cnf_logger->isDebugEnabled())
-        /*
-         * Explicitly check if debugging is enabled on the CNF logger, as running a serialisation visitor down the
-         * entire tree for each step in the normalisation pipeline would be a great inefficiency if the strings were not
-         * used!
-         */
-        for (const auto &visitor: visitors) {
-            try {
-                sentence->accept(*visitor);
-            } catch (const SemanticException &semantic_exception) {
-                Logging::get_logger({cnf_logger->getName(), std::string(visitor->get_visitor_name())})
-                        ->error(semantic_exception.what());
-                throw;
-            }
-
-            Logging::get_logger({cnf_logger->getName(), std::string(visitor->get_visitor_name())})
-                    ->debug(text_serialise(sentence.get()));
-        }
-    else
-        for (const auto &visitor: visitors)
-            try {
-                sentence->accept(*visitor);
-            } catch (const SemanticException &semantic_exception) {
-                Logging::get_logger({cnf_logger->getName(), std::string(visitor->get_visitor_name())})
-                        ->error(semantic_exception.what());
-                throw;
-            }
-
-    if (cnf_logger->isInfoEnabled()) {
-        cnf_logger->info("Completed CNF transformation.");
-        cnf_logger->info("Normalised sentence: " + text_serialise(sentence.get()));
-    }
-
-    return sentence;
-}
-
-std::unique_ptr<SentenceRoot> Requirement::populate_symbol_repository(std::unique_ptr<IMutableSentence> &&mutable_root)
-{
-    if (repository_building_visitor.has_value() == false)
-        throw std::logic_error("Requirement has not been exposed to the system-wide symbol repository; formula "
-                               "cannot be understood within the context of adjacent expressions. Logical analysis "
-                               "will produce unexpected results.");
-
-    // TODO: info-level integration logging as with CNF normalisation pipeline
-
-    mutable_root->accept(*repository_building_visitor);
-    return repository_building_visitor->take_last_root();
 }
 
 std::string Requirement::text_serialise(const IMutableSentence *sentence)

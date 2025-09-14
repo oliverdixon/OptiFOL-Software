@@ -50,25 +50,22 @@ public:
 
     /**
      * @brief Reports a new fully parsed root sentence, typically from another parser-like source
-     * @param sentenceNode The parsed FOL sentence
+     * @param sentence_root The parsed FOL sentence
      */
-    [[maybe_unused]] void register_sentence(std::unique_ptr<IMutableSentence>&& sentenceNode)
+    [[maybe_unused]] void register_sentence(std::unique_ptr<MutableSentenceRoot> &&sentence_root)
     {
-        last_parsed = std::move(sentenceNode);
+        last_parsed_root = std::move(sentence_root);
     }
 
-    [[nodiscard]] std::unique_ptr<IMutableSentence> retrieve_sentence()
+    [[nodiscard]] std::unique_ptr<MutableSentenceRoot> retrieve_sentence()
     {
-        auto sentence = std::move(last_parsed);
-        last_parsed = nullptr;
+        auto sentence = std::move(last_parsed_root);
+        last_parsed_root = nullptr;
         return sentence;
     }
 
 private:
-    /**
-     * @brief A strong reference to the last-parsed FOL sentence.
-     */
-    std::unique_ptr<IMutableSentence> last_parsed;
+    std::unique_ptr<MutableSentenceRoot> last_parsed_root;
 };
 
 }

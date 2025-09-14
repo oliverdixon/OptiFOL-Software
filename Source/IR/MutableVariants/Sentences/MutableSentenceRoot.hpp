@@ -37,6 +37,12 @@ public:
 
     [[nodiscard]] std::unique_ptr<IMutableSentence> clone() const override;
 
+    /**
+     * @brief Recursively clone the MutableSentenceRoot and preserve the root typing.
+     * @return The container containing the copied sentence root.
+     */
+    [[nodiscard]] std::unique_ptr<MutableSentenceRoot> clone_as_root() const;
+
     void flip_polarity() noexcept override;
 
     [[nodiscard]] bool is_negative_polarity() const noexcept override;

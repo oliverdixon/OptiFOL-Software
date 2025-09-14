@@ -44,9 +44,9 @@ std::size_t SentenceRoot::hash() const noexcept
 {
     std::size_t hash_value = clauses.size();
 
-    for (const auto& clause : clauses) {
+    for (const auto &clause: clauses) {
         std::size_t literal_hash_value = clause.size();
-        for (const auto literal : clause)
+        for (const auto literal: clause)
             literal_hash_value = hash_combine(literal_hash_value, literal->hash());
 
         hash_value = hash_combine_commutative(hash_value, literal_hash_value);
@@ -68,8 +68,8 @@ bool SentenceRoot::operator==(const IProcessedSentence &other) const noexcept
         return false;
 
     for (std::size_t clause_idx = 0; clause_idx < clause_count; ++clause_idx) {
-        const auto& clause = clauses[clause_idx];
-        const auto& other_clause = other_root->clauses[clause_idx];
+        const auto &clause = clauses[clause_idx];
+        const auto &other_clause = other_root->clauses[clause_idx];
 
         const auto literal_count = clause.size();
         if (literal_count != other_clause.size())
@@ -88,7 +88,7 @@ bool SentenceRoot::operator==(const IProcessedSentence &other) const noexcept
     return true;
 }
 
-void SentenceRoot::commit_clause(const std::vector<const Literal *> &literals)
+void SentenceRoot::add_clause(const std::vector<const Literal *> &literals)
 {
     clauses.emplace_back(literals);
 }

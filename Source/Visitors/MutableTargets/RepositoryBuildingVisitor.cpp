@@ -67,7 +67,7 @@ const BinaryConnected *RepositoryBuildingVisitor::visit(MutableBinaryConnected &
 
     // Create a fresh clause for the LHS operand, committing a previously populated clause if necessary.
     if (managed_clause && !working_clause.empty()) {
-        root->commit_clause(working_clause);
+        root->add_clause(working_clause);
         working_clause.clear();
     }
 
@@ -79,7 +79,7 @@ const BinaryConnected *RepositoryBuildingVisitor::visit(MutableBinaryConnected &
      * fresh clause for the RHS operand.
      */
     if (managed_clause && !working_clause.empty()) {
-        root->commit_clause(working_clause);
+        root->add_clause(working_clause);
         working_clause.clear();
     }
 
@@ -88,7 +88,7 @@ const BinaryConnected *RepositoryBuildingVisitor::visit(MutableBinaryConnected &
 
     // Likewise, commit any disjunctive literals produced by the RHS recursion to the sentence root.
     if (managed_clause && !working_clause.empty()) {
-        root->commit_clause(working_clause);
+        root->add_clause(working_clause);
         working_clause.clear();
     }
 
@@ -131,7 +131,7 @@ void RepositoryBuildingVisitor::visit(MutableSentenceRoot &node)
     sentence->accept(*this);
 
     if (!working_clause.empty()) {
-        root->commit_clause(working_clause);
+        root->add_clause(working_clause);
         working_clause.clear();
     }
 }
