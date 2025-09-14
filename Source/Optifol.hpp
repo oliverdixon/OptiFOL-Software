@@ -59,8 +59,11 @@ concept WeaklyEqualityComparableWith =
 #pragma clang diagnostic pop
 
 /**
- * @brief
- * @tparam T
+ * @class UniversalTransparentEquality
+ * @brief Provides a transparent equality functor for homogenously comparable types through @ref std::unique_ptr,
+ *  @ref std::shared_ptr, and raw pointers; or heterogeneously comparing through object references where
+ *  WeaklyEqualityComparableWith is modelled.
+ * @tparam T The concrete type to transparently compare.
  */
 template<typename T>
 struct UniversalTransparentEquality

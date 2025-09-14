@@ -50,7 +50,7 @@ bool BinaryConnected::operator==(const IProcessedSentence &other) const noexcept
         // Other IProcessedSentence isn't a BinaryConnected.
         return false;
 
-    return *lhs == *other_connected->lhs && *rhs == *other_connected->rhs;
+    return commutative_ptr_compare(lhs, rhs, other_connected->lhs, other_connected->rhs);
 }
 
 BinaryOperatorTypes BinaryConnected::get_operator_type() const noexcept

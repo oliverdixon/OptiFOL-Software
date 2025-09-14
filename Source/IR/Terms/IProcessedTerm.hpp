@@ -77,6 +77,12 @@ public:
     [[nodiscard]] virtual std::variant<std::unique_ptr<IProcessedTerm>, const IProcessedTerm *> accept(
             const UnificationApplicationVisitor &unification_application_visitor) const = 0;
 
+
+    /**
+     * @brief Test equality between two IProcessedTerm instances.
+     * @param other The other IProcessedTerm instance with which to test for equality.
+     * @return Are the two terms of the same concrete type and equal?
+     */
     [[nodiscard]] virtual bool operator==(const IProcessedTerm &other) const noexcept = 0;
 };
 

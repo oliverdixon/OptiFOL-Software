@@ -33,10 +33,10 @@ namespace optifol
  * @tparam Candidate The candidate for the concept properties
  */
 template<typename Candidate>
-concept GoogleTestable = requires(const Candidate& lhs, const Candidate& rhs, std::ostream& ostream)
+concept GoogleTestable =
+    requires(const Candidate& lhs, const Candidate& rhs, std::ostream& ostream)
 {
-    { lhs == rhs } -> std::convertible_to<bool>; // For EXPECT_EQ, et al.
-    { lhs != rhs } -> std::convertible_to<bool>; // For pre-C++20 compilers without default comparators
+    { lhs.operator==(rhs) } -> std::convertible_to<bool>; // For EXPECT_EQ, et al.
     { ostream << lhs } -> std::same_as<std::ostream&>; // For serialising 'actual' vs. 'expected' results on failure.
 };
 #pragma clang diagnostic pop

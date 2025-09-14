@@ -35,6 +35,11 @@ public:
         return false;
     }
 
+    /**
+     * @brief Test equality between two IProcessedSentence instances.
+     * @param other The other IProcessedSentence instance with which to test for equality.
+     * @return Are the two sentences of the same concrete type and equal?
+     */
     [[nodiscard]] virtual bool operator==(const IProcessedSentence &other) const noexcept = 0;
 };
 

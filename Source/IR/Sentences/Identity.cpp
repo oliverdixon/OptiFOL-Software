@@ -47,7 +47,7 @@ bool Identity::operator==(const IProcessedSentence &other) const noexcept
         // Other IProcessedSentence isn't an Identity.
         return false;
 
-    return *lhs == *other_identity->lhs && *rhs == *other_identity->rhs;
+    return commutative_ptr_compare(lhs, rhs, other_identity->lhs, other_identity->rhs);
 }
 
 const IProcessedTerm *Identity::observe_lhs_operand() const noexcept

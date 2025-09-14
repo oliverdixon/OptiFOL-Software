@@ -79,6 +79,11 @@ public:
      */
     virtual const IProcessedSentence *accept(RepositoryBuildingVisitor &visitor) = 0;
 
+    /**
+     * @brief Test equality between two IMutableSentence instances.
+     * @param other The other IMutableSentence instance with which to test for equality.
+     * @return Are the two sentences of the same concrete type and equal?
+     */
     [[nodiscard]] virtual bool operator==(const IMutableSentence &other) const noexcept = 0;
 };
 

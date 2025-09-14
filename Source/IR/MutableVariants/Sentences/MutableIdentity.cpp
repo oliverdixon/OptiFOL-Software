@@ -97,24 +97,7 @@ bool MutableIdentity::operator==(const IMutableSentence &other) const noexcept
         // Other IMutableSentence isn't a MutableIdentity.
         return false;
 
-    bool lhs_matches = false;
-
-    if (lhs == nullptr)
-        lhs_matches = other_identity->lhs == nullptr;
-    else if (other_identity->lhs == nullptr)
-        lhs_matches = lhs == nullptr;
-    else
-        // Both LHS pointers are non-NULL and should be compared with IMutableTerm::operator==.
-        lhs_matches = *lhs == *other_identity->lhs;
-
-    if (!lhs_matches)
-        return false;
-
-    // LHS matches. Test the RHS operands for NULL, otherwise use IMutableTerm::operator==.
-    if (rhs == nullptr || other_identity->rhs == nullptr)
-        return rhs == other_identity->rhs;
-
-    return *rhs == *other_identity->rhs;
+    return commutative_ptr_compare(lhs.get(), rhs.get(), other_identity->lhs.get(), other_identity->rhs.get());
 }
 
 void MutableIdentity::put_lhs_operand(std::unique_ptr<IMutableTerm> &&new_lhs) noexcept

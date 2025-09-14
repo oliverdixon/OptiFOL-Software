@@ -117,28 +117,7 @@ bool MutableBinaryConnected::operator==(const IMutableSentence &other) const noe
         // Other IMutableSentence isn't a MutableBinaryConnected.
         return false;
 
-    if (operator_type != other_connected->operator_type)
-        // Different binary operator.
-        return false;
-
-    bool lhs_matches = false;
-    
-    if (lhs == nullptr)
-        lhs_matches = other_connected->lhs == nullptr;
-    else if (other_connected->lhs == nullptr)
-        lhs_matches = lhs == nullptr;
-    else
-        // Both LHS operands are non-NULL and should be compared with IMutableSentence::operator==.
-        lhs_matches = *lhs == *other_connected->lhs;
-
-    if (!lhs_matches)
-        return false;
-
-    // LHS matches. Test the RHS operands for NULL, otherwise use IMutableSentence::operator==.
-    if (rhs == nullptr || other_connected->rhs == nullptr)
-        return rhs == other_connected->rhs;
-
-    return *rhs == *other_connected->rhs;
+    return commutative_ptr_compare(lhs.get(), rhs.get(), other_connected->lhs.get(), other_connected->rhs.get());
 }
 
 } // namespace optifol

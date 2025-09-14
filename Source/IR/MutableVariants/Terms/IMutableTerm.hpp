@@ -64,6 +64,11 @@ public:
      */
     [[nodiscard]] virtual const IProcessedTerm *accept(RepositoryBuildingVisitor &visitor) = 0;
 
+    /**
+     * @brief Test equality between two IMutableTerm instances.
+     * @param other The other IMutableTerm instance with which to test for equality.
+     * @return Are the two terms of the same concrete type and equal?
+     */
     [[nodiscard]] virtual bool operator==(const IMutableTerm &other) const noexcept = 0;
 };
 

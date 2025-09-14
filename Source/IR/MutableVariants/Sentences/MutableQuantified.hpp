@@ -24,7 +24,7 @@ namespace optifol
 {
 
 /**
- * @class QuantifierTypes
+ * @enum QuantifierTypes
  * @brief The modes by which a sentence can be bound by a variable
  */
 enum class QuantifierTypes

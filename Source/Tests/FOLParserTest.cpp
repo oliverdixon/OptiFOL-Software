@@ -43,7 +43,9 @@ protected:
         parser.parse();
 
         const auto sentence = parser.retrieve_sentence();
-        GoogleTestSupport::test_sentence_equality(*sentence, *expected);
+        const auto expected_wrapped = std::make_unique<MutableSentenceRoot>(std::move(expected));
+
+        GoogleTestSupport::test_sentence_equality(*sentence, *expected_wrapped);
     }
 
 private:
