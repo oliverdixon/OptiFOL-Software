@@ -50,6 +50,30 @@ std::size_t Literal::hash() const noexcept
     return composite_hash(name, arguments.cbegin(), arguments.cend(), is_negative_polarity());
 }
 
+bool Literal::operator==(const IProcessedSentence &other) const noexcept
+{
+    const auto other_literal = dynamic_cast<const Literal *>(&other);
+    if (other_literal == nullptr)
+        // Other IProcessedSentence isn't a Literal.
+        return false;
+
+    if (name != other_literal->name)
+        // Other literal has a different superficial name.
+        return false;
+
+    const auto argument_count = arguments.size();
+    if (argument_count != other_literal->arguments.size())
+        // Other literal has a different number of arguments.
+        return false;
+
+    for (std::size_t arg_idx = 0; arg_idx < argument_count; ++arg_idx)
+        if (*arguments[arg_idx] != *other_literal->arguments[arg_idx])
+            // Other pairwise argument is different according to its own comparator.
+            return false;
+
+    return true;
+}
+
 std::string_view Literal::get_name() const noexcept
 {
     return name;

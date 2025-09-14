@@ -45,6 +45,8 @@ public:
 
     [[nodiscard]] std::size_t hash() const noexcept override;
 
+    [[nodiscard]] bool operator==(const IProcessedSentence &other) const noexcept override;
+
     /**
      * @brief Retrieve an observing pointer to the LHS term operand
      * @return An observing pointer to the LHS of the Identity IR node

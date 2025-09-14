@@ -19,7 +19,6 @@
 #include <sigc++/functors/slot.h>
 #include <unordered_set>
 
-#include "../../HashableEqualityFunctor.hpp"
 #include "../../IHashable.hpp"
 
 namespace optifol
@@ -41,28 +40,19 @@ public:
 
     [[nodiscard]] virtual std::size_t is_empty() const noexcept = 0;
 
-    [[nodiscard]] bool operator==(const TestExecutable& other) const;
+    [[nodiscard]] bool operator==(const TestExecutable &other) const;
 
-    [[nodiscard]] bool operator==(const ExecutionGroup& other) const;
+    [[nodiscard]] bool operator==(const ExecutionGroup &other) const;
 
     [[nodiscard]] Glib::ustring get_executable_name() const;
 
 protected:
-    explicit ExecutionGroup(const TestExecutable& executable);
+    explicit ExecutionGroup(const TestExecutable &executable);
 
-    [[nodiscard]] bool check_eligibility(const Test& test) const;
+    [[nodiscard]] bool check_eligibility(const Test &test) const;
 
 private:
-    const TestExecutable& executable;
-};
-
-struct ExecutionGroupEqualityFunctor : HashableEqualityFunctor<ExecutionGroup>
-{
-    bool operator()(const std::unique_ptr<ExecutionGroup> &lhs, const TestExecutable& rhs) const;
-
-    bool operator()(const TestExecutable& lhs, const std::unique_ptr<ExecutionGroup> &rhs) const;
-
-    bool operator()(const std::unique_ptr<ExecutionGroup> &lhs, const std::unique_ptr<ExecutionGroup> &rhs) const;
+    const TestExecutable &executable;
 };
 
 } // namespace optifol
@@ -72,9 +62,9 @@ struct std::hash<optifol::ExecutionGroup>
 {
     using is_transparent = void;
 
-    std::size_t operator()(const optifol::ExecutionGroup& object) const noexcept;
+    std::size_t operator()(const optifol::ExecutionGroup &object) const noexcept;
 
-    std::size_t operator()(const optifol::TestExecutable& executable) const noexcept;
+    std::size_t operator()(const optifol::TestExecutable &executable) const noexcept;
 
     std::size_t operator()(const unique_ptr<optifol::ExecutionGroup> &unique_hashable) const noexcept;
 };

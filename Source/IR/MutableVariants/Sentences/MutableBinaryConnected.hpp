@@ -60,6 +60,8 @@ public:
 
     std::ostream &serialise(std::ostream &ostream) const override;
 
+    [[nodiscard]] bool operator==(const IMutableSentence &other) const noexcept override;
+
     /**
      * @brief Get the current operator by which the operands are connected
      * @return The binary-connected operator type

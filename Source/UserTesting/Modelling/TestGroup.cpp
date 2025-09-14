@@ -113,6 +113,7 @@ void TestGroup::deregister_test_executable(const Glib::RefPtr<Test> &test)
 {
     assert(test != nullptr);
 
+#if 0 // TODO URGENT HERE OWD
     /*
      * Locate the ExecutionGroup that should contain the Test, according to its TargetExecutable, and remove it from
      * the ExecutionGroup. If there is no suitable ExecutionGroup, then that is considered an error as all tests have
@@ -134,6 +135,7 @@ void TestGroup::deregister_test_executable(const Glib::RefPtr<Test> &test)
         testgroup_logger->info("Removed empty Execution Group for \"" + (*exe_group_it)->get_executable_name() + "\".");
         execution_groups.erase(exe_group_it);
     }
+#endif
 }
 
 // ReSharper disable once CppDFAUnreachableFunctionCall - False positive: called from 'handle_test_additions' callback.
@@ -162,6 +164,7 @@ void TestGroup::register_test_executable(const Glib::RefPtr<Test> &test)
 {
     assert(test != nullptr);
 
+#if 0 // TODO URGENT HERE OWD
     try {
         const auto group_it = execution_groups.find(*test->observe_test_executable());
         if (group_it == execution_groups.cend()) {
@@ -182,6 +185,7 @@ void TestGroup::register_test_executable(const Glib::RefPtr<Test> &test)
             test->property_name().get_value() + "\".");
         testgroup_logger->error(semantic_exception.what());
     }
+#endif
 }
 
 // ReSharper disable once CppDFAUnreachableFunctionCall - False positive. Called from 'handle_object_change'.

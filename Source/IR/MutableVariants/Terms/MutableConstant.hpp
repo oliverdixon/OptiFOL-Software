@@ -49,6 +49,8 @@ public:
 
     void accept(IObservingNodeVisitor &visitor) const override;
 
+    [[nodiscard]] bool operator==(const IMutableTerm &other) const noexcept override;
+
 private:
     std::string name;
 };

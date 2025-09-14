@@ -15,7 +15,6 @@
 #define MANAGETESTSPOPOVER_HPP
 
 #include <giomm/liststore.h>
-#include <gtkmm/builder.h>
 #include <gtkmm/button.h>
 #include <gtkmm/columnview.h>
 #include <gtkmm/entry.h>
@@ -25,7 +24,7 @@
 #include <log4cxx/logger.h>
 #include <unordered_set>
 
-#include "../../DereferencingEqualityFunctor.hpp"
+#include "../../Optifol.hpp"
 #include "../../UserTesting/Discovery/DiscoveryTestExecutable.hpp"
 
 namespace optifol
@@ -161,11 +160,7 @@ private:
     Glib::RefPtr<Gtk::SingleSelection> selection_model = Gtk::SingleSelection::create();
     Glib::RefPtr<Gio::ListStore<TestSpecificationEntry>> test_spec_model;
 
-    std::unordered_set<
-        Glib::RefPtr<DiscoveryTestExecutable>,
-        std::hash<DiscoveryTestExecutable>,
-        DereferencingEqualityFunctor<Glib::RefPtr<DiscoveryTestExecutable>, DiscoveryTestExecutable>
-    > discovery_exe_cache;
+    SharedUnorderedSet<DiscoveryTestExecutable> discovery_exe_cache;
 };
 
 } // namespace optifol

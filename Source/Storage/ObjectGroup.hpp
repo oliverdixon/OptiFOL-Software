@@ -18,7 +18,7 @@
 #include <gtkmm/singleselection.h>
 #include <gtkmm/dropdown.h>
 
-#include "../DereferencingEqualityFunctor.hpp"
+#include "../Optifol.hpp"
 #include "StorageObjectBase.hpp"
 
 namespace optifol
@@ -249,9 +249,7 @@ private:
      * @brief Mapping of hashable objects present in the models, associated with their respective indices in the linear
      *  @ref model.
      */
-    std::unordered_map<Glib::RefPtr<Derived>, guint, std::hash<Derived>,
-            DereferencingEqualityFunctor<Glib::RefPtr<Derived>, Derived>>
-            index_map;
+    SharedUnorderedMap<Derived, guint> index_map;
 
     /**
      * @brief Items deleted from the linear @ref model but not the @ref index_map. Keys indicate the old positions of

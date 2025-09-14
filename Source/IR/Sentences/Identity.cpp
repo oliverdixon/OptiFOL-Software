@@ -40,6 +40,16 @@ std::size_t Identity::hash() const noexcept
     return Identity::hash_identity(lhs, rhs, is_negative_polarity());
 }
 
+bool Identity::operator==(const IProcessedSentence &other) const noexcept
+{
+    const auto other_identity = dynamic_cast<const Identity *>(&other);
+    if (other_identity == nullptr)
+        // Other IProcessedSentence isn't an Identity.
+        return false;
+
+    return *lhs == *other_identity->lhs && *rhs == *other_identity->rhs;
+}
+
 const IProcessedTerm *Identity::observe_lhs_operand() const noexcept
 {
     return lhs;

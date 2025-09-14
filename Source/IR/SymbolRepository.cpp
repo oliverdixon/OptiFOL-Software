@@ -40,7 +40,7 @@ const IProcessedTerm *SymbolRepository::get_symbol_handle(const IProcessedTerm &
     return it->get();
 }
 
-const ISentence *SymbolRepository::get_symbol_handle(const ISentence &sentence) const
+const IProcessedSentence *SymbolRepository::get_symbol_handle(const IProcessedSentence &sentence) const
 {
     const auto it = sentences.find(sentence);
     if (it == sentences.cend())

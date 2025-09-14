@@ -18,9 +18,9 @@
 #include <optional>
 #include <unordered_set>
 
-#include "../HashableEqualityFunctor.hpp"
 #include "../IHashable.hpp"
-#include "Sentences/ISentence.hpp"
+#include "../Optifol.hpp"
+#include "Sentences/IProcessedSentence.hpp"
 #include "Terms/IProcessedTerm.hpp"
 #include "Terms/Variable.hpp"
 
@@ -84,8 +84,8 @@ public:
      * @note If the supplied sentence is hash-equal to an existing sentence held by the repository, the repository is
      *  unchanged.
      */
-    template<typename SentenceType = ISentence>
-        requires std::derived_from<SentenceType, ISentence>
+    template<typename SentenceType = IProcessedSentence>
+        requires std::derived_from<SentenceType, IProcessedSentence>
     const SentenceType *add_symbol(std::unique_ptr<SentenceType> &&sentence)
     {
         const auto find_it = sentences.find(*sentence);
@@ -118,7 +118,7 @@ public:
      * @return A constant handle to the sentence, if a suitable match exists in the repository. Otherwise, an empty
      *  @ref std::optional.
      */
-    const ISentence *get_symbol_handle(const ISentence &sentence) const;
+    const IProcessedSentence *get_symbol_handle(const IProcessedSentence &sentence) const;
 
     const Variable *get_symbol_handle(const Variable &variable) const;
 
@@ -130,13 +130,9 @@ public:
     [[nodiscard]] bool operator==(const SymbolRepository & other) const noexcept;
 
 private:
-    std::unordered_set<std::unique_ptr<ISentence>, std::hash<ISentence>, HashableEqualityFunctor<ISentence>> sentences;
-
-    std::unordered_set<std::unique_ptr<IProcessedTerm>, std::hash<IProcessedTerm>,
-        HashableEqualityFunctor<IProcessedTerm>> terms;
-
-    std::unordered_set<std::unique_ptr<Variable>, std::hash<Variable>,
-        HashableEqualityFunctor<Variable>> variables;
+    UniqueUnorderedSet<IProcessedSentence> sentences;
+    UniqueUnorderedSet<IProcessedTerm> terms;
+    UniqueUnorderedSet<Variable> variables;
 };
 
 } // namespace optifol

@@ -55,6 +55,23 @@ void MutableSentenceRoot::put_sentence(std::unique_ptr<IMutableSentence> &&sente
     this->sentence = std::move(sentence);
 }
 
+bool MutableSentenceRoot::operator==(const IMutableSentence &other) const noexcept
+{
+    const auto other_root = dynamic_cast<const MutableSentenceRoot *>(&other);
+    if (other_root == nullptr)
+        // Other IMutableSentence isn't a MutableSentenceRoot.
+        return false;
+
+    if (is_positive != other_root->is_positive)
+        // Different signs.
+        return false;
+
+    if (sentence == nullptr || other_root->sentence == nullptr)
+        return sentence == other_root->sentence;
+
+    return *sentence == *other_root->sentence;
+}
+
 void MutableSentenceRoot::accept(MutatingSentenceVisitorBase &visitor)
 {
     visitor.visit(*this);

@@ -64,6 +64,8 @@ public:
 
     std::ostream &serialise(std::ostream &ostream) const override;
 
+    [[nodiscard]] bool operator==(const IMutableSentence &other) const noexcept override;
+
     /**
      * @brief Replaces the quantifier operator with an alternative type
      * @param quantifier_type The new quantifier operator

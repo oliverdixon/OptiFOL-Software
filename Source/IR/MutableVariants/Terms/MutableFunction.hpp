@@ -64,6 +64,8 @@ public:
 
     void accept(IObservingNodeVisitor &visitor) const override;
 
+    [[nodiscard]] bool operator==(const IMutableTerm &other) const noexcept override;
+
     /**
      * @brief Observe the constant owning ordered argument collection
      * @return The arguments owned by the function

@@ -43,6 +43,16 @@ std::ostream &BinaryConnected::serialise(std::ostream &ostream) const
     return serialise_binary_connected(ostream, operator_type, lhs, rhs, is_negative_polarity());
 }
 
+bool BinaryConnected::operator==(const IProcessedSentence &other) const noexcept
+{
+    const auto other_connected = dynamic_cast<const BinaryConnected *>(&other);
+    if (other_connected == nullptr)
+        // Other IProcessedSentence isn't a BinaryConnected.
+        return false;
+
+    return *lhs == *other_connected->lhs && *rhs == *other_connected->rhs;
+}
+
 BinaryOperatorTypes BinaryConnected::get_operator_type() const noexcept
 {
     return operator_type;

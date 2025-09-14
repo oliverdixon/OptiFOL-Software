@@ -102,6 +102,38 @@ std::ostream &MutablePredicate::serialise(std::ostream &ostream) const
             ostream, name, arguments.cbegin(), arguments.cend(), is_negative_polarity());
 }
 
+bool MutablePredicate::operator==(const IMutableSentence &other) const noexcept
+{
+    const auto other_predicate = dynamic_cast<const MutablePredicate *>(&other);
+    if (other_predicate == nullptr)
+        // Other IMutableSentence isn't a MutablePredicate.
+        return false;
+
+    if (name != other_predicate->name)
+        // Different superficial names.
+        return false;
+
+    const auto argument_count = arguments.size();
+    if (argument_count != other_predicate->arguments.size())
+        // Different number of arguments.
+        return false;
+
+    for (std::size_t argument_idx = 0; argument_idx < argument_count; ++argument_idx) {
+        const auto& lhs_arg_ptr = arguments[argument_idx];
+        const auto& rhs_arg_ptr = other_predicate->arguments[argument_idx];
+
+        if (lhs_arg_ptr == nullptr) {
+            if (rhs_arg_ptr != nullptr)
+                return false;
+        } else if (rhs_arg_ptr == nullptr)
+            return false;
+        else if (*lhs_arg_ptr != *rhs_arg_ptr)
+                return false;
+    }
+
+    return true;
+}
+
 std::string_view MutablePredicate::get_name() const noexcept
 {
     return name;

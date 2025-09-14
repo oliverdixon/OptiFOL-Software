@@ -57,8 +57,7 @@ class TestGroup : public StorageObjectBase,
                   public ObjectGroup<Requirement>,
                   public ITestModelNode
 {
-    std::unordered_set<std::unique_ptr<ExecutionGroup>, std::hash<ExecutionGroup>,
-        ExecutionGroupEqualityFunctor> execution_groups;
+    UniqueUnorderedSet<ExecutionGroup> execution_groups;
 
 public:
     /**
@@ -183,8 +182,7 @@ private:
 
     ObjectGroup<Test> results_model;
 
-    std::unordered_map<Glib::RefPtr<Test>, sigc::connection, std::hash<Test>,
-        DereferencingEqualityFunctor<Glib::RefPtr<Test>, Test>> registered_callbacks;
+    SharedUnorderedMap<Test, sigc::connection> registered_callbacks;
 
     Glib::RefPtr<Gtk::TreeListModel> results_tree =
             Gtk::TreeListModel::create(results_model.get_model(), &ITestModelNode::get_given_results_tree, true);

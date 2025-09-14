@@ -76,6 +76,8 @@ public:
      */
     void put_sentence(std::unique_ptr<IMutableSentence> &&sentence) noexcept;
 
+    [[nodiscard]] bool operator==(const IMutableSentence &other) const noexcept override;
+
 private:
     std::unique_ptr<IMutableSentence> sentence;
     bool is_positive = true;

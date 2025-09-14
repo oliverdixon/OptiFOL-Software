@@ -26,23 +26,29 @@ namespace optifol
  */
 class SentenceRoot : public IProcessedSentence
 {
-    std::vector<std::vector<const Literal *>> clauses;
-
 public:
+    using Clause = std::vector<const Literal *>;
+
     [[nodiscard]] bool is_negative_polarity() const noexcept override;
 
     std::ostream& serialise(std::ostream &ostream) const override;
 
     [[nodiscard]] std::size_t hash() const noexcept override;
 
+    [[nodiscard]] bool operator==(const IProcessedSentence &other) const noexcept override;
+
     void commit_clause(const std::vector<const Literal *> &literals);
 
-    decltype(clauses)::const_iterator cbegin() const noexcept;
+    [[nodiscard]] std::vector<Clause>::const_iterator begin() const noexcept;
 
-    decltype(clauses)::const_iterator cend() const noexcept;
+    [[nodiscard]] std::vector<Clause>::const_iterator end() const noexcept;
 
 private:
     static std::ostream& serialise_clause(std::ostream &ostream, const std::vector<const Literal *> &clause);
+
+    std::vector<Clause> clauses;
+
+    bool is_negative = false;
 };
 
 } // namespace optifol

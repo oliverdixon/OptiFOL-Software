@@ -118,6 +118,44 @@ std::ostream &MutableQuantified::serialise(std::ostream &ostream) const
     return ostream << ')';
 }
 
+bool MutableQuantified::operator==(const IMutableSentence &other) const noexcept
+{
+    const auto other_quantified = dynamic_cast<const MutableQuantified *>(&other);
+    if (other_quantified == nullptr)
+        // Other IProcessedSentence isn't a MutableQuantified.
+        return false;
+
+    if (is_positive != other_quantified->is_positive)
+        // Different signs.
+        return false;
+
+    if (quantifier_type != other_quantified->quantifier_type)
+        // Different quantifier nature.
+        return false;
+
+    bool bound_terms_match = false;
+
+    if (bound_term == nullptr)
+        bound_terms_match = other_quantified->bound_term == nullptr;
+    else if (other_quantified->bound_term == nullptr)
+        bound_terms_match = bound_term == nullptr;
+    else
+        // Both bound terms are non-NULL and should be compared with IMutableTerm::operator==.
+        bound_terms_match = *bound_term == *other_quantified->bound_term;
+
+    if (!bound_terms_match)
+        return false;
+
+    /*
+     * Bound terms and quantifier natures match. Test the sentences for NULL, otherwise use
+     * IMutableSentence::operator==.
+     */
+    if (sentence == nullptr || other_quantified->sentence == nullptr)
+        return sentence == other_quantified->sentence;
+
+    return *sentence == *other_quantified->sentence;
+}
+
 void MutableQuantified::put_bound_term(std::unique_ptr<IMutableTerm> &&new_bound_term) noexcept
 {
     bound_term = std::move(new_bound_term);

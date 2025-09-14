@@ -179,7 +179,6 @@ add_library(OptifolCommon OBJECT
         Source/Visitors/MutableTargets/RepositoryBuildingVisitor.hpp
         Source/IR/Sentences/SentenceRoot.cpp
         Source/IR/Sentences/SentenceRoot.hpp
-        Source/HashableEqualityFunctor.hpp
         Source/Visitors/MutableTargets/Observers/LaTeXSerialisationVisitor.cpp
         Source/Visitors/MutableTargets/Observers/LaTeXSerialisationVisitor.hpp
         Source/IR/Sentences/IProcessedSentence.hpp
@@ -187,7 +186,6 @@ add_library(OptifolCommon OBJECT
         Source/UserTesting/Execution/PayloadManagement/GoogleTestParser.hpp
         Source/UserTesting/Execution/TestResult.cpp
         Source/UserTesting/Execution/TestResult.hpp
-        Source/DereferencingEqualityFunctor.hpp
         Source/GUI/MainWindow.cpp
         Source/GUI/MainWindow.hpp
         Source/GUI/Application.cpp
@@ -285,8 +283,6 @@ add_library(OptifolCommon OBJECT
         Source/UserTesting/Execution/PartialTestResult.hpp
         Source/Inference/KnowledgeBase.cpp
         Source/Inference/KnowledgeBase.hpp
-        Source/Inference/Resolution.cpp
-        Source/Inference/Resolution.hpp
         Source/Visitors/RegularTargets/Unification/UnificationApplicationVisitor.cpp
         Source/Visitors/RegularTargets/Unification/UnificationApplicationVisitor.hpp
 )
@@ -462,6 +458,7 @@ add_executable(OptifolTesting
         Source/Tests/UnificationTest.cpp
         Source/Tests/GoogleTestSupport.hpp
         Source/Tests/RepositoryBuildingTest.cpp
+        Source/Tests/ResolutionTest.cpp
 )
 
 target_include_directories(OptifolTesting PRIVATE

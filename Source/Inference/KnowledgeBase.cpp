@@ -11,4 +11,15 @@
 
 namespace optifol
 {
+
+KnowledgeBase::KnowledgeBase(std::shared_ptr<SymbolRepository> symbol_repository) :
+    symbol_repository(std::move(symbol_repository))
+{
+}
+
+void KnowledgeBase::tell(const SentenceRoot::Clause &clause)
+{
+    clauses.push_back(clause);
+}
+
 } // namespace optifol

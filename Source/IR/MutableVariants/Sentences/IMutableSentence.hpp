@@ -78,6 +78,8 @@ public:
      * @return An observing reference to the ISentence node added to a central SymbolRepository object
      */
     virtual const IProcessedSentence *accept(RepositoryBuildingVisitor &visitor) = 0;
+
+    [[nodiscard]] virtual bool operator==(const IMutableSentence &other) const noexcept = 0;
 };
 
 } // namespace optifol

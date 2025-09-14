@@ -58,6 +58,8 @@ public:
 
     std::ostream &serialise(std::ostream &ostream) const override;
 
+    [[nodiscard]] bool operator==(const IMutableSentence &other) const noexcept override;
+
     /**
      * @brief Steal ownership of the LHS term from the node
      * @return The LHS term container

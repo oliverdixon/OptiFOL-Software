@@ -47,24 +47,6 @@ std::size_t ExecutionGroup::hash() const noexcept
     return executable.hash();
 }
 
-bool ExecutionGroupEqualityFunctor::operator()(
-        const std::unique_ptr<ExecutionGroup> &lhs, const TestExecutable &rhs) const
-{
-    return *lhs == rhs;
-}
-
-bool ExecutionGroupEqualityFunctor::operator()(
-        const TestExecutable &lhs, const std::unique_ptr<ExecutionGroup> &rhs) const
-{
-    return lhs == *rhs;
-}
-
-bool ExecutionGroupEqualityFunctor::operator()(
-        const std::unique_ptr<ExecutionGroup> &lhs, const std::unique_ptr<ExecutionGroup> &rhs) const
-{
-    return *lhs == *rhs;
-}
-
 } // namespace optifol
 
 namespace std

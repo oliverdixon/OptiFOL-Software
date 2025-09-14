@@ -37,21 +37,6 @@ class Variable;
 class IProcessedTerm : public ITerm
 {
 public:
-    /**
-     * @brief Test hash-based equality with another IProcessedTerm, wrapped in a @ref std::unique_ptr
-     * @param other The owning container of the IProcessedTerm with which equality should be tested
-     * @return Are the IProcessedTerm objects equal?
-     */
-    bool operator==(const std::unique_ptr<IProcessedTerm> &other) const noexcept
-    {
-        return other->hash() == hash();
-    }
-
-    bool operator==(const IProcessedTerm &other) const noexcept
-    {
-        return other.hash() == hash();
-    }
-
     [[nodiscard]] virtual bool accept(UnificationVisitor &unification_visitor, const IProcessedTerm &term) const = 0;
 
     [[nodiscard]] virtual bool accept(UnificationVisitor &unification_visitor, const Constant &constant) const
@@ -91,6 +76,8 @@ public:
      */
     [[nodiscard]] virtual std::variant<std::unique_ptr<IProcessedTerm>, const IProcessedTerm *> accept(
             const UnificationApplicationVisitor &unification_application_visitor) const = 0;
+
+    [[nodiscard]] virtual bool operator==(const IProcessedTerm &other) const noexcept = 0;
 };
 
 } // namespace optifol

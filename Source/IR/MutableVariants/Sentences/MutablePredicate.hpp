@@ -90,6 +90,8 @@ public:
 
     std::ostream &serialise(std::ostream &ostream) const override;
 
+    [[nodiscard]] bool operator==(const IMutableSentence &other) const noexcept override;
+
     /**
      * @brief Get the display name of the mutable predicate, not including any arguments or metadata
      * @return A view of the predicate symbol name

@@ -57,6 +57,8 @@ public:
 
     [[nodiscard]] std::size_t hash() const noexcept override;
 
+    [[nodiscard]] bool operator==(const IProcessedSentence &other) const noexcept override;
+
     /**
      * @brief Get the display name of the predicate, not including any arguments or metadata
      * @return A view of the predicate symbol name

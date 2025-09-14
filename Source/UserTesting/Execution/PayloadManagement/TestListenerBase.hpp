@@ -16,11 +16,9 @@
 
 #include <giomm/asyncresult.h>
 #include <glibmm/refptr.h>
-#include <log4cxx/logger.h>
 #include <memory>
-#include <unordered_set>
 
-#include "../../../DereferencingEqualityFunctor.hpp"
+#include "../Optifol.hpp"
 #include "../TestResult.hpp"
 
 namespace optifol
@@ -70,8 +68,7 @@ protected:
     virtual void connection_callback(const Glib::RefPtr<Gio::AsyncResult> &result) noexcept = 0;
 
 private:
-    std::unordered_set<std::shared_ptr<TestResult>, std::hash<TestResult>,
-        DereferencingEqualityFunctor<std::shared_ptr<TestResult>, TestResult>> received_test_blob;
+    SharedUnorderedSet<TestResult> received_test_blob;
 };
 
 } // namespace optifol

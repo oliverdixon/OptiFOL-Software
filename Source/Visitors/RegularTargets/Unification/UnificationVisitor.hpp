@@ -16,7 +16,6 @@
 
 #include <unordered_map>
 
-#include "../../../DereferencingEqualityFunctor.hpp"
 #include "../../../IR/SymbolRepository.hpp"
 #include "../../../IR/Terms/Variable.hpp"
 
@@ -68,8 +67,7 @@ class SymbolRepository;
  */
 class UnificationVisitor
 {
-    std::unordered_map<const Variable *, const IProcessedTerm *, std::hash<Variable>,
-        DereferencingEqualityFunctor<const Variable *, const Variable>> substitutions;
+    RawUnorderedMap<const Variable, const IProcessedTerm *> substitutions;
 
 public:
     using Substitution = std::optional<std::pair<const IProcessedTerm *, const IProcessedTerm *>>;

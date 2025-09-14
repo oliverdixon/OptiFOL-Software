@@ -34,6 +34,8 @@ public:
         std::ignore = predicate;
         return false;
     }
+
+    [[nodiscard]] virtual bool operator==(const IProcessedSentence &other) const noexcept = 0;
 };
 
 } // namespace optifol

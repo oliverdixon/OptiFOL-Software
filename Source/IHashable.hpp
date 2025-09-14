@@ -128,14 +128,16 @@ protected:
 
 // ReSharper disable once CppDoxygenUnresolvedReference
 
+namespace std
+{
+
 /**
- * @class std::hash<Type>
+ * @class hash<Type>
  * @brief Standard hasher implementation for Optifol's IHashable derived classes
  * @tparam Type The IHashable type to hash
  */
-template<typename Type>
-    requires std::derived_from<Type, optifol::IHashable>
-struct std::hash<Type> // NOLINT(*-dcl58-cpp) Specialising std::hash for non-standard types does not result in UB.
+template<typename Type> requires derived_from<Type, optifol::IHashable>
+struct hash<Type> // NOLINT(*-dcl58-cpp) Specialising std::hash does not result in UB.
 {
     using is_transparent = void;
 
@@ -155,7 +157,7 @@ struct std::hash<Type> // NOLINT(*-dcl58-cpp) Specialising std::hash for non-sta
      *  generated
      * @return The hashcode of the hashable object detained within the ref-counted pointer
      */
-    std::size_t operator()(const std::shared_ptr<Type> &shared_hashable) const
+    size_t operator()(const shared_ptr<Type> &shared_hashable) const
     {
         return shared_hashable->hash();
     }
@@ -165,12 +167,12 @@ struct std::hash<Type> // NOLINT(*-dcl58-cpp) Specialising std::hash for non-sta
      * @param unique_hashable The unique pointer containing the hashable object for which a hashcode should be generated
      * @return The hashcode of the hashable object detained within the unique pointer
      */
-    std::size_t operator()(const std::unique_ptr<Type> &unique_hashable) const
+    size_t operator()(const unique_ptr<Type> &unique_hashable) const
     {
         return unique_hashable->hash();
     }
 
-    std::size_t operator()(const Type* ptr_hashable) const
+    size_t operator()(const Type* ptr_hashable) const
     {
         return ptr_hashable->hash();
     }
@@ -181,15 +183,17 @@ struct std::hash<Type> // NOLINT(*-dcl58-cpp) Specialising std::hash for non-sta
 // ReSharper disable once CppDoxygenUnresolvedReference
 
 /**
- * @class std::hash<std::chrono::system_clock::time_point>
+ * @class hash<std::chrono::system_clock::time_point>
  * @brief Standard hasher specialisation for the system clock, only required prior to C++26.
  */
 template<>
-struct std::hash<std::chrono::system_clock::time_point>
+struct hash<chrono::system_clock::time_point>
 {
-    std::size_t operator()(const std::chrono::system_clock::time_point& time) const noexcept;
+    std::size_t operator()(const chrono::system_clock::time_point& time) const noexcept;
 };
 
 #endif
+
+}
 
 #endif

@@ -64,6 +64,8 @@ public:
     std::variant<std::unique_ptr<IProcessedTerm>, const IProcessedTerm *> accept(
             const UnificationApplicationVisitor &unification_application_visitor) const override;
 
+    [[nodiscard]] bool operator==(const IProcessedTerm &other) const noexcept override;
+
 private:
     const std::string name;
     const std::optional<std::string> disambiguated_name;

@@ -54,7 +54,7 @@ bool Function::accept(UnificationVisitor &unification_visitor, const Variable &v
 
 bool Function::is_self_nested(const IProcessedTerm &search_term) const noexcept
 {
-    for (const auto argument : arguments)
+    for (const auto argument: arguments)
         if (argument->is_self_nested(search_term))
             return true;
 
@@ -65,6 +65,38 @@ UnificationApplicationVisitor::VisitorReturn Function::accept(
         const UnificationApplicationVisitor &unification_application_visitor) const
 {
     return unification_application_visitor.visit(*this);
+}
+
+bool Function::operator==(const IProcessedTerm &other) const noexcept
+{
+    const auto other_function = dynamic_cast<const Function *>(&other);
+    if (other_function == nullptr)
+        // Other IMutableTerm isn't a MutableFunction.
+        return false;
+
+    if (get_disambiguated_name() != other_function->get_disambiguated_name())
+        // Different superficial names.
+        return false;
+
+    const auto argument_count = arguments.size();
+    if (argument_count != other_function->arguments.size())
+        // Different number of arguments.
+        return false;
+
+    for (std::size_t argument_idx = 0; argument_idx < argument_count; ++argument_idx) {
+        const auto &lhs_arg_ptr = arguments[argument_idx];
+        const auto &rhs_arg_ptr = other_function->arguments[argument_idx];
+
+        if (lhs_arg_ptr == nullptr) {
+            if (rhs_arg_ptr != nullptr)
+                return false;
+        } else if (rhs_arg_ptr == nullptr)
+            return false;
+        else if (*lhs_arg_ptr != *rhs_arg_ptr)
+            return false;
+    }
+
+    return true;
 }
 
 std::string Function::to_string() const

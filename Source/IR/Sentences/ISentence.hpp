@@ -47,33 +47,6 @@ public:
     {
         return object.serialise(ostream);
     }
-
-    /**
-     * @brief Test equality between two sentences
-     * @param other The sentence against which to compare for equality
-     * @return Is the current sentence equal to the given sentence?
-     * @note The metric of equality is hash-based
-     * @note This function is provided for satisfaction of @ref GoogleTestable.
-     */
-    [[nodiscard]] bool operator==(const ISentence &other) const
-    {
-        /*
-         * TODO: This is a quick fix. We shouldn't be relying solely on hashes to determine equality. We need an
-         *  equality testing visitor.
-         */
-        return hash() == other.hash();
-    }
-
-    /**
-     * @brief Compare with another sentence wrapped in a @ref std::unique_ptr
-     * @param other The wrapper containing the sentence against which equality should be determined
-     * @return Is the wrapped sentence hash-equal to us?
-     * @see GoogleTestable for desired concept
-     */
-    bool operator==(const std::unique_ptr<ISentence> &other) const noexcept
-    {
-        return hash() == other->hash();
-    }
 };
 
 } // namespace optifol

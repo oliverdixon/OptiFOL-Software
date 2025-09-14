@@ -69,4 +69,14 @@ void MutableVariable::accept(IObservingNodeVisitor &visitor) const
     visitor.visit(*this);
 }
 
+bool MutableVariable::operator==(const IMutableTerm &other) const noexcept
+{
+    const auto other_variable = dynamic_cast<const MutableVariable *>(&other);
+    if (other_variable == nullptr)
+        // Other IMutableTerm isn't a MutableVariable.
+        return false;
+
+    return get_disambiguated_name() == other_variable->get_disambiguated_name();
+}
+
 } // namespace optifol

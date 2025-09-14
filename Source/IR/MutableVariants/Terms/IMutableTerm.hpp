@@ -63,6 +63,8 @@ public:
      * @param visitor The instantiation of the mutating repository-building visitor
      */
     [[nodiscard]] virtual const IProcessedTerm *accept(RepositoryBuildingVisitor &visitor) = 0;
+
+    [[nodiscard]] virtual bool operator==(const IMutableTerm &other) const noexcept = 0;
 };
 
 } // namespace optifol

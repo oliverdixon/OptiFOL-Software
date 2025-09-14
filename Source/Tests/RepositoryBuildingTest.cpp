@@ -50,8 +50,8 @@ protected:
         wrapped_test_input->accept(visitor);
         const auto transformed_root = visitor.take_last_root();
 
-        auto actual_clause_begin = transformed_root->cbegin();
-        const auto actual_clause_end = transformed_root->cend();
+        auto actual_clause_begin = transformed_root->begin();
+        const auto actual_clause_end = transformed_root->end();
 
         for (const auto &expected_clause: expected) {
             // Verify that the actual clause list does not exceed the expected clause list.

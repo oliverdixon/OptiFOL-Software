@@ -55,17 +55,50 @@ std::size_t SentenceRoot::hash() const noexcept
     return hash_value;
 }
 
+bool SentenceRoot::operator==(const IProcessedSentence &other) const noexcept
+{
+    const auto other_root = dynamic_cast<const SentenceRoot *>(&other);
+    if (other_root == nullptr)
+        // Other IProcessedSentence isn't a SentenceRoot.
+        return false;
+
+    const auto clause_count = clauses.size();
+    if (clause_count != other_root->clauses.size())
+        // Other SentenceRoot has a different number of clauses under conjunction.
+        return false;
+
+    for (std::size_t clause_idx = 0; clause_idx < clause_count; ++clause_idx) {
+        const auto& clause = clauses[clause_idx];
+        const auto& other_clause = other_root->clauses[clause_idx];
+
+        const auto literal_count = clause.size();
+        if (literal_count != other_clause.size())
+            // Other clause has a different number of literals under disjunction.
+            return false;
+
+        for (std::size_t literal_idx = 0; literal_idx < literal_count; ++literal_idx)
+            if (clause[literal_idx]->operator==(*other_clause[literal_idx]))
+                /*
+                 * Other literal is different. This uses Literal::operator==, not memory addresses. Otherwise we could
+                 * just use std::vector::operator==(const std::vector&) and forget about all this!
+                 */
+                return false;
+    }
+
+    return true;
+}
+
 void SentenceRoot::commit_clause(const std::vector<const Literal *> &literals)
 {
     clauses.emplace_back(literals);
 }
 
-decltype(SentenceRoot::clauses)::const_iterator SentenceRoot::cbegin() const noexcept
+std::vector<SentenceRoot::Clause>::const_iterator SentenceRoot::begin() const noexcept
 {
     return clauses.cbegin();
 }
 
-decltype(SentenceRoot::clauses)::const_iterator SentenceRoot::cend() const noexcept
+std::vector<SentenceRoot::Clause>::const_iterator SentenceRoot::end() const noexcept
 {
     return clauses.cend();
 }

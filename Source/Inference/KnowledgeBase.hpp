@@ -10,11 +10,24 @@
 #ifndef OPTIFOL_KNOWLEDGEBASE_HPP
 #define OPTIFOL_KNOWLEDGEBASE_HPP
 
+#include "../IR/Sentences/SentenceRoot.hpp"
+
 namespace optifol
 {
 
+class SymbolRepository;
+
 class KnowledgeBase
 {
+public:
+    explicit KnowledgeBase(std::shared_ptr<SymbolRepository> symbol_repository);
+
+    void tell(const SentenceRoot::Clause& clause);
+
+private:
+    std::vector<SentenceRoot::Clause> clauses;
+
+    std::shared_ptr<SymbolRepository> symbol_repository;
 };
 
 } // namespace optifol
