@@ -70,7 +70,6 @@ class UnificationVisitor
     RawUnorderedMap<const Variable, const IProcessedTerm *> substitutions;
 
 public:
-    using Substitution = std::optional<std::pair<const IProcessedTerm *, const IProcessedTerm *>>;
     using SubstitutionMap = decltype(substitutions);
 
     explicit UnificationVisitor(std::shared_ptr<SymbolRepository> symbol_repository);
@@ -85,9 +84,7 @@ public:
 
     [[nodiscard]] bool visit(const Function &function_lhs, const Function &function_rhs);
 
-    decltype(substitutions)::const_iterator get_substitutions_cbegin() const noexcept;
-
-    decltype(substitutions)::const_iterator get_substitutions_cend() const noexcept;
+    [[nodiscard]] const SubstitutionMap& get_substitutions() const noexcept;
 
 private:
     /**

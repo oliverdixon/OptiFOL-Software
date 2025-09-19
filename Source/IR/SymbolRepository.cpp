@@ -16,19 +16,6 @@
 namespace optifol
 {
 
-const Variable *SymbolRepository::add_symbol(std::unique_ptr<Variable> &&variable)
-{
-    const auto find_it = variables.find(*variable);
-    if (find_it != variables.cend())
-        return find_it->get();
-
-    const auto [inserted_it, success] = variables.insert(std::move(variable));
-    if (!success)
-        throw std::runtime_error("Cannot add variable: insertion failed.");
-
-    return inserted_it->get();
-}
-
 const IProcessedTerm *SymbolRepository::get_symbol_handle(const IProcessedTerm &term) const
 {
     const auto it = terms.find(term);

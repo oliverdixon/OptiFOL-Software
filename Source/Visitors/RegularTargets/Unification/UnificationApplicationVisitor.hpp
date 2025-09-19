@@ -24,6 +24,7 @@ class UnificationApplicationVisitor
 {
 public:
     using VisitorReturn = std::variant<std::unique_ptr<IProcessedTerm>, const IProcessedTerm *>;
+    using LiteralReturn = std::variant<std::unique_ptr<Literal>, const Literal *>;
 
     UnificationApplicationVisitor(const UnificationVisitor::SubstitutionMap& substitutions,
         std::shared_ptr<SymbolRepository> symbol_repository);
@@ -34,7 +35,12 @@ public:
 
     VisitorReturn visit(const Function &node) const;
 
+    LiteralReturn visit(const Literal& literal) const;
+
 private:
+    std::optional<std::vector<const IProcessedTerm *>> apply_to_term_vector(
+            const std::vector<const IProcessedTerm *> &terms) const;
+
     const UnificationVisitor::SubstitutionMap& substitutions;
     const std::shared_ptr<SymbolRepository> symbol_repository;
 };

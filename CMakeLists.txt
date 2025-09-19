@@ -287,6 +287,8 @@ add_library(OptifolCommon OBJECT
         Source/Visitors/RegularTargets/Unification/UnificationApplicationVisitor.hpp
         Source/Inference/ExpressionFactory.cpp
         Source/Inference/ExpressionFactory.hpp
+        Source/IR/Sentences/Clause.hpp
+        Source/IR/Sentences/Clause.cpp
 )
 
 target_include_directories(OptifolCommon PRIVATE

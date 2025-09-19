@@ -11,6 +11,7 @@
 
 #include "../../../IR/SymbolRepository.hpp"
 #include "../../../IR/Terms/Function.hpp"
+#include "../../../IR/Sentences/Literal.hpp"
 
 // ReSharper disable CppUnusedIncludeDirective - Full definitions required for transparent hashing of sub. map.
 #include "../../../IR/Terms/Constant.hpp"
@@ -29,6 +30,7 @@ UnificationApplicationVisitor::UnificationApplicationVisitor(
 
 UnificationApplicationVisitor::VisitorReturn UnificationApplicationVisitor::visit(const Constant &node)
 {
+    std::ignore = node;
     return nullptr;
 }
 
@@ -40,13 +42,31 @@ UnificationApplicationVisitor::VisitorReturn UnificationApplicationVisitor::visi
 
 UnificationApplicationVisitor::VisitorReturn UnificationApplicationVisitor::visit(const Function &node) const
 {
+    auto transformed_arguments = apply_to_term_vector(node.observe_arguments());
+    if (!transformed_arguments.has_value())
+        return nullptr;
+
+    return std::make_unique<Function>(std::string(node.get_disambiguated_name()), std::move(*transformed_arguments));
+}
+
+UnificationApplicationVisitor::LiteralReturn UnificationApplicationVisitor::visit(const Literal &literal) const
+{
+    auto transformed_arguments = apply_to_term_vector(literal.observe_arguments());
+    if (!transformed_arguments.has_value())
+        return nullptr;
+
+    return std::make_unique<Literal>(std::string(literal.get_name()), std::move(*transformed_arguments));
+}
+
+std::optional<std::vector<const IProcessedTerm *>> UnificationApplicationVisitor::apply_to_term_vector(
+        const std::vector<const IProcessedTerm *> &terms) const
+{
     bool changed = false;
     std::vector<const IProcessedTerm *> transformed_arguments;
-    const auto &arguments = node.observe_arguments();
 
-    transformed_arguments.reserve(arguments.size());
+    transformed_arguments.reserve(terms.size());
 
-    for (const auto &argument: arguments) {
+    for (const auto &argument: terms) {
         auto transformed = argument->accept(*this);
 
         if (std::holds_alternative<std::unique_ptr<IProcessedTerm>>(transformed)) {
@@ -69,9 +89,9 @@ UnificationApplicationVisitor::VisitorReturn UnificationApplicationVisitor::visi
     }
 
     if (!changed)
-        return nullptr;
+        return std::nullopt;
 
-    return std::make_unique<Function>(std::string(node.get_disambiguated_name()), std::move(transformed_arguments));
+    return transformed_arguments;
 }
 
 } // namespace optifol

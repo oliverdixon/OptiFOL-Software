@@ -103,6 +103,11 @@ std::vector<SentenceRoot::Clause>::const_iterator SentenceRoot::end() const noex
     return clauses.cend();
 }
 
+std::size_t SentenceRoot::get_clause_count() const noexcept
+{
+    return clauses.size();
+}
+
 std::ostream &SentenceRoot::serialise_clause(std::ostream &ostream, const std::vector<const Literal *> &clause)
 {
     ostream << '{' << ' ';

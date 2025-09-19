@@ -48,6 +48,7 @@ std::unique_ptr<SentenceRoot> ExpressionFactory::build_sentence(
      */
 
     if (cnf_logger->isInfoEnabled()) {
+
         cnf_logger->info("Beginning CNF pipeline transformation.");
         sentence_root->accept(serialiser_visitor);
         cnf_logger->info("Initial sentence: " + serialiser_visitor.extract());

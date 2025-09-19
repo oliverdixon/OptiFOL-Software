@@ -94,4 +94,10 @@ bool Literal::accept(UnificationVisitor &unification_visitor, const Literal &pre
     return unification_visitor.visit(*this, predicate);
 }
 
+UnificationApplicationVisitor::LiteralReturn Literal::accept(
+        const UnificationApplicationVisitor &application_visitor) const
+{
+    return application_visitor.visit(*this);
+}
+
 } // namespace optifol

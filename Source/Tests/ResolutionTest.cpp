@@ -13,8 +13,14 @@
 
 #include <gtest/gtest.h>
 
-#include "../IR/Sentences/Literal.hpp"
+#include "../IR/MutableVariants/Sentences/MutableBinaryConnected.hpp"
+#include "../IR/MutableVariants/Sentences/MutablePredicate.hpp"
+#include "../IR/MutableVariants/Sentences/MutableQuantified.hpp"
+#include "../IR/MutableVariants/Sentences/MutableSentenceRoot.hpp"
+#include "../IR/MutableVariants/Terms/MutableConstant.hpp"
+#include "../IR/MutableVariants/Terms/MutableVariable.hpp"
 #include "../IR/SymbolRepository.hpp"
+#include "../Inference/ExpressionFactory.hpp"
 #include "../Inference/KnowledgeBase.hpp"
 
 namespace optifol
@@ -38,7 +44,7 @@ protected:
 
 /**
  * @brief Tests Resolution functionality for a Modus Ponens knowledge base over a single universally quantified variable
- *  @f$ x @f$.
+ *  @f$ x @f$ and a constant @f$ C @f$.
  * @details
  *  <table>
  *      <tr>
@@ -54,28 +60,61 @@ protected:
  *          <td>@f$ \left\{ \left\{ \lnot P\left(x\right), Q\left(x\right) \right\} \right\} @f$</td>
  *      </tr>
  *      <tr>
- *          <td>@f$ P\left(x\right) @f$</td>
- *          <td>@f$ P\left(x\right) @f$</td>
- *          <td>@f$ \left\{ \left\{ P\left(x\right) \right\} \right\} @f$</td>
+ *          <td>@f$ P\left(C\right) @f$</td>
+ *          <td>@f$ P\left(C\right) @f$</td>
+ *          <td>@f$ \left\{ \left\{ P\left(C\right) \right\} \right\} @f$</td>
  *      </tr>
  *      <tr>
  *          <th>Goal</th>
- *          <td>@f$ Q\left(x\right) @f$</td>
- *          <td>@f$ Q\left(x\right) @f$</td>
- *          <td>@f$ \left\{ \left\{ Q\left(x\right) \right\} \right\} @f$</td>
+ *          <td>@f$ Q\left(C\right) @f$</td>
+ *          <td>@f$ Q\left(C\right) @f$</td>
+ *          <td>@f$ \left\{ \left\{ Q\left(C\right) \right\} \right\} @f$</td>
  *      </tr>
  *  </table>
  * @memberof ResolutionTest
  */
 TEST_F(ResolutionTest, ModusPonens_Quantified)
 {
-    const auto x = symbol_repository->add_symbol(std::make_unique<Variable>("x"));
-    const auto p_neg = symbol_repository->add_symbol(std::make_unique<Literal>(
-        "P", std::vector<const IProcessedTerm *>{ x }, false));
-    const auto q = symbol_repository->add_symbol(std::make_unique<Literal>(
-        "Q", std::vector<const IProcessedTerm *>{ x }));
+    std::vector<std::unique_ptr<IMutableTerm>> s1_p_args;
+    s1_p_args.push_back(MutableVariable::build<IMutableTerm>("x"));
 
+    std::vector<std::unique_ptr<IMutableTerm>> s1_q_args;
+    s1_q_args.push_back(MutableVariable::build<IMutableTerm>("x"));
 
+    std::vector<std::unique_ptr<IMutableTerm>> s2_p_args;
+    s2_p_args.push_back(MutableConstant::build<IMutableTerm>("C"));
+
+    std::vector<std::unique_ptr<IMutableTerm>> query_args;
+    query_args.push_back(MutableConstant::build<IMutableTerm>("C"));
+
+    // clang-format off
+
+    const auto sentence1 = ExpressionFactory::build_sentence(MutableSentenceRoot::build(
+        MutableQuantified::build(
+            QuantifierTypes::Universal,
+            MutableVariable::build("x"),
+            MutableBinaryConnected::build(
+                BinaryOperatorTypes::Implication,
+                MutablePredicate::build("P", std::move(s1_p_args)),
+                MutablePredicate::build("Q", std::move(s1_q_args))
+            )
+        )
+    ), symbol_repository);
+
+    // clang-format on
+
+    const auto sentence2 = ExpressionFactory::build_sentence(MutableSentenceRoot::build(
+        MutablePredicate::build("P", std::move(s2_p_args))
+    ), symbol_repository);
+
+    const auto query = ExpressionFactory::build_sentence(
+        MutableSentenceRoot::build(MutablePredicate::build("Q", false, std::move(query_args))
+    ), symbol_repository);
+
+    knowledge_base->tell(*sentence1);
+    knowledge_base->tell(*sentence2);
+
+    knowledge_base->ask(*query);
 }
 
 } // namespace optifol

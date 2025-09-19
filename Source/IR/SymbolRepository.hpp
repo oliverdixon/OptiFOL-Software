@@ -73,8 +73,6 @@ public:
         return static_cast<const TermType *>(inserted_it->get());
     }
 
-    const Variable *add_symbol(std::unique_ptr<Variable>&& variable);
-
     /**
      * @brief Add a sentence to the repository
      * @tparam SentenceType The type of sentence pointer to return
@@ -134,6 +132,20 @@ private:
     UniqueUnorderedSet<IProcessedTerm> terms;
     UniqueUnorderedSet<Variable> variables;
 };
+
+template<>
+inline const Variable* SymbolRepository::add_symbol(std::unique_ptr<Variable>&& variable)
+{
+    const auto find_it = variables.find(*variable);
+    if (find_it != variables.cend())
+        return find_it->get();
+
+    const auto [inserted_it, success] = variables.insert(std::move(variable));
+    if (!success)
+        throw std::runtime_error("Cannot add variable: insertion failed.");
+
+    return inserted_it->get();
+}
 
 } // namespace optifol
 

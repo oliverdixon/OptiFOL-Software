@@ -45,6 +45,8 @@ public:
 
     [[nodiscard]] std::vector<Clause>::const_iterator end() const noexcept;
 
+    [[nodiscard]] std::size_t get_clause_count() const noexcept;
+
 private:
     static std::ostream& serialise_clause(std::ostream &ostream, const std::vector<const Literal *> &clause);
 

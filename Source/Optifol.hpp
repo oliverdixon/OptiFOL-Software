@@ -200,7 +200,7 @@ struct UniversalTransparentEquality
         if (ptr == nullptr || ptr_other == nullptr)
             return ptr == ptr_other;
 
-        return *ptr == *ptr_other;
+        return ptr->operator==(*ptr_other);
     }
 
     bool operator()(const T * const ptr, const T& obj) const noexcept

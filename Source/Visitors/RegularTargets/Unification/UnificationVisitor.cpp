@@ -36,6 +36,9 @@ bool UnificationVisitor::visit(const Literal &predicate_lhs, const Literal &pred
     const auto &rhs_arguments = predicate_rhs.observe_arguments();
     const auto argument_count = lhs_arguments.size();
 
+    if (predicate_lhs.is_negative_polarity() != predicate_rhs.is_negative_polarity())
+        return false;
+
     if (predicate_lhs.get_name() != predicate_rhs.get_name() || argument_count != rhs_arguments.size())
         // Cannot unify if predicates are fundamentally different, i.e. different name or number of arguments.
         return false;
@@ -105,16 +108,9 @@ bool UnificationVisitor::visit(const Function &function_lhs, const Function &fun
     return true;
 }
 
-decltype(UnificationVisitor::substitutions)::const_iterator
-    UnificationVisitor::get_substitutions_cbegin() const noexcept
+const UnificationVisitor::SubstitutionMap &UnificationVisitor::get_substitutions() const noexcept
 {
-    return substitutions.cbegin();
-}
-
-decltype(UnificationVisitor::substitutions)::const_iterator UnificationVisitor::get_substitutions_cend() const noexcept
-
-{
-    return substitutions.cend();
+    return substitutions;
 }
 
 bool UnificationVisitor::variable_generic(const Variable &variable_lhs, const IProcessedTerm &generic_term_rhs)

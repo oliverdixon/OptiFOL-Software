@@ -40,16 +40,6 @@ protected:
         return symbol_repository->add_symbol(std::make_unique<TermType>(std::forward<CtorArgs>(ctor_args)...));
     }
 
-    bool are_substitution_sets_equal(const UnificationVisitor::SubstitutionMap& expected_map) const
-    {
-        const UnificationVisitor::SubstitutionMap given_map(
-            unification_visitor->get_substitutions_cbegin(),
-            unification_visitor->get_substitutions_cend()
-        );
-
-        return given_map == expected_map;
-    }
-
 private:
     std::shared_ptr<SymbolRepository> symbol_repository;
 };
@@ -77,7 +67,7 @@ TEST_F(UnificationTest, Positive_SingleBinding_FuncVar)
     EXPECT_TRUE(p1->accept(*unification_visitor, *p2));
 
     const UnificationVisitor::SubstitutionMap expected_subs{{x, d}};
-    EXPECT_TRUE(are_substitution_sets_equal(expected_subs));
+    EXPECT_EQ(unification_visitor->get_substitutions(), expected_subs);
 }
 
 /**
@@ -108,7 +98,7 @@ TEST_F(UnificationTest, Positive_MultipleBindings_FuncVar)
         {y, c}
     };
 
-    EXPECT_TRUE(are_substitution_sets_equal(expected_subs));
+    EXPECT_EQ(unification_visitor->get_substitutions(), expected_subs);
 }
 
 /**
@@ -139,7 +129,7 @@ TEST_F(UnificationTest, Positive_MultipleBindings_VarVar)
             {d, b}
     };
 
-    EXPECT_TRUE(are_substitution_sets_equal(expected_subs));
+    EXPECT_EQ(unification_visitor->get_substitutions(), expected_subs);
 }
 
 /**

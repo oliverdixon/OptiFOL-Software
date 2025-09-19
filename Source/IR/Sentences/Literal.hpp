@@ -16,6 +16,7 @@
 
 #include <vector>
 
+#include "../../Visitors/RegularTargets/Unification/UnificationApplicationVisitor.hpp"
 #include "IProcessedSentence.hpp"
 
 namespace optifol
@@ -23,6 +24,7 @@ namespace optifol
 
 class IProcessedTerm;
 class UnificationVisitor;
+class UnificationApplicationVisitor;
 
 /**
  * @class Literal
@@ -75,6 +77,9 @@ public:
         override;
 
     [[nodiscard]] bool accept(UnificationVisitor &unification_visitor, const Literal &predicate) const override;
+
+    [[nodiscard]] UnificationApplicationVisitor::LiteralReturn accept(
+            const UnificationApplicationVisitor &application_visitor) const;
 
 private:
     const std::string name;

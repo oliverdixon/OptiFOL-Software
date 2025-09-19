@@ -33,9 +33,10 @@ protected:
     }
 
     /**
-     * @brief Tests that the given input correctly lexes and parses to the equivalent given typed structure
-     * @param test The raw input string to pass to the lexer
-     * @param expected The expected output sentence structure
+     * @brief Tests that the given input correctly lexes and parses to the equivalent given typed structure.
+     * @param test The raw input string to pass to the lexer.
+     * @param expected The expected output sentence structure. The sentence is wrapped in a positive
+     *  MutableSentenceRoot.
      */
     void equality_on_input(const char *test, std::unique_ptr<IMutableSentence>&& expected)
     {
@@ -43,9 +44,9 @@ protected:
         parser.parse();
 
         const auto sentence = parser.retrieve_sentence();
-        const auto expected_wrapped = std::make_unique<MutableSentenceRoot>(std::move(expected));
+        const auto expected_root = std::make_unique<MutableSentenceRoot>(std::move(expected));
 
-        GoogleTestSupport::test_sentence_equality(*sentence, *expected_wrapped);
+        GoogleTestSupport::test_sentence_equality(*sentence, *expected_root);
     }
 
 private:
