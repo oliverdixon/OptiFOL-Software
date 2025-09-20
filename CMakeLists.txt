@@ -427,8 +427,7 @@ target_link_libraries(OptifolGUI PRIVATE
         OptifolCommon
         OptifolGenerated
         log4cxx
-        ${GTKMM_LIBRARIES}
-        ${LOG4CXX_LIBRARIES}
+        ${GTKMM_LINK_LIBRARIES}
 )
 
 target_include_directories(OptifolGUI SYSTEM PRIVATE
@@ -481,8 +480,7 @@ target_link_libraries(OptifolTesting PRIVATE
         OptifolGenerated
         log4cxx
         GTest::gtest_main
-        ${GTKMM_LIBRARIES}
-        ${LOG4CXX_LIBRARIES}
+        ${GTKMM_LINK_LIBRARIES}
 )
 
 target_compile_options(OptifolTesting PRIVATE

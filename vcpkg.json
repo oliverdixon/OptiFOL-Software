@@ -1,0 +1,18 @@
+{
+  "name": "optifol",
+  "version-date": "2025-09-25",
+  "dependencies": [
+    {
+      "name": "gtkmm",
+      "version>=": "4.14.0"
+    },
+    {
+      "name": "log4cxx",
+      "version>=": "1.5.0"
+    },
+    {
+      "name": "rapidjson",
+      "version>=": "2025-02-26"
+    }
+  ]
+}
