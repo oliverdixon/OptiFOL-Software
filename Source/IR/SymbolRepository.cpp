@@ -27,15 +27,6 @@ const IProcessedTerm *SymbolRepository::get_symbol_handle(const IProcessedTerm &
     return it->get();
 }
 
-const IProcessedSentence *SymbolRepository::get_symbol_handle(const IProcessedSentence &sentence) const
-{
-    const auto it = sentences.find(sentence);
-    if (it == sentences.cend())
-        return nullptr;
-
-    return it->get();
-}
-
 const Variable *SymbolRepository::get_symbol_handle(const Variable &variable) const
 {
     const auto it = variables.find(variable);

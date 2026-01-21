@@ -50,8 +50,7 @@ bool Constant::is_self_nested(const IProcessedTerm &search_term) const noexcept
     return false;
 }
 
-UnificationApplicationVisitor::VisitorReturn Constant::accept(
-        const UnificationApplicationVisitor &unification_application_visitor) const
+const IProcessedTerm *Constant::accept(const UnificationApplicationVisitor &unification_application_visitor) const
 {
     return unification_application_visitor.visit(*this);
 }

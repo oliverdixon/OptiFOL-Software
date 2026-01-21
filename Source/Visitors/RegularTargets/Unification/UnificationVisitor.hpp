@@ -26,8 +26,9 @@ class Function;
 class ITerm;
 class Literal;
 class Constant;
-
 class SymbolRepository;
+
+using Unifier = RawUnorderedMap<const Variable, const IProcessedTerm *>;
 
 /**
  * @class UnificationVisitor
@@ -67,11 +68,11 @@ class SymbolRepository;
  */
 class UnificationVisitor
 {
-    RawUnorderedMap<const Variable, const IProcessedTerm *> substitutions;
-
 public:
-    using SubstitutionMap = decltype(substitutions);
-
+    /**
+     * @brief Initialise the UnificationVisitor for use with symbols registered in the given SymbolRepository.
+     * @param symbol_repository The SymbolRepository containing symbols for the terms received by the visitor.
+     */
     explicit UnificationVisitor(std::shared_ptr<SymbolRepository> symbol_repository);
 
     [[nodiscard]] bool visit(const Literal &predicate_lhs, const Literal &predicate_rhs);
@@ -84,7 +85,9 @@ public:
 
     [[nodiscard]] bool visit(const Function &function_lhs, const Function &function_rhs);
 
-    [[nodiscard]] const SubstitutionMap& get_substitutions() const noexcept;
+    [[nodiscard]] const Unifier& observe_substitutions() const noexcept;
+
+    void reset_working_set() noexcept;
 
 private:
     /**
@@ -138,15 +141,15 @@ private:
     [[nodiscard]] bool occurs_check(const Variable &variable_lhs, const IProcessedTerm &generic_term_rhs) const;
 
     /**
-     * @brief A dummy SymbolRepository for tracking symbols introduced by the UnificationApplicationVisitor during
-     *  @ref occurs_check temporary substitution.
-     */
-    const std::shared_ptr<SymbolRepository> occurs_dummy_symbol_repo = std::make_shared<SymbolRepository>();
-
-    /**
      * @brief The SymbolRepository for the environment of the unified pair, provided by the consumer.
      */
     const std::shared_ptr<SymbolRepository> symbol_repository;
+
+    /**
+     * @brief The working set of Variable-to-Term substitutions for the unification attempt. Once unification has
+     *  returned a verdict, the final set can be observed with @ref observe_substitutions.
+     */
+    Unifier substitutions;
 };
 
 }

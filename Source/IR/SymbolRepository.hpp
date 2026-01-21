@@ -112,11 +112,23 @@ public:
 
     /**
      * @brief Retrieves a handle to an immutable sentence symbol owned by the repository
+     * @tparam SentenceType The type of sentence pointer to return
      * @param sentence A hash-equal sentence to the target sentence
      * @return A constant handle to the sentence, if a suitable match exists in the repository. Otherwise, an empty
      *  @ref std::optional.
      */
-    const IProcessedSentence *get_symbol_handle(const IProcessedSentence &sentence) const;
+    template<typename SentenceType = IProcessedSentence>
+        requires std::derived_from<SentenceType, IProcessedSentence>
+    const SentenceType *get_symbol_handle(const IProcessedSentence &sentence) const
+    {
+        const auto it = sentences.find(sentence);
+        const SentenceType * downcast_ptr = nullptr;
+
+        if (it == sentences.cend() || (downcast_ptr = dynamic_cast<const SentenceType *>(it->get())) == nullptr)
+            return nullptr;
+
+        return downcast_ptr;
+    }
 
     const Variable *get_symbol_handle(const Variable &variable) const;
 
@@ -134,13 +146,13 @@ private:
 };
 
 template<>
-inline const Variable* SymbolRepository::add_symbol(std::unique_ptr<Variable>&& variable)
+inline const Variable* SymbolRepository::add_symbol(std::unique_ptr<Variable>&& term)
 {
-    const auto find_it = variables.find(*variable);
+    const auto find_it = variables.find(*term);
     if (find_it != variables.cend())
         return find_it->get();
 
-    const auto [inserted_it, success] = variables.insert(std::move(variable));
+    const auto [inserted_it, success] = variables.insert(std::move(term));
     if (!success)
         throw std::runtime_error("Cannot add variable: insertion failed.");
 

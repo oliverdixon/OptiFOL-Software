@@ -73,8 +73,7 @@ bool Variable::is_self_nested(const IProcessedTerm &search_term) const noexcept
     return search_term == *this;
 }
 
-UnificationApplicationVisitor::VisitorReturn Variable::accept(
-        const UnificationApplicationVisitor &unification_application_visitor) const
+const IProcessedTerm *Variable::accept(const UnificationApplicationVisitor &unification_application_visitor) const
 {
     return unification_application_visitor.visit(*this);
 }

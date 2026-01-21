@@ -22,40 +22,45 @@ namespace optifol
 {
 
 UnificationApplicationVisitor::UnificationApplicationVisitor(
-        const UnificationVisitor::SubstitutionMap &substitutions, std::shared_ptr<SymbolRepository> symbol_repository) :
+        const Unifier &substitutions, std::shared_ptr<SymbolRepository> symbol_repository) :
     substitutions(substitutions),
     symbol_repository(std::move(symbol_repository))
 {
 }
 
-UnificationApplicationVisitor::VisitorReturn UnificationApplicationVisitor::visit(const Constant &node)
+const IProcessedTerm *UnificationApplicationVisitor::visit(const Constant &node) const
 {
-    std::ignore = node;
-    return nullptr;
+    return symbol_repository->get_symbol_handle(node);
 }
 
-UnificationApplicationVisitor::VisitorReturn UnificationApplicationVisitor::visit(const Variable &node) const
+const IProcessedTerm *UnificationApplicationVisitor::visit(const Variable &node) const
 {
     const auto it = substitutions.find(node);
     return it == substitutions.cend() ? nullptr : it->second;
 }
 
-UnificationApplicationVisitor::VisitorReturn UnificationApplicationVisitor::visit(const Function &node) const
+const IProcessedTerm *UnificationApplicationVisitor::visit(const Function &node) const
 {
     auto transformed_arguments = apply_to_term_vector(node.observe_arguments());
-    if (!transformed_arguments.has_value())
-        return nullptr;
 
-    return std::make_unique<Function>(std::string(node.get_disambiguated_name()), std::move(*transformed_arguments));
+    /*
+     * If the unifier could be successfully applied component-wise to the arguments (indicated by the std::optional
+     * containing a vector), create the applied Function symbol and add it to the SymbolRepository. Otherwise, provide
+     * a handle to the original unmutated Function.
+     */
+    return transformed_arguments.has_value() ?
+        symbol_repository->add_symbol(std::make_unique<Function>(std::string(node.get_disambiguated_name()),
+            std::move(*transformed_arguments))) :
+        symbol_repository->get_symbol_handle(node);
 }
 
-UnificationApplicationVisitor::LiteralReturn UnificationApplicationVisitor::visit(const Literal &literal) const
+const Literal *UnificationApplicationVisitor::visit(const Literal &node) const
 {
-    auto transformed_arguments = apply_to_term_vector(literal.observe_arguments());
-    if (!transformed_arguments.has_value())
-        return nullptr;
-
-    return std::make_unique<Literal>(std::string(literal.get_name()), std::move(*transformed_arguments));
+    auto transformed_arguments = apply_to_term_vector(node.observe_arguments());
+    return transformed_arguments.has_value() ?
+        symbol_repository->add_symbol<Literal>(std::make_unique<Literal>(std::string(node.get_name()),
+            std::move(*transformed_arguments))) :
+        symbol_repository->get_symbol_handle<Literal>(node);
 }
 
 std::optional<std::vector<const IProcessedTerm *>> UnificationApplicationVisitor::apply_to_term_vector(
@@ -67,28 +72,18 @@ std::optional<std::vector<const IProcessedTerm *>> UnificationApplicationVisitor
     transformed_arguments.reserve(terms.size());
 
     for (const auto &argument: terms) {
-        auto transformed = argument->accept(*this);
+        const auto transformed_argument = argument->accept(*this);
+        transformed_arguments.push_back(transformed_argument);
 
-        if (std::holds_alternative<std::unique_ptr<IProcessedTerm>>(transformed)) {
-
-            auto subbed_argument = std::move(std::get<std::unique_ptr<IProcessedTerm>>(transformed));
-            transformed_arguments.push_back(symbol_repository->add_symbol(std::move(subbed_argument)));
+        if (transformed_argument != argument)
             changed = true;
-
-        } else if (std::holds_alternative<const IProcessedTerm *>(transformed)) {
-
-            const auto subbed_argument = std::get<const IProcessedTerm *>(transformed);
-            if (subbed_argument == nullptr)
-                transformed_arguments.push_back(argument);
-            else {
-                transformed_arguments.push_back(subbed_argument);
-                changed = true;
-            }
-
-        }
     }
 
     if (!changed)
+        /*
+         * It's only worth reporting our transformed argument vector if a transformation occurred on at least one of the
+         * arguments. Else it's just the orginal argument vector, and we can indicate this with an empty optional.
+         */
         return std::nullopt;
 
     return transformed_arguments;

@@ -13,6 +13,8 @@
 
 #include "Function.hpp"
 
+#include <algorithm>
+
 #include "../../CompositeSerialisationHelpers.hpp"
 #include "../../Visitors/RegularTargets/Unification/UnificationApplicationVisitor.hpp"
 #include "../../Visitors/RegularTargets/Unification/UnificationVisitor.hpp"
@@ -54,15 +56,11 @@ bool Function::accept(UnificationVisitor &unification_visitor, const Variable &v
 
 bool Function::is_self_nested(const IProcessedTerm &search_term) const noexcept
 {
-    for (const auto argument: arguments)
-        if (argument->is_self_nested(search_term))
-            return true;
-
-    return false;
+    return std::ranges::any_of(arguments, [&search_term](const IProcessedTerm * const argument)
+        { return argument->is_self_nested(search_term); });
 }
 
-UnificationApplicationVisitor::VisitorReturn Function::accept(
-        const UnificationApplicationVisitor &unification_application_visitor) const
+const IProcessedTerm *Function::accept(const UnificationApplicationVisitor &unification_application_visitor) const
 {
     return unification_application_visitor.visit(*this);
 }

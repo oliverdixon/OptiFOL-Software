@@ -20,14 +20,14 @@ namespace optifol
 {
 
 Literal::Literal(
-        std::string name, std::initializer_list<const IProcessedTerm *> arguments, const bool is_positive) :
+        std::string name, const std::initializer_list<const IProcessedTerm *> arguments, const bool is_positive) :
     name(std::move(name)),
     arguments(arguments),
     is_positive(is_positive)
 {
 }
 
-Literal::Literal(std::string name, std::vector<const IProcessedTerm *> &&arguments, bool is_positive) :
+Literal::Literal(std::string name, std::vector<const IProcessedTerm *> &&arguments, const bool is_positive) :
     name(std::move(name)),
     arguments(std::move(arguments)),
     is_positive(is_positive)
@@ -52,26 +52,12 @@ std::size_t Literal::hash() const noexcept
 
 bool Literal::operator==(const IProcessedSentence &other) const noexcept
 {
-    const auto other_literal = dynamic_cast<const Literal *>(&other);
-    if (other_literal == nullptr)
-        // Other IProcessedSentence isn't a Literal.
-        return false;
+    return is_negative_polarity() == other.is_negative_polarity() && unsigned_equality(other);
+}
 
-    if (name != other_literal->name)
-        // Other literal has a different superficial name.
-        return false;
-
-    const auto argument_count = arguments.size();
-    if (argument_count != other_literal->arguments.size())
-        // Other literal has a different number of arguments.
-        return false;
-
-    for (std::size_t arg_idx = 0; arg_idx < argument_count; ++arg_idx)
-        if (*arguments[arg_idx] != *other_literal->arguments[arg_idx])
-            // Other pairwise argument is different according to its own comparator.
-            return false;
-
-    return true;
+bool Literal::equals_negation(const Literal &other) const noexcept
+{
+    return is_negative_polarity() == !other.is_negative_polarity() && unsigned_equality(other);
 }
 
 std::string_view Literal::get_name() const noexcept
@@ -94,10 +80,33 @@ bool Literal::accept(UnificationVisitor &unification_visitor, const Literal &pre
     return unification_visitor.visit(*this, predicate);
 }
 
-UnificationApplicationVisitor::LiteralReturn Literal::accept(
-        const UnificationApplicationVisitor &application_visitor) const
+const Literal *Literal::accept(const UnificationApplicationVisitor &application_visitor) const
 {
     return application_visitor.visit(*this);
+}
+
+bool Literal::unsigned_equality(const IProcessedSentence &other) const noexcept
+{
+    const auto other_literal = dynamic_cast<const Literal *>(&other);
+    if (other_literal == nullptr)
+        // Other IProcessedSentence isn't a Literal.
+        return false;
+
+    if (name != other_literal->name)
+        // Other literal has a different superficial name.
+        return false;
+
+    const auto argument_count = arguments.size();
+    if (argument_count != other_literal->arguments.size())
+        // Other literal has a different number of arguments.
+        return false;
+
+    for (std::size_t arg_idx = 0; arg_idx < argument_count; ++arg_idx)
+        if (*arguments[arg_idx] != *other_literal->arguments[arg_idx])
+            // Other pairwise argument is different according to its own comparator.
+            return false;
+
+    return true;
 }
 
 } // namespace optifol

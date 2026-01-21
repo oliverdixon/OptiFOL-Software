@@ -47,7 +47,7 @@ public:
      */
     [[nodiscard]] bool is_self_nested(const IProcessedTerm &search_term) const noexcept override;
 
-    [[nodiscard]] std::variant<std::unique_ptr<IProcessedTerm>, const IProcessedTerm *> accept(
+    [[nodiscard]] const IProcessedTerm *accept(
             const UnificationApplicationVisitor &unification_application_visitor) const override;
 
     [[nodiscard]] bool operator==(const IProcessedTerm &other) const noexcept override;

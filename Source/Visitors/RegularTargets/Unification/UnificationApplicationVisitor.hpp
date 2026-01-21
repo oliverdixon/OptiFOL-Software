@@ -3,9 +3,13 @@
  * 2025 Oliver Dixon <od641@york.ac.uk>
  */
 
-//
-// Created by owd on 9/11/25.
-//
+/**
+ * @file
+ * @brief Class specification for the FOL substitution-application visitor
+ * @author Oliver Dixon
+ * @date 2026-01-21
+ * @version Development
+ */
 
 #ifndef OPTIFOL_UNIFICATIONAPPLICATIONVISITOR_HPP
 #define OPTIFOL_UNIFICATIONAPPLICATIONVISITOR_HPP
@@ -23,25 +27,28 @@ class SentenceRoot;
 class UnificationApplicationVisitor
 {
 public:
-    using VisitorReturn = std::variant<std::unique_ptr<IProcessedTerm>, const IProcessedTerm *>;
-    using LiteralReturn = std::variant<std::unique_ptr<Literal>, const Literal *>;
+    UnificationApplicationVisitor(const Unifier& substitutions, std::shared_ptr<SymbolRepository> symbol_repository);
 
-    UnificationApplicationVisitor(const UnificationVisitor::SubstitutionMap& substitutions,
-        std::shared_ptr<SymbolRepository> symbol_repository);
+    /**
+     * @brief Attempt to unify with a Constant.
+     * @note This member function is provided only for API consistency. It is always a no-op, since Constant terms
+     *  cannot be substituted with a Variable.
+     * @param node The input Constant node.
+     * @return An observing pointer to the given Constant node in the SymbolRepository.
+     */
+    [[nodiscard]] const IProcessedTerm *visit(const Constant &node) const;
 
-    static VisitorReturn visit(const Constant &node);
+    [[nodiscard]] const IProcessedTerm *visit(const Variable &node) const;
 
-    VisitorReturn visit(const Variable &node) const;
+    [[nodiscard]] const IProcessedTerm *visit(const Function &node) const;
 
-    VisitorReturn visit(const Function &node) const;
-
-    LiteralReturn visit(const Literal& literal) const;
+    [[nodiscard]] const Literal *visit(const Literal &node) const;
 
 private:
-    std::optional<std::vector<const IProcessedTerm *>> apply_to_term_vector(
+    [[nodiscard]] std::optional<std::vector<const IProcessedTerm *>> apply_to_term_vector(
             const std::vector<const IProcessedTerm *> &terms) const;
 
-    const UnificationVisitor::SubstitutionMap& substitutions;
+    const Unifier& substitutions;
     const std::shared_ptr<SymbolRepository> symbol_repository;
 };
 

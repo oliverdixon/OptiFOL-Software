@@ -108,9 +108,14 @@ bool UnificationVisitor::visit(const Function &function_lhs, const Function &fun
     return true;
 }
 
-const UnificationVisitor::SubstitutionMap &UnificationVisitor::get_substitutions() const noexcept
+const Unifier &UnificationVisitor::observe_substitutions() const noexcept
 {
     return substitutions;
+}
+
+void UnificationVisitor::reset_working_set() noexcept
+{
+    substitutions.clear();
 }
 
 bool UnificationVisitor::variable_generic(const Variable &variable_lhs, const IProcessedTerm &generic_term_rhs)
@@ -150,30 +155,9 @@ void UnificationVisitor::register_substitution(const Variable &bound_key, const 
 
 bool UnificationVisitor::occurs_check(const Variable &variable_lhs, const IProcessedTerm &generic_term_rhs) const
 {
-    const UnificationApplicationVisitor applicator(substitutions, occurs_dummy_symbol_repo);
-    auto application_variant = generic_term_rhs.accept(applicator);
-
-    if (std::holds_alternative<std::unique_ptr<IProcessedTerm>>(application_variant)) {
-        /*
-         * Presence of a unique_ptr indicates that a new term was created solely to express the result of substitution.
-         * Such terms are not added to the central symbol repository by the application visitor, so we have ownership
-         * and destruct at the end of the scope once determining occurrence.
-         */
-        return std::get<std::unique_ptr<IProcessedTerm>>(application_variant)->is_self_nested(variable_lhs);
-    }
-
-    if (std::holds_alternative<const IProcessedTerm *>(application_variant)) {
-        /*
-         * Presence of a raw observing pointer indicates that an existing term was pulled from the central symbol
-         * repository, as no substitutions were applicable, or they were sufficiently trivial to express with the given
-         * immutable node. We don't have ownership of anything.
-         */
-        const auto temp_sub = std::get<const IProcessedTerm *>(application_variant);
-        return temp_sub == nullptr ? generic_term_rhs.is_self_nested(variable_lhs) :
-            temp_sub->is_self_nested(variable_lhs);
-    }
-
-    return false;
+    const UnificationApplicationVisitor applicator(substitutions, std::make_shared<SymbolRepository>());
+    const auto applied_term = generic_term_rhs.accept(applicator);
+    return *applied_term == generic_term_rhs ? false : applied_term->is_self_nested(variable_lhs);
 }
 
 } // namespace optifol

@@ -71,12 +71,10 @@ public:
      * @brief Accept a visit from the UnificationApplicationVisitor to construct new IProcessedTerm objects by
      *  substituting Variable instances into the term.
      * @param unification_application_visitor The non-mutating visitor to accept.
-     * @return Any applicable productions of the UnificationApplicationVisitor.
      * @see UnificationApplicationVisitor for the visitor context.
      */
-    [[nodiscard]] virtual std::variant<std::unique_ptr<IProcessedTerm>, const IProcessedTerm *> accept(
-            const UnificationApplicationVisitor &unification_application_visitor) const = 0;
-
+    [[nodiscard]] virtual const IProcessedTerm *accept(
+        const UnificationApplicationVisitor &unification_application_visitor) const = 0;
 
     /**
      * @brief Test equality between two IProcessedTerm instances.

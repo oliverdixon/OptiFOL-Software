@@ -13,8 +13,6 @@
 
 #include "KnowledgeBase.hpp"
 
-#include <iostream>
-
 #include "../IR/Sentences/Literal.hpp"
 #include "../Visitors/RegularTargets/Unification/UnificationApplicationVisitor.hpp"
 #include "../Visitors/RegularTargets/Unification/UnificationVisitor.hpp"
@@ -65,43 +63,26 @@ KnowledgeBase::Resolvent KnowledgeBase::resolve(const SentenceRoot::Clause &lhs_
             if (lhs_literal->accept(unification_visitor, negated_rhs)) {
 
                 /*
-                 * If the two literals can be unified, we have attained a most-general unifier. Construct the final
-                 * resolvent according to the predicate resolution rule: apply the unifier to the union of all literals
-                 * except the pair removed by unification. For the LHS and RHS clauses, over all literals except the
-                 * pair removed by resolution, apply the MGU and add to the resolvent set.
+                 * If the LHS and negated RHS can be unified, we have attained a most-general unifier. Construct the
+                 * final resolvent according to the predicate resolution rule: apply the unifier to the union of all
+                 * literals except the pair removed by unification. For the LHS and RHS clauses, over all literals
+                 * except the pair removed by resolution, apply the MGU and add to the resolvent set.
                  *
                  * Note that application of the MGU might create new literals. In that case, they are added to the
                  * general symbol store so we only have to see non-owning, raw, immutable pointers.
                  */
 
                 RawUnorderedSet<const Literal> unified_literals;
-                const UnificationApplicationVisitor application_visitor(unification_visitor.get_substitutions(),
+                const UnificationApplicationVisitor application_visitor(unification_visitor.observe_substitutions(),
                     symbol_repository);
 
                 for (const auto lhs_other : lhs_clause)
-                    if (lhs_other != lhs_literal) {
-                        auto post_application = lhs_other->accept(application_visitor);
-                        if (std::holds_alternative<std::unique_ptr<Literal>>(post_application)) {
-                            auto new_owned_literal = std::move(std::get<std::unique_ptr<Literal>>(post_application));
-                            unified_literals.insert(symbol_repository->add_symbol(std::move(new_owned_literal)));
-                        } else if (std::holds_alternative<const Literal *>(post_application))
-                            unified_literals.insert(std::get<const Literal *>(post_application));
-                    }
+                    if (lhs_other != lhs_literal)
+                        unified_literals.insert(lhs_other->accept(application_visitor));
 
                 for (const auto rhs_other : rhs_clause)
-                    if (rhs_other != rhs_literal) {
-                        auto post_application = rhs_other->accept(application_visitor);
-                        if (std::holds_alternative<std::unique_ptr<Literal>>(post_application)) {
-                            auto new_owned_literal = std::move(std::get<std::unique_ptr<Literal>>(post_application));
-                            unified_literals.insert(symbol_repository->add_symbol(std::move(new_owned_literal)));
-                        } else if (std::holds_alternative<const Literal *>(post_application))
-                            unified_literals.insert(std::get<const Literal *>(post_application));
-                    }
-
-                // TODO: put above into function.
-                // TODO: factor for complete inference process.
-
-
+                    if (rhs_other != rhs_literal)
+                        unified_literals.insert(rhs_other->accept(application_visitor));
             }
         }
 
