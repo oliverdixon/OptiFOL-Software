@@ -35,7 +35,7 @@ protected:
     }
 
     template<typename TermType, class... CtorArgs>
-    const TermType * register_symbol(CtorArgs&&... ctor_args) const
+    [[nodiscard]] const TermType * register_symbol(CtorArgs&&... ctor_args) const
     {
         return symbol_repository->add_symbol(std::make_unique<TermType>(std::forward<CtorArgs>(ctor_args)...));
     }
@@ -66,8 +66,8 @@ TEST_F(UnificationTest, Positive_SingleBinding_FuncVar)
 
     EXPECT_TRUE(p1->accept(*unification_visitor, *p2));
 
-    const UnificationVisitor::SubstitutionMap expected_subs{{x, d}};
-    EXPECT_EQ(unification_visitor->get_substitutions(), expected_subs);
+    const Unifier expected_subs{{x, d}};
+    EXPECT_EQ(unification_visitor->observe_substitutions(), expected_subs);
 }
 
 /**
@@ -93,12 +93,8 @@ TEST_F(UnificationTest, Positive_MultipleBindings_FuncVar)
 
     EXPECT_TRUE(p1->accept(*unification_visitor, *p2));
 
-    const UnificationVisitor::SubstitutionMap expected_subs{
-        {x, d},
-        {y, c}
-    };
-
-    EXPECT_EQ(unification_visitor->get_substitutions(), expected_subs);
+    const Unifier expected_subs{{x, d}, {y, c}};
+    EXPECT_EQ(unification_visitor->observe_substitutions(), expected_subs);
 }
 
 /**
@@ -124,12 +120,8 @@ TEST_F(UnificationTest, Positive_MultipleBindings_VarVar)
 
     EXPECT_TRUE(p1->accept(*unification_visitor, *p2));
 
-    const UnificationVisitor::SubstitutionMap expected_subs{
-            {c, a},
-            {d, b}
-    };
-
-    EXPECT_EQ(unification_visitor->get_substitutions(), expected_subs);
+    const Unifier expected_subs{{c, a}, {d, b}};
+    EXPECT_EQ(unification_visitor->observe_substitutions(), expected_subs);
 }
 
 /**

@@ -49,6 +49,10 @@ void KnowledgeBase::ask(const SentenceRoot &query)
 KnowledgeBase::Resolvent KnowledgeBase::resolve(const SentenceRoot::Clause &lhs_clause,
     const SentenceRoot::Clause &rhs_clause) const
 {
+    UnificationVisitor unification_visitor(symbol_repository);
+    const UnificationApplicationVisitor application_visitor(unification_visitor.observe_substitutions(),
+        symbol_repository);
+
     for (const auto lhs_literal : lhs_clause)
         for (const auto rhs_literal : rhs_clause) {
 
@@ -57,8 +61,6 @@ KnowledgeBase::Resolvent KnowledgeBase::resolve(const SentenceRoot::Clause &lhs_
             auto rhs_args_copy = rhs_literal->observe_arguments();
             const Literal negated_rhs(std::string(rhs_literal->get_name()), std::move(rhs_args_copy),
                 rhs_literal->is_negative_polarity());
-
-            UnificationVisitor unification_visitor(symbol_repository);
 
             if (lhs_literal->accept(unification_visitor, negated_rhs)) {
 
@@ -73,8 +75,6 @@ KnowledgeBase::Resolvent KnowledgeBase::resolve(const SentenceRoot::Clause &lhs_
                  */
 
                 RawUnorderedSet<const Literal> unified_literals;
-                const UnificationApplicationVisitor application_visitor(unification_visitor.observe_substitutions(),
-                    symbol_repository);
 
                 for (const auto lhs_other : lhs_clause)
                     if (lhs_other != lhs_literal)
@@ -84,6 +84,8 @@ KnowledgeBase::Resolvent KnowledgeBase::resolve(const SentenceRoot::Clause &lhs_
                     if (rhs_other != rhs_literal)
                         unified_literals.insert(rhs_other->accept(application_visitor));
             }
+
+            unification_visitor.reset_substitutions();
         }
 
     return {};

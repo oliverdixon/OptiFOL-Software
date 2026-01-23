@@ -14,11 +14,18 @@
 #ifndef OPTIFOL_UNIFICATIONAPPLICATIONVISITOR_HPP
 #define OPTIFOL_UNIFICATIONAPPLICATIONVISITOR_HPP
 
-#include "UnificationVisitor.hpp"
+#include <optional>
+#include <vector>
+
+#include "Unifier.hpp"
 
 namespace optifol
 {
 
+class SymbolRepository;
+
+class Function;
+class Constant;
 class BinaryConnected;
 class Identity;
 class Literal;
@@ -44,12 +51,18 @@ public:
 
     [[nodiscard]] const Literal *visit(const Literal &node) const;
 
+    void discard_working_set();
+
+    void keep_working_set();
+
 private:
     [[nodiscard]] std::optional<std::vector<const IProcessedTerm *>> apply_to_term_vector(
             const std::vector<const IProcessedTerm *> &terms) const;
 
     const Unifier& substitutions;
-    const std::shared_ptr<SymbolRepository> symbol_repository;
+
+    const std::shared_ptr<SymbolRepository> existing_symbol_repository;
+    std::unique_ptr<SymbolRepository> new_symbol_repository;
 };
 
 } // namespace optifol

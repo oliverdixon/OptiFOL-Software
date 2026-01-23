@@ -41,4 +41,11 @@ bool SymbolRepository::operator==(const SymbolRepository & other) const noexcept
     return sentences == other.sentences && terms == other.terms;
 }
 
+void SymbolRepository::inherit_repository(std::unique_ptr<SymbolRepository> &&other)
+{
+    inherit_set(sentences, other->sentences);
+    inherit_set(terms, other->terms);
+    inherit_set(variables, other->variables);
+}
+
 } // namespace optifol

@@ -289,6 +289,7 @@ add_library(OptifolCommon OBJECT
         Source/Inference/ExpressionFactory.hpp
         Source/IR/Sentences/Clause.hpp
         Source/IR/Sentences/Clause.cpp
+        Source/Visitors/RegularTargets/Unification/Unifier.hpp
 )
 
 target_include_directories(OptifolCommon PRIVATE
@@ -466,7 +467,6 @@ add_executable(OptifolTesting
 
 target_include_directories(OptifolTesting PRIVATE
         Source/Interpreter/
-        Source/UserTesting/Google/
 )
 
 target_include_directories(OptifolTesting SYSTEM PRIVATE

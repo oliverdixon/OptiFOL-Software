@@ -26,7 +26,8 @@ namespace optifol
 {
 
 UnificationVisitor::UnificationVisitor(std::shared_ptr<SymbolRepository> symbol_repository) :
-    symbol_repository(std::move(symbol_repository))
+    symbol_repository(std::move(symbol_repository)),
+    application_visitor(substitutions, this->symbol_repository)
 {
 }
 
@@ -113,7 +114,7 @@ const Unifier &UnificationVisitor::observe_substitutions() const noexcept
     return substitutions;
 }
 
-void UnificationVisitor::reset_working_set() noexcept
+void UnificationVisitor::reset_substitutions() noexcept
 {
     substitutions.clear();
 }
@@ -155,9 +156,10 @@ void UnificationVisitor::register_substitution(const Variable &bound_key, const 
 
 bool UnificationVisitor::occurs_check(const Variable &variable_lhs, const IProcessedTerm &generic_term_rhs) const
 {
-    const UnificationApplicationVisitor applicator(substitutions, std::make_shared<SymbolRepository>());
-    const auto applied_term = generic_term_rhs.accept(applicator);
-    return *applied_term == generic_term_rhs ? false : applied_term->is_self_nested(variable_lhs);
+    const auto applied_term = generic_term_rhs.accept(application_visitor);
+    application_visitor.discard_working_set();
+    return *applied_term == generic_term_rhs ? generic_term_rhs.is_self_nested(variable_lhs) :
+        applied_term->is_self_nested(variable_lhs);
 }
 
 } // namespace optifol

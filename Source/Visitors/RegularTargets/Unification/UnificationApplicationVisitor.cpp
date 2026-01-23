@@ -3,9 +3,13 @@
  * 2025 Oliver Dixon <od641@york.ac.uk>
  */
 
-//
-// Created by owd on 9/11/25.
-//
+/**
+ * @file
+ * @brief Class implementation for the FOL substitution-application visitor
+ * @author Oliver Dixon
+ * @date 2026-01-21
+ * @version Development
+ */
 
 #include "UnificationApplicationVisitor.hpp"
 
@@ -24,19 +28,20 @@ namespace optifol
 UnificationApplicationVisitor::UnificationApplicationVisitor(
         const Unifier &substitutions, std::shared_ptr<SymbolRepository> symbol_repository) :
     substitutions(substitutions),
-    symbol_repository(std::move(symbol_repository))
+    existing_symbol_repository(std::move(symbol_repository)),
+    new_symbol_repository(std::make_unique<SymbolRepository>())
 {
 }
 
 const IProcessedTerm *UnificationApplicationVisitor::visit(const Constant &node) const
 {
-    return symbol_repository->get_symbol_handle(node);
+    return existing_symbol_repository->get_symbol_handle(node);
 }
 
 const IProcessedTerm *UnificationApplicationVisitor::visit(const Variable &node) const
 {
     const auto it = substitutions.find(node);
-    return it == substitutions.cend() ? nullptr : it->second;
+    return it == substitutions.cend() ? existing_symbol_repository->get_symbol_handle(node) : it->second;
 }
 
 const IProcessedTerm *UnificationApplicationVisitor::visit(const Function &node) const
@@ -49,18 +54,29 @@ const IProcessedTerm *UnificationApplicationVisitor::visit(const Function &node)
      * a handle to the original unmutated Function.
      */
     return transformed_arguments.has_value() ?
-        symbol_repository->add_symbol(std::make_unique<Function>(std::string(node.get_disambiguated_name()),
+        existing_symbol_repository->add_symbol(std::make_unique<Function>(std::string(node.get_disambiguated_name()),
             std::move(*transformed_arguments))) :
-        symbol_repository->get_symbol_handle(node);
+        existing_symbol_repository->get_symbol_handle(node);
 }
 
 const Literal *UnificationApplicationVisitor::visit(const Literal &node) const
 {
     auto transformed_arguments = apply_to_term_vector(node.observe_arguments());
     return transformed_arguments.has_value() ?
-        symbol_repository->add_symbol<Literal>(std::make_unique<Literal>(std::string(node.get_name()),
+        existing_symbol_repository->add_symbol<Literal>(std::make_unique<Literal>(std::string(node.get_name()),
             std::move(*transformed_arguments))) :
-        symbol_repository->get_symbol_handle<Literal>(node);
+        existing_symbol_repository->get_symbol_handle<Literal>(node);
+}
+
+void UnificationApplicationVisitor::discard_working_set()
+{
+    new_symbol_repository = std::make_unique<SymbolRepository>();
+}
+
+void UnificationApplicationVisitor::keep_working_set()
+{
+    existing_symbol_repository->inherit_repository(std::move(new_symbol_repository));
+    discard_working_set();
 }
 
 std::optional<std::vector<const IProcessedTerm *>> UnificationApplicationVisitor::apply_to_term_vector(

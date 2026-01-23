@@ -18,6 +18,7 @@
 
 #include "../../../IR/SymbolRepository.hpp"
 #include "../../../IR/Terms/Variable.hpp"
+#include "UnificationApplicationVisitor.hpp"
 
 namespace optifol
 {
@@ -27,8 +28,6 @@ class ITerm;
 class Literal;
 class Constant;
 class SymbolRepository;
-
-using Unifier = RawUnorderedMap<const Variable, const IProcessedTerm *>;
 
 /**
  * @class UnificationVisitor
@@ -43,7 +42,8 @@ using Unifier = RawUnorderedMap<const Variable, const IProcessedTerm *>;
  *          \text{Unify}(p, q) \mathrel{\vcenter{:}}= \theta \text{ such that }
  *          \text{Sub}(\theta, p) = \text{Sub}(\theta, q).
  *      @f]
- *      For brevity, the definition of our sameness metric is not elaborated here.
+ *      For brevity, the definition of our sameness metric is not elaborated here. Clearly, unification is a commutative
+ *      operation.
  *  </p>
  *  <p>
  *      The overall association rules within the constraints of the Optifol type systems is:
@@ -57,6 +57,14 @@ using Unifier = RawUnorderedMap<const Variable, const IProcessedTerm *>;
  *      implementing the acceptor member functions. Note that triple-despatch may be necessary in some cases (acceptor
  *      calling another overload acceptor, which then calls the visitor) to correctly explore term-specialised cases.
  *  </p>
+ *  <p>
+ *      Following a unification attempt (<code>visit</code> call), any applicable substitutions will have been traced by
+ *      the visitor instance and written to an internal state accessible with @ref observe_substitutions. If unification
+ *      was successful, indicated by the return code of <code>visit</code>, the set consists of most-general unifiers.
+ *      If unification was unsuccessful, the substitutions will not necessarily produce matching clauses under
+ *      application, and the state should be reset with @ref reset_substitutions. This is a conscious API design choice,
+ *      as it is occasionally useful for users to inspect the partial substitution trace of a failed unification.
+ *  </p>
  * @warning
  *  <p>
  *      There is opportunity for significant optimisation of this procedure. In particular, the implementation
@@ -65,6 +73,7 @@ using Unifier = RawUnorderedMap<const Variable, const IProcessedTerm *>;
  *      implementation can be found at https://github.com/ddccc/Unification. See also the paper:
  *      https://doi.org/10.1007/s10817-022-09635-1.
  *  </p>
+ * @see UnificationApplicationVisitor for the mutating visitor to apply Unifier elements to ASTs.
  */
 class UnificationVisitor
 {
@@ -75,23 +84,78 @@ public:
      */
     explicit UnificationVisitor(std::shared_ptr<SymbolRepository> symbol_repository);
 
+    /**
+     * @brief Attempt to unify two predicates (Literal) on the predicate and component-wise arguments.
+     * @details Unification between two predicates will succeed if and only if they are identically named, have the same
+     *  number of term arguments, and the terms can be zipped and mutually unified i.a.w. other rules described herein.
+     * @param predicate_lhs The LHS Literal to unify
+     * @param predicate_rhs The RHS Literal to unify
+     * @return Can the LHS and RHS Literal objects be unified?
+     */
     [[nodiscard]] bool visit(const Literal &predicate_lhs, const Literal &predicate_rhs);
 
+    /**
+     * @brief Attempt to unify a Variable and a Constant term.
+     * @details Unification between a Variable and a Constant will succeed if and only if they are identically named and
+     *  substitution does not result in an infinite cycle (the "occurs check" condition).
+     * @param variable_lhs The LHS Variable to unify
+     * @param constant_rhs The RHS Constant to unify
+     * @return Can the LHS and RHS objects be unified?
+     */
     [[nodiscard]] bool visit(const Variable &variable_lhs, const Constant &constant_rhs);
 
+    /**
+     * @brief Attempt to unify a Variable and a Function term.
+     * @details Unification between a Variable and Function will succeed according to the same conditions as those
+     *  required by @ref visit(const Variable&, const Constant&).
+     * @param variable_lhs The LHS Variable to unify
+     * @param function_rhs The RHS Function to unify
+     * @return Can the LHS and RHS objects be unified?
+     */
     [[nodiscard]] bool visit(const Variable &variable_lhs, const Function &function_rhs);
 
+    /**
+     * @brief Attempt to unify two Variable terms.
+     * @details Unification between two Variable terms will succeed according to the same conditions as those required
+     *  by @ref visit(const Variable&, const Constant&).
+     * @param variable_lhs The LHS Variable to unify
+     * @param variable_rhs The RHS Variable to unify
+     * @return Can the LHS and RHS Variable objects be unified?
+     */
     [[nodiscard]] bool visit(const Variable &variable_lhs, const Variable &variable_rhs);
 
+    /**
+     * @brief Attempt to unify two Function terms.
+     * @details Unification between two Function terms will succeed according to similar conditions as those required
+     *  by @ref visit(const Literal&, const Literal&), i.e. identically named symbols and component-wise unification.
+     * @param function_lhs The LHS Function to unify
+     * @param function_rhs The RHS Function to unify
+     * @return Can the LHS and RHS Function objects be unified?
+     */
     [[nodiscard]] bool visit(const Function &function_lhs, const Function &function_rhs);
 
+    /**
+     * @brief Observe the working set of substitutions produced since the last @ref reset_substitutions call.
+     *
+     * @details The Unifier set consists of substitutions explored by the visitor whilst attempting to force two clauses
+     *  to be equivalent under application. If a <code>visit</code> call indicated successful unification, the
+     *  substitutions represent the most-general unifiers required to make the two respective clauses equivalent under
+     *  the UnificationApplicationVisitor. An empty set, or set returned following a failed unification attempt, may be
+     *  useful to callers but are not unifiers.
+     *
+     * @return The working Unifier set.
+     */
     [[nodiscard]] const Unifier& observe_substitutions() const noexcept;
 
-    void reset_working_set() noexcept;
+    /**
+     * @brief Clear unifying substitutions and reset the state such that @ref observe_substitutions produces an empty
+     *  working set.
+     */
+    void reset_substitutions() noexcept;
 
 private:
     /**
-     * @brief Attempt to unify a variable with a non-variable/"generic" term.
+     * @brief Attempt to unify a variable with a non-variable ("generic") term.
      * @details
      *      To unify a variable with a generic term, they must be one of the following. Providing that unification is
      *      successful in the non-trivial sense, a substitution is added to the map.
@@ -150,6 +214,14 @@ private:
      *  returned a verdict, the final set can be observed with @ref observe_substitutions.
      */
     Unifier substitutions;
+
+    /**
+     * @brief A helper substitution applicator for @ref occurs_check.
+     * @note This is <code>mutable</code> because it's essentially a throw-away, single-use cache for the occurs check,
+     *  and we don't want to break API semantics by indicating the occurs-check procedure is non-constant on the visitor
+     *  object.
+     */
+    mutable UnificationApplicationVisitor application_visitor;
 };
 
 }

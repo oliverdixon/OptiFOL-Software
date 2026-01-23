@@ -139,7 +139,30 @@ public:
      */
     [[nodiscard]] bool operator==(const SymbolRepository & other) const noexcept;
 
+    /**
+     * @brief Move all symbols (sentences, non-variable and variable terms) from the given SymbolRepository into this
+     *  one.
+     * @param other The target repository, the entirety of which is to be consumed by the inheritor.
+     */
+    void inherit_repository(std::unique_ptr<SymbolRepository> &&other);
+
 private:
+    /**
+     * @brief Steal @ref std::unique_ptr objects from the given UniqueUnorderedSet source container and move into the
+     *  given destination.
+     * @tparam Element The type of elements owned by the members of the set.
+     * @param dest The destination set.
+     * @param src The source set.
+     */
+    template<class Element>
+    static void inherit_set(UniqueUnorderedSet<Element>& dest, UniqueUnorderedSet<Element>& src)
+    {
+        for (auto node_handle_it = src.begin(); node_handle_it != src.end(); ) {
+            auto borrowed_node = src.extract(node_handle_it++);
+            dest.insert(std::move(borrowed_node));
+        }
+    }
+
     UniqueUnorderedSet<IProcessedSentence> sentences;
     UniqueUnorderedSet<IProcessedTerm> terms;
     UniqueUnorderedSet<Variable> variables;
