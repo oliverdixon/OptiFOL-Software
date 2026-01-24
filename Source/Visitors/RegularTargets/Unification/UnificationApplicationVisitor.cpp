@@ -54,18 +54,21 @@ const IProcessedTerm *UnificationApplicationVisitor::visit(const Function &node)
      * a handle to the original unmutated Function.
      */
     return transformed_arguments.has_value() ?
-        existing_symbol_repository->add_symbol(std::make_unique<Function>(std::string(node.get_disambiguated_name()),
-            std::move(*transformed_arguments))) :
-        existing_symbol_repository->get_symbol_handle(node);
+        existing_symbol_repository->add_symbol(std::make_unique<Function>(
+            std::string(node.get_disambiguated_name()),
+            std::move(*transformed_arguments))
+        ) : existing_symbol_repository->get_symbol_handle(node);
 }
 
 const Literal *UnificationApplicationVisitor::visit(const Literal &node) const
 {
     auto transformed_arguments = apply_to_term_vector(node.observe_arguments());
     return transformed_arguments.has_value() ?
-        existing_symbol_repository->add_symbol<Literal>(std::make_unique<Literal>(std::string(node.get_name()),
-            std::move(*transformed_arguments))) :
-        existing_symbol_repository->get_symbol_handle<Literal>(node);
+        existing_symbol_repository->add_symbol<Literal>(std::make_unique<Literal>(
+            std::string(node.get_name()),
+            std::move(*transformed_arguments),
+            !node.is_negative_polarity())
+        ) : existing_symbol_repository->get_symbol_handle<Literal>(node);
 }
 
 void UnificationApplicationVisitor::discard_working_set()

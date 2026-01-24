@@ -50,6 +50,7 @@ class SymbolRepository;
  *      <ul>
  *          <li>Predicates might unify with predicates only;</li>
  *          <li>Variables might unify with any term;</li>
+ *          <li>Constants might unify with constants only;</li>
  *          <li>Functions might unify with functions only; and</li>
  *          <li>Any term might unify with variables only.</li>
  *      </ul>
@@ -93,6 +94,8 @@ public:
      * @return Can the LHS and RHS Literal objects be unified?
      */
     [[nodiscard]] bool visit(const Literal &predicate_lhs, const Literal &predicate_rhs);
+
+    [[nodiscard]] static bool visit(const Constant &constant_lhs, const Constant &constant_rhs);
 
     /**
      * @brief Attempt to unify a Variable and a Constant term.

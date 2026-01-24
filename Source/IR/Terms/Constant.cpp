@@ -40,6 +40,11 @@ bool Constant::accept(UnificationVisitor &unification_visitor, const IProcessedT
     return term.accept(unification_visitor, *this);
 }
 
+bool Constant::accept(UnificationVisitor &unification_visitor, const Constant &constant) const
+{
+    return UnificationVisitor::visit(constant, *this);
+}
+
 bool Constant::accept(UnificationVisitor &unification_visitor, const Variable &variable) const
 {
     return unification_visitor.visit(variable, *this);

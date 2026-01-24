@@ -52,6 +52,11 @@ bool UnificationVisitor::visit(const Literal &predicate_lhs, const Literal &pred
     return true;
 }
 
+bool UnificationVisitor::visit(const Constant &constant_lhs, const Constant &constant_rhs)
+{
+    return constant_lhs.operator==(constant_rhs);
+}
+
 bool UnificationVisitor::visit(const Variable &variable_lhs, const Constant &constant_rhs)
 {
     return variable_generic(variable_lhs, constant_rhs);
