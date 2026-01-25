@@ -13,6 +13,7 @@
 
 #include "KnowledgeBase.hpp"
 
+#include <algorithm>
 #include <queue>
 
 #include "../IR/Sentences/Literal.hpp"
@@ -29,17 +30,17 @@ KnowledgeBase::KnowledgeBase(std::shared_ptr<SymbolRepository> symbol_repository
 
 void KnowledgeBase::tell(const SentenceRoot &sentence)
 {
-    clauses.reserve(clauses.size() + sentence.get_clause_count());
+    clauses.reserve(clauses.size() + sentence.order());
     for (const auto& clause : sentence)
         tell(clause);
 }
 
-void KnowledgeBase::tell(const SentenceRoot::Clause &clause)
+void KnowledgeBase::tell(const Clause &clause)
 {
     clauses.push_back(clause);
 }
 
-bool KnowledgeBase::query_negative(const SentenceRoot &negated_query)
+bool KnowledgeBase::query(const SentenceRoot &negated_query)
 {
     std::priority_queue<Resolvent> resolvents;
 
@@ -58,12 +59,11 @@ bool KnowledgeBase::query_negative(const SentenceRoot &negated_query)
      * Once the initial set of resolvents has been added to the priority queue, continue stepping until a result has
      * been produced to indicate whether the negated query induces an inconsistent KB.
      */
-
     while (!resolvents.empty()) {
-        const auto resolvent = resolvents.top();
+        const auto resolution = resolvents.top().observe_resolution();
         resolvents.pop();
 
-        if (resolvent.unified_clause.empty())
+        if (resolution.get_triviality_state() == Clause::State::TriviallyFalse)
             // An empty unified clause indicates that a contradiction was derived in the KB.
             return true;
 
@@ -71,9 +71,9 @@ bool KnowledgeBase::query_negative(const SentenceRoot &negated_query)
          * If no contradiction was derived for this resolvent, insert it into the KB. If it is something new, attempt to
          * find new resolvents.
          */
-        tell(resolvent.unified_clause); // TODO doesn't restrict to new clauses because the store is a vector...
+        tell(resolution); // TODO doesn't restrict to new clauses because the store is a vector...
         for (const auto& rhs_clause : clauses) {
-            auto new_resolvents = find_resolvents(resolvent.unified_clause, rhs_clause);
+            auto new_resolvents = find_resolvents(resolution, rhs_clause);
             for (auto new_resolvent : new_resolvents)
                 resolvents.push(std::move(new_resolvent));
         }
@@ -86,8 +86,7 @@ bool KnowledgeBase::query_negative(const SentenceRoot &negated_query)
     return false;
 }
 
-std::vector<KnowledgeBase::Resolvent> KnowledgeBase::find_resolvents(
-        const SentenceRoot::Clause &lhs_clause, const SentenceRoot::Clause &rhs_clause) const
+std::vector<Resolvent> KnowledgeBase::find_resolvents(const Clause &lhs_clause, const Clause &rhs_clause) const
 {
     UnificationVisitor unification_visitor(symbol_repository);
     UnificationVisitor factoring_unification_visitor(symbol_repository);
@@ -154,7 +153,9 @@ std::vector<KnowledgeBase::Resolvent> KnowledgeBase::find_resolvents(
                              * Any clauses that would be trivially true, where a literal is a negation of itself, can be
                              * discarded, as it would never produce a useful resolvent.
                              */
-                            if (factoring_lhs_literal->equals_negation(*factoring_rhs_literal)) {
+                            if (factoring_lhs_literal->is_negative_polarity() ==
+                                    !factoring_rhs_literal->is_negative_polarity() &&
+                                    factoring_lhs_literal->unsigned_equality(*factoring_rhs_literal)) {
                                 trivial = true;
                                 break;
                             }
@@ -191,9 +192,9 @@ std::vector<KnowledgeBase::Resolvent> KnowledgeBase::find_resolvents(
                      *
                      * TODO: make this nicer?  Does the resolvent need to store LHS and RHS clauses?
                      */
-                    SentenceRoot::Clause unified_clause;
-                    unified_clause.reserve(unified_literals.size());
-                    unified_clause.insert(unified_clause.end(), unified_literals.begin(), unified_literals.end());
+                    Clause unified_clause;
+                    std::ranges::for_each(unified_literals,
+                        [&unified_clause](const Literal * literal) { unified_clause.add_literal(literal); });
 
                     resolvents.emplace_back(lhs_clause, rhs_clause,
                         unification_visitor.observe_substitutions(), std::move(unified_clause));

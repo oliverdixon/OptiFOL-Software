@@ -208,7 +208,7 @@ private:
      *  working clause should be committed to the SentenceRoot @ref root node once it has been fully populated.
      * @see SentenceRoot::commit_clause
      */
-    std::vector<const Literal *> working_clause;
+    Clause working_clause;
 
     std::unique_ptr<SentenceRoot> root;
 

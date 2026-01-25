@@ -14,12 +14,12 @@
 #ifndef OPTIFOL_UNIFIER_HPP
 #define OPTIFOL_UNIFIER_HPP
 
-#include "../../../Optifol.hpp"
+#include "../Optifol.hpp"
+#include "../IR/Terms/Variable.hpp"
 
 namespace optifol
 {
 
-class Variable;
 class IProcessedTerm;
 
 /**

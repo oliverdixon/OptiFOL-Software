@@ -17,7 +17,7 @@
 #include <optional>
 #include <vector>
 
-#include "Unifier.hpp"
+#include "../../../Inference/Unifier.hpp"
 
 namespace optifol
 {

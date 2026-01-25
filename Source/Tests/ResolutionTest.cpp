@@ -114,7 +114,7 @@ TEST_F(ResolutionTest, ModusPonens_Quantified)
     knowledge_base->tell(*sentence1);
     knowledge_base->tell(*sentence2);
 
-    EXPECT_TRUE(knowledge_base->query_negative(*query));
+    EXPECT_TRUE(knowledge_base->query(*query));
 }
 
 } // namespace optifol

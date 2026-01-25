@@ -14,8 +14,7 @@
 #ifndef SENTENCEROOT_HPP
 #define SENTENCEROOT_HPP
 
-#include <log4cxx/logger.h>
-
+#include "Clause.hpp"
 #include "IProcessedSentence.hpp"
 
 namespace optifol
@@ -29,8 +28,6 @@ namespace optifol
 class SentenceRoot : public IProcessedSentence
 {
 public:
-    using Clause = std::vector<const Literal *>;
-
     [[nodiscard]] bool is_negative_polarity() const noexcept override;
 
     std::ostream& serialise(std::ostream &ostream) const override;
@@ -39,17 +36,15 @@ public:
 
     [[nodiscard]] bool operator==(const IProcessedSentence &other) const noexcept override;
 
-    void add_clause(const std::vector<const Literal *> &literals);
+    void add_clause(const Clause &new_clause);
 
     [[nodiscard]] std::vector<Clause>::const_iterator begin() const noexcept;
 
     [[nodiscard]] std::vector<Clause>::const_iterator end() const noexcept;
 
-    [[nodiscard]] std::size_t get_clause_count() const noexcept;
+    [[nodiscard]] std::size_t order() const noexcept;
 
 private:
-    static std::ostream& serialise_clause(std::ostream &ostream, const std::vector<const Literal *> &clause);
-
     std::vector<Clause> clauses;
 
     bool is_negative = false;

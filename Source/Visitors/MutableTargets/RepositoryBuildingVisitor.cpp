@@ -68,7 +68,7 @@ const BinaryConnected *RepositoryBuildingVisitor::visit(MutableBinaryConnected &
     // Create a fresh clause for the LHS operand, committing a previously populated clause if necessary.
     if (managed_clause && !working_clause.empty()) {
         root->add_clause(working_clause);
-        working_clause.clear();
+        working_clause.force_bottom();
     }
 
     const auto bound_lhs = node.take_lhs_operand();
@@ -80,7 +80,7 @@ const BinaryConnected *RepositoryBuildingVisitor::visit(MutableBinaryConnected &
      */
     if (managed_clause && !working_clause.empty()) {
         root->add_clause(working_clause);
-        working_clause.clear();
+        working_clause.force_bottom();
     }
 
     const auto bound_rhs = node.take_rhs_operand();
@@ -89,7 +89,7 @@ const BinaryConnected *RepositoryBuildingVisitor::visit(MutableBinaryConnected &
     // Likewise, commit any disjunctive literals produced by the RHS recursion to the sentence root.
     if (managed_clause && !working_clause.empty()) {
         root->add_clause(working_clause);
-        working_clause.clear();
+        working_clause.force_bottom();
     }
 
     return symbol_repository->add_symbol<BinaryConnected>(
@@ -119,7 +119,7 @@ const Literal *RepositoryBuildingVisitor::visit(MutablePredicate &node)
     // Create the Literal symbol and append to the working clause.
     const auto new_symbol = symbol_repository->add_symbol<Literal>(std::make_unique<Literal>(
             std::string(node.get_name()), std::move(processed_terms), !node.is_negative_polarity()));
-    working_clause.push_back(new_symbol);
+    working_clause.add_literal(new_symbol);
     return new_symbol;
 }
 
@@ -132,7 +132,7 @@ void RepositoryBuildingVisitor::visit(MutableSentenceRoot &node)
 
     if (!working_clause.empty()) {
         root->add_clause(working_clause);
-        working_clause.clear();
+        working_clause.force_bottom();
     }
 }
 

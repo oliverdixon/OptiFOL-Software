@@ -55,9 +55,21 @@ bool Literal::operator==(const IProcessedSentence &other) const noexcept
     return is_negative_polarity() == other.is_negative_polarity() && unsigned_equality(other);
 }
 
-bool Literal::equals_negation(const Literal &other) const noexcept
+bool Literal::operator<(const Literal &other) const noexcept
 {
-    return is_negative_polarity() == !other.is_negative_polarity() && unsigned_equality(other);
+    // Order lexicographically on the string_view.
+    if (get_name() < other.get_name())
+        return true;
+
+    if (get_name() > other.get_name())
+        return false;
+
+    // Names are lexicographically equal. Order on sign; negatives are considered less.
+    if (is_negative_polarity() && !other.is_negative_polarity())
+        return true;
+
+    // Names are lexicographically equal and signs are equal, or the other is greater.
+    return false;
 }
 
 std::string_view Literal::get_name() const noexcept
@@ -107,6 +119,11 @@ bool Literal::unsigned_equality(const IProcessedSentence &other) const noexcept
             return false;
 
     return true;
+}
+
+std::ostream &operator<<(std::ostream &ostream, const Literal &literal)
+{
+    return literal.serialise(ostream);
 }
 
 } // namespace optifol

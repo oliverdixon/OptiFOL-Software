@@ -289,7 +289,9 @@ add_library(OptifolCommon OBJECT
         Source/Inference/ExpressionFactory.hpp
         Source/IR/Sentences/Clause.hpp
         Source/IR/Sentences/Clause.cpp
-        Source/Visitors/RegularTargets/Unification/Unifier.hpp
+        Source/Inference/Unifier.hpp
+        Source/Inference/Resolvent.cpp
+        Source/Inference/Resolvent.hpp
 )
 
 target_include_directories(OptifolCommon PRIVATE

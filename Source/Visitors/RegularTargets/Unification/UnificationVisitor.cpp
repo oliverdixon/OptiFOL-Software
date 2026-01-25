@@ -54,6 +54,10 @@ bool UnificationVisitor::visit(const Literal &predicate_lhs, const Literal &pred
 
 bool UnificationVisitor::visit(const Constant &constant_lhs, const Constant &constant_rhs)
 {
+    /*
+     * We don't need to query the existing visitor state here, since constants are not candidates for any kind of
+     * substitutions.
+     */
     return constant_lhs.operator==(constant_rhs);
 }
 

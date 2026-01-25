@@ -95,6 +95,13 @@ public:
      */
     [[nodiscard]] bool visit(const Literal &predicate_lhs, const Literal &predicate_rhs);
 
+    /**
+     * @brief Attempt to unify two Constant terms
+     * @details Unification between two Constant terms will succeed if and only if they are identically named.
+     * @param constant_lhs The LHS Constant to unify
+     * @param constant_rhs The RHS Constant to unify
+     * @return Can the LHS and RHS Constant objects be unified?
+     */
     [[nodiscard]] static bool visit(const Constant &constant_lhs, const Constant &constant_rhs);
 
     /**

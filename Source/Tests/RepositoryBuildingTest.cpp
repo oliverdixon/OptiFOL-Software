@@ -57,8 +57,8 @@ protected:
             // Verify that the actual clause list does not exceed the expected clause list.
             EXPECT_NE(actual_clause_begin, actual_clause_end);
 
-            auto actual_literal_begin = actual_clause_begin->cbegin();
-            const auto actual_literal_end = actual_clause_begin->cend();
+            auto actual_literal_begin = actual_clause_begin->begin();
+            const auto actual_literal_end = actual_clause_begin->end();
 
             for (const auto expected_literal: expected_clause) {
                 // Verify that the actual literal list does not exceed the expected literal list for the fixed clause.

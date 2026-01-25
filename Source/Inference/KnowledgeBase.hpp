@@ -14,9 +14,8 @@
 #ifndef OPTIFOL_KNOWLEDGEBASE_HPP
 #define OPTIFOL_KNOWLEDGEBASE_HPP
 
-#include "../IR/Terms/Variable.hpp"
 #include "../IR/Sentences/SentenceRoot.hpp"
-#include "../Visitors/RegularTargets/Unification/Unifier.hpp"
+#include "Resolvent.hpp"
 
 namespace optifol
 {
@@ -32,37 +31,14 @@ public:
 
     void tell(const SentenceRoot& sentence);
 
-    void tell(const SentenceRoot::Clause& clause);
+    void tell(const Clause& clause);
 
-    bool query_negative(const SentenceRoot &negated_query);
+    bool query(const SentenceRoot &negated_query);
 
 private:
-    struct Resolvent
-    {
-        SentenceRoot::Clause lhs_clause;
-        SentenceRoot::Clause rhs_clause;
-        Unifier resolving_unifier;
-        SentenceRoot::Clause unified_clause;
+    [[nodiscard]] std::vector<Resolvent> find_resolvents(const Clause &lhs_clause, const Clause &rhs_clause) const;
 
-        friend bool operator<(const Resolvent& lhs, const Resolvent& rhs) noexcept
-        {
-            const auto lhs_has_unit = lhs.lhs_clause.size() == 1 || lhs.rhs_clause.size() == 1;
-            const auto rhs_has_unit = rhs.lhs_clause.size() == 1 || rhs.rhs_clause.size() == 1;
-
-            if (lhs_has_unit && !rhs_has_unit)
-                return false; // LHS has higher priority.
-
-            if (!lhs_has_unit && rhs_has_unit)
-                return true; // RHS has higher priority.
-
-            return false; // Equal priority.
-        }
-    };
-
-    [[nodiscard]] std::vector<Resolvent> find_resolvents(
-            const SentenceRoot::Clause &lhs_clause, const SentenceRoot::Clause &rhs_clause) const;
-
-    std::vector<SentenceRoot::Clause> clauses;
+    std::vector<Clause> clauses;
     std::shared_ptr<SymbolRepository> symbol_repository;
 };
 

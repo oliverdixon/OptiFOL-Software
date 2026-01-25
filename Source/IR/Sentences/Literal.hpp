@@ -57,11 +57,13 @@ public:
 
     std::ostream &serialise(std::ostream &ostream) const override;
 
+    friend std::ostream& operator<<(std::ostream& ostream, const Literal& literal);
+
     [[nodiscard]] std::size_t hash() const noexcept override;
 
     [[nodiscard]] bool operator==(const IProcessedSentence &other) const noexcept override;
 
-    [[nodiscard]] bool equals_negation(const Literal& other) const noexcept;
+    [[nodiscard]] bool operator<(const Literal& other) const noexcept;
 
     /**
      * @brief Get the display name of the predicate, not including any arguments or metadata
@@ -82,9 +84,9 @@ public:
 
     [[nodiscard]] const Literal *accept(const UnificationApplicationVisitor &application_visitor) const;
 
-private:
     [[nodiscard]] bool unsigned_equality(const IProcessedSentence &other) const noexcept;
 
+private:
     const std::string name;
     const std::vector<const IProcessedTerm *> arguments;
     const bool is_positive = true;
