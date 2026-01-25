@@ -53,7 +53,7 @@ void SymbolStandardisingVisitor::visit(MutablePredicate &node)
 
     // For each term argument, apply any relevant disambiguation rewriting. Then recurse with the term visitor.
     for (std::remove_const_t<decltype(argument_count)> i = 0; i < argument_count; ++i) {
-        const auto& rule = rewriting_rules.find(args[i]->get_disambiguated_name());
+        const auto& rule = rewriting_rules.find(std::string(args[i]->get_disambiguated_name()));
         if (rule != rewriting_rules.cend())
             args[i] = rule->second->clone();
 
@@ -66,7 +66,7 @@ void SymbolStandardisingVisitor::visit(MutableIdentity &node)
     auto borrowed_lhs = node.take_lhs_operand();
 
     // Apply any relevant disambiguation rewriting to the LHS operand.
-    const auto& lhs_rule = rewriting_rules.find(borrowed_lhs->get_disambiguated_name());
+    const auto& lhs_rule = rewriting_rules.find(std::string(borrowed_lhs->get_disambiguated_name()));
     if (lhs_rule != rewriting_rules.cend())
         node.put_lhs_operand(lhs_rule->second->clone());
 
@@ -76,7 +76,7 @@ void SymbolStandardisingVisitor::visit(MutableIdentity &node)
     auto borrowed_rhs = node.take_rhs_operand();
 
     // Apply any relevant disambiguation rewriting to the RHS operand.
-    const auto& rhs_rule = rewriting_rules.find(borrowed_rhs->get_disambiguated_name());
+    const auto& rhs_rule = rewriting_rules.find(std::string(borrowed_rhs->get_disambiguated_name()));
     if (rhs_rule != rewriting_rules.cend())
         node.put_rhs_operand(rhs_rule->second->clone());
 

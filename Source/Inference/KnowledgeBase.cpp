@@ -55,6 +55,13 @@ bool KnowledgeBase::query(const SentenceRoot &negated_query)
 
     // Add the negated query to the KB in an attempt to derive a contradiction.
     tell(negated_query);
+
+    if (kb_logger->isTraceEnabled()) {
+        const auto clause_count = clauses.size();
+        for (const auto& [clause_idx, clause]: std::views::enumerate(clauses))
+            kb_logger->trace(std::format("KB Clause {}/{}: {}", clause_idx + 1, clause_count, clause));
+    }
+
     std::priority_queue<Resolvent> resolvents;
 
     // Over the Cartesian product of clauses in the KB, add pairwise resolvents.
@@ -122,13 +129,18 @@ Clause KnowledgeBase::factor_literals(const Clause &unified_clause, UnificationV
     UnificationApplicationVisitor &applicator)
 {
     bool factoring_done = false;
+    bool trivially_true = false;
     Clause working_clause = unified_clause;
 
     do {
         factoring_done = false;
 
         for (const auto [factoring_idx, factoring_lhs_literal] : std::views::enumerate(unified_clause)) {
-            for (const auto factoring_rhs_literal : unified_clause | std::views::take(factoring_idx))
+            for (const auto factoring_rhs_literal : unified_clause | std::views::take(factoring_idx)) {
+                if (working_clause.get_triviality_state() == Clause::State::TriviallyTrue) {
+                    trivially_true = true;
+                    break;
+                }
 
                 /*
                  * Finding a unifying MGU between the factoring literals indicates an opportunity to reduce the clause
@@ -155,11 +167,12 @@ Clause KnowledgeBase::factor_literals(const Clause &unified_clause, UnificationV
                     factoring_done = true;
                     break;
                 }
+            }
 
-            if (factoring_done)
+            if (!trivially_true || factoring_done)
                 break;
         }
-    } while (factoring_done);
+    } while (!trivially_true && factoring_done);
 
     return working_clause;
 }
@@ -196,12 +209,12 @@ std::vector<Resolvent> KnowledgeBase::find_resolvents(const Clause &lhs_clause, 
                  * general symbol store so we only have to see non-owning, raw, immutable pointers.
                  */
 
-                Clause unified_clause;
-                collect_unified_literals(*lhs_literal, lhs_clause, unified_clause, applicator);
-                collect_unified_literals(*rhs_literal, rhs_clause, unified_clause, applicator);
+                Clause resolution;
+                collect_unified_literals(*lhs_literal, lhs_clause, resolution, applicator);
+                collect_unified_literals(*rhs_literal, rhs_clause, resolution, applicator);
 
                 resolution_logger->debug(std::format("Constructed a unified clause of {} literals.",
-                    unified_clause.order()));
+                    resolution.order()));
 
                 /*
                  * Attempt to simplify the unified clause, and guarantee a complete inference process, by:
@@ -216,8 +229,17 @@ std::vector<Resolvent> KnowledgeBase::find_resolvents(const Clause &lhs_clause, 
                  * a pair of complementary literals are added.
                  */
 
-                if (unified_clause.get_triviality_state() == Clause::State::TriviallyTrue) {
-                    resolution_logger->debug("The unified clause is a tautology; continuing.");
+                if (resolution.get_triviality_state() == Clause::State::TriviallyTrue) {
+                    resolution_logger->debug("Before factoring, the unified clause is a tautology; continuing.");
+                    applicator.discard_new_symbols();
+                    continue;
+                }
+
+                resolution = factor_literals(resolution, factoring_unifier, factoring_applicator);
+
+                if (resolution.get_triviality_state() == Clause::State::TriviallyTrue) {
+                    resolution_logger->debug("After factoring, the unified clause is a tautology; continuing.");
+                    applicator.discard_new_symbols();
                     continue;
                 }
 
@@ -227,7 +249,7 @@ std::vector<Resolvent> KnowledgeBase::find_resolvents(const Clause &lhs_clause, 
                  * application literals as a clause under disjunction.
                  */
                 resolvents.emplace_back(lhs_clause, rhs_clause, unifier.observe_substitutions(),
-                    factor_literals(unified_clause, factoring_unifier, factoring_applicator));
+                    std::move(resolution));
 
                 resolution_logger->info(std::format("Resolved {} and {} to {}.", lhs_clause, rhs_clause,
                     resolvents.back().observe_resolution()));

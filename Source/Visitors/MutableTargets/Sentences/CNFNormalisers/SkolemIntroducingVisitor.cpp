@@ -79,7 +79,7 @@ void SkolemIntroducingVisitor::visit(MutablePredicate &node)
 
     for (std::remove_const_t<decltype(argument_count)> i = 0; i < argument_count; ++i) {
         const auto& potential_replacement =
-            skolem_replacements.find(args[i]->get_disambiguated_name());
+            skolem_replacements.find(std::string(args[i]->get_disambiguated_name()));
         if (potential_replacement != skolem_replacements.cend())
             args[i] = potential_replacement->second->clone();
 
@@ -93,7 +93,7 @@ void SkolemIntroducingVisitor::visit(MutableIdentity &node)
 
     // Apply any relevant disambiguation rewriting to the LHS operand.
     const auto& lhs_rule =
-        skolem_replacements.find(borrowed_lhs->get_disambiguated_name());
+        skolem_replacements.find(std::string(borrowed_lhs->get_disambiguated_name()));
     if (lhs_rule != skolem_replacements.cend())
         node.put_lhs_operand(lhs_rule->second->clone());
 
@@ -104,7 +104,7 @@ void SkolemIntroducingVisitor::visit(MutableIdentity &node)
 
     // Apply any relevant disambiguation rewriting to the RHS operand.
     const auto& rhs_rule =
-        skolem_replacements.find(borrowed_rhs->get_disambiguated_name());
+        skolem_replacements.find(std::string(borrowed_rhs->get_disambiguated_name())); // TODO transparent hashing so we don't have to construct string
     if (rhs_rule != skolem_replacements.cend())
         node.put_rhs_operand(rhs_rule->second->clone());
 

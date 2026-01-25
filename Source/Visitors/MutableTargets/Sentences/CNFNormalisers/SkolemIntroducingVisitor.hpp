@@ -58,7 +58,7 @@ private:
 
     std::size_t skolem_counter = 0;
 
-    std::unordered_map<std::string_view, std::unique_ptr<IMutableTerm>> skolem_replacements;
+    std::unordered_map<std::string, std::unique_ptr<IMutableTerm>> skolem_replacements;
 
     TermResolutionVisitor term_visitor{skolem_replacements};
 
