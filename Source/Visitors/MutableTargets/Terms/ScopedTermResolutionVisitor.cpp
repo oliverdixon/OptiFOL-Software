@@ -20,7 +20,8 @@ namespace optifol
 {
 
 ScopedTermResolutionVisitor::ScopedTermResolutionVisitor(const std::unordered_set<std::string> &scope_hook,
-        const std::unordered_map<std::string, std::unique_ptr<IMutableTerm>> &rewriting_rules_hook) :
+        const std::unordered_map<std::string, std::unique_ptr<IMutableTerm>, StringHash, std::equal_to<>>
+            &rewriting_rules_hook) :
     TermResolutionVisitor(rewriting_rules_hook),
     scope_hook(scope_hook)
 {

@@ -39,7 +39,8 @@ public:
      *  map.
      */
     explicit TermResolutionVisitor(
-            const std::unordered_map<std::string, std::unique_ptr<IMutableTerm>> &rewriting_rules_hook);
+            const std::unordered_map<std::string, std::unique_ptr<IMutableTerm>, StringHash, std::equal_to<>>
+                &rewriting_rules_hook);
 
     /**
      * @brief Rewrite a function and all arguments according to the substitution ruleset.
@@ -58,7 +59,8 @@ public:
     void visit(MutableFunction &node) override;
 
 private:
-    const std::unordered_map<std::string, std::unique_ptr<IMutableTerm>> &rewriting_rules_hook;
+    const std::unordered_map<std::string, std::unique_ptr<IMutableTerm>, StringHash, std::equal_to<>>
+        &rewriting_rules_hook;
 };
 
 } // namespace optifol

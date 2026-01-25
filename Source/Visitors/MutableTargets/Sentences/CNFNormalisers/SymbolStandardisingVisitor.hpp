@@ -81,7 +81,7 @@ private:
      *  pointer in the corresponding value. Only variables with disambiguated names occupy entries in the map, and the
      *  map should be cleared down when the scope is released.
      */
-    std::unordered_map<std::string, std::unique_ptr<IMutableTerm>> rewriting_rules;
+    std::unordered_map<std::string, std::unique_ptr<IMutableTerm>, StringHash, std::equal_to<>> rewriting_rules;
 
     /**
      * @brief The set of pre-disambiguated names bound in the current scope.

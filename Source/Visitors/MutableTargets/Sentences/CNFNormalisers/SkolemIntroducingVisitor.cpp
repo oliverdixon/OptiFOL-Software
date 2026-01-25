@@ -104,7 +104,7 @@ void SkolemIntroducingVisitor::visit(MutableIdentity &node)
 
     // Apply any relevant disambiguation rewriting to the RHS operand.
     const auto& rhs_rule =
-        skolem_replacements.find(std::string(borrowed_rhs->get_disambiguated_name())); // TODO transparent hashing so we don't have to construct string
+        skolem_replacements.find(borrowed_rhs->get_disambiguated_name());
     if (rhs_rule != skolem_replacements.cend())
         node.put_rhs_operand(rhs_rule->second->clone());
 

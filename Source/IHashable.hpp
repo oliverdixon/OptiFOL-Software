@@ -124,6 +124,29 @@ protected:
     }
 };
 
+/**
+ * @class StringHash
+ * @brief Hashing functor helper for transparent/heterogeneous lookup on string-like containers.
+ */
+struct StringHash
+{
+    using is_transparent = void;
+    using hash_type = std::hash<std::string_view>;
+
+    auto operator()(const char *const str) const
+    {
+        return hash_type{}(str);
+    }
+    auto operator()(const std::string_view str) const
+    {
+        return hash_type{}(str);
+    }
+    auto operator()(const std::string &str) const
+    {
+        return hash_type{}(str);
+    }
+};
+
 } // namespace optifol
 
 // ReSharper disable once CppDoxygenUnresolvedReference
