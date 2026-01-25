@@ -117,4 +117,36 @@ TEST_F(ResolutionTest, ModusPonens_Quantified)
     EXPECT_TRUE(knowledge_base->query(*query));
 }
 
+TEST_F(ResolutionTest, NoImplication_Reject)
+{
+    std::vector<std::unique_ptr<IMutableTerm>> s1_p_args;
+    s1_p_args.push_back(MutableVariable::build<IMutableTerm>("x"));
+
+    std::vector<std::unique_ptr<IMutableTerm>> s1_q_args;
+    s1_q_args.push_back(MutableVariable::build<IMutableTerm>("x"));
+
+    std::vector<std::unique_ptr<IMutableTerm>> s2_p_args;
+    s2_p_args.push_back(MutableConstant::build<IMutableTerm>("C"));
+
+    std::vector<std::unique_ptr<IMutableTerm>> query_args;
+    query_args.push_back(MutableConstant::build<IMutableTerm>("C"));
+
+    const auto sentence1 = ExpressionFactory::build_sentence(MutableSentenceRoot::build(
+        MutablePredicate::build("P", std::move(s2_p_args))
+    ), symbol_repository);
+
+    const auto sentence2 = ExpressionFactory::build_sentence(MutableSentenceRoot::build(
+        MutablePredicate::build("Q", std::move(s2_p_args))
+    ), symbol_repository);
+
+    const auto query = ExpressionFactory::build_sentence(
+        MutableSentenceRoot::build(MutablePredicate::build("R", false, std::move(query_args))
+    ), symbol_repository);
+
+    knowledge_base->tell(*sentence1);
+    knowledge_base->tell(*sentence2);
+
+    EXPECT_FALSE(knowledge_base->query(*query));
+}
+
 } // namespace optifol

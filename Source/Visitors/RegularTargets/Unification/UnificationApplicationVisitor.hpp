@@ -51,9 +51,9 @@ public:
 
     [[nodiscard]] const Literal *visit(const Literal &node) const;
 
-    void discard_working_set();
+    void discard_new_symbols();
 
-    void keep_working_set();
+    void keep_new_symbols();
 
 private:
     [[nodiscard]] std::optional<std::vector<const IProcessedTerm *>> apply_to_term_vector(

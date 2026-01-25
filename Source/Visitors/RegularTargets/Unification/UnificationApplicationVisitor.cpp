@@ -71,15 +71,15 @@ const Literal *UnificationApplicationVisitor::visit(const Literal &node) const
         ) : existing_symbol_repository->get_symbol_handle<Literal>(node);
 }
 
-void UnificationApplicationVisitor::discard_working_set()
+void UnificationApplicationVisitor::discard_new_symbols()
 {
     new_symbol_repository = std::make_unique<SymbolRepository>();
 }
 
-void UnificationApplicationVisitor::keep_working_set()
+void UnificationApplicationVisitor::keep_new_symbols()
 {
     existing_symbol_repository->inherit_repository(std::move(new_symbol_repository));
-    discard_working_set();
+    discard_new_symbols();
 }
 
 std::optional<std::vector<const IProcessedTerm *>> UnificationApplicationVisitor::apply_to_term_vector(

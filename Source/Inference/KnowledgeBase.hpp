@@ -36,6 +36,12 @@ public:
     bool query(const SentenceRoot &negated_query);
 
 private:
+    static void collect_unified_literals(const Literal &self, const Clause &source_clause, Clause &destination_clause,
+            UnificationApplicationVisitor &applicator);
+
+    static Clause factor_literals(
+            const Clause &unified_clause, UnificationVisitor &unifier, UnificationApplicationVisitor &applicator);
+
     [[nodiscard]] std::vector<Resolvent> find_resolvents(const Clause &lhs_clause, const Clause &rhs_clause) const;
 
     std::vector<Clause> clauses;

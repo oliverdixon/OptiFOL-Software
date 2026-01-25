@@ -15,6 +15,7 @@
 
 #include <algorithm>
 #include <queue>
+#include <ranges>
 
 #include "../IR/Sentences/Literal.hpp"
 #include "../Visitors/RegularTargets/Unification/UnificationApplicationVisitor.hpp"
@@ -86,13 +87,65 @@ bool KnowledgeBase::query(const SentenceRoot &negated_query)
     return false;
 }
 
+void KnowledgeBase::collect_unified_literals(const Literal &self, const Clause &source_clause,
+        Clause &destination_clause, UnificationApplicationVisitor &applicator)
+{
+    auto unified = source_clause |
+        std::views::filter([self](const Literal * candidate) { return !self.operator==(*candidate); }) |
+        std::views::transform([&applicator](const Literal * target) { return target->accept(applicator); });
+
+    std::ranges::for_each(unified,
+        [&destination_clause](const Literal * literal) { destination_clause.add_literal(literal); } );
+}
+
+Clause KnowledgeBase::factor_literals(const Clause &unified_clause, UnificationVisitor &unifier,
+    UnificationApplicationVisitor &applicator)
+{
+    bool factoring_done = false;
+    Clause working_clause;
+
+    do {
+        factoring_done = false;
+
+        for (const auto [factoring_idx, factoring_lhs_literal] : std::views::enumerate(unified_clause)) {
+            for (const auto factoring_rhs_literal : unified_clause | std::views::take(factoring_idx))
+
+                /*
+                 * Finding a unifying MGU between the factoring literals indicates an opportunity to reduce the clause
+                 * size. Once the MGU is obtained, we can replace the working clause with the simplified variant, under
+                 * application of the MGU.
+                 */
+                if (factoring_lhs_literal->accept(unifier, *factoring_rhs_literal)) {
+                    Clause simplified;
+
+                    std::ranges::for_each(unified_clause,
+                        [&simplified, &applicator](const Literal * literal)
+                        {
+                            simplified.add_literal(literal->accept(applicator));
+                        }
+                    );
+
+                    working_clause = std::move(simplified);
+                    applicator.keep_new_symbols();
+                    factoring_done = true;
+                    break;
+                }
+
+            if (factoring_done)
+                break;
+        }
+    } while (factoring_done);
+
+    return working_clause;
+}
+
 std::vector<Resolvent> KnowledgeBase::find_resolvents(const Clause &lhs_clause, const Clause &rhs_clause) const
 {
-    UnificationVisitor unification_visitor(symbol_repository);
-    UnificationVisitor factoring_unification_visitor(symbol_repository);
+    UnificationVisitor unifier(symbol_repository);
+    UnificationApplicationVisitor applicator(unifier.observe_substitutions(), symbol_repository);
 
-    UnificationApplicationVisitor applicator(unification_visitor.observe_substitutions(), symbol_repository);
-    UnificationApplicationVisitor factoring_applicator(unification_visitor.observe_substitutions(), symbol_repository);
+    UnificationVisitor factoring_unifier(symbol_repository);
+    UnificationApplicationVisitor factoring_applicator(unifier.observe_substitutions(), symbol_repository);
 
     std::vector<Resolvent> resolvents;
 
@@ -100,12 +153,11 @@ std::vector<Resolvent> KnowledgeBase::find_resolvents(const Clause &lhs_clause, 
         for (const auto rhs_literal : rhs_clause) {
 
             // Attempt to unify the LHS literal with the negation of the RHS literal.
-
             auto rhs_args_copy = rhs_literal->observe_arguments();
             const Literal negated_rhs(std::string(rhs_literal->get_name()), std::move(rhs_args_copy),
                 rhs_literal->is_negative_polarity());
 
-            if (lhs_literal->accept(unification_visitor, negated_rhs)) {
+            if (lhs_literal->accept(unifier, negated_rhs)) {
 
                 /*
                  * If the LHS and negated RHS can be unified, we have attained a set of most-general unifiers. Construct
@@ -117,15 +169,9 @@ std::vector<Resolvent> KnowledgeBase::find_resolvents(const Clause &lhs_clause, 
                  * general symbol store so we only have to see non-owning, raw, immutable pointers.
                  */
 
-                RawUnorderedSet<const Literal> unified_literals;
-
-                for (const auto lhs_other : lhs_clause)
-                    if (lhs_other != lhs_literal)
-                        unified_literals.insert(lhs_other->accept(applicator));
-
-                for (const auto rhs_other : rhs_clause)
-                    if (rhs_other != rhs_literal)
-                        unified_literals.insert(rhs_other->accept(applicator));
+                Clause unified_clause;
+                collect_unified_literals(*lhs_literal, lhs_clause, unified_clause, applicator);
+                collect_unified_literals(*rhs_literal, rhs_clause, unified_clause, applicator);
 
                 /*
                  * Attempt to simplify the unified clause, and guarantee a complete inference process, by:
@@ -135,76 +181,28 @@ std::vector<Resolvent> KnowledgeBase::find_resolvents(const Clause &lhs_clause, 
                  *
                  * Once the clause has been built according to the above exclusion criteria, it is added to the
                  * resolvent vector returned to the caller.
+                 *
+                 * Note that (1) doesn't need explicit handling here, as the clause will reduce to TriviallyTrue if
+                 * a pair of complementary literals are added.
                  */
 
-                bool trivial = false;
-                bool factored = false;
+                if (unified_clause.get_triviality_state() == Clause::State::TriviallyTrue)
+                    continue;
 
-                do {
-                    factored = false;
+                /*
+                 * A non-trivial clause produced through resolution should be considered a fresh resolvent. This is
+                 * described by the source LHS and RHS clauses, the MGU, and the unified clause of the post-
+                 * application literals as a clause under disjunction.
+                 */
+                resolvents.emplace_back(lhs_clause, rhs_clause, unifier.observe_substitutions(),
+                    factor_literals(unified_clause, factoring_unifier, factoring_applicator));
 
-                    for (const auto factoring_lhs_literal : unified_literals) {
-                        // TODO don't need to run over all literals here.
-                        for (const auto factoring_rhs_literal : unified_literals) {
-                            if (factoring_lhs_literal == factoring_rhs_literal)
-                                continue;
-
-                            /*
-                             * Any clauses that would be trivially true, where a literal is a negation of itself, can be
-                             * discarded, as it would never produce a useful resolvent.
-                             */
-                            if (factoring_lhs_literal->is_negative_polarity() ==
-                                    !factoring_rhs_literal->is_negative_polarity() &&
-                                    factoring_lhs_literal->unsigned_equality(*factoring_rhs_literal)) {
-                                trivial = true;
-                                break;
-                            }
-
-                            /*
-                             * Finding a unifying MGU between the factoring literals indicates an opportunity to reduce
-                             * the clause size. Once the MGU is obtained, we can replace the working clause with the
-                             * simplified variant, under application of the MGU.
-                             */
-                            if (factoring_lhs_literal->accept(factoring_unification_visitor,
-                                    *factoring_rhs_literal)) {
-                                RawUnorderedSet<const Literal> simplified_unified_literals;
-
-                                for (const auto target_literal : unified_literals)
-                                    simplified_unified_literals.insert(target_literal->accept(factoring_applicator));
-
-                                unified_literals = std::move(simplified_unified_literals);
-                                factoring_applicator.keep_working_set();
-                                factored = true;
-                                break;
-                            }
-                        }
-
-                        if (trivial || factored)
-                            break;
-                    }
-                } while (!trivial && factored);
-
-                if (!trivial) {
-                    /*
-                     * A non-trivial clause produced through resolution should be considered a fresh resolvent. This is
-                     * described by the source LHS and RHS clauses, the MGU, and the unified clause of the
-                     * post-application literals as a clause under disjunction.
-                     *
-                     * TODO: make this nicer?  Does the resolvent need to store LHS and RHS clauses?
-                     */
-                    Clause unified_clause;
-                    std::ranges::for_each(unified_literals,
-                        [&unified_clause](const Literal * literal) { unified_clause.add_literal(literal); });
-
-                    resolvents.emplace_back(lhs_clause, rhs_clause,
-                        unification_visitor.observe_substitutions(), std::move(unified_clause));
-                }
-
-                applicator.keep_working_set();
+                // The applicator might have introduced new symbols, so we inherit them into the SymbolRepository here.
+                applicator.keep_new_symbols();
             }
 
             // Any important MGUs have been copied into a resolvent.
-            unification_visitor.reset_substitutions();
+            unifier.reset_substitutions();
         }
 
     return resolvents;

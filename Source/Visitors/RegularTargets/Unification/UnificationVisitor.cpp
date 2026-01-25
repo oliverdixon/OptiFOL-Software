@@ -166,7 +166,7 @@ void UnificationVisitor::register_substitution(const Variable &bound_key, const 
 bool UnificationVisitor::occurs_check(const Variable &variable_lhs, const IProcessedTerm &generic_term_rhs) const
 {
     const auto applied_term = generic_term_rhs.accept(application_visitor);
-    application_visitor.discard_working_set();
+    application_visitor.discard_new_symbols();
     return *applied_term == generic_term_rhs ? generic_term_rhs.is_self_nested(variable_lhs) :
         applied_term->is_self_nested(variable_lhs);
 }
