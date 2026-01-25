@@ -17,12 +17,19 @@
 #include <queue>
 #include <ranges>
 
+#include "../Logging.hpp"
 #include "../IR/Sentences/Literal.hpp"
 #include "../Visitors/RegularTargets/Unification/UnificationApplicationVisitor.hpp"
 #include "../Visitors/RegularTargets/Unification/UnificationVisitor.hpp"
 
 namespace optifol
 {
+
+const log4cxx::LoggerPtr KnowledgeBase::kb_logger = Logging::get_logger({"LogicServices", "KnowledgeBase"});
+const log4cxx::LoggerPtr KnowledgeBase::resolution_logger = Logging::get_logger({"LogicServices", "KnowledgeBase",
+    "Resolution"});
+const log4cxx::LoggerPtr KnowledgeBase::factoring_logger = Logging::get_logger({"LogicServices", "KnowledgeBase",
+    "Factoring"});
 
 KnowledgeBase::KnowledgeBase(std::shared_ptr<SymbolRepository> symbol_repository) :
     symbol_repository(std::move(symbol_repository))
@@ -43,12 +50,14 @@ void KnowledgeBase::tell(const Clause &clause)
 
 bool KnowledgeBase::query(const SentenceRoot &negated_query)
 {
-    std::priority_queue<Resolvent> resolvents;
+    kb_logger->info(std::format("Querying the KB of {} clauses for the negation of {}.", clauses.size(),
+        negated_query));
 
     // Add the negated query to the KB in an attempt to derive a contradiction.
     tell(negated_query);
+    std::priority_queue<Resolvent> resolvents;
 
-    // Over the Cartesian product of clauses in the KB, add pairwise resolutions to the priority queue.
+    // Over the Cartesian product of clauses in the KB, add pairwise resolvents.
     for (const auto& lhs_clause : clauses)
         for (const auto& rhs_clause : clauses) {
             auto new_resolvents = find_resolvents(lhs_clause, rhs_clause);
@@ -56,17 +65,25 @@ bool KnowledgeBase::query(const SentenceRoot &negated_query)
                 resolvents.push(std::move(new_resolvent));
         }
 
+    kb_logger->debug(std::format("Completed initial search; gathered {} resolvents.", resolvents.size()));
+
     /*
      * Once the initial set of resolvents has been added to the priority queue, continue stepping until a result has
      * been produced to indicate whether the negated query induces an inconsistent KB.
      */
-    while (!resolvents.empty()) {
+
+    unsigned int step_num = 1;
+    for (; !resolvents.empty(); ++step_num) {
         const auto resolution = resolvents.top().observe_resolution();
         resolvents.pop();
 
-        if (resolution.get_triviality_state() == Clause::State::TriviallyFalse)
+        kb_logger->debug(std::format("Step {} is using resolution {}.", step_num, resolution));
+
+        if (resolution.get_triviality_state() == Clause::State::TriviallyFalse) {
             // An empty unified clause indicates that a contradiction was derived in the KB.
+            kb_logger->info(std::format("Step {} derived a contradiction; the queried sentence is true.", step_num));
             return true;
+        }
 
         /*
          * If no contradiction was derived for this resolvent, insert it into the KB. If it is something new, attempt to
@@ -84,6 +101,9 @@ bool KnowledgeBase::query(const SentenceRoot &negated_query)
      * If we have exhausted all resolvents in the PQ without finding a contradiction, then introduced of the negated
      * query did not induce an inconsistent KB.
      */
+    kb_logger->info(std::format("Did not derive a contradiction after {} steps; the queried sentence is false.",
+        step_num));
+
     return false;
 }
 
@@ -102,7 +122,7 @@ Clause KnowledgeBase::factor_literals(const Clause &unified_clause, UnificationV
     UnificationApplicationVisitor &applicator)
 {
     bool factoring_done = false;
-    Clause working_clause;
+    Clause working_clause = unified_clause;
 
     do {
         factoring_done = false;
@@ -116,14 +136,19 @@ Clause KnowledgeBase::factor_literals(const Clause &unified_clause, UnificationV
                  * application of the MGU.
                  */
                 if (factoring_lhs_literal->accept(unifier, *factoring_rhs_literal)) {
-                    Clause simplified;
+                    factoring_logger->info(std::format("Successfully unified {} and {}.", *factoring_lhs_literal,
+                        *factoring_rhs_literal));
 
+                    Clause simplified;
                     std::ranges::for_each(unified_clause,
                         [&simplified, &applicator](const Literal * literal)
                         {
                             simplified.add_literal(literal->accept(applicator));
                         }
                     );
+
+                    factoring_logger->info(std::format("Reduced the working clause size to {} from {}.",
+                        simplified.order(), working_clause.order()));
 
                     working_clause = std::move(simplified);
                     applicator.keep_new_symbols();
@@ -159,6 +184,8 @@ std::vector<Resolvent> KnowledgeBase::find_resolvents(const Clause &lhs_clause, 
 
             if (lhs_literal->accept(unifier, negated_rhs)) {
 
+                resolution_logger->info(std::format("Successfully unified {} and {}.", *lhs_literal, negated_rhs));
+
                 /*
                  * If the LHS and negated RHS can be unified, we have attained a set of most-general unifiers. Construct
                  * the final resolvents according to the predicate resolution rule: apply the unifier to the union of
@@ -173,6 +200,9 @@ std::vector<Resolvent> KnowledgeBase::find_resolvents(const Clause &lhs_clause, 
                 collect_unified_literals(*lhs_literal, lhs_clause, unified_clause, applicator);
                 collect_unified_literals(*rhs_literal, rhs_clause, unified_clause, applicator);
 
+                resolution_logger->debug(std::format("Constructed a unified clause of {} literals.",
+                    unified_clause.order()));
+
                 /*
                  * Attempt to simplify the unified clause, and guarantee a complete inference process, by:
                  *
@@ -186,8 +216,10 @@ std::vector<Resolvent> KnowledgeBase::find_resolvents(const Clause &lhs_clause, 
                  * a pair of complementary literals are added.
                  */
 
-                if (unified_clause.get_triviality_state() == Clause::State::TriviallyTrue)
+                if (unified_clause.get_triviality_state() == Clause::State::TriviallyTrue) {
+                    resolution_logger->debug("The unified clause is a tautology; continuing.");
                     continue;
+                }
 
                 /*
                  * A non-trivial clause produced through resolution should be considered a fresh resolvent. This is
@@ -196,6 +228,9 @@ std::vector<Resolvent> KnowledgeBase::find_resolvents(const Clause &lhs_clause, 
                  */
                 resolvents.emplace_back(lhs_clause, rhs_clause, unifier.observe_substitutions(),
                     factor_literals(unified_clause, factoring_unifier, factoring_applicator));
+
+                resolution_logger->info(std::format("Resolved {} and {} to {}.", lhs_clause, rhs_clause,
+                    resolvents.back().observe_resolution()));
 
                 // The applicator might have introduced new symbols, so we inherit them into the SymbolRepository here.
                 applicator.keep_new_symbols();

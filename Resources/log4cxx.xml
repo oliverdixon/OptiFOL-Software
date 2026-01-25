@@ -29,7 +29,12 @@
     </logger>
 
     <logger name="LogicServices" additivity="false">
-        <priority value="info"/>
+        <priority value="warn"/>
+        <appender-ref ref="ConsoleAppender"/>
+    </logger>
+
+    <logger name="LogicServices.KnowledgeBase" additivity="false">
+        <priority value="debug"/>
         <appender-ref ref="ConsoleAppender"/>
     </logger>
 

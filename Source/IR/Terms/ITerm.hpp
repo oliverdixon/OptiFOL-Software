@@ -15,6 +15,7 @@
 #define ITERM_HPP
 
 #include "../../IHashable.hpp"
+#include "../../ISerialisable.hpp"
 
 namespace optifol
 {
@@ -42,7 +43,7 @@ class Function;
  *      up to the outermost IR node, but not necessarily across multiple SentenceRoot or ITerm root objects.
  *  </p>
  */
-class ITerm : public IHashable
+class ITerm : public IHashable, public ISerialisable
 {
 public:
     [[nodiscard]] std::size_t hash() const noexcept override
@@ -67,7 +68,7 @@ public:
      * @param ostream The destination output stream
      * @return The populated destination output stream
      */
-    virtual std::ostream &serialise(std::ostream &ostream) const
+    std::ostream &serialise(std::ostream &ostream) const override
     {
         return ostream << to_string();
     }
@@ -80,18 +81,6 @@ public:
     bool operator==(const ITerm &other) const
     {
         return hash() == other.hash();
-    }
-
-    /**
-     * @brief Non-member function to serialise the ITerm to a destination output stream
-     * @param ostream The destination output stream
-     * @param object The object to serialise
-     * @return The populated destination output stream
-     * @see ITerm::serialise(std::ostream&)
-     */
-    friend std::ostream &operator<<(std::ostream &ostream, const ITerm &object)
-    {
-        return object.serialise(ostream);
     }
 };
 

@@ -91,6 +91,26 @@ decltype(Clause::literals)::const_iterator Clause::end() const noexcept
     return literals.cend();
 }
 
+std::ostream &Clause::serialise(std::ostream &ostream) const
+{
+    ostream << '{' << ' ';
+
+    if (!literals.empty()) {
+        std::ranges::for_each_n(
+            literals.begin(),
+            literals.size() - 1, // NOLINT(*-narrowing-conversions)
+            [&ostream](const Literal * literal)
+            {
+                ostream << *literal << ',' << ' ';
+            }
+        );
+
+        ostream << *literals.back();
+    }
+
+    return ostream << ' ' << '}';
+}
+
 bool Clause::operator<(const Clause &other) const noexcept
 {
     return std::ranges::lexicographical_compare(literals, other.literals, [](const Literal * lhs, const Literal * rhs)
@@ -139,27 +159,6 @@ bool Clause::is_tautology() const noexcept
         {
             return lhs->unsigned_equality(*rhs) && lhs->is_negative_polarity() == !rhs->is_negative_polarity();
         }) != literals.end();
-}
-
-std::ostream &operator<<(std::ostream &ostream, const Clause &clause)
-{
-    ostream << '{' << ' ';
-    const auto& literals = clause.literals;
-
-    if (!literals.empty()) {
-        std::ranges::for_each_n(
-            literals.begin(),
-            literals.size() - 1, // NOLINT(*-narrowing-conversions)
-            [&ostream](const Literal * literal)
-            {
-                ostream << *literal << ',' << ' ';
-            }
-        );
-
-        ostream << *literals.back();
-    }
-
-    return ostream << ' ' << '}';
 }
 
 } // namespace optifol

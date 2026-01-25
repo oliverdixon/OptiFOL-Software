@@ -38,7 +38,7 @@ class Literal;
  *      This implementation models a tautology with @f$ C := \emptyset @f$. Trivial states can be further queried.
  *  </p>
  */
-class Clause : public OwningBuildable<Clause>
+class Clause : public OwningBuildable<Clause>, public ISerialisable
 {
 public:
     /**
@@ -107,13 +107,7 @@ public:
      */
     [[nodiscard]] decltype(literals)::const_iterator end() const noexcept;
 
-    /**
-     * @brief Serialise the Clause with all Literal objects to the given output stream.
-     * @param ostream The destination output stream
-     * @param clause The Clause to serialise
-     * @return The populated output stream
-     */
-    friend std::ostream& operator<<(std::ostream& ostream, const Clause& clause);
+    std::ostream &serialise(std::ostream &ostream) const override;
 
     bool operator<(const Clause& other) const noexcept;
 

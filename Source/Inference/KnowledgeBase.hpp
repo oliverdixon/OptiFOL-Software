@@ -14,6 +14,8 @@
 #ifndef OPTIFOL_KNOWLEDGEBASE_HPP
 #define OPTIFOL_KNOWLEDGEBASE_HPP
 
+#include <log4cxx/logger.h>
+
 #include "../IR/Sentences/SentenceRoot.hpp"
 #include "Resolvent.hpp"
 
@@ -43,6 +45,10 @@ private:
             const Clause &unified_clause, UnificationVisitor &unifier, UnificationApplicationVisitor &applicator);
 
     [[nodiscard]] std::vector<Resolvent> find_resolvents(const Clause &lhs_clause, const Clause &rhs_clause) const;
+
+    static const log4cxx::LoggerPtr kb_logger;
+    static const log4cxx::LoggerPtr resolution_logger;
+    static const log4cxx::LoggerPtr factoring_logger;
 
     std::vector<Clause> clauses;
     std::shared_ptr<SymbolRepository> symbol_repository;

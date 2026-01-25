@@ -117,7 +117,7 @@ TEST_F(ResolutionTest, ModusPonens_Quantified)
     EXPECT_TRUE(knowledge_base->query(*query));
 }
 
-TEST_F(ResolutionTest, NoImplication_Reject)
+TEST_F(ResolutionTest, Reject_Trivial)
 {
     std::vector<std::unique_ptr<IMutableTerm>> s1_p_args;
     s1_p_args.push_back(MutableVariable::build<IMutableTerm>("x"));

@@ -15,6 +15,7 @@
 #define ISENTENCE_HPP
 
 #include "../../IHashable.hpp"
+#include "../../ISerialisable.hpp"
 #include "../../Optifol.hpp"
 
 namespace optifol
@@ -25,29 +26,10 @@ namespace optifol
  * @brief A sentence represents a first-order logic sentence node within an IR tree. In most instantiations, it may
  *  consist of a deeply nested structure and always supports a polarity, i.e. positive or negative.
  */
-class ISentence : public IHashable
+class ISentence : public IHashable, public ISerialisable
 {
 public:
     [[nodiscard]] virtual bool is_negative_polarity() const noexcept = 0;
-
-    /**
-     * @brief Serialise a basic representation of the ISentence object on the given output stream
-     * @param ostream The destination output stream
-     * @return The output stream populated with the serialised sentence
-     * @note This function is provided for satisfaction of GoogleTestable.
-     */
-    virtual std::ostream &serialise(std::ostream &ostream) const = 0;
-
-    /**
-     * @brief Serialise a basic representation of the ISentence object on the given output stream
-     * @param ostream The destination output stream
-     * @param object The sentence to serialise
-     * @note This function is provided for satisfaction of GoogleTestable.
-     */
-    friend std::ostream &operator<<(std::ostream &ostream, const ISentence &object)
-    {
-        return object.serialise(ostream);
-    }
 
 protected:
     /**

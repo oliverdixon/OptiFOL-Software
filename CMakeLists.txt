@@ -292,6 +292,7 @@ add_library(OptifolCommon OBJECT
         Source/Inference/Unifier.hpp
         Source/Inference/Resolvent.cpp
         Source/Inference/Resolvent.hpp
+        Source/ISerialisable.hpp
 )
 
 target_include_directories(OptifolCommon PRIVATE
