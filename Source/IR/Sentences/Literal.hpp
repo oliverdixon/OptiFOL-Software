@@ -17,6 +17,7 @@
 #include <vector>
 
 #include "../../Visitors/RegularTargets/Unification/UnificationApplicationVisitor.hpp"
+#include "../MutableVariants/OwningBuildable.hpp"
 #include "IProcessedSentence.hpp"
 
 namespace optifol
@@ -32,7 +33,7 @@ class UnificationApplicationVisitor;
  *  all of which are referenced from the centralised SymbolRepository.
  * @see MutablePredicate for the unprocessed, argument-owning dual.
  */
-class Literal : public IProcessedSentence
+class Literal : public IProcessedSentence, public OwningBuildable<Literal>
 {
 public:
     /**

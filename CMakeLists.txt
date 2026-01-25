@@ -465,6 +465,7 @@ add_executable(OptifolTesting
         Source/Tests/GoogleTestSupport.hpp
         Source/Tests/RepositoryBuildingTest.cpp
         Source/Tests/ResolutionTest.cpp
+        Source/Tests/LiteralOrganisationTest.cpp
 )
 
 target_include_directories(OptifolTesting PRIVATE

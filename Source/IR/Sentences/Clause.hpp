@@ -38,7 +38,7 @@ class Literal;
  *      This implementation models a tautology with @f$ C := \emptyset @f$. Trivial states can be further queried.
  *  </p>
  */
-class Clause
+class Clause : public OwningBuildable<Clause>
 {
 public:
     /**
