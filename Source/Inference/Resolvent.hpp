@@ -29,6 +29,10 @@ public:
 
     friend std::ostream& operator<<(std::ostream& ostream, const Resolvent& resolvent);
 
+    [[nodiscard]] const Clause& observe_lhs_clause() const noexcept;
+
+    [[nodiscard]] const Clause& observe_rhs_clause() const noexcept;
+
     [[nodiscard]] const Clause& observe_resolution() const noexcept;
 
 private:

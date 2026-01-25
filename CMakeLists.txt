@@ -293,6 +293,10 @@ add_library(OptifolCommon OBJECT
         Source/Inference/Resolvent.cpp
         Source/Inference/Resolvent.hpp
         Source/ISerialisable.hpp
+        Source/GUI/AnalysisArea/AnalysisQuery.cpp
+        Source/GUI/AnalysisArea/AnalysisQuery.hpp
+        Source/GUI/AnalysisArea/AnalysisQueryCanvas.cpp
+        Source/GUI/AnalysisArea/AnalysisQueryCanvas.hpp
 )
 
 target_include_directories(OptifolCommon PRIVATE

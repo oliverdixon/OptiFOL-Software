@@ -26,6 +26,16 @@ Resolvent::Resolvent(Clause lhs_clause, Clause rhs_clause, Unifier unifier, Clau
 {
 }
 
+const Clause &Resolvent::observe_lhs_clause() const noexcept
+{
+    return lhs_clause;
+}
+
+const Clause &Resolvent::observe_rhs_clause() const noexcept
+{
+    return rhs_clause;
+}
+
 const Clause &Resolvent::observe_resolution() const noexcept
 {
     return resolution;

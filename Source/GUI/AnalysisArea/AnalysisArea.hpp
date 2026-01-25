@@ -16,6 +16,7 @@
 
 #include <gtkmm/builder.h>
 #include <gtkmm/columnview.h>
+#include <gtkmm/notebook.h>
 #include <gtkmm/singleselection.h>
 #include <gtkmm/treelistmodel.h>
 
@@ -23,6 +24,7 @@
 #include "../ContextButtonCorrespondence.hpp"
 #include "../IWindowArea.hpp"
 #include "AnalysisAreaNewAnalysisGroupPopover.hpp"
+#include "AnalysisQuery.hpp"
 
 namespace optifol
 {
@@ -94,6 +96,21 @@ namespace optifol
  *              <td>Popover UI for deleting an existing AnalysisGroup</td>
  *          </tr>
  *          <tr>
+ *              <td>Gtk::MenuButton</td>
+ *              <td><code>create_new_query</code></td>
+ *              <td>Button for creating a new query</td>
+ *          </tr>
+ *          <tr>
+ *              <td>Gtk::MenuButton</td>
+ *              <td><code>delete_selected_query</code></td>
+ *              <td>Button for deleting the selected query</td>
+ *          </tr>
+*           <tr>
+ *              <td>Gtk::Notebook</td>
+ *              <td><code>analysis_queries</code></td>
+ *              <td>Notebook containing the executed queries for the selected AnalysisGroup</td>
+ *          </tr>
+ *          <tr>
  *              <td>Gtk::ColumnViewColumn</td>
  *              <td><code>analysis_requirement_name</code></td>
  *              <td>Table column for the Requirement / AnalysisGroup name</td>
@@ -130,6 +147,8 @@ public:
       */
     explicit AnalysisArea(Gtk::Builder& builder);
 
+    ~AnalysisArea() override;
+
     void select_model(const Glib::RefPtr<Subsystem> &subsystem_model) override;
 
     void deselect_model() override;
@@ -139,6 +158,8 @@ public:
     const Subsystem *observe_active_subsystem() const noexcept override;
 
 private:
+    void add_query_page();
+
     static const char * const area_name;
 
     Glib::RefPtr<Subsystem> active_subsystem;
@@ -146,8 +167,10 @@ private:
     Glib::RefPtr<Gtk::TreeListModel> tree_model;
 
     std::pair<Gtk::Widget*, Gtk::Widget*> on_off_widgets;
+    std::vector<AnalysisQuery> query_pages;
 
     Gtk::ColumnView * groups_view;
+    Gtk::Notebook * queries_notebook;
 
     ContextButtonCorrespondence context_menu;
 

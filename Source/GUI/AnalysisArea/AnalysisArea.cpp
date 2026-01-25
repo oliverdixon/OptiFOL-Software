@@ -20,6 +20,12 @@
 namespace optifol
 {
 
+void AnalysisArea::add_query_page()
+{
+    auto& new_page = query_pages.emplace_back("new query");
+    new_page.add_to_notebook(*queries_notebook);
+}
+
 const char * const AnalysisArea::area_name = "Analysis and Optimisation Area";
 
 AnalysisArea::AnalysisArea(Gtk::Builder &builder) :
@@ -52,7 +58,8 @@ AnalysisArea::AnalysisArea(Gtk::Builder &builder) :
             }
         }
     ),
-    new_analysis_group_popover(builder, *this)
+    new_analysis_group_popover(builder, *this),
+    queries_notebook(GTKHelpers::get_widget<Gtk::Notebook>(area_name, builder, "analysis_queries"))
 {
     selection_model->set_autoselect(false);
     selection_model->set_can_unselect(true);
@@ -120,6 +127,39 @@ AnalysisArea::AnalysisArea(Gtk::Builder &builder) :
             column->set_factory(factory);
         }
     }
+
+    queries_notebook->signal_page_added().connect([this](Gtk::Widget * const, const guint) noexcept
+    {
+        queries_notebook->set_visible();
+    });
+
+    queries_notebook->signal_page_removed().connect([this](Gtk::Widget * const, const guint) noexcept
+    {
+        if (queries_notebook->get_n_pages() == 0)
+            queries_notebook->set_visible(false);
+    });
+
+    add_query_page(); // TODO testing
+}
+
+AnalysisArea::~AnalysisArea()
+{
+    assert(queries_notebook->get_n_pages() == query_pages.size());
+
+    if (queries_notebook->get_n_pages() > 1) {
+        const auto page_count = static_cast<guint>(query_pages.size());
+        for (guint page_index = page_count - 1; page_index > 1; --page_index) {
+            queries_notebook->remove_page(static_cast<gint>(page_index));
+            query_pages.pop_back();
+        }
+    }
+
+    if (queries_notebook->get_n_pages() == 1) {
+        queries_notebook->remove_page(0);
+        query_pages.pop_back();
+    }
+
+    assert(queries_notebook->get_n_pages() == 0 && query_pages.empty());
 }
 
 void AnalysisArea::select_model(const Glib::RefPtr<Subsystem> &subsystem_model)
