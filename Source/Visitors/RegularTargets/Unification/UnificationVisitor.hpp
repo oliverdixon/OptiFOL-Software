@@ -155,13 +155,15 @@ public:
      *
      * @return The working Unifier set.
      */
-    [[nodiscard]] const Unifier& observe_substitutions() const noexcept;
+    [[nodiscard]] const Unifier *observe_substitutions() const noexcept;
+
+    [[nodiscard]] std::shared_ptr<Unifier> share_substitutions() const noexcept;
 
     /**
      * @brief Clear unifying substitutions and reset the state such that @ref observe_substitutions produces an empty
      *  working set.
      */
-    void reset_substitutions() noexcept;
+    void reset_substitutions() const noexcept;
 
 private:
     /**
@@ -188,7 +190,7 @@ private:
      * @param bound_value The @f$ \beta @f$ IProcessedTerm binding.
      * @throws SemanticException if either @f$ \alpha @f$ or @f$ \beta @f$ do not exist in the @ref symbol_repository.
      */
-    void register_substitution(const Variable &bound_key, const IProcessedTerm &bound_value);
+    void register_substitution(const Variable &bound_key, const IProcessedTerm &bound_value) const;
 
     /**
      * @brief Determines whether the LHS Variable occurs in the RHS IProcessedTerm, or any applicable substitutions
@@ -223,7 +225,7 @@ private:
      * @brief The working set of Variable-to-Term substitutions for the unification attempt. Once unification has
      *  returned a verdict, the final set can be observed with @ref observe_substitutions.
      */
-    Unifier substitutions;
+    const std::shared_ptr<Unifier> substitutions;
 
     /**
      * @brief A helper substitution applicator for @ref occurs_check.

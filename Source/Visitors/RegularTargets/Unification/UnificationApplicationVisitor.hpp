@@ -34,7 +34,8 @@ class SentenceRoot;
 class UnificationApplicationVisitor
 {
 public:
-    UnificationApplicationVisitor(const Unifier& substitutions, std::shared_ptr<SymbolRepository> symbol_repository);
+    explicit UnificationApplicationVisitor(std::shared_ptr<Unifier> unifier,
+        std::shared_ptr<SymbolRepository> symbol_repository);
 
     /**
      * @brief Attempt to unify with a Constant.
@@ -59,7 +60,7 @@ private:
     [[nodiscard]] std::optional<std::vector<const IProcessedTerm *>> apply_to_term_vector(
             const std::vector<const IProcessedTerm *> &terms) const;
 
-    const Unifier& substitutions;
+    std::shared_ptr<Unifier> substitutions;
 
     const std::shared_ptr<SymbolRepository> existing_symbol_repository;
     std::unique_ptr<SymbolRepository> new_symbol_repository;

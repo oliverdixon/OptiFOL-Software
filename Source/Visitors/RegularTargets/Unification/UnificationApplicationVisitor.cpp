@@ -26,8 +26,8 @@ namespace optifol
 {
 
 UnificationApplicationVisitor::UnificationApplicationVisitor(
-        const Unifier &substitutions, std::shared_ptr<SymbolRepository> symbol_repository) :
-    substitutions(substitutions),
+        std::shared_ptr<Unifier> unifier, std::shared_ptr<SymbolRepository> symbol_repository) :
+    substitutions(std::move(unifier)),
     existing_symbol_repository(std::move(symbol_repository)),
     new_symbol_repository(std::make_unique<SymbolRepository>())
 {
@@ -40,8 +40,8 @@ const IProcessedTerm *UnificationApplicationVisitor::visit(const Constant &node)
 
 const IProcessedTerm *UnificationApplicationVisitor::visit(const Variable &node) const
 {
-    const auto it = substitutions.unifier.find(node);
-    return it == substitutions.unifier.cend() ? existing_symbol_repository->get_symbol_handle(node) : it->second;
+    const auto it = substitutions->unifier.find(node);
+    return it == substitutions->unifier.cend() ? existing_symbol_repository->get_symbol_handle(node) : it->second;
 }
 
 const IProcessedTerm *UnificationApplicationVisitor::visit(const Function &node) const

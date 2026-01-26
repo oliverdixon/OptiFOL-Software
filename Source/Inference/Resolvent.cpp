@@ -26,6 +26,16 @@ Resolvent::Resolvent(Clause lhs_clause, Clause rhs_clause, Unifier unifier, Clau
 {
 }
 
+std::size_t Resolvent::hash() const noexcept
+{
+    return hash_combine(hash_combine(lhs_clause.hash(), rhs_clause.hash()), resolution.hash());
+}
+
+std::ostream &Resolvent::serialise(std::ostream &ostream) const
+{
+    return ostream << resolution;
+}
+
 const Clause &Resolvent::observe_lhs_clause() const noexcept
 {
     return lhs_clause;
@@ -53,11 +63,6 @@ bool operator<(const Resolvent &lhs, const Resolvent &rhs) noexcept
         return true; // RHS has higher priority.
 
     return false; // Equal priority.
-}
-
-std::ostream &operator<<(std::ostream &ostream, const Resolvent &resolvent)
-{
-    return ostream << resolvent.resolution;
 }
 
 } // namespace optifol

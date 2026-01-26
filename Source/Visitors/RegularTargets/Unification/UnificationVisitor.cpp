@@ -27,6 +27,7 @@ namespace optifol
 
 UnificationVisitor::UnificationVisitor(std::shared_ptr<SymbolRepository> symbol_repository) :
     symbol_repository(std::move(symbol_repository)),
+    substitutions(std::make_shared<Unifier>()),
     application_visitor(substitutions, this->symbol_repository)
 {
 }
@@ -77,12 +78,14 @@ bool UnificationVisitor::visit(const Variable &variable_lhs, const Variable &var
         // If atomics (e.g. variables) are trivially identical, they can be unified without an explicit substitution.
         return true;
 
+    const auto& unifier = substitutions->unifier;
+
     /*
      * If the given LHS variable already has a binding, ensure that its bound mapping can be unified with the candidate
      * RHS variable.
      */
-    const auto &lhs_binding_it = substitutions.unifier.find(variable_lhs);
-    if (lhs_binding_it != substitutions.unifier.cend())
+    const auto &lhs_binding_it = unifier.find(variable_lhs);
+    if (lhs_binding_it != unifier.cend())
         return lhs_binding_it->second->accept(*this, variable_rhs);
 
     /*
@@ -90,8 +93,8 @@ bool UnificationVisitor::visit(const Variable &variable_lhs, const Variable &var
      * it could be a key in the substitutions map. Ensure that the RHS binding, if it exists, can be bound with the
      * candidate LHS variable.
      */
-    const auto &rhs_binding_it = substitutions.unifier.find(variable_rhs);
-    if (rhs_binding_it != substitutions.unifier.cend())
+    const auto &rhs_binding_it = unifier.find(variable_rhs);
+    if (rhs_binding_it != unifier.cend())
         return rhs_binding_it->second->accept(*this, variable_lhs);
 
     // If all checks pass, we can do a unification between the variables. Register the replacement and indicate success.
@@ -118,14 +121,19 @@ bool UnificationVisitor::visit(const Function &function_lhs, const Function &fun
     return true;
 }
 
-const Unifier &UnificationVisitor::observe_substitutions() const noexcept
+const Unifier *UnificationVisitor::observe_substitutions() const noexcept
+{
+    return substitutions.get();
+}
+
+std::shared_ptr<Unifier> UnificationVisitor::share_substitutions() const noexcept
 {
     return substitutions;
 }
 
-void UnificationVisitor::reset_substitutions() noexcept
+void UnificationVisitor::reset_substitutions() const noexcept
 {
-    substitutions.unifier.clear();
+    substitutions->unifier.clear();
 }
 
 bool UnificationVisitor::variable_generic(const Variable &variable_lhs, const IProcessedTerm &generic_term_rhs)
@@ -138,8 +146,8 @@ bool UnificationVisitor::variable_generic(const Variable &variable_lhs, const IP
      * If the given LHS variable already has a binding, ensure that its bound mapping can be unified with the other
      * variable.
      */
-    const auto &lhs_binding_it = substitutions.unifier.find(variable_lhs);
-    if (lhs_binding_it != substitutions.unifier.cend())
+    const auto &lhs_binding_it = substitutions->unifier.find(variable_lhs);
+    if (lhs_binding_it != substitutions->unifier.cend())
         return lhs_binding_it->second->accept(*this, generic_term_rhs);
 
     // Perform an 'occurs check' only when considering binding a variable to a generic, non-variable term.
@@ -151,7 +159,7 @@ bool UnificationVisitor::variable_generic(const Variable &variable_lhs, const IP
     return true;
 }
 
-void UnificationVisitor::register_substitution(const Variable &bound_key, const IProcessedTerm &bound_value)
+void UnificationVisitor::register_substitution(const Variable &bound_key, const IProcessedTerm &bound_value) const
 {
     const auto variable_repo_ptr = symbol_repository->get_symbol_handle(bound_key);
     const auto bound_repo_ptr = symbol_repository->get_symbol_handle(bound_value);
@@ -160,7 +168,7 @@ void UnificationVisitor::register_substitution(const Variable &bound_key, const 
         throw SemanticException("Attempted to register substitution for " + bound_key.to_string() + " but the "
             "Repository is incomplete.");
 
-    substitutions.unifier.emplace(variable_repo_ptr, bound_repo_ptr);
+    substitutions->unifier.emplace(variable_repo_ptr, bound_repo_ptr);
 }
 
 bool UnificationVisitor::occurs_check(const Variable &variable_lhs, const IProcessedTerm &generic_term_rhs) const

@@ -36,8 +36,15 @@ TextSerialiserVisitor ExpressionFactory::serialiser_visitor;
 std::unique_ptr<SentenceRoot> ExpressionFactory::build_sentence(
         std::unique_ptr<MutableSentenceRoot> &&sentence_root, std::shared_ptr<SymbolRepository> symbol_repository)
 {
+    // Step 1. Propagate the polarity of the root to its immediate child.
+    if (sentence_root->is_negative_polarity() && !sentence_root->observe_sentence()->is_negative_polarity()) {
+        auto borrowed = sentence_root->take_sentence();
+        borrowed->flip_polarity();
+        sentence_root->put_sentence(std::move(borrowed));
+    }
+
     /*
-     * Step 1. Push through the seven-stage CNF normalisation pipeline.
+     * Step 2. Push through the seven-stage CNF normalisation pipeline.
      *
      * This produces a MutableSentenceRoot that is structured as a tree, but only contains elements allowable in a CNF
      * tree. Note that a new tree is not created; the original tree is mutated such that it can be trivially converted
@@ -62,7 +69,7 @@ std::unique_ptr<SentenceRoot> ExpressionFactory::build_sentence(
         sentence_root = cnf_normalise(std::move(sentence_root));
 
     /*
-     * Step 2. Populate the symbol repository.
+     * Step 3. Populate the symbol repository.
      *
      * This transforms the normalised mutable CNF tree into the corresponding immutable form, represented by a
      * SentenceRoot. SentenceRoot objects do not indicate trees, rather sets of literals under disjunction, of which the

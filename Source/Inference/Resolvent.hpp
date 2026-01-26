@@ -20,12 +20,16 @@
 namespace optifol
 {
 
-class Resolvent
+class Resolvent : public IHashable, public ISerialisable
 {
 public:
     Resolvent(Clause lhs_clause, Clause rhs_clause, Unifier unifier, Clause resolution);
 
     friend bool operator<(const Resolvent& lhs, const Resolvent& rhs) noexcept;
+
+    [[nodiscard]] std::size_t hash() const noexcept override;
+
+    std::ostream &serialise(std::ostream &ostream) const override;
 
     friend std::ostream& operator<<(std::ostream& ostream, const Resolvent& resolvent);
 

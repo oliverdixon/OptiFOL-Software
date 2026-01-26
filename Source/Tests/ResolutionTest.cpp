@@ -84,9 +84,6 @@ TEST_F(ResolutionTest, ModusPonens_Quantified)
     std::vector<std::unique_ptr<IMutableTerm>> s2_p_args;
     s2_p_args.push_back(MutableConstant::build<IMutableTerm>("C"));
 
-    std::vector<std::unique_ptr<IMutableTerm>> query_args;
-    query_args.push_back(MutableConstant::build<IMutableTerm>("C"));
-
     // clang-format off
 
     const auto sentence1 = ExpressionFactory::build_sentence(MutableSentenceRoot::build(
@@ -107,17 +104,18 @@ TEST_F(ResolutionTest, ModusPonens_Quantified)
         MutablePredicate::build("P", std::move(s2_p_args))
     ), symbol_repository);
 
-    const auto query = ExpressionFactory::build_sentence(
-        MutableSentenceRoot::build(MutablePredicate::build("Q", false, std::move(query_args))
-    ), symbol_repository);
-
     knowledge_base->tell(*sentence1);
     knowledge_base->tell(*sentence2);
 
-    EXPECT_TRUE(knowledge_base->query(*query));
+    std::vector<std::unique_ptr<IMutableTerm>> query_args;
+    query_args.push_back(MutableConstant::build<IMutableTerm>("C"));
+
+    const auto result = knowledge_base->ask(MutableSentenceRoot::build(MutablePredicate::build("Q",
+        std::move(query_args))));
+
+    EXPECT_EQ(result.outcome, KnowledgeBase::QueryResult::ConjectureStatus::Consistent);
 }
 
-#if 0
 TEST_F(ResolutionTest, Reject_Trivial)
 {
     std::vector<std::unique_ptr<IMutableTerm>> s1_p_args;
@@ -129,9 +127,6 @@ TEST_F(ResolutionTest, Reject_Trivial)
     std::vector<std::unique_ptr<IMutableTerm>> s2_p_args;
     s2_p_args.push_back(MutableConstant::build<IMutableTerm>("C"));
 
-    std::vector<std::unique_ptr<IMutableTerm>> query_args;
-    query_args.push_back(MutableConstant::build<IMutableTerm>("C"));
-
     const auto sentence1 = ExpressionFactory::build_sentence(MutableSentenceRoot::build(
         MutablePredicate::build("P", std::move(s2_p_args))
     ), symbol_repository);
@@ -140,14 +135,16 @@ TEST_F(ResolutionTest, Reject_Trivial)
         MutablePredicate::build("Q", std::move(s2_p_args))
     ), symbol_repository);
 
-    const auto query = ExpressionFactory::build_sentence(
-        MutableSentenceRoot::build(MutablePredicate::build("R", false, std::move(query_args))
-    ), symbol_repository);
-
     knowledge_base->tell(*sentence1);
     knowledge_base->tell(*sentence2);
 
-    EXPECT_FALSE(knowledge_base->query(*query));
+    std::vector<std::unique_ptr<IMutableTerm>> query_args;
+    query_args.push_back(MutableConstant::build<IMutableTerm>("C"));
+
+    const auto result = knowledge_base->ask(MutableSentenceRoot::build(MutablePredicate::build("R",
+        std::move(query_args))));
+
+    EXPECT_EQ(result.outcome, KnowledgeBase::QueryResult::ConjectureStatus::Inconsistent);
 }
 
 TEST_F(ResolutionTest, CuriosityKilledTheCat)
@@ -288,15 +285,6 @@ TEST_F(ResolutionTest, CuriosityKilledTheCat)
         )
     ), symbol_repository);
 
-    // Did Curiosity kill Tuna?
-    std::vector<std::unique_ptr<IMutableTerm>> kills_args_4;
-    kills_args_4.push_back(MutableConstant::build("Curiosity"));
-    kills_args_4.push_back(MutableConstant::build("Tuna"));
-
-    const auto negated_query = ExpressionFactory::build_sentence(MutableSentenceRoot::build(
-        MutablePredicate::build("Kills", false, std::move(kills_args_4))
-    ), symbol_repository);
-
     // Tell the KB the facts...
     knowledge_base->tell(*loves_all_animals);
     knowledge_base->tell(*kills_an_animal);
@@ -305,8 +293,15 @@ TEST_F(ResolutionTest, CuriosityKilledTheCat)
     knowledge_base->tell(*tuna_is_cat);
     knowledge_base->tell(*cats_are_animals);
 
-    EXPECT_TRUE(knowledge_base->query(*negated_query));
+    // Did Curiosity kill Tuna?
+    std::vector<std::unique_ptr<IMutableTerm>> kills_args_4;
+    kills_args_4.push_back(MutableConstant::build("Curiosity"));
+    kills_args_4.push_back(MutableConstant::build("Tuna"));
+
+    const auto result = knowledge_base->ask(MutableSentenceRoot::build(MutablePredicate::build("Kills",
+        std::move(kills_args_4))));
+
+    EXPECT_EQ(result.outcome, KnowledgeBase::QueryResult::ConjectureStatus::Consistent);
 }
-#endif
 
 } // namespace optifol

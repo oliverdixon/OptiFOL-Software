@@ -33,13 +33,8 @@
         <appender-ref ref="ConsoleAppender"/>
     </logger>
 
-    <logger name="LogicServices.CNFNormalisation" additivity="false">
-        <priority value="debug"/>
-        <appender-ref ref="ConsoleAppender"/>
-    </logger>
-
     <logger name="LogicServices.KnowledgeBase" additivity="false">
-        <priority value="trace"/>
+        <priority value="debug"/>
         <appender-ref ref="ConsoleAppender"/>
     </logger>
 
