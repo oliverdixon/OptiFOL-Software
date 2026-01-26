@@ -38,7 +38,7 @@ class Literal;
  *      This implementation models a tautology with @f$ C := \emptyset @f$. Trivial states can be further queried.
  *  </p>
  */
-class Clause : public OwningBuildable<Clause>, public ISerialisable
+class Clause : public OwningBuildable<Clause>, public ISerialisable, public IHashable
 {
 public:
     /**
@@ -108,6 +108,8 @@ public:
     [[nodiscard]] decltype(literals)::const_iterator end() const noexcept;
 
     std::ostream &serialise(std::ostream &ostream) const override;
+
+    [[nodiscard]] std::size_t hash() const noexcept override;
 
     bool operator<(const Clause& other) const noexcept;
 

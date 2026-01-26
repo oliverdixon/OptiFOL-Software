@@ -81,8 +81,8 @@ bool UnificationVisitor::visit(const Variable &variable_lhs, const Variable &var
      * If the given LHS variable already has a binding, ensure that its bound mapping can be unified with the candidate
      * RHS variable.
      */
-    const auto &lhs_binding_it = substitutions.find(variable_lhs);
-    if (lhs_binding_it != substitutions.cend())
+    const auto &lhs_binding_it = substitutions.unifier.find(variable_lhs);
+    if (lhs_binding_it != substitutions.unifier.cend())
         return lhs_binding_it->second->accept(*this, variable_rhs);
 
     /*
@@ -90,8 +90,8 @@ bool UnificationVisitor::visit(const Variable &variable_lhs, const Variable &var
      * it could be a key in the substitutions map. Ensure that the RHS binding, if it exists, can be bound with the
      * candidate LHS variable.
      */
-    const auto &rhs_binding_it = substitutions.find(variable_rhs);
-    if (rhs_binding_it != substitutions.cend())
+    const auto &rhs_binding_it = substitutions.unifier.find(variable_rhs);
+    if (rhs_binding_it != substitutions.unifier.cend())
         return rhs_binding_it->second->accept(*this, variable_lhs);
 
     // If all checks pass, we can do a unification between the variables. Register the replacement and indicate success.
@@ -125,7 +125,7 @@ const Unifier &UnificationVisitor::observe_substitutions() const noexcept
 
 void UnificationVisitor::reset_substitutions() noexcept
 {
-    substitutions.clear();
+    substitutions.unifier.clear();
 }
 
 bool UnificationVisitor::variable_generic(const Variable &variable_lhs, const IProcessedTerm &generic_term_rhs)
@@ -138,8 +138,8 @@ bool UnificationVisitor::variable_generic(const Variable &variable_lhs, const IP
      * If the given LHS variable already has a binding, ensure that its bound mapping can be unified with the other
      * variable.
      */
-    const auto &lhs_binding_it = substitutions.find(variable_lhs);
-    if (lhs_binding_it != substitutions.cend())
+    const auto &lhs_binding_it = substitutions.unifier.find(variable_lhs);
+    if (lhs_binding_it != substitutions.unifier.cend())
         return lhs_binding_it->second->accept(*this, generic_term_rhs);
 
     // Perform an 'occurs check' only when considering binding a variable to a generic, non-variable term.
@@ -160,13 +160,13 @@ void UnificationVisitor::register_substitution(const Variable &bound_key, const 
         throw SemanticException("Attempted to register substitution for " + bound_key.to_string() + " but the "
             "Repository is incomplete.");
 
-    substitutions.emplace(variable_repo_ptr, bound_repo_ptr);
+    substitutions.unifier.emplace(variable_repo_ptr, bound_repo_ptr);
 }
 
 bool UnificationVisitor::occurs_check(const Variable &variable_lhs, const IProcessedTerm &generic_term_rhs) const
 {
     const auto applied_term = generic_term_rhs.accept(application_visitor);
-    application_visitor.discard_new_symbols();
+    application_visitor.discard_new_symbols(); // TODO this looks unsafe.
     return *applied_term == generic_term_rhs ? generic_term_rhs.is_self_nested(variable_lhs) :
         applied_term->is_self_nested(variable_lhs);
 }

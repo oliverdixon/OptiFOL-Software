@@ -48,4 +48,14 @@ void SymbolRepository::inherit_repository(std::unique_ptr<SymbolRepository> &&ot
     inherit_set(variables, other->variables);
 }
 
+void SymbolRepository::increment_sentence_count() noexcept
+{
+    ++sentence_count;
+}
+
+unsigned int SymbolRepository::get_sentence_count() const noexcept
+{
+    return sentence_count;
+}
+
 } // namespace optifol

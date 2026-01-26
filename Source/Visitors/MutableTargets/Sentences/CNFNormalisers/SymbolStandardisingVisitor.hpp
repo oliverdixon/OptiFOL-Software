@@ -38,7 +38,8 @@ namespace optifol
  *      quantifier having already been defined in the relevant scope, an exception is thrown.</li>
  *    <li><b>Standardising naming of adjacent variables:</b> ensures that syntactically and semantically valid sentences
  *      discriminate between variables of the same name when used across different scopes. For example,
- *      <code>%Ux(P(x)) | %Ex(Q(x))</code> would be suitably rewritten as <code>%Ux(P(x)) | %Ex0(Q(x0))</code>.</li>
+ *      <code>%Ux(P(x)) | %Ex(Q(x))</code> would be suitably rewritten as <code>%Ux(P(x)) | %Ex_0(Q(x_0))</code>, where
+ *      <code>x_0</code> is the introduced variable.</li>
  *  </ol>
  *
  * @warning Although multiple passes are not required for this symbol-standardising visitor, it does recurse on any

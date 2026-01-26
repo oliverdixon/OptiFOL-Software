@@ -146,6 +146,10 @@ public:
      */
     void inherit_repository(std::unique_ptr<SymbolRepository> &&other);
 
+    void increment_sentence_count() noexcept;
+
+    [[nodiscard]] unsigned int get_sentence_count() const noexcept;
+
 private:
     /**
      * @brief Steal @ref std::unique_ptr objects from the given UniqueUnorderedSet source container and move into the
@@ -166,6 +170,8 @@ private:
     UniqueUnorderedSet<IProcessedSentence> sentences;
     UniqueUnorderedSet<IProcessedTerm> terms;
     UniqueUnorderedSet<Variable> variables;
+
+    unsigned int sentence_count = 0;
 };
 
 template<>

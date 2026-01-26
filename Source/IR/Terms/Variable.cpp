@@ -24,15 +24,15 @@ Variable::Variable(std::string name) :
 {
 }
 
-Variable::Variable(std::string name, const std::string &disambiguated_name) :
+Variable::Variable(std::string name, std::string disambiguated_name) :
     name(std::move(name)),
-    disambiguated_name(disambiguated_name)
+    disambiguated_name(std::move(disambiguated_name))
 {
 }
 
 std::string Variable::to_string() const
 {
-    return name;
+    return std::string(get_disambiguated_name());
 }
 
 std::string_view Variable::get_disambiguated_name() const
@@ -40,6 +40,11 @@ std::string_view Variable::get_disambiguated_name() const
     if (disambiguated_name.has_value())
         return *disambiguated_name;
 
+    return name;
+}
+
+std::string_view Variable::get_base_name() const noexcept
+{
     return name;
 }
 

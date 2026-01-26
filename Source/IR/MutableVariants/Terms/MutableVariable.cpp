@@ -48,7 +48,7 @@ void MutableVariable::accept(MutatingTermVisitorBase &visitor)
 
 std::string MutableVariable::to_string() const
 {
-    return name;
+    return std::string(get_disambiguated_name());
 }
 
 std::string_view MutableVariable::get_disambiguated_name() const
@@ -56,6 +56,11 @@ std::string_view MutableVariable::get_disambiguated_name() const
     if (disambiguated_name.has_value())
         return *disambiguated_name;
 
+    return name;
+}
+
+std::string_view MutableVariable::get_base_name() const noexcept
+{
     return name;
 }
 

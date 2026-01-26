@@ -68,8 +68,15 @@ public:
 
         return lhs;
     }
+    
+    IHashable(const IHashable&) = default;
+    IHashable& operator=(const IHashable&) = default;
+    IHashable(IHashable&&) = default;
+    IHashable& operator=(IHashable&&) = default;
 
 protected:
+    IHashable() = default;
+
     /**
      * @brief Commutatively combine two hashes using sensible constants, inspired by boost::hash_combine.
      * @param lhs The LHS hash value

@@ -46,20 +46,20 @@ protected:
 // ReSharper disable once CppDoxygenUnresolvedReference
 
 /**
- * @class formatter<SentenceType>
+ * @class formatter<Serialisable>
  * @brief Helper for C++20 @ref std::format support on serialisable Optifol types.
- * @tparam SentenceType The derived ISerialisable type to format
+ * @tparam Serialisable The derived ISerialisable type to format
  */
-template<typename SentenceType> requires std::derived_from<SentenceType, optifol::ISerialisable>
-struct std::formatter<SentenceType> : formatter<string> // NOLINT(*-dcl58-cpp)
+template<typename Serialisable> requires std::derived_from<Serialisable, optifol::ISerialisable>
+struct std::formatter<Serialisable> : formatter<string> // NOLINT(*-dcl58-cpp)
 {
     /**
      * @brief Format the given sentence according to the implementation-defined serialiser.
-     * @param value The SentenceType to serialise with the <code>operator&lt;&lt;</code> call.
+     * @param value The Serialisable to serialise with the <code>operator&lt;&lt;</code> call.
      * @param context The streamed formatting context
      * @return The updated formatting context
      */
-    auto format(const SentenceType &value, format_context &context) const
+    auto format(const Serialisable &value, format_context &context) const
     {
         ostringstream output_stream;
         output_stream << value;

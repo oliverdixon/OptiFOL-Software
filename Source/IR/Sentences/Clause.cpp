@@ -111,6 +111,16 @@ std::ostream &Clause::serialise(std::ostream &ostream) const
     return ostream << ' ' << '}';
 }
 
+std::size_t Clause::hash() const noexcept
+{
+    return std::ranges::fold_left(
+        literals, std::size_t{0},
+        [](const std::size_t seed, const Literal * const literal)
+        {
+            return hash_combine(seed, std::hash<Literal>{}(*literal));
+        });
+}
+
 bool Clause::operator<(const Clause &other) const noexcept
 {
     return std::ranges::lexicographical_compare(literals, other.literals, [](const Literal * lhs, const Literal * rhs)

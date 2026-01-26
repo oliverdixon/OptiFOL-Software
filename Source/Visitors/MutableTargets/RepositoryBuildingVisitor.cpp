@@ -130,6 +130,8 @@ void RepositoryBuildingVisitor::visit(MutableSentenceRoot &node)
     const auto sentence = node.take_sentence();
     sentence->accept(*this);
 
+    symbol_repository->increment_sentence_count();
+
     if (!working_clause.empty()) {
         root->add_clause(working_clause);
         working_clause.force_bottom();
@@ -145,7 +147,9 @@ std::unique_ptr<SentenceRoot> RepositoryBuildingVisitor::take_last_root() noexce
 const Variable *RepositoryBuildingVisitor::visit(const MutableVariable &node) const
 {
     return symbol_repository->add_symbol<Variable>(
-            std::make_unique<Variable>(node.to_string(), std::string(node.get_disambiguated_name())));
+            std::make_unique<Variable>(std::string(node.get_base_name()),
+                std::string(node.get_base_name()) + MutableVariable::disambiguating_delimiter +
+                    std::to_string(symbol_repository->get_sentence_count())));
 }
 
 const Function *RepositoryBuildingVisitor::visit(MutableFunction &node)

@@ -138,7 +138,7 @@ void SymbolStandardisingVisitor::close_scope(MutableQuantified &node,
 
 std::string SymbolStandardisingVisitor::generate_name(const std::string &name)
 {
-    return name + std::to_string(unique_name_counter++);
+    return name + MutableVariable::disambiguating_delimiter + std::to_string(unique_name_counter++);
 }
 
 }

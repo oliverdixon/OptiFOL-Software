@@ -55,11 +55,15 @@ public:
 
     [[nodiscard]] std::string_view get_disambiguated_name() const override;
 
+    [[nodiscard]] std::string_view get_base_name() const noexcept;
+
     const IProcessedTerm *accept(RepositoryBuildingVisitor &visitor) override;
 
     void accept(IObservingNodeVisitor &visitor) const override;
 
     [[nodiscard]] bool operator==(const IMutableTerm &other) const noexcept override;
+
+    static constexpr char disambiguating_delimiter = '#';
 
 private:
     std::string name;

@@ -31,9 +31,9 @@ class KnowledgeBase
 public:
     explicit KnowledgeBase(std::shared_ptr<SymbolRepository> symbol_repository);
 
-    void tell(const SentenceRoot& sentence);
+    bool tell(const SentenceRoot &sentence);
 
-    void tell(const Clause& clause);
+    bool tell(const Clause &new_clause);
 
     bool query(const SentenceRoot &negated_query);
 
@@ -50,7 +50,7 @@ private:
     static const log4cxx::LoggerPtr resolution_logger;
     static const log4cxx::LoggerPtr factoring_logger;
 
-    std::vector<Clause> clauses;
+    std::unordered_set<Clause> clauses;
     std::shared_ptr<SymbolRepository> symbol_repository;
 };
 

@@ -66,7 +66,7 @@ TEST_F(UnificationTest, Positive_SingleBinding_FuncVar)
 
     EXPECT_TRUE(p1->accept(*unification_visitor, *p2));
 
-    const Unifier expected_subs{{x, d}};
+    const Unifier expected_subs{{{x, d}}};
     EXPECT_EQ(unification_visitor->observe_substitutions(), expected_subs);
 }
 
@@ -93,7 +93,7 @@ TEST_F(UnificationTest, Positive_MultipleBindings_FuncVar)
 
     EXPECT_TRUE(p1->accept(*unification_visitor, *p2));
 
-    const Unifier expected_subs{{x, d}, {y, c}};
+    const Unifier expected_subs{{{x, d}, {y, c}}};
     EXPECT_EQ(unification_visitor->observe_substitutions(), expected_subs);
 }
 
@@ -120,7 +120,7 @@ TEST_F(UnificationTest, Positive_MultipleBindings_VarVar)
 
     EXPECT_TRUE(p1->accept(*unification_visitor, *p2));
 
-    const Unifier expected_subs{{c, a}, {d, b}};
+    const Unifier expected_subs{{{c, a}, {d, b}}};
     EXPECT_EQ(unification_visitor->observe_substitutions(), expected_subs);
 }
 

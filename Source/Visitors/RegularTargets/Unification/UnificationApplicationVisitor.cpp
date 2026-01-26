@@ -40,8 +40,8 @@ const IProcessedTerm *UnificationApplicationVisitor::visit(const Constant &node)
 
 const IProcessedTerm *UnificationApplicationVisitor::visit(const Variable &node) const
 {
-    const auto it = substitutions.find(node);
-    return it == substitutions.cend() ? existing_symbol_repository->get_symbol_handle(node) : it->second;
+    const auto it = substitutions.unifier.find(node);
+    return it == substitutions.unifier.cend() ? existing_symbol_repository->get_symbol_handle(node) : it->second;
 }
 
 const IProcessedTerm *UnificationApplicationVisitor::visit(const Function &node) const

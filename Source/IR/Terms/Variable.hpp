@@ -42,11 +42,13 @@ public:
      * @param disambiguated_name The fixed disambiguated name for the variable
      * @warning No uniqueness check is done for the disambiguated name upon construction
      */
-    explicit Variable(std::string name, const std::string &disambiguated_name);
+    explicit Variable(std::string name, std::string disambiguated_name);
 
     [[nodiscard]] std::string to_string() const override;
 
     [[nodiscard]] std::string_view get_disambiguated_name() const override;
+
+    [[nodiscard]] std::string_view get_base_name() const noexcept;
 
     [[nodiscard]] bool operator==(const Variable & other) const;
 
@@ -61,7 +63,8 @@ public:
      */
     [[nodiscard]] bool is_self_nested(const IProcessedTerm &search_term) const noexcept override;
 
-    const IProcessedTerm *accept(const UnificationApplicationVisitor &unification_application_visitor) const override;
+    [[nodiscard]] const IProcessedTerm *accept(const UnificationApplicationVisitor &unification_application_visitor)
+        const override;
 
     [[nodiscard]] bool operator==(const IProcessedTerm &other) const noexcept override;
 

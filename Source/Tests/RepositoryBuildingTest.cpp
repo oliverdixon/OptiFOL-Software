@@ -88,7 +88,8 @@ protected:
  * @details
  *  <ul>
  *      <li>Input: @f$ P \left( x, y, z \right) @f$</li>
- *      <li>Expected output: @f$ \left\{ \left\{ P \left( x, y, z \right) \right\} \right\} @f$</li>
+ *      <li>Expected output: @f$ \left\{ \left\{ P \left( x_0, y_0, z_0 \right) \right\} \right\} @f$, where the
+ *          subscripted suffixes are introduced to disambiguate across sentences.</li>
  *  </ul>
  * @memberof RepositoryBuildingTest
  */
@@ -101,9 +102,9 @@ TEST_F(RepositoryBuildingTest, SingleClause_SinglePredicate)
     p_args.push_back(MutableVariable::build<IMutableTerm>("y"));
     p_args.push_back(MutableVariable::build<IMutableTerm>("z"));
 
-    const Variable x("x");
-    const Variable y("y");
-    const Variable z("z");
+    const Variable x("x", "x#0");
+    const Variable y("y", "y#0");
+    const Variable z("z", "z#0");
     const Literal p("P", { &x, &y, &z });
 
     repo_build_test(

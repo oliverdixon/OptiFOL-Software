@@ -36,16 +36,23 @@ KnowledgeBase::KnowledgeBase(std::shared_ptr<SymbolRepository> symbol_repository
 {
 }
 
-void KnowledgeBase::tell(const SentenceRoot &sentence)
+bool KnowledgeBase::tell(const SentenceRoot &sentence)
 {
     clauses.reserve(clauses.size() + sentence.order());
-    for (const auto& clause : sentence)
-        tell(clause);
+    return std::ranges::all_of(sentence, [this](const Clause& clause) { return tell(clause); });
 }
 
-void KnowledgeBase::tell(const Clause &clause)
+bool KnowledgeBase::tell(const Clause &new_clause)
 {
-    clauses.push_back(clause);
+    const auto existing_it = clauses.find(new_clause);
+    if (existing_it != clauses.cend()) {
+        kb_logger->debug(std::format("Rejecting clause {} from the KB as it is already present.", new_clause));
+        return false;
+    }
+
+    clauses.insert(new_clause);
+    kb_logger->trace(std::format("Inserted new clause {} into the KB.", new_clause));
+    return true;
 }
 
 bool KnowledgeBase::query(const SentenceRoot &negated_query)
@@ -57,6 +64,7 @@ bool KnowledgeBase::query(const SentenceRoot &negated_query)
     tell(negated_query);
 
     if (kb_logger->isTraceEnabled()) {
+        kb_logger->trace("Dumping entire knowledge base, including goal...");
         const auto clause_count = clauses.size();
         for (const auto& [clause_idx, clause]: std::views::enumerate(clauses))
             kb_logger->trace(std::format("KB Clause {}/{}: {}", clause_idx + 1, clause_count, clause));
@@ -71,8 +79,6 @@ bool KnowledgeBase::query(const SentenceRoot &negated_query)
             for (auto new_resolvent : new_resolvents)
                 resolvents.push(std::move(new_resolvent));
         }
-
-    kb_logger->debug(std::format("Completed initial search; gathered {} resolvents.", resolvents.size()));
 
     /*
      * Once the initial set of resolvents has been added to the priority queue, continue stepping until a result has
@@ -96,7 +102,6 @@ bool KnowledgeBase::query(const SentenceRoot &negated_query)
          * If no contradiction was derived for this resolvent, insert it into the KB. If it is something new, attempt to
          * find new resolvents.
          */
-        tell(resolution); // TODO doesn't restrict to new clauses because the store is a vector...
         for (const auto& rhs_clause : clauses) {
             auto new_resolvents = find_resolvents(resolution, rhs_clause);
             for (auto new_resolvent : new_resolvents)
@@ -197,7 +202,8 @@ std::vector<Resolvent> KnowledgeBase::find_resolvents(const Clause &lhs_clause, 
 
             if (lhs_literal->accept(unifier, negated_rhs)) {
 
-                resolution_logger->info(std::format("Successfully unified {} and {}.", *lhs_literal, negated_rhs));
+                resolution_logger->error(std::format("{}@{}@{}", *lhs_literal, negated_rhs,
+                    unifier.observe_substitutions()));
 
                 /*
                  * If the LHS and negated RHS can be unified, we have attained a set of most-general unifiers. Construct
