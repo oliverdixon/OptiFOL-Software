@@ -76,6 +76,11 @@ Glib::RefPtr<Gio::ListStore<TestGroup>> Subsystem::get_test_groups() const noexc
     return test_groups;
 }
 
+std::shared_ptr<SymbolRepository> Subsystem::share_symbol_repository()
+{
+    return symbol_repository;
+}
+
 void Subsystem::setup_groups(const Glib::ustring &name)
 {
     assert(analysis_groups->get_n_items() == 0);
@@ -83,7 +88,9 @@ void Subsystem::setup_groups(const Glib::ustring &name)
 
     property_name().set_value(name);
 
-    analysis_groups->append(Glib::make_refptr_for_instance(new AnalysisGroup("Unassigned Requirements")));
+    analysis_groups->append(Glib::make_refptr_for_instance(new AnalysisGroup("Unassigned Requirements",
+        symbol_repository)));
+
     test_groups->append(Glib::make_refptr_for_instance(new TestGroup("Unassigned Requirements")));
 
     assert(analysis_groups->get_n_items() == 1);

@@ -14,6 +14,7 @@
 #ifndef ANALYSISGROUP_HPP
 #define ANALYSISGROUP_HPP
 
+#include "../Inference/KnowledgeBase.hpp"
 #include "ObjectGroup.hpp"
 #include "Requirement.hpp"
 
@@ -28,10 +29,20 @@ public:
     /**
      * @brief Create a new Analysis Group with the given name and register in the Glib GType system
      * @param name The initial name of the Analysis Group
+     * @param symbol_repository The associated SymbolRepository for Clause objects used by Requirement nodes in the
+     *  AnalysisGroup.
      */
-    explicit AnalysisGroup(const Glib::ustring& name);
+    explicit AnalysisGroup(const Glib::ustring& name, std::shared_ptr<SymbolRepository> symbol_repository);
 
-    AnalysisGroup(const Glib::ustring& name, BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &builder);
+    AnalysisGroup(const Glib::ustring& name, BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &builder,
+        std::shared_ptr<SymbolRepository> symbol_repository);
+
+    KnowledgeBase& observe_kb() noexcept;
+
+private:
+    void handle_group_model_change(guint initial_index, guint removed_count, guint added_count);
+
+    KnowledgeBase kb;
 };
 
 }

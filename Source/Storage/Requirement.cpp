@@ -178,6 +178,14 @@ void Requirement::bind_name_to_label(const Glib::RefPtr<Gtk::ListItem> &item) no
     target_label->set_text(typed_group->property_name().get_value());
 }
 
+const SentenceRoot &Requirement::observe_prepared_sentence() const
+{
+    if (!is_analysis_ready())
+        throw std::runtime_error("The Requirement is not ready for FOL analysis.");
+
+    return *prepared_ast;
+}
+
 void Requirement::setup_properties(std::string &&requirement_name, std::string &&requirement_statement,
         std::string &&requirement_description, const guint requirement_priority,
         Glib::RefPtr<Gio::ListStore<TestSpecificationEntry>> &&requirement_tests)

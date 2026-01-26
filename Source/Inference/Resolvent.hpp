@@ -31,7 +31,7 @@ public:
 
     std::ostream &serialise(std::ostream &ostream) const override;
 
-    friend std::ostream& operator<<(std::ostream& ostream, const Resolvent& resolvent);
+    [[nodiscard]] bool operator==(const Resolvent &other) const;
 
     [[nodiscard]] const Clause& observe_lhs_clause() const noexcept;
 

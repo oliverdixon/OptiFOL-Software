@@ -36,6 +36,11 @@ std::ostream &Resolvent::serialise(std::ostream &ostream) const
     return ostream << resolution;
 }
 
+bool Resolvent::operator==(const Resolvent &other) const
+{
+    return lhs_clause == other.lhs_clause && rhs_clause == other.rhs_clause && resolution == other.resolution;
+}
+
 const Clause &Resolvent::observe_lhs_clause() const noexcept
 {
     return lhs_clause;

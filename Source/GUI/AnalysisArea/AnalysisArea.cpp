@@ -22,7 +22,7 @@ namespace optifol
 
 void AnalysisArea::add_query_page()
 {
-    auto& new_page = query_pages.emplace_back("new query");
+    auto& new_page = query_pages.emplace_back("new query", get_selected_analysis_group()->observe_kb());
     new_page.add_to_notebook(*queries_notebook);
 }
 
@@ -75,8 +75,12 @@ AnalysisArea::AnalysisArea(Gtk::Builder &builder) :
         }
     });
 
-    selection_model->signal_items_changed().connect([this](guint, const guint removed, guint)
+    selection_model->signal_items_changed().connect([this](guint added, const guint removed, guint)
     {
+        // TODO URGENT remove this... just for very dirty test.
+        if (added > 0)
+            add_query_page();
+
         if (removed > 0) {
             // If anything was removed from the model, just deselect everything out of an abundance of caution.
             context_menu.disable_action("edit_analysis_group");
@@ -138,8 +142,6 @@ AnalysisArea::AnalysisArea(Gtk::Builder &builder) :
         if (queries_notebook->get_n_pages() == 0)
             queries_notebook->set_visible(false);
     });
-
-    add_query_page(); // TODO testing
 }
 
 AnalysisArea::~AnalysisArea()
@@ -191,6 +193,22 @@ Subsystem *AnalysisArea::get_active_subsystem() noexcept
 const Subsystem *AnalysisArea::observe_active_subsystem() const noexcept
 {
     return active_subsystem.get();
+}
+
+Glib::RefPtr<AnalysisGroup> AnalysisArea::get_selected_analysis_group() const
+{
+    auto selected_row = tree_model->get_row(selection_model->get_selected());
+    if (selected_row == nullptr)
+        throw std::runtime_error("Popover was made available despite no suitable Analysis Group selection.");
+
+    while (selected_row->get_depth() > 0)
+        selected_row = selected_row->get_parent();
+
+    const auto analysis_group = std::dynamic_pointer_cast<AnalysisGroup>(selected_row->get_item());
+    if (analysis_group == nullptr)
+        throw std::runtime_error("Popover could not find a suitable Analysis Group.");
+
+    return analysis_group;
 }
 
 } // namespace optifol

@@ -9,10 +9,24 @@
 
 #include "AnalysisQuery.hpp"
 
+#include <assert.h>
+
+#include "../../Exceptions/SemanticException.hpp"
+
 namespace optifol
 {
 
-AnalysisQuery::AnalysisQuery(const Glib::ustring &query_name)
+std::istringstream AnalysisQuery::lexer_input_stream;
+
+/*
+ * TODO: this construction is possibly undefined due to std::cerr. But for the real case, we'll use a custom error
+ *  handler that can be statically initialised in the Analysis Manager, so this is OK for development.
+ */
+FOLLexer AnalysisQuery::lexer{AnalysisQuery::lexer_input_stream, std::cerr};
+FOLParser AnalysisQuery::parser{&AnalysisQuery::lexer};
+
+AnalysisQuery::AnalysisQuery(const Glib::ustring &query_name, KnowledgeBase& kb_weak) :
+    kb_weak(kb_weak)
 {
     execute_query_button.signal_clicked().connect(sigc::mem_fun(*this, &AnalysisQuery::execute_query));
     tab_label.set_text(query_name);
@@ -48,20 +62,27 @@ void AnalysisQuery::add_to_notebook(Gtk::Notebook &notebook)
 
 void AnalysisQuery::execute_query()
 {
-    // TODO: test resolvent
+    if (query_entry.get_text().empty())
+        return;
 
-    literal_store.push_back(Literal::build("P"));
-    literal_store.push_back(Literal::build("Q"));
-    literal_store.push_back(Literal::build("Q"));
-    literal_store.push_back(Literal::build("S"));
+    try {
+        lexer_input_stream.str(query_entry.get_text());
+        parser.parse();
+    } catch (const ParseError& parse_error) {
+        // TODO log
+        assert(0);
+        return;
+    }
 
-    Clause lhs_clause{literal_store[0].get(), literal_store[1].get()};
-    Clause rhs_clause{literal_store[2].get(), literal_store[3].get()};
-    Clause resolution{literal_store[0].get(), literal_store[3].get()};
-
-    const Resolvent resolvent{std::move(lhs_clause), std::move(rhs_clause), {}, std::move(resolution)};
-
-    drawing_area.add_resolvent(resolvent);
+    try {
+        const auto result = kb_weak.ask(parser.retrieve_sentence());
+        for (const auto& resolvent : result.resolvents)
+            drawing_area.add_resolvent(resolvent);
+    } catch (const SemanticException& semantic_exception) {
+        // TODO log
+        assert(0);
+        return;
+    }
 
     drawing_area.queue_draw();
 }

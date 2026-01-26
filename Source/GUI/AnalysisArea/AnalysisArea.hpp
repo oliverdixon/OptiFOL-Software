@@ -158,6 +158,8 @@ public:
     const Subsystem *observe_active_subsystem() const noexcept override;
 
 private:
+    Glib::RefPtr<AnalysisGroup> get_selected_analysis_group() const;
+
     void add_query_page();
 
     static const char * const area_name;

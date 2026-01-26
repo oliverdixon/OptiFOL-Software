@@ -70,10 +70,10 @@ public:
     /**
      * @brief Construct a new popover manager, registering callbacks on elements loaded by the given builder
      * @param builder A GTK builder containing popover UI elements
-     * @param analysis_area An observing reference to the view of which the popover is a member
+     * @param analysis_area A mutating reference to the view of which the popover is a member
      * @throws std::runtime_error A required GTK element/widget could not be loaded from the given builder
      */
-    AnalysisAreaNewAnalysisGroupPopover(Gtk::Builder& builder, const AnalysisArea& analysis_area);
+    AnalysisAreaNewAnalysisGroupPopover(Gtk::Builder& builder, AnalysisArea& analysis_area);
 
 private:
     /**
@@ -94,7 +94,7 @@ private:
     static const char * const popover_name;
     static const log4cxx::LoggerPtr popover_logger;
 
-    const AnalysisArea& analysis_area;
+    AnalysisArea& analysis_area;
     Gtk::Popover * const my_popover;
     Gtk::Button * const confirm_button;
     Gtk::Button * const cancel_button;

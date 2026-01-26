@@ -2,7 +2,7 @@
   <configuration default="false" name="OptifolGUINested" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" WORKING_DIR="file://$PROJECT_DIR$" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Optifol" TARGET_NAME="OptifolGUI" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Optifol" RUN_TARGET_NAME="OptifolGUI">
     <envs>
       <env name="GTK_THEME" value="Arc-Dark" />
-      <env name="DISPLAY" value=":1" />
+      <env name="DISPLAY" value=":2" />
     </envs>
     <method v="2">
       <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />

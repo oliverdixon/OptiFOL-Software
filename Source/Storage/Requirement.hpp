@@ -173,6 +173,8 @@ public:
 
     static void bind_name_to_label(const Glib::RefPtr<Gtk::ListItem> &item) noexcept;
 
+    const SentenceRoot& observe_prepared_sentence() const;
+
 private:
     static const log4cxx::LoggerPtr control_logger;
     static const log4cxx::LoggerPtr parse_logger;

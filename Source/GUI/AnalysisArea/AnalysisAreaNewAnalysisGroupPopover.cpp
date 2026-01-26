@@ -26,7 +26,7 @@ const log4cxx::LoggerPtr AnalysisAreaNewAnalysisGroupPopover::popover_logger =
         Logging::get_logger({"GUI", "AnalysisOptimisation", "NewAnalysisGroup"});
 
 AnalysisAreaNewAnalysisGroupPopover::AnalysisAreaNewAnalysisGroupPopover(
-        Gtk::Builder &builder, const AnalysisArea &analysis_area) :
+        Gtk::Builder &builder, AnalysisArea &analysis_area) :
     analysis_area(analysis_area),
     my_popover(GTKHelpers::get_widget<Gtk::Popover>(popover_name, builder, "new_analysis_group_popover")),
     confirm_button(GTKHelpers::get_widget<Gtk::Button>(popover_name, builder, "new_analysis_group_confirm")),
@@ -43,7 +43,7 @@ void AnalysisAreaNewAnalysisGroupPopover::confirm_button_clicked() const
 {
     my_popover->popdown();
     analysis_area.observe_active_subsystem()->get_analysis_groups()->append(Glib::make_refptr_for_instance(
-        new AnalysisGroup(name_entry->get_text())));
+        new AnalysisGroup(name_entry->get_text(), analysis_area.get_active_subsystem()->share_symbol_repository())));
 
     popover_logger->debug("Created new analysis group with name \"" + name_entry->get_text() + "\".");
     clear_inputs();

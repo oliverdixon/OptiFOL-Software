@@ -102,6 +102,8 @@ public:
 
     Glib::RefPtr<Gio::ListStore<TestGroup>> get_test_groups() const noexcept;
 
+    std::shared_ptr<SymbolRepository> share_symbol_repository();
+
 private:
     /**
      * @brief Configure the Subsystem to a known initial state, including the configuration of signal handlers for

@@ -83,6 +83,10 @@ public:
     QueryResult ask(std::unique_ptr<MutableSentenceRoot> &&query, size_t max_step_count =
         std::numeric_limits<std::size_t>::max());
 
+    KnowledgeBase(const KnowledgeBase&) = delete;
+    KnowledgeBase& operator=(const KnowledgeBase&) = delete;
+    KnowledgeBase(KnowledgeBase&&) = default;
+
 private:
     QueryResult run_resolution(size_t max_step_count);
 
@@ -116,7 +120,8 @@ private:
      */
     static bool insert_clause(const Clause& new_clause, std::unordered_set<Clause>& destination);
 
-    [[nodiscard]] std::vector<Resolvent> find_resolvents(const Clause &lhs_clause, const Clause &rhs_clause);
+    [[nodiscard]] std::vector<std::unique_ptr<Resolvent>> find_resolvents(
+            const Clause &lhs_clause, const Clause &rhs_clause);
 
     static const log4cxx::LoggerPtr kb_logger;
     static const log4cxx::LoggerPtr resolution_logger;
@@ -124,7 +129,6 @@ private:
 
     std::unordered_set<Clause> base_clauses;
     std::unordered_set<Clause> introduced_clauses;
-    std::unordered_set<Resolvent> resolution_steps;
 
     std::shared_ptr<SymbolRepository> symbol_repository;
 

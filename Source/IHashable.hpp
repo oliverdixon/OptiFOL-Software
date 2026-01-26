@@ -18,6 +18,8 @@
 #include <cstddef>
 #include <memory>
 
+#include "IHashable.hpp"
+
 namespace optifol
 {
 
@@ -151,6 +153,16 @@ struct StringHash
     auto operator()(const std::string &str) const
     {
         return hash_type{}(str);
+    }
+};
+
+struct PairHash
+{
+    template<typename LHS, typename RHS>
+        requires(std::derived_from<LHS, IHashable> and std::derived_from<RHS, IHashable>)
+    auto operator()(const std::pair<LHS, RHS>& pair) const
+    {
+        return IHashable::hash_combine(pair.first.hash(), pair.second.hash());
     }
 };
 

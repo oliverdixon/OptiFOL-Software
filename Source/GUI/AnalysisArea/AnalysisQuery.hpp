@@ -12,13 +12,14 @@
 
 #include <gtkmm/box.h>
 #include <gtkmm/button.h>
-#include <gtkmm/drawingarea.h>
 #include <gtkmm/entry.h>
 #include <gtkmm/label.h>
 #include <gtkmm/notebook.h>
 #include <gtkmm/scrolledwindow.h>
 
+#include "../../Inference/KnowledgeBase.hpp"
 #include "AnalysisQueryCanvas.hpp"
+#include "FOLLexer.hpp"
 
 namespace optifol
 {
@@ -32,7 +33,7 @@ namespace optifol
 class AnalysisQuery
 {
 public:
-    explicit AnalysisQuery(const Glib::ustring& query_name);
+    explicit AnalysisQuery(const Glib::ustring& query_name, KnowledgeBase& kb_weak);
 
     void add_to_notebook(Gtk::Notebook& notebook);
 
@@ -48,6 +49,12 @@ private:
     Gtk::Box inner_box;
     Gtk::Entry query_entry;
     Gtk::Button execute_query_button;
+
+    KnowledgeBase& kb_weak;
+
+    static std::istringstream lexer_input_stream;
+    static FOLLexer lexer;
+    static FOLParser parser;
 };
 
 } // namespace optifol
