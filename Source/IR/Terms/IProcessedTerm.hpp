@@ -82,6 +82,8 @@ public:
      * @return Are the two terms of the same concrete type and equal?
      */
     [[nodiscard]] virtual bool operator==(const IProcessedTerm &other) const noexcept = 0;
+
+    [[nodiscard]] virtual bool operator<(const IProcessedTerm& other) const noexcept = 0;
 };
 
 } // namespace optifol

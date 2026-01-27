@@ -14,6 +14,7 @@
 #include "Function.hpp"
 
 #include <algorithm>
+#include <ranges>
 
 #include "../../CompositeSerialisationHelpers.hpp"
 #include "../../Visitors/RegularTargets/Unification/UnificationApplicationVisitor.hpp"
@@ -69,7 +70,7 @@ bool Function::operator==(const IProcessedTerm &other) const noexcept
 {
     const auto other_function = dynamic_cast<const Function *>(&other);
     if (other_function == nullptr)
-        // Other IMutableTerm isn't a MutableFunction.
+        // Other IProcessedTerm isn't a MutableFunction.
         return false;
 
     if (get_disambiguated_name() != other_function->get_disambiguated_name())
@@ -95,6 +96,18 @@ bool Function::operator==(const IProcessedTerm &other) const noexcept
     }
 
     return true;
+}
+bool Function::operator<(const IProcessedTerm &other) const noexcept
+{
+    const auto other_function = dynamic_cast<const Function *>(&other);
+    if (other_function == nullptr)
+        // Other IProcessedTerm isn't a MutableFunction.
+        return false;
+
+    return std::ranges::any_of(std::views::zip(arguments, other_function->arguments), [](const auto& pair)
+    {
+        return *std::get<0>(pair) < *std::get<1>(pair);
+    });
 }
 
 std::string Function::to_string() const

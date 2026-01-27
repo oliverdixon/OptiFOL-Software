@@ -58,17 +58,24 @@ bool KnowledgeBase::tell(const Clause &new_clause)
 
 KnowledgeBase::QueryResult KnowledgeBase::run_resolution(const size_t max_step_count)
 {
-    std::priority_queue<std::unique_ptr<Resolvent>, std::vector<std::unique_ptr<Resolvent>>, std::less<>> resolvents;
+    constexpr PQResolventUnitPref pq_comp{};
+    std::vector<std::unique_ptr<Resolvent>> resolvents;
     QueryResult result;
 
-    auto all_clauses_view = std::ranges::concat_view(base_clauses, introduced_clauses);
+    std::ranges::make_heap(resolvents, pq_comp);
 
     // Over the Cartesian product of clauses in the KB, add pairwise resolvents, noting commutativity of resolution.
-    for (const auto [clause_idx, lhs_clause] : all_clauses_view | std::views::enumerate)
-        for (const auto& rhs_clause : all_clauses_view | std::views::take(clause_idx + 1)) {
+    for (const auto [clause_idx, lhs_clause] : std::ranges::concat_view(base_clauses, introduced_clauses) |
+            std::views::enumerate)
+
+        for (const auto& rhs_clause : std::ranges::concat_view(base_clauses, introduced_clauses) |
+                std::views::take(clause_idx + 1)) {
+
             auto new_resolvents = find_resolvents(lhs_clause, rhs_clause);
-            for (auto& new_resolvent : new_resolvents)
-                resolvents.push(std::move(new_resolvent));
+            for (auto&& new_resolvent : new_resolvents) {
+                resolvents.push_back(std::move(new_resolvent));
+                std::ranges::push_heap(resolvents, pq_comp);
+            }
         }
 
     resolution_logger->debug(std::format("Resolution initial search gathered {} resolvents.", resolvents.size()));
@@ -78,15 +85,17 @@ KnowledgeBase::QueryResult KnowledgeBase::run_resolution(const size_t max_step_c
      * been produced to indicate whether the negated query induces an inconsistent KB.
      */
     for (; !resolvents.empty(); ++result.elapsed_step_count) {
-        auto next_resolvent = std::move(*resolvents.top());
-        resolution_logger->debug(std::format("Step {} is using resolution {}.", result.elapsed_step_count,
-            next_resolvent));
-        auto [inserted_resolvent, was_inserted] = result.resolvents.emplace(
+        std::ranges::pop_heap(resolvents, pq_comp);
+        auto next_resolvent = std::move(resolvents.back());
+        resolvents.pop_back();
+
+        auto [inserted_resolvent, was_inserted] = result.resolvents.insert(
             std::move(next_resolvent));
 
         if (was_inserted) {
-            auto& next_resolution = inserted_resolvent->observe_resolution();
-            resolvents.pop();
+            auto& next_resolution = (*inserted_resolvent)->observe_resolution();
+            resolution_logger->info(std::format("Step {} is using resolution {}.", result.elapsed_step_count,
+                next_resolution));
 
             if (next_resolution.get_triviality_state() == Clause::State::TriviallyFalse) {
                 // An empty unified clause indicates that a contradiction was derived in the KB.
@@ -98,13 +107,14 @@ KnowledgeBase::QueryResult KnowledgeBase::run_resolution(const size_t max_step_c
              * If no contradiction was derived for this resolvent, insert it into the KB. If it is something new (previously
              * unseen by the KB), attempt to find new resolvents.
              */
-            if (tell(next_resolution)) {
-                for (const auto& rhs_clause : all_clauses_view) {
+            if (tell(next_resolution))
+                for (const auto& rhs_clause : std::ranges::concat_view(base_clauses, introduced_clauses)) {
                     auto new_resolvents = find_resolvents(next_resolution, rhs_clause);
-                    for (auto& new_resolvent : new_resolvents)
-                        resolvents.push(std::move(new_resolvent));
+                    for (auto& new_resolvent : new_resolvents) {
+                        resolvents.push_back(std::move(new_resolvent));
+                        std::ranges::push_heap(resolvents, pq_comp);
+                    }
                 }
-            }
         } else
             resolution_logger->debug(std::format("Resolution skipping step {} due to repeated resolvent.",
                 result.elapsed_step_count));
@@ -174,12 +184,12 @@ KnowledgeBase::QueryResult KnowledgeBase::ask(std::unique_ptr<MutableSentenceRoo
 void KnowledgeBase::collect_unified_literals(
         const Literal &self, const Clause &source_clause, Clause &destination_clause) const
 {
-    auto unified = source_clause |
+    const auto transformer =
         std::views::filter([self](const Literal * candidate) { return !self.operator==(*candidate); }) |
         std::views::transform([this](const Literal * target) { return target->accept(applicator); });
 
-    std::ranges::for_each(unified,
-        [&destination_clause](const Literal * literal) { destination_clause.add_literal(literal); } );
+    for (const auto transformed_literal : source_clause | transformer)
+        destination_clause.add_literal(transformed_literal);
 }
 
 Clause KnowledgeBase::factor_literals(const Clause &unified_clause)
@@ -261,8 +271,8 @@ bool KnowledgeBase::insert_clause(const Clause &new_clause, std::unordered_set<C
     return true;
 }
 
-std::vector<std::unique_ptr<Resolvent>> KnowledgeBase::find_resolvents(const Clause &lhs_clause,
-        const Clause &rhs_clause)
+std::vector<std::unique_ptr<Resolvent>> KnowledgeBase::find_resolvents(
+        const Clause &lhs_clause, const Clause &rhs_clause)
 {
     std::vector<std::unique_ptr<Resolvent>> resolvents;
 
@@ -325,8 +335,8 @@ std::vector<std::unique_ptr<Resolvent>> KnowledgeBase::find_resolvents(const Cla
                  * described by the source LHS and RHS clauses, the MGU, and the unified clause of the post-
                  * application literals as a clause under disjunction.
                  */
-                resolvents.emplace_back(std::make_unique<Resolvent>(
-                    lhs_clause, rhs_clause, *unifier.observe_substitutions(), std::move(resolution)));
+                resolvents.emplace_back(std::make_unique<Resolvent>(lhs_clause, rhs_clause,
+                    *unifier.observe_substitutions(), std::move(resolution)));
 
                 resolution_logger->info(std::format("Resolved {} and {} to {}.", lhs_clause, rhs_clause,
                     resolvents.back()->observe_resolution()));

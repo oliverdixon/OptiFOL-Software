@@ -68,6 +68,8 @@ public:
 
     [[nodiscard]] bool operator==(const IProcessedTerm &other) const noexcept override;
 
+    [[nodiscard]] bool operator<(const IProcessedTerm& other) const noexcept override;
+
 private:
     const std::string name;
     const std::optional<std::string> disambiguated_name;

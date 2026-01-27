@@ -70,4 +70,14 @@ bool Constant::operator==(const IProcessedTerm &other) const noexcept
     return get_disambiguated_name() == other_constant->get_disambiguated_name();
 }
 
+bool Constant::operator<(const IProcessedTerm &other) const noexcept
+{
+    const auto other_constant = dynamic_cast<const Constant *>(&other);
+    if (other_constant == nullptr)
+        // Other IProcessedTerm isn't a Constant.
+            return false;
+
+    return get_disambiguated_name() < other_constant->get_disambiguated_name();
+}
+
 } // namespace optifol

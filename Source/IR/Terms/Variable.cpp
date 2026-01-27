@@ -93,4 +93,14 @@ bool Variable::operator==(const IProcessedTerm &other) const noexcept
     return get_disambiguated_name() == other_variable->get_disambiguated_name();
 }
 
+bool Variable::operator<(const IProcessedTerm &other) const noexcept
+{
+    const auto other_variable = dynamic_cast<const Variable *>(&other);
+    if (other_variable == nullptr)
+        // Other IProcessedTerm isn't a Variable.
+        return false;
+
+    return get_disambiguated_name() < other.get_disambiguated_name();
+}
+
 } // namespace optifol

@@ -13,6 +13,9 @@
 
 #include "Literal.hpp"
 
+#include <algorithm>
+#include <ranges>
+
 #include "../../CompositeSerialisationHelpers.hpp"
 #include "../../Visitors/RegularTargets/Unification/UnificationVisitor.hpp"
 
@@ -68,8 +71,14 @@ bool Literal::operator<(const Literal &other) const noexcept
     if (is_negative_polarity() && !other.is_negative_polarity())
         return true;
 
-    // Names are lexicographically equal and signs are equal, or the other is greater.
-    return false;
+    if (!is_negative_polarity() && other.is_negative_polarity())
+        return false;
+
+    // Literals are superficially equal, so order based on arguments.
+    return std::ranges::any_of(std::ranges::views::zip(arguments, other.arguments), [](const auto& pair)
+    {
+        return *std::get<0>(pair) < *std::get<1>(pair);
+    });
 }
 
 std::string_view Literal::get_name() const noexcept

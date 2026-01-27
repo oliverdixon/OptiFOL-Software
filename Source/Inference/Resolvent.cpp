@@ -28,7 +28,7 @@ Resolvent::Resolvent(Clause lhs_clause, Clause rhs_clause, Unifier unifier, Clau
 
 std::size_t Resolvent::hash() const noexcept
 {
-    return hash_combine(hash_combine(lhs_clause.hash(), rhs_clause.hash()), resolution.hash());
+    return resolution.hash();
 }
 
 std::ostream &Resolvent::serialise(std::ostream &ostream) const
@@ -38,7 +38,7 @@ std::ostream &Resolvent::serialise(std::ostream &ostream) const
 
 bool Resolvent::operator==(const Resolvent &other) const
 {
-    return lhs_clause == other.lhs_clause && rhs_clause == other.rhs_clause && resolution == other.resolution;
+    return resolution == other.resolution;
 }
 
 const Clause &Resolvent::observe_lhs_clause() const noexcept
@@ -56,10 +56,10 @@ const Clause &Resolvent::observe_resolution() const noexcept
     return resolution;
 }
 
-bool operator<(const Resolvent &lhs, const Resolvent &rhs) noexcept
+bool Resolvent::operator<(const Resolvent &other) const noexcept
 {
-    const auto lhs_has_unit = lhs.lhs_clause.unit() == 1 || lhs.rhs_clause.unit() == 1;
-    const auto rhs_has_unit = rhs.lhs_clause.unit() == 1 || rhs.rhs_clause.unit() == 1;
+    const auto lhs_has_unit = lhs_clause.unit() || rhs_clause.unit();
+    const auto rhs_has_unit = other.lhs_clause.unit() || other.rhs_clause.unit();
 
     if (lhs_has_unit && !rhs_has_unit)
         return false; // LHS has higher priority.
@@ -67,7 +67,8 @@ bool operator<(const Resolvent &lhs, const Resolvent &rhs) noexcept
     if (!lhs_has_unit && rhs_has_unit)
         return true; // RHS has higher priority.
 
-    return false; // Equal priority.
+    // Equal priority. For resolvents, we don't care about the exact ordering provided by Clause::operator<.
+    return false;
 }
 
 } // namespace optifol

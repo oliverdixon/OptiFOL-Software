@@ -25,7 +25,13 @@ class Resolvent : public IHashable, public ISerialisable
 public:
     Resolvent(Clause lhs_clause, Clause rhs_clause, Unifier unifier, Clause resolution);
 
-    friend bool operator<(const Resolvent& lhs, const Resolvent& rhs) noexcept;
+    Resolvent(const Resolvent&) = delete;
+    Resolvent& operator=(const Resolvent&) = delete;
+
+    Resolvent(Resolvent&&) = default;
+    Resolvent& operator=(Resolvent&&) = default;
+
+    [[nodiscard]] bool operator<(const Resolvent& other) const noexcept;
 
     [[nodiscard]] std::size_t hash() const noexcept override;
 

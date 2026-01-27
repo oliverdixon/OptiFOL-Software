@@ -44,7 +44,7 @@ public:
         QueryResult() = default;
 
         ConjectureStatus outcome = ConjectureStatus::NotExecuted;
-        std::unordered_set<Resolvent> resolvents{};
+        UniqueUnorderedSet<Resolvent> resolvents{};
         std::size_t elapsed_step_count = 1;
 
         QueryResult(const QueryResult&) = delete;
@@ -88,8 +88,33 @@ public:
     KnowledgeBase(KnowledgeBase&&) = default;
 
 private:
+    /**
+     * @struct PQResolventUnitPref
+     * @brief Helper comparator for imposing the unit-preference strict weak ordering on owned Resolvent objects.
+     */
+    struct PQResolventUnitPref
+    {
+        /**
+         * @brief Is the Resolvent owned by the LHS more preferable than the Resolvent owned by the RHS?
+         * @param lhs LHS Resolvent owning container
+         * @param rhs RHS Resolvent owning container
+         * @return LHS-RHS relation
+         */
+        static bool operator()(const std::unique_ptr<Resolvent>& lhs, const std::unique_ptr<Resolvent>& rhs) noexcept
+        {
+            return *lhs < *rhs;
+        }
+    };
+
     QueryResult run_resolution(size_t max_step_count);
 
+    /**
+     * @brief Apply the state UnificationApplicationVisitor to the given source Clause, filtering the given Literal, and
+     *  add the results to the given destination Clause.
+     * @param self The Literal contained within the source Clause to filter out.
+     * @param source_clause The Clause containing Literal objects to be subject to the applicator.
+     * @param destination_clause The Clause to receive the filtered and transformed Literal objects from the source.
+     */
     void collect_unified_literals(const Literal &self, const Clause &source_clause, Clause &destination_clause) const;
 
     Clause factor_literals(const Clause &unified_clause);
