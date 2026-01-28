@@ -76,8 +76,8 @@ void AnalysisQuery::execute_query()
 
     try {
         const auto result = kb_weak.ask(parser.retrieve_sentence());
-        for (const auto& resolvent : result.resolvents)
-            drawing_area.add_resolvent(*resolvent);
+        for (const auto& resolvent : result.relations)
+            drawing_area.add_resolvent(resolvent);
     } catch (const SemanticException& semantic_exception) {
         // TODO log
         assert(0);

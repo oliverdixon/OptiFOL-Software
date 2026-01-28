@@ -298,6 +298,7 @@ add_library(OptifolCommon OBJECT
         Source/GUI/AnalysisArea/AnalysisQueryCanvas.cpp
         Source/GUI/AnalysisArea/AnalysisQueryCanvas.hpp
         Source/Inference/Unifier.cpp
+        Source/Inference/QueryResult.hpp
 )
 
 target_include_directories(OptifolCommon PRIVATE

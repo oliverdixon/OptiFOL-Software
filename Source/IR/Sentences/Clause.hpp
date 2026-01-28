@@ -136,7 +136,7 @@ public:
      * @brief Is the Clause a unit clause?
      * @return Is the Clause a unit, or equivalently, of order 1?
      */
-    [[nodiscard]] bool unit() const noexcept;
+    [[nodiscard]] bool is_unit() const noexcept;
 
     /**
      * @brief Reset the Clause to its bottom state of order zero, where it is trivially unsatisfiable.

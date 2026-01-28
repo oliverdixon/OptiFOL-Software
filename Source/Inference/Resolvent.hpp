@@ -14,6 +14,9 @@
 #ifndef OPTIFOL_RESOLVENT_HPP
 #define OPTIFOL_RESOLVENT_HPP
 
+#include <variant>
+
+
 #include "../IR/Sentences/SentenceRoot.hpp"
 #include "Unifier.hpp"
 
@@ -23,10 +26,7 @@ namespace optifol
 class Resolvent : public IHashable, public ISerialisable
 {
 public:
-    Resolvent(Clause lhs_clause, Clause rhs_clause, Unifier unifier, Clause resolution);
-
-    Resolvent(const Resolvent&) = delete;
-    Resolvent& operator=(const Resolvent&) = delete;
+    Resolvent(const Clause * lhs_clause, const Clause * rhs_clause, Unifier unifier, const Clause * resolution);
 
     Resolvent(Resolvent&&) = default;
     Resolvent& operator=(Resolvent&&) = default;
@@ -39,17 +39,20 @@ public:
 
     [[nodiscard]] bool operator==(const Resolvent &other) const;
 
-    [[nodiscard]] const Clause& observe_lhs_clause() const noexcept;
+    [[nodiscard]] const Clause *observe_lhs_clause() const noexcept;
 
-    [[nodiscard]] const Clause& observe_rhs_clause() const noexcept;
+    [[nodiscard]] const Clause *observe_rhs_clause() const noexcept;
 
-    [[nodiscard]] const Clause& observe_resolution() const noexcept;
+    [[nodiscard]] const Clause *observe_resolution() const noexcept;
+
+    void change_resolution(const Clause * clause) noexcept;
 
 private:
-    Clause lhs_clause;
-    Clause rhs_clause;
+    const Clause * lhs_clause;
+    const Clause * rhs_clause;
+
     Unifier unifier;
-    Clause resolution;
+    const Clause * resolution;
 };
 
 } // namespace optifol

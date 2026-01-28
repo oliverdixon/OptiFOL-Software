@@ -151,7 +151,7 @@ bool Clause::empty() const noexcept
     return literals.empty();
 }
 
-bool Clause::unit() const noexcept
+bool Clause::is_unit() const noexcept
 {
     return order() == 1;
 }

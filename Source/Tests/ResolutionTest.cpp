@@ -75,6 +75,7 @@ protected:
  */
 TEST_F(ResolutionTest, ModusPonens_Quantified)
 {
+    // TODO fix these constructors so I don't have to specify arguments like this... !!! Deduction guides?
     std::vector<std::unique_ptr<IMutableTerm>> s1_p_args;
     s1_p_args.push_back(MutableVariable::build<IMutableTerm>("x"));
 
@@ -113,7 +114,7 @@ TEST_F(ResolutionTest, ModusPonens_Quantified)
     const auto result = knowledge_base->ask(MutableSentenceRoot::build(MutablePredicate::build("Q",
         std::move(query_args))));
 
-    EXPECT_EQ(result.outcome, KnowledgeBase::QueryResult::ConjectureStatus::Consistent);
+    EXPECT_EQ(result.outcome, QueryResult::ConjectureStatus::Consistent);
 }
 
 TEST_F(ResolutionTest, Reject_Trivial)
@@ -144,7 +145,7 @@ TEST_F(ResolutionTest, Reject_Trivial)
     const auto result = knowledge_base->ask(MutableSentenceRoot::build(MutablePredicate::build("R",
         std::move(query_args))));
 
-    EXPECT_EQ(result.outcome, KnowledgeBase::QueryResult::ConjectureStatus::Inconsistent);
+    EXPECT_EQ(result.outcome, QueryResult::ConjectureStatus::Inconsistent);
 }
 
 TEST_F(ResolutionTest, CuriosityKilledTheCat)
@@ -286,11 +287,11 @@ TEST_F(ResolutionTest, CuriosityKilledTheCat)
     ), symbol_repository);
 
     // Tell the KB the facts...
+    knowledge_base->tell(*tuna_is_killed);
+    knowledge_base->tell(*tuna_is_cat);
     knowledge_base->tell(*loves_all_animals);
     knowledge_base->tell(*kills_an_animal);
     knowledge_base->tell(*jack_loves_animals);
-    knowledge_base->tell(*tuna_is_killed);
-    knowledge_base->tell(*tuna_is_cat);
     knowledge_base->tell(*cats_are_animals);
 
     // Did Curiosity kill Tuna?
@@ -301,7 +302,7 @@ TEST_F(ResolutionTest, CuriosityKilledTheCat)
     const auto result = knowledge_base->ask(MutableSentenceRoot::build(MutablePredicate::build("Kills",
         std::move(kills_args_4))));
 
-    EXPECT_EQ(result.outcome, KnowledgeBase::QueryResult::ConjectureStatus::Consistent);
+    EXPECT_EQ(result.outcome, QueryResult::ConjectureStatus::Consistent);
 }
 
 } // namespace optifol
