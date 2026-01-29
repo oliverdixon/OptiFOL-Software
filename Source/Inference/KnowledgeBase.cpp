@@ -14,16 +14,15 @@
 #include "KnowledgeBase.hpp"
 
 #include <algorithm>
-#include <cassert>
 #include <queue>
 #include <ranges>
 
 #include "../IR/MutableVariants/Sentences/MutableSentenceRoot.hpp"
 #include "../IR/Sentences/Literal.hpp"
 #include "../Logging.hpp"
-#include "../Visitors/RegularTargets/Unification/UnificationApplicationVisitor.hpp"
-#include "../Visitors/RegularTargets/Unification/UnificationVisitor.hpp"
 #include "ExpressionFactory.hpp"
+#include "QueryResult.hpp"
+#include "Resolvent.hpp"
 
 namespace optifol
 {
@@ -57,103 +56,81 @@ bool KnowledgeBase::tell(const Clause &new_clause)
     return insert_clause(std::make_unique<Clause>(new_clause), base_clauses);
 }
 
-QueryResult KnowledgeBase::run_resolution(const size_t max_step_count)
+bool KnowledgeBase::PQResolventUnitPref::operator()(
+        const std::unique_ptr<Resolvent> &lhs, const std::unique_ptr<Resolvent> &rhs) noexcept
 {
-    // Transparent hashing to provide a lightweight de-duplication container.
-    RawUnorderedSet<const Clause> seen_resolvents;
+    return *lhs < *rhs;
+}
 
-    std::vector<Resolvent> working_pq;
-    QueryResult result;
+QueryResult KnowledgeBase::run_resolution(std::unique_ptr<SentenceRoot> &&negated_query, const size_t max_step_count)
+{
+    RawUnorderedSet<const Clause> seen_resolvents; // Transparent hashing to provide lightweight de-duplication.
+    ResolventQueue working_queue; // Generated resolvents not yet committed to introduced knowledge.
+    QueryResult result; // Execution trace, introduced clauses, and metadata built up by the solver.
+
+    // Introduce the negated goal clauses into the query instance.
+    result.introduced_clauses.reserve(result.introduced_clauses.size() + negated_query->order());
+    for (const auto& clause : *negated_query)
+        insert_clause(std::make_unique<Clause>(clause), result.introduced_clauses);
 
     /*
-     * Over the Cartesian product of clauses in the KB, search for resolvents in the initial set. Note that binary
-     * resolution is a commutative operation, so we restrict the RHS.
-     *
-     * For each derived resolution, commit the Resolvent to the working priority queue (maximised according to Clause
-     * unit-preference) and take ownership of the resolution produced by the Resolvent. Note that according to Resolvent
-     * semantics, all participants in resolution (LHS and RHS clauses and resolved clause) must persist for the lifetime
-     * of the Resolvent.
+     * Over the Cartesian product of clauses in the KB, search for resolvents in the initial set and populate the
+     * working queue accordingly. Note that binary resolution is a commutative operation, so we restrict the RHS.
      */
-    for (const auto [clause_idx, lhs_clause] : base_clauses | unwrap_clause | std::views::enumerate)
-        for (const auto& rhs_clause : base_clauses | unwrap_clause | std::views::take(clause_idx + 1)) {
+    const auto initial_clauses = std::ranges::concat_view(base_clauses, result.introduced_clauses) | unwrap_clause;
+    for (const auto [clause_idx, lhs_clause] : initial_clauses | std::views::enumerate)
+        for (const auto& rhs_clause : initial_clauses | std::views::take(clause_idx + 1)) {
             auto new_resolvents = find_resolvents(lhs_clause, rhs_clause);
-            for (auto&& [resolvent, owning_resolution] : new_resolvents) {
-                result.clauses.insert(std::move(owning_resolution));
-                working_pq.push_back(std::move(resolvent));
-                std::push_heap(working_pq.begin(), working_pq.end());
-            }
+            for (auto&& [resolvent, owning_resolution] : new_resolvents)
+                working_queue.push(std::move(resolvent), std::move(owning_resolution));
         }
 
-    resolution_logger->debug(std::format("Resolution initial search gathered {} resolvents.", working_pq.size()));
+    resolution_logger->debug(std::format("Resolution initial search gathered {} resolvents.", working_queue.size()));
 
     /*
      * Once the initial set of resolvents has been added to the priority queue, continue stepping until a result has
      * been produced to indicate whether the negated query induces an inconsistent KB.
      */
-    for (; !working_pq.empty(); ++result.elapsed_step_count) {
-        std::pop_heap(working_pq.begin(), working_pq.end());
-        auto next_resolvent = std::move(working_pq.back());
-        working_pq.pop_back();
+    for (; !working_queue.empty(); ++result.elapsed_step_count) {
+        auto next_resolvent = working_queue.pop();
 
         /*
          * Mark the resolved clause as "seen". If it is being seen for the first time, the popped resolvent is committed
          * to the final execution trace, and ownership of the resolved clause is transferred likewise. If it has been
-         * seen before, we can just ignore it, as binary resolution can repeat resolutions for different clauses (hence
-         * Resolvent::operator== and Resolvent::hash depend only on the resolved clause).
+         * seen before, we can just ignore it, as binary resolution can repeat resolutions for different clauses.
          */
-        auto [seen_resolution_it, was_unseen] = seen_resolvents.insert(next_resolvent.observe_resolution());
+        auto [seen_resolution_it, was_unseen] = seen_resolvents.insert(
+            next_resolvent.observe_resolution());
         std::ignore = seen_resolution_it;
 
         if (was_unseen) {
-            result.relations.push_back(std::move(next_resolvent));
-            const auto * const next_resolution = result.relations.back().observe_resolution();
-
             resolution_logger->info(std::format("Step {} is using resolution {}.", result.elapsed_step_count,
-                *result.relations.back().observe_resolution()));
+                *next_resolvent.observe_resolution()));
 
-            if (next_resolution->get_triviality_state() == Clause::State::TriviallyFalse) {
-                // An empty unified clause indicates that a contradiction was derived in the KB.
+            if (next_resolvent.observe_resolution()->get_triviality_state() == Clause::State::TriviallyFalse) {
+                // An empty derived clause indicates that a contradiction was derived in the KB.
                 result.outcome = QueryResult::ConjectureStatus::Consistent;
                 return result;
             }
 
             /*
              * If no contradiction was derived for this resolvent, insert it into the KB. If it is something new
-             * (previously unseen by the KB), attempt to find new resolvents.
-             *
-             * To insert into the KB effectively, we transfer ownership from the trace's storage into the KB's store.
-             * These both have the same lifetime guarantees, and observers depend only on the address of the stored
-             * object.
+             * (previously unseen by the KB), attempt to find new resolvents. Ownership of the resolved clause is
+             * transferred from the working queue into the result.
              */
+            auto owning_resolution = working_queue.extract_resolution(next_resolvent);
+            auto [committed_resolution_it, was_committed] =
+                result.introduced_clauses.insert(std::move(owning_resolution));
 
-            auto stored_it = result.clauses.find(*next_resolution);
-
-            /*
-             * This is an invariant, not an error or exceptional path. Violation indicates that a Resolvent was added
-             * without its resolution correctly stored in the KnowledgeBase.
-             */
-            assert(stored_it != result.clauses.end());
-
-            if (introduce(std::move(result.clauses.extract(stored_it).value())))
-                for (const auto& rhs_clause : std::ranges::concat_view(base_clauses, introduced_clauses) |
-                        unwrap_clause) {
-                    auto new_resolvents = find_resolvents(next_resolution, rhs_clause);
-                    for (auto&& [resolvent, owning_resolution] : new_resolvents) {
-                        /*
-                         * If a derived resolution is already stored, it will not be inserted at the expected address.
-                         * We recover the stored element and redirect the Resolvent to use the persistent resolution.
-                         */
-
-                        auto [stored_it, resolvent_matches] = result.clauses.insert(std::move(owning_resolution));
-                        if (!resolvent_matches) {
-                            stored_it = result.clauses.find(*resolvent.observe_resolution());
-                            resolvent.change_resolution(stored_it->get());
-                        }
-
-                        working_pq.push_back(std::move(resolvent));
-                        std::push_heap(working_pq.begin(), working_pq.end());
-                    }
+            if (was_committed) {
+                const auto all_clauses_view = std::ranges::concat_view(base_clauses, result.introduced_clauses);
+                result.relations.push_back(std::move(next_resolvent));
+                for (const auto& rhs_clause : all_clauses_view | unwrap_clause) {
+                    auto new_resolvents = find_resolvents(committed_resolution_it->get(), rhs_clause);
+                    for (auto&& [new_resolvent, new_resolution] : new_resolvents)
+                        working_queue.push(std::move(new_resolvent), std::move(new_resolution));
                 }
+            }
         } else
             resolution_logger->debug(std::format("Resolution skipping step {} due to repeated resolvent.",
                 result.elapsed_step_count));
@@ -174,10 +151,9 @@ QueryResult KnowledgeBase::run_resolution(const size_t max_step_count)
 
 QueryResult KnowledgeBase::ask(std::unique_ptr<MutableSentenceRoot> &&query, const size_t max_step_count)
 {
-    // Produce the negation of the goal and add it to the KB in an attempt to derive a contradiction.
+    // Produce the negation of the goal.
     query->flip_polarity();
-    const auto negated_query = ExpressionFactory::build_sentence(std::move(query), symbol_repository);
-    introduce(*negated_query);
+    auto negated_query = ExpressionFactory::build_sentence(std::move(query), symbol_repository);
 
     kb_logger->info(std::format("Querying the KB of {} clauses for the negation of {}.", base_clauses.size(),
         *negated_query));
@@ -191,24 +167,8 @@ QueryResult KnowledgeBase::ask(std::unique_ptr<MutableSentenceRoot> &&query, con
         kb_logger->trace(std::format("KB Clause (negated goal): {}", *negated_query->begin()));
     }
 
-
     // Run the theorem-prover.
-    QueryResult result = run_resolution(max_step_count);
-
-    /*
-     * Copy all referenced clauses from the base and introduced sets to the result, such that execution traces may still
-     * refer to the elements. The introduced clauses can be cleared for the next query on the KB.
-     *
-     * TODO: this is a temporary bodge. In production, the results can depend on the knowledge base, so we can just
-     *  provide observing pointers for the base clauses, and allow the result to own the introduced clauses.
-     */
-    for (const auto& clause : base_clauses)
-        result.clauses.insert(std::make_unique<Clause>(*clause));
-
-    for (auto it = introduced_clauses.begin(); it != introduced_clauses.end(); )
-        result.clauses.insert(std::move(introduced_clauses.extract(it++).value()));
-
-    introduced_clauses.clear();
+    QueryResult result = run_resolution(std::move(negated_query), max_step_count);
 
     switch (result.outcome) {
     case QueryResult::ConjectureStatus::TimedOut:
@@ -295,20 +255,6 @@ std::unique_ptr<Clause> KnowledgeBase::factor_literals(std::unique_ptr<Clause> &
     return working_clause;
 }
 
-bool KnowledgeBase::introduce(const SentenceRoot &sentence)
-{
-    introduced_clauses.reserve(introduced_clauses.size() + sentence.order());
-    return std::ranges::all_of(sentence, [this](const Clause& new_clause)
-    {
-        return insert_clause(std::make_unique<Clause>(new_clause), introduced_clauses);
-    });
-}
-
-bool KnowledgeBase::introduce(std::unique_ptr<Clause> &&new_clause)
-{
-    return insert_clause(std::move(new_clause), introduced_clauses);
-}
-
 bool KnowledgeBase::insert_clause(std::unique_ptr<Clause> &&new_clause, UniqueUnorderedSet<Clause> &destination)
 {
     const auto [node_it, added_ok] = destination.emplace(std::move(new_clause));
@@ -390,7 +336,7 @@ std::vector<std::pair<Resolvent, std::unique_ptr<Clause>>> KnowledgeBase::find_r
                 resolvents.emplace_back(Resolvent(lhs_clause, rhs_clause, *unifier.observe_substitutions(),
                     resolution.get()), std::move(resolution));
 
-                resolution_logger->info(std::format("Resolved {} and {} to {}.", *lhs_clause, *rhs_clause,
+                resolution_logger->debug(std::format("Resolved {} and {} to {}.", *lhs_clause, *rhs_clause,
                     *resolvents.back().first.observe_resolution()));
 
                 // The applicator might have introduced new symbols, so we inherit them into the SymbolRepository here.

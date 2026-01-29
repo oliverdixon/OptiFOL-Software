@@ -14,10 +14,7 @@
 #ifndef UNIFICATIONVISITOR_H
 #define UNIFICATIONVISITOR_H
 
-#include <unordered_map>
-
 #include "../../../IR/SymbolRepository.hpp"
-#include "../../../IR/Terms/Variable.hpp"
 #include "UnificationApplicationVisitor.hpp"
 
 namespace optifol

@@ -19,6 +19,8 @@
 #include "../IR/MutableVariants/Sentences/MutableSentenceRoot.hpp"
 #include "../IR/MutableVariants/Terms/MutableConstant.hpp"
 #include "../IR/MutableVariants/Terms/MutableVariable.hpp"
+#include "../Inference/QueryResult.hpp"
+#include "../Inference/Resolvent.hpp"
 #include "../IR/SymbolRepository.hpp"
 #include "../Inference/ExpressionFactory.hpp"
 #include "../Inference/KnowledgeBase.hpp"

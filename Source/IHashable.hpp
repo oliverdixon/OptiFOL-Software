@@ -5,7 +5,7 @@
 
 /**
  * @file
- * @brief Class specification for the IHashable interface
+ * @brief Class specification for the IHashable interface, and some supporting specialisations.
  * @author Oliver Dixon
  * @date 2025-06-09
  * @version Development

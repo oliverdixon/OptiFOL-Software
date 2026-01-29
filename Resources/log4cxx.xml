@@ -34,7 +34,7 @@
     </logger>
 
     <logger name="LogicServices.KnowledgeBase" additivity="false">
-        <priority value="debug"/>
+        <priority value="info"/>
         <appender-ref ref="ConsoleAppender"/>
     </logger>
 

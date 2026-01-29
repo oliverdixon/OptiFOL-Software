@@ -14,10 +14,8 @@
 #ifndef OPTIFOL_RESOLVENT_HPP
 #define OPTIFOL_RESOLVENT_HPP
 
-#include <variant>
-
-
 #include "../IR/Sentences/SentenceRoot.hpp"
+#include "ResolventQueue.hpp"
 #include "Unifier.hpp"
 
 namespace optifol
@@ -45,9 +43,9 @@ public:
 
     [[nodiscard]] const Clause *observe_resolution() const noexcept;
 
-    void change_resolution(const Clause * clause) noexcept;
-
 private:
+    friend void ResolventQueue::push(Resolvent, std::unique_ptr<Clause> &&);
+
     const Clause * lhs_clause;
     const Clause * rhs_clause;
 

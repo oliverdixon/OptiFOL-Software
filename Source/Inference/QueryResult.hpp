@@ -14,10 +14,12 @@
 #ifndef OPTIFOL_QUERYRESULT_HPP
 #define OPTIFOL_QUERYRESULT_HPP
 
-#include "Resolvent.hpp"
+#include "../IR/Sentences/Clause.hpp"
 
 namespace optifol
 {
+
+class Resolvent;
 
 struct QueryResult
 {
@@ -34,7 +36,7 @@ struct QueryResult
     ConjectureStatus outcome = ConjectureStatus::NotExecuted;
     std::size_t elapsed_step_count = 1;
 
-    UniqueUnorderedSet<Clause> clauses;
+    UniqueUnorderedSet<Clause> introduced_clauses;
     std::vector<Resolvent> relations;
 
     QueryResult(QueryResult&&) = default;

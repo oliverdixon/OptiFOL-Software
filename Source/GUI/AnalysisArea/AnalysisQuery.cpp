@@ -9,9 +9,10 @@
 
 #include "AnalysisQuery.hpp"
 
-#include <assert.h>
+#include <cassert>
 
 #include "../../Exceptions/SemanticException.hpp"
+#include "../../Inference/QueryResult.hpp"
 
 namespace optifol
 {

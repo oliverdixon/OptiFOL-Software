@@ -17,10 +17,8 @@
 #include <log4cxx/logger.h>
 #include <ranges>
 
-#include "../IR/Sentences/SentenceRoot.hpp"
+#include "../IR/Sentences/Clause.hpp"
 #include "../Visitors/RegularTargets/Unification/UnificationVisitor.hpp"
-#include "QueryResult.hpp"
-#include "Resolvent.hpp"
 
 namespace optifol
 {
@@ -29,6 +27,9 @@ class MutableSentenceRoot;
 class SymbolRepository;
 class Variable;
 class IProcessedTerm;
+
+class Resolvent;
+struct QueryResult;
 
 /**
  * @class KnowledgeBase
@@ -40,7 +41,7 @@ class IProcessedTerm;
  *      <ol>
  *          <li>The user creates a new KnowledgeBase linked to a persistent SymbolRepository;</li>
  *          <li>The user issues @ref tell commands to incrementally build the axioms of the KnowledgeBase;</li>
- *          <li>Once the KnowledgeBase has been informed of all the axioms, the user issues a @ref ask command with
+ *          <li>Once the KnowledgeBase has been informed of all the axioms, the user issues an @ref ask command with
  *              a query to attempt to derive a contradiction or model proof attesting to the consistency of the given
  *              conjecture under the axioms.</li>
  *          <li>After the proof has completed, the user browses the execution metadata and proof trace (organised as
@@ -102,26 +103,22 @@ private:
          * @param rhs RHS Resolvent owning container
          * @return LHS-RHS relation
          */
-        static bool operator()(const std::unique_ptr<Resolvent>& lhs, const std::unique_ptr<Resolvent>& rhs) noexcept
-        {
-            return *lhs < *rhs;
-        }
+        static bool operator()(const std::unique_ptr<Resolvent>& lhs, const std::unique_ptr<Resolvent>& rhs) noexcept;
     };
 
     /**
      * @brief Drive and organise the binary resolution procedure on the populated knowledge base, attempting to derive a
      *  contradiction.
+     * @param negated_query A CNF-normalised construction of the negation of the goal.
      * @param max_step_count The maximum number of steps to perform in the resolution procedure before bailing out.
      * @return Execution metadata and a proof trace.
      * @invariant Any Clauses referenced by Resolvents must be present in one of the standard locations:
      *  <ul>
-     *      <li>The <i>base clause</i> store of the KnowledgeBase;</li>
-     *      <li>The <i>introduced clause</i> store of the KnowledgeBase; or</li>
-     *      <li>The managed clause store in QueryResult.</li>
+     *      <li>The <i>base clauses</i> store of the KnowledgeBase; or</li>
+     *      <li>The <i>introduced clauses</i> store in QueryResult.</li>
      *  </ul>
-     *  (This is enforced at runtime.)
      */
-    QueryResult run_resolution(size_t max_step_count);
+    QueryResult run_resolution(std::unique_ptr<SentenceRoot> &&negated_query, size_t max_step_count);
 
     /**
      * @brief Apply the state UnificationApplicationVisitor to the given source Clause, filtering the given Literal, and
@@ -139,24 +136,6 @@ private:
      * @return The owning container of the maximally simplified (under unifier application) Clause.
      */
     std::unique_ptr<Clause> factor_literals(std::unique_ptr<Clause> &&unified_clause);
-
-    /**
-     * @brief Attempt to introduce an entire SentenceRoot into the knowledge base.
-     * @param sentence The SentenceRoot containing the Clause nodes to introduce.
-     * @return Were all Clause objects from the SentenceRoot added?
-     * @note This should only be used for Clause nodes being introduced mid-way through the resolution process. Use
-     *  @ref tell(const SentenceRoot&) for populating the initial knowledge base that persists across queries.
-     */
-    bool introduce(const SentenceRoot &sentence);
-
-    /**
-     * @brief Attempt to introduce a new single Clause into the knowledge base.
-     * @param new_clause The new Clause to introduce.
-     * @return Was the Clause added?
-     * @note This should only be used for Clause nodes being introduced mid-way through the resolution process. Use
-     *  @ref tell(const Clause&) for populating the initial knowledge base that persists across queries.
-     */
-    bool introduce(std::unique_ptr<Clause> &&new_clause);
 
     /**
      * @brief Attempt to insert a new Clause in the given @ref std::unordered_set, providing suitable logging.
@@ -193,7 +172,6 @@ private:
     static const log4cxx::LoggerPtr factoring_logger;
 
     UniqueUnorderedSet<Clause> base_clauses;
-    UniqueUnorderedSet<Clause> introduced_clauses;
 
     std::shared_ptr<SymbolRepository> symbol_repository;
 

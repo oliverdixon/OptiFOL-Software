@@ -59,11 +59,6 @@ const Clause *Resolvent::observe_resolution() const noexcept
     return resolution;
 }
 
-void Resolvent::change_resolution(const Clause *clause) noexcept
-{
-    resolution = clause;
-}
-
 bool Resolvent::operator<(const Resolvent &other) const noexcept
 {
     const auto lhs_has_unit = lhs_clause->is_unit() || rhs_clause->is_unit();
