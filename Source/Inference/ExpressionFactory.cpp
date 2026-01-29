@@ -37,10 +37,11 @@ std::unique_ptr<SentenceRoot> ExpressionFactory::build_sentence(
         std::unique_ptr<MutableSentenceRoot> &&sentence_root, std::shared_ptr<SymbolRepository> symbol_repository)
 {
     // Step 1. Propagate the polarity of the root to its immediate child.
-    if (sentence_root->is_negative_polarity() && !sentence_root->observe_sentence()->is_negative_polarity()) {
+    if (sentence_root->is_negative_polarity()) {
         auto borrowed = sentence_root->take_sentence();
         borrowed->flip_polarity();
         sentence_root->put_sentence(std::move(borrowed));
+        sentence_root->flip_polarity();
     }
 
     /*

@@ -107,24 +107,24 @@ QueryResult KnowledgeBase::run_resolution(std::unique_ptr<SentenceRoot> &&negate
             resolution_logger->info(std::format("Step {} is using resolution {}.", result.elapsed_step_count,
                 *next_resolvent.observe_resolution()));
 
-            if (next_resolvent.observe_resolution()->get_triviality_state() == Clause::State::TriviallyFalse) {
+            /*
+             * Insert the next-unseen resolvent into the KB by transferring ownership of the corresponding resolution
+             * into the QueryResult and recording the resolvent into the trace. If the resolution clause is non-trivial
+             * and new, search for more resolvents.
+             */
+            auto owning_resolution = working_queue.extract_resolution(next_resolvent);
+            auto [committed_resolution_it, was_committed] =
+                result.introduced_clauses.insert(std::move(owning_resolution));
+            result.relations.push_back(std::move(next_resolvent));
+
+            if ((*committed_resolution_it)->get_triviality_state() == Clause::State::TriviallyFalse) {
                 // An empty derived clause indicates that a contradiction was derived in the KB.
                 result.outcome = QueryResult::ConjectureStatus::Consistent;
                 return result;
             }
 
-            /*
-             * If no contradiction was derived for this resolvent, insert it into the KB. If it is something new
-             * (previously unseen by the KB), attempt to find new resolvents. Ownership of the resolved clause is
-             * transferred from the working queue into the result.
-             */
-            auto owning_resolution = working_queue.extract_resolution(next_resolvent);
-            auto [committed_resolution_it, was_committed] =
-                result.introduced_clauses.insert(std::move(owning_resolution));
-
             if (was_committed) {
                 const auto all_clauses_view = std::ranges::concat_view(base_clauses, result.introduced_clauses);
-                result.relations.push_back(std::move(next_resolvent));
                 for (const auto& rhs_clause : all_clauses_view | unwrap_clause) {
                     auto new_resolvents = find_resolvents(committed_resolution_it->get(), rhs_clause);
                     for (auto&& [new_resolvent, new_resolution] : new_resolvents)
