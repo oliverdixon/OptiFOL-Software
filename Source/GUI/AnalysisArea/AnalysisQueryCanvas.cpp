@@ -9,6 +9,7 @@
 
 #include "AnalysisQueryCanvas.hpp"
 
+#include <cassert>
 #include <ranges>
 
 namespace optifol
@@ -19,53 +20,102 @@ AnalysisQueryCanvas::AnalysisQueryCanvas()
     set_draw_func(sigc::mem_fun(*this, &AnalysisQueryCanvas::on_draw));
 }
 
-void AnalysisQueryCanvas::add_resolvent(const Resolvent &resolvent)
+void AnalysisQueryCanvas::add_resolvent(const ProofTreeNode *terminating_node)
 {
-    std::ostringstream oss;
-    oss << resolvent.observe_substance();
+    add_node(terminating_node);
+}
 
-    nodes.emplace_back(oss.str(), nullptr, nullptr); // TODO how to find parents?
+const AnalysisQueryCanvas::NodeDrawingAdapter *AnalysisQueryCanvas::add_node(const ProofTreeNode *node)
+{
+    const NodeDrawingAdapter * lhs_adapter = nullptr;
+    const NodeDrawingAdapter * rhs_adapter = nullptr;
+
+    if (node->get_depth() > 0) {
+        if (node->observe_lhs_parent() != nullptr)
+            lhs_adapter = add_node(node->observe_lhs_parent());
+
+        if (node->observe_rhs_parent() != nullptr)
+            rhs_adapter = add_node(node->observe_rhs_parent());
+    }
+
+    return &nodes[node->get_depth()].emplace_back(node, lhs_adapter, rhs_adapter);
 }
 
 void AnalysisQueryCanvas::on_draw(const Cairo::RefPtr<Cairo::Context> &ctx, int width, int height)
 {
-    // coordinates for the center of the window
-    const int xc = width / 2;
-    const int yc = height / 2;
+    static constexpr float rectangle_padding = 6;
+    static constexpr float h_indent = 50;
+    static constexpr float v_indent = 50;
+    static constexpr float h_spacing = 100;
+    static constexpr float v_spacing = 80;
 
-    static constexpr int padding = 6.0;
+    Cairo::TextExtents text_extents;
 
-    ctx->select_font_face("Sans", Cairo::ToyFontFace::Slant::NORMAL, Cairo::ToyFontFace::Weight::NORMAL);
+    ctx->select_font_face("Monospace", Cairo::ToyFontFace::Slant::NORMAL, Cairo::ToyFontFace::Weight::NORMAL);
     ctx->set_font_size(14.0);
 
-    for (const auto [node_idx, resolvent] : std::views::enumerate(nodes)) {
-        // Measure text
-        Cairo::TextExtents extents;
-        ctx->get_text_extents(resolvent.formula, extents);
+    float last_x_pos = h_indent;
 
-        // Compute bounds
-        const int basis_x = xc;
-        const int basis_y = yc + node_idx * 30;
-        const int rect_x = basis_x + extents.x_bearing - padding;
-        const int rect_y = basis_y + extents.y_bearing - padding;
-        const int rect_w = extents.width + 2 * padding;
-        const int rect_h = extents.height + 2 * padding;
+    for (auto& [depth, layer_contents] : nodes)
+        for (auto&& [idx, node] : layer_contents | std::views::enumerate) {
+            ctx->get_text_extents(node.label, text_extents);
 
-        // Draw the rectangle body
-        ctx->set_source_rgb(0.95, 0.95, 0.95);
-        ctx->rectangle(rect_x, rect_y, rect_w, rect_h);
-        ctx->fill();
+            node.start_y = v_indent + v_spacing * depth;
+            node.centre_y = node.start_y + text_extents.height / 2;
 
-        // Draw the rectangle border
-        ctx->set_source_rgb(0.2, 0.2, 0.2);
-        ctx->rectangle(rect_x, rect_y, rect_w, rect_h);
-        ctx->stroke();
+            if (depth > 0) {
+                assert(node.lhs != nullptr);
+                assert(node.rhs != nullptr);
+                node.centre_x = node.lhs->centre_x + (node.rhs->centre_x - node.lhs->centre_x) / 2;
+            } else {
+                node.centre_x = last_x_pos + h_spacing + text_extents.width / 2;
+                last_x_pos = node.centre_x + text_extents.width / 2;
+            }
 
-        // Draw text
-        ctx->set_source_rgb(0.0, 0.0, 0.0);
-        ctx->move_to(basis_x, basis_y);
-        ctx->show_text(resolvent.formula);
-    }
+            node.start_x = node.centre_x - text_extents.width / 2;
+
+            if (depth > 0) {
+                ctx->move_to(node.lhs->centre_x, node.lhs->centre_y);
+                ctx->line_to(node.centre_x, node.centre_y);
+                ctx->stroke();
+
+                ctx->move_to(node.rhs->centre_x, node.rhs->centre_y);
+                ctx->line_to(node.centre_x, node.centre_y);
+                ctx->stroke();
+            }
+        }
+
+    // Draw the nodes.
+    for (const auto& [depth, layer_contents] : nodes)
+        for (const auto& [idx, node] : layer_contents | std::views::enumerate) {
+            ctx->get_text_extents(node.label, text_extents);
+
+            const float rect_x = node.start_x + text_extents.x_bearing - rectangle_padding;
+            const float rect_y = node.start_y + text_extents.y_bearing - rectangle_padding;
+            const float rect_w = text_extents.width + 2 * rectangle_padding;
+            const float rect_h = text_extents.height + 2 * rectangle_padding;
+
+            // Draw the rectangle body
+            if (depth == 0)
+                ctx->set_source_rgb(axiom_colouring.red, axiom_colouring.green, axiom_colouring.blue);
+            else if (node.node->observe_substance()->get_triviality_state() == Clause::State::TriviallyFalse)
+                ctx->set_source_rgb(terminating_colouring.red, terminating_colouring.green, terminating_colouring.blue);
+            else
+                ctx->set_source_rgb(regular_colouring.red, regular_colouring.green, regular_colouring.blue);
+
+            ctx->rectangle(rect_x, rect_y, rect_w, rect_h);
+            ctx->fill();
+
+            // Draw the rectangle border
+            ctx->set_source_rgb(0.2, 0.2, 0.2);
+            ctx->rectangle(rect_x, rect_y, rect_w, rect_h);
+            ctx->stroke();
+
+            // Draw text
+            ctx->set_source_rgb(0.0, 0.0, 0.0);
+            ctx->move_to(node.start_x, node.start_y);
+            ctx->show_text(node.label);
+        }
 }
 
 Gtk::SizeRequestMode AnalysisQueryCanvas::get_request_mode_vfunc() const

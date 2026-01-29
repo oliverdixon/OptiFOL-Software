@@ -18,6 +18,7 @@
 #include <gtkmm/scrolledwindow.h>
 
 #include "../../Inference/KnowledgeBase.hpp"
+#include "../../Inference/QueryResult.hpp"
 #include "AnalysisQueryCanvas.hpp"
 #include "FOLLexer.hpp"
 
@@ -51,6 +52,7 @@ private:
     Gtk::Button execute_query_button;
 
     KnowledgeBase& kb_weak;
+    std::unique_ptr<QueryResult> latest_result;
 
     static std::istringstream lexer_input_stream;
     static FOLLexer lexer;

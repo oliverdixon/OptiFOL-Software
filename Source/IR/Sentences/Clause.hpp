@@ -41,7 +41,6 @@ class Literal;
  */
 class Clause :
     public OwningBuildable<Clause>,
-    public ISerialisable,
     public IHashable,
     public ProofTreeNode
 {

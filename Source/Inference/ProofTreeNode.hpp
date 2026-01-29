@@ -12,6 +12,8 @@
 
 #include <memory>
 
+#include "../ISerialisable.hpp"
+
 namespace optifol
 {
 
@@ -19,11 +21,9 @@ struct Unifier;
 class Clause;
 class Resolvent;
 
-class ProofTreeNode
+class ProofTreeNode : public ISerialisable
 {
 public:
-    virtual ~ProofTreeNode() = default;
-
     ProofTreeNode(const ProofTreeNode&) = default;
     ProofTreeNode& operator=(const ProofTreeNode&) = default;
 

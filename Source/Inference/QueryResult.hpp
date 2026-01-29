@@ -40,6 +40,7 @@ struct QueryResult
 
     UniqueUnorderedSet<Clause> introduced_clauses;
     std::deque<Resolvent> relations;
+    const Resolvent * terminating_resolvent = nullptr;
 
     QueryResult(QueryResult&&) = default;
     QueryResult& operator=(QueryResult&&) = default;

@@ -14,7 +14,7 @@
 #ifndef OPTIFOL_RESOLVENTQUEUE
 #define OPTIFOL_RESOLVENTQUEUE
 
-#include <vector>
+#include <deque>
 #include <memory>
 
 #include "../IR/Sentences/Clause.hpp"
@@ -68,8 +68,10 @@ public:
      */
     [[nodiscard]] std::size_t size() const noexcept;
 
+    void dump(std::deque<Resolvent>& resolvent_destination, UniqueUnorderedSet<Clause>& clause_destination);
+
 private:
-    std::vector<Resolvent> elements;
+    std::deque<Resolvent> elements;
     std::less<Resolvent> comparator{};
     UniqueUnorderedSet<Clause> resolutions;
 };

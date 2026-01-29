@@ -78,4 +78,16 @@ std::size_t ResolventQueue::size() const noexcept
     return elements.size();
 }
 
+void ResolventQueue::dump(std::deque<Resolvent> &resolvent_destination, UniqueUnorderedSet<Clause> &clause_destination)
+{
+    while (!empty()) {
+        auto resolvent = pop();
+        auto resolution = extract_resolution(resolvent);
+        resolvent_destination.push_back(std::move(resolvent));
+
+        if (resolution != nullptr)
+            clause_destination.insert(std::move(resolution));
+    }
+}
+
 } // namespace optifol

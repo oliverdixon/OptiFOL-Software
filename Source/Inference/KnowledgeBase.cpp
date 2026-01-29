@@ -65,8 +65,6 @@ bool KnowledgeBase::PQResolventUnitPref::operator()(
 QueryResult KnowledgeBase::run_resolution(std::unique_ptr<SentenceRoot> &&negated_query, const size_t max_step_count)
 {
     RawUnorderedSet<const Clause> seen_resolvents; // Transparent hashing to provide lightweight de-duplication.
-
-    // TODO should the working queue be dumped into the result even if we bail out early? Probably, to preserve pointers.
     ResolventQueue working_queue; // Generated resolvents not yet committed to introduced knowledge.
     QueryResult result; // Execution trace, introduced clauses, and metadata built up by the solver.
 
@@ -122,6 +120,8 @@ QueryResult KnowledgeBase::run_resolution(std::unique_ptr<SentenceRoot> &&negate
             if ((*committed_resolution_it)->get_triviality_state() == Clause::State::TriviallyFalse) {
                 // An empty derived clause indicates that a contradiction was derived in the KB.
                 result.outcome = QueryResult::ConjectureStatus::Consistent;
+                result.terminating_resolvent = &result.relations.back();
+                working_queue.dump(result.relations, result.introduced_clauses);
                 return result;
             }
 
@@ -148,6 +148,7 @@ QueryResult KnowledgeBase::run_resolution(std::unique_ptr<SentenceRoot> &&negate
 
         if (result.elapsed_step_count == max_step_count) {
             result.outcome = QueryResult::ConjectureStatus::TimedOut;
+            working_queue.dump(result.relations, result.introduced_clauses);
             return result;
         }
     }
@@ -157,6 +158,7 @@ QueryResult KnowledgeBase::run_resolution(std::unique_ptr<SentenceRoot> &&negate
      * query did not induce an inconsistent KB.
      */
     result.outcome = QueryResult::ConjectureStatus::Inconsistent;
+    working_queue.dump(result.relations, result.introduced_clauses);
     return result;
 }
 

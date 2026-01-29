@@ -12,7 +12,6 @@
 #include <cassert>
 
 #include "../../Exceptions/SemanticException.hpp"
-#include "../../Inference/QueryResult.hpp"
 
 namespace optifol
 {
@@ -76,9 +75,9 @@ void AnalysisQuery::execute_query()
     }
 
     try {
-        const auto result = kb_weak.ask(parser.retrieve_sentence());
-        for (const auto& resolvent : result.relations)
-            drawing_area.add_resolvent(resolvent);
+        latest_result = std::make_unique<QueryResult>(kb_weak.ask(parser.retrieve_sentence()));
+        if (latest_result->terminating_resolvent != nullptr)
+            drawing_area.add_resolvent(latest_result->terminating_resolvent);
     } catch (const SemanticException& semantic_exception) {
         // TODO log
         assert(0);

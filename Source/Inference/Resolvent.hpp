@@ -24,7 +24,6 @@ namespace optifol
 
 class Resolvent :
     public IHashable,
-    public ISerialisable,
     public ProofTreeNode
 {
 public:
