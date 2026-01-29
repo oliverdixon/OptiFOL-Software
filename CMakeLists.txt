@@ -301,6 +301,7 @@ add_library(OptifolCommon OBJECT
         Source/Inference/QueryResult.hpp
         Source/Inference/ResolventQueue.hpp
         Source/Inference/ResolventQueue.cpp
+        Source/Inference/ProofTreeNode.hpp
 )
 
 target_include_directories(OptifolCommon PRIVATE

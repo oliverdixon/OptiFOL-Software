@@ -15,16 +15,21 @@
 #define OPTIFOL_RESOLVENT_HPP
 
 #include "../IR/Sentences/SentenceRoot.hpp"
+#include "ProofTreeNode.hpp"
 #include "ResolventQueue.hpp"
 #include "Unifier.hpp"
 
 namespace optifol
 {
 
-class Resolvent : public IHashable, public ISerialisable
+class Resolvent :
+    public IHashable,
+    public ISerialisable,
+    public ProofTreeNode
 {
 public:
-    Resolvent(const Clause * lhs_clause, const Clause * rhs_clause, Unifier unifier, const Clause * resolution);
+    Resolvent(const ProofTreeNode * lhs_parent, const ProofTreeNode * rhs_parent, Unifier unifier,
+        const Clause * resolution);
 
     Resolvent(Resolvent&&) = default;
     Resolvent& operator=(Resolvent&&) = default;
@@ -37,17 +42,12 @@ public:
 
     [[nodiscard]] bool operator==(const Resolvent &other) const;
 
-    [[nodiscard]] const Clause *observe_lhs_clause() const noexcept;
+    [[nodiscard]] bool is_unit() const noexcept override;
 
-    [[nodiscard]] const Clause *observe_rhs_clause() const noexcept;
-
-    [[nodiscard]] const Clause *observe_resolution() const noexcept;
+    [[nodiscard]] const Clause * observe_substance() const noexcept override;
 
 private:
     friend void ResolventQueue::push(Resolvent, std::unique_ptr<Clause> &&);
-
-    const Clause * lhs_clause;
-    const Clause * rhs_clause;
 
     Unifier unifier;
     const Clause * resolution;

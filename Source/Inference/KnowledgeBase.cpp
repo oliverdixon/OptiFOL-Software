@@ -65,6 +65,8 @@ bool KnowledgeBase::PQResolventUnitPref::operator()(
 QueryResult KnowledgeBase::run_resolution(std::unique_ptr<SentenceRoot> &&negated_query, const size_t max_step_count)
 {
     RawUnorderedSet<const Clause> seen_resolvents; // Transparent hashing to provide lightweight de-duplication.
+
+    // TODO should the working queue be dumped into the result even if we bail out early? Probably, to preserve pointers.
     ResolventQueue working_queue; // Generated resolvents not yet committed to introduced knowledge.
     QueryResult result; // Execution trace, introduced clauses, and metadata built up by the solver.
 
@@ -100,12 +102,12 @@ QueryResult KnowledgeBase::run_resolution(std::unique_ptr<SentenceRoot> &&negate
          * seen before, we can just ignore it, as binary resolution can repeat resolutions for different clauses.
          */
         auto [seen_resolution_it, was_unseen] = seen_resolvents.insert(
-            next_resolvent.observe_resolution());
+            next_resolvent.observe_substance());
         std::ignore = seen_resolution_it;
 
         if (was_unseen) {
             resolution_logger->info(std::format("Step {} is using resolution {}.", result.elapsed_step_count,
-                *next_resolvent.observe_resolution()));
+                *next_resolvent.observe_substance()));
 
             /*
              * Insert the next-unseen resolvent into the KB by transferring ownership of the corresponding resolution
@@ -124,9 +126,18 @@ QueryResult KnowledgeBase::run_resolution(std::unique_ptr<SentenceRoot> &&negate
             }
 
             if (was_committed) {
-                const auto all_clauses_view = std::ranges::concat_view(base_clauses, result.introduced_clauses);
-                for (const auto& rhs_clause : all_clauses_view | unwrap_clause) {
-                    auto new_resolvents = find_resolvents(committed_resolution_it->get(), rhs_clause);
+                const Resolvent * const lhs = &result.relations.back();
+
+                // Clauses on RHS
+                for (const auto& rhs_clause : base_clauses | unwrap_clause) {
+                    auto new_resolvents = find_resolvents(lhs, rhs_clause);
+                    for (auto&& [new_resolvent, new_resolution] : new_resolvents)
+                        working_queue.push(std::move(new_resolvent), std::move(new_resolution));
+                }
+
+                // Resolvents on RHS
+                for (const auto& rhs_resolvent : result.relations) {
+                    auto new_resolvents = find_resolvents(lhs, &rhs_resolvent);
                     for (auto&& [new_resolvent, new_resolution] : new_resolvents)
                         working_queue.push(std::move(new_resolvent), std::move(new_resolution));
                 }
@@ -269,9 +280,12 @@ bool KnowledgeBase::insert_clause(std::unique_ptr<Clause> &&new_clause, UniqueUn
 }
 
 std::vector<std::pair<Resolvent, std::unique_ptr<Clause>>> KnowledgeBase::find_resolvents(
-        const Clause *const lhs_clause, const Clause *const rhs_clause)
+        const ProofTreeNode *const lhs_node, const ProofTreeNode *const rhs_node)
 {
     std::vector<std::pair<Resolvent, std::unique_ptr<Clause>>> resolvents;
+
+    const auto * const lhs_clause = lhs_node->observe_substance();
+    const auto * const rhs_clause = rhs_node->observe_substance();
 
     for (const auto lhs_literal : *lhs_clause)
         for (const auto rhs_literal : *rhs_clause) {
@@ -333,11 +347,11 @@ std::vector<std::pair<Resolvent, std::unique_ptr<Clause>>> KnowledgeBase::find_r
                  * application literals as a clause under disjunction.
                  */
 
-                resolvents.emplace_back(Resolvent(lhs_clause, rhs_clause, *unifier.observe_substitutions(),
+                resolvents.emplace_back(Resolvent(lhs_node, rhs_node, *unifier.observe_substitutions(),
                     resolution.get()), std::move(resolution));
 
                 resolution_logger->debug(std::format("Resolved {} and {} to {}.", *lhs_clause, *rhs_clause,
-                    *resolvents.back().first.observe_resolution()));
+                    *resolvents.back().first.observe_substance()));
 
                 // The applicator might have introduced new symbols, so we inherit them into the SymbolRepository here.
                 applicator.keep_new_symbols();

@@ -23,7 +23,7 @@ namespace optifol
 
 void ResolventQueue::push(Resolvent element, std::unique_ptr<Clause> &&resolution)
 {
-    assert(element.observe_resolution() == resolution.get());
+    assert(element.observe_substance() == resolution.get());
 
     auto [resolution_it, was_new] = resolutions.insert(std::move(resolution));
     if (!was_new) {
@@ -37,7 +37,7 @@ void ResolventQueue::push(Resolvent element, std::unique_ptr<Clause> &&resolutio
          *     clause. Once this process is repeated for all resolvents, there will be a de-duplicated set of resolution
          *     clauses (either owned by us or transferred into a QueryResult) to which all resolvents correctly refer.
          */
-        resolution_it = resolutions.find(*element.observe_resolution());
+        resolution_it = resolutions.find(*element.observe_substance());
         if (resolution_it == resolutions.end())
             throw std::runtime_error("The ownership of the incoming resolution clause could not be transferred into "
                                      "the queue.");
@@ -61,7 +61,7 @@ Resolvent ResolventQueue::pop()
 
 std::unique_ptr<Clause> ResolventQueue::extract_resolution(const Resolvent &resolvent)
 {
-    const auto resolution_it = resolutions.find(*resolvent.observe_resolution());
+    const auto resolution_it = resolutions.find(*resolvent.observe_substance());
     if (resolution_it == resolutions.end())
         return {};
 

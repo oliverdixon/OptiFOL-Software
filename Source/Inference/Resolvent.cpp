@@ -20,10 +20,9 @@
 namespace optifol
 {
 
-Resolvent::Resolvent(const Clause * const lhs_clause, const Clause * const rhs_clause, Unifier unifier,
+Resolvent::Resolvent(const ProofTreeNode * const lhs_parent, const ProofTreeNode * const rhs_parent, Unifier unifier,
         const Clause * resolution) :
-    lhs_clause(lhs_clause),
-    rhs_clause(rhs_clause),
+    ProofTreeNode(lhs_parent, rhs_parent),
     unifier(std::move(unifier)),
     resolution(resolution)
 {
@@ -44,30 +43,25 @@ bool Resolvent::operator==(const Resolvent &other) const
     return resolution == other.resolution;
 }
 
-const Clause *Resolvent::observe_lhs_clause() const noexcept
+bool Resolvent::is_unit() const noexcept
 {
-    return lhs_clause;
+    return resolution->is_unit();
 }
 
-const Clause *Resolvent::observe_rhs_clause() const noexcept
-{
-    return rhs_clause;
-}
-
-const Clause *Resolvent::observe_resolution() const noexcept
+const Clause *Resolvent::observe_substance() const noexcept
 {
     return resolution;
 }
 
 bool Resolvent::operator<(const Resolvent &other) const noexcept
 {
-    const auto lhs_has_unit = lhs_clause->is_unit() || rhs_clause->is_unit();
-    const auto rhs_has_unit = other.lhs_clause->is_unit() || other.rhs_clause->is_unit();
+    const auto we_have_unit = observe_lhs_parent()->is_unit() || observe_rhs_parent()->is_unit();
+    const auto other_has_unit = other.observe_lhs_parent()->is_unit() || other.observe_rhs_parent()->is_unit();
 
-    if (lhs_has_unit && !rhs_has_unit)
+    if (we_have_unit && !other_has_unit)
         return false; // LHS has higher priority.
 
-    if (!lhs_has_unit && rhs_has_unit)
+    if (!we_have_unit && other_has_unit)
         return true; // RHS has higher priority.
 
     // Equal priority. For resolvents, we don't care about the exact ordering provided by Clause::operator<.

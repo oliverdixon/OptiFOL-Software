@@ -12,6 +12,7 @@
  */
 
 #include "Clause.hpp"
+#include "../Inference/Resolvent.hpp"
 
 #include <algorithm>
 #include <ranges>
@@ -154,6 +155,11 @@ bool Clause::empty() const noexcept
 bool Clause::is_unit() const noexcept
 {
     return order() == 1;
+}
+
+const Clause *Clause::observe_substance() const noexcept
+{
+    return this;
 }
 
 void Clause::force_bottom() noexcept

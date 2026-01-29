@@ -16,6 +16,7 @@
 
 #include <vector>
 
+#include "../../Inference/ProofTreeNode.hpp"
 #include "Literal.hpp"
 
 namespace optifol
@@ -38,7 +39,11 @@ class Literal;
  *      This implementation models a tautology with @f$ C := \emptyset @f$. Trivial states can be further queried.
  *  </p>
  */
-class Clause : public OwningBuildable<Clause>, public ISerialisable, public IHashable
+class Clause :
+    public OwningBuildable<Clause>,
+    public ISerialisable,
+    public IHashable,
+    public ProofTreeNode
 {
 public:
     /**
@@ -136,7 +141,9 @@ public:
      * @brief Is the Clause a unit clause?
      * @return Is the Clause a unit, or equivalently, of order 1?
      */
-    [[nodiscard]] bool is_unit() const noexcept;
+    [[nodiscard]] bool is_unit() const noexcept override;
+
+    [[nodiscard]] const Clause * observe_substance() const noexcept override;
 
     /**
      * @brief Reset the Clause to its bottom state of order zero, where it is trivially unsatisfiable.

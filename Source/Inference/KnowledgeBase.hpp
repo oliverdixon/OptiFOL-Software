@@ -157,12 +157,12 @@ private:
      *      <li>If a tautology cannot be derived, construct a Resolvent containing the clause as its resolution, also
      *          keeping track of the MGU and source Clauses.</li>
      *  </ol>
-     * @param lhs_clause The source LHS Clause containing Literals to subject to binary resolution.
-     * @param rhs_clause The source RHS Clause containing Literals to subject to binary resolution.
+     * @param lhs_node The source LHS node containing Literals to subject to binary resolution.
+     * @param rhs_node The source RHS node containing Literals to subject to binary resolution.
      * @return The generated Resolvents, and owning containers of resolutions referenced by the Resolvents.
      */
     [[nodiscard]] std::vector<std::pair<Resolvent, std::unique_ptr<Clause>>> find_resolvents(
-            const Clause *lhs_clause, const Clause *rhs_clause);
+            const ProofTreeNode *lhs_node, const ProofTreeNode *rhs_node);
 
     static constexpr auto unwrap_clause = std::views::transform(
         [](const std::unique_ptr<Clause>& clause){ return clause.get(); });

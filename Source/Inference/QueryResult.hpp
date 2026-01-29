@@ -14,6 +14,8 @@
 #ifndef OPTIFOL_QUERYRESULT_HPP
 #define OPTIFOL_QUERYRESULT_HPP
 
+#include <deque>
+
 #include "../IR/Sentences/Clause.hpp"
 
 namespace optifol
@@ -37,7 +39,7 @@ struct QueryResult
     std::size_t elapsed_step_count = 1;
 
     UniqueUnorderedSet<Clause> introduced_clauses;
-    std::vector<Resolvent> relations;
+    std::deque<Resolvent> relations;
 
     QueryResult(QueryResult&&) = default;
     QueryResult& operator=(QueryResult&&) = default;

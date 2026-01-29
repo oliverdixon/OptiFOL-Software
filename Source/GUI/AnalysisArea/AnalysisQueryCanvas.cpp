@@ -22,7 +22,7 @@ AnalysisQueryCanvas::AnalysisQueryCanvas()
 void AnalysisQueryCanvas::add_resolvent(const Resolvent &resolvent)
 {
     std::ostringstream oss;
-    oss << resolvent.observe_resolution();
+    oss << resolvent.observe_substance();
 
     nodes.emplace_back(oss.str(), nullptr, nullptr); // TODO how to find parents?
 }
