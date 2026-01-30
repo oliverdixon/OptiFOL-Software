@@ -51,6 +51,8 @@ public:
     [[nodiscard]] const IProcessedTerm *accept(
             const UnificationApplicationVisitor &unification_application_visitor) const override;
 
+    void accept(const FeatureComponentBuilder &feature_builder) const override;
+
     [[nodiscard]] bool operator==(const IProcessedTerm &other) const noexcept override;
 
     [[nodiscard]] bool operator<(const IProcessedTerm& other) const noexcept override;

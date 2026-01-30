@@ -38,6 +38,8 @@ class MutableFunction;
 class Function;
 class MutableConstant;
 class Constant;
+class MutableSkolemFunction;
+class SkolemFunction;
 
 class IProcessedSentence;
 
@@ -196,6 +198,8 @@ public:
     const Function *visit(MutableFunction& node);
 
     const Constant *visit(const MutableConstant & node) const;
+
+    const SkolemFunction *visit(const MutableSkolemFunction& node);
 
     void visit(MutableSentenceRoot &node);
 

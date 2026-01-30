@@ -13,6 +13,7 @@
 
 #include "Constant.hpp"
 
+#include "../../Inference/FVI/FeatureComponentBuilder.hpp"
 #include "../../Visitors/MutableTargets/RepositoryBuildingVisitor.hpp"
 #include "../../Visitors/RegularTargets/Unification/UnificationApplicationVisitor.hpp"
 #include "../../Visitors/RegularTargets/Unification/UnificationVisitor.hpp"
@@ -58,6 +59,11 @@ bool Constant::is_self_nested(const IProcessedTerm &search_term) const noexcept
 const IProcessedTerm *Constant::accept(const UnificationApplicationVisitor &unification_application_visitor) const
 {
     return unification_application_visitor.visit(*this);
+}
+
+void Constant::accept(const FeatureComponentBuilder &feature_builder) const
+{
+    feature_builder.visit(this);
 }
 
 bool Constant::operator==(const IProcessedTerm &other) const noexcept

@@ -21,12 +21,14 @@
 #include "../../IR/MutableVariants/Sentences/MutableSentenceRoot.hpp"
 #include "../../IR/MutableVariants/Terms/MutableConstant.hpp"
 #include "../../IR/MutableVariants/Terms/MutableFunction.hpp"
+#include "../../IR/MutableVariants/Terms/MutableSkolemFunction.hpp"
 #include "../../IR/MutableVariants/Terms/MutableVariable.hpp"
 #include "../../IR/Sentences/Identity.hpp"
 #include "../../IR/Sentences/Literal.hpp"
 #include "../../IR/Sentences/SentenceRoot.hpp"
 #include "../../IR/Terms/Constant.hpp"
 #include "../../IR/Terms/Function.hpp"
+#include "../../IR/Terms/SkolemFunction.hpp"
 #include "../../IR/Terms/Variable.hpp"
 
 namespace optifol
@@ -168,6 +170,19 @@ const Function *RepositoryBuildingVisitor::visit(MutableFunction &node)
 const Constant *RepositoryBuildingVisitor::visit(const MutableConstant &node) const
 {
     return symbol_repository->add_symbol<Constant>(std::make_unique<Constant>(node.to_string()));
+}
+
+const SkolemFunction *RepositoryBuildingVisitor::visit(const MutableSkolemFunction &node)
+{
+    const auto &quantified_terms = node.observe_arguments();
+    std::vector<const IProcessedTerm *> processed_terms;
+    processed_terms.reserve(quantified_terms.size());
+
+    for (const auto &term: quantified_terms)
+        processed_terms.push_back(term->accept(*this));
+
+    return symbol_repository->add_symbol<SkolemFunction>(
+            std::make_unique<SkolemFunction>(std::string(node.get_disambiguated_name()), std::move(processed_terms)));
 }
 
 } // namespace optifol

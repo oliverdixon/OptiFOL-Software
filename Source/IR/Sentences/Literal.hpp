@@ -26,6 +26,7 @@ namespace optifol
 class IProcessedTerm;
 class UnificationVisitor;
 class UnificationApplicationVisitor;
+class FeatureComponentBuilder;
 
 /**
  * @class Literal
@@ -84,6 +85,8 @@ public:
     [[nodiscard]] bool accept(UnificationVisitor &unification_visitor, const Literal &predicate) const override;
 
     [[nodiscard]] const Literal *accept(const UnificationApplicationVisitor &application_visitor) const;
+
+    void accept(FeatureComponentBuilder &feature_builder) const;
 
     [[nodiscard]] bool unsigned_equality(const IProcessedSentence &other) const noexcept;
 

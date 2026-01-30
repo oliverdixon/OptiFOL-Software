@@ -17,6 +17,7 @@
 #include <ranges>
 
 #include "../../CompositeSerialisationHelpers.hpp"
+#include "../../Inference/FVI/FeatureComponentBuilder.hpp"
 #include "../../Visitors/RegularTargets/Unification/UnificationApplicationVisitor.hpp"
 #include "../../Visitors/RegularTargets/Unification/UnificationVisitor.hpp"
 
@@ -64,6 +65,11 @@ bool Function::is_self_nested(const IProcessedTerm &search_term) const noexcept
 const IProcessedTerm *Function::accept(const UnificationApplicationVisitor &unification_application_visitor) const
 {
     return unification_application_visitor.visit(*this);
+}
+
+void Function::accept(const FeatureComponentBuilder &feature_builder) const
+{
+    feature_builder.visit(this);
 }
 
 bool Function::operator==(const IProcessedTerm &other) const noexcept

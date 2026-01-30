@@ -302,6 +302,13 @@ add_library(OptifolCommon OBJECT
         Source/Inference/ResolventQueue.hpp
         Source/Inference/ResolventQueue.cpp
         Source/Inference/ProofTreeNode.hpp
+        Source/Inference/FVI/FeatureComponent.hpp
+        Source/Inference/FVI/FeatureComponentBuilder.cpp
+        Source/Inference/FVI/FeatureComponentBuilder.hpp
+        Source/IR/Terms/SkolemFunction.cpp
+        Source/IR/Terms/SkolemFunction.hpp
+        Source/Inference/FVI/OccurrenceCountFeature.cpp
+        Source/Inference/FVI/OccurrenceCountFeature.hpp
 )
 
 target_include_directories(OptifolCommon PRIVATE
@@ -476,6 +483,7 @@ add_executable(OptifolTesting
         Source/Tests/RepositoryBuildingTest.cpp
         Source/Tests/ResolutionTest.cpp
         Source/Tests/LiteralOrganisationTest.cpp
+        Source/Tests/FeatureVectorIndexTest.cpp
 )
 
 target_include_directories(OptifolTesting PRIVATE

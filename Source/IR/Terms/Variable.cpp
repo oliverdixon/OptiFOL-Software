@@ -13,6 +13,7 @@
 
 #include "Variable.hpp"
 
+#include "../../Inference/FVI/FeatureComponentBuilder.hpp"
 #include "../../Visitors/RegularTargets/Unification/UnificationApplicationVisitor.hpp"
 #include "../../Visitors/RegularTargets/Unification/UnificationVisitor.hpp"
 
@@ -81,6 +82,11 @@ bool Variable::is_self_nested(const IProcessedTerm &search_term) const noexcept
 const IProcessedTerm *Variable::accept(const UnificationApplicationVisitor &unification_application_visitor) const
 {
     return unification_application_visitor.visit(*this);
+}
+
+void Variable::accept(const FeatureComponentBuilder &feature_builder) const
+{
+    feature_builder.visit(this);
 }
 
 bool Variable::operator==(const IProcessedTerm &other) const noexcept

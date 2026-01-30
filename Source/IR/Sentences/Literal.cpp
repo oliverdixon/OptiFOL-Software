@@ -17,6 +17,7 @@
 #include <ranges>
 
 #include "../../CompositeSerialisationHelpers.hpp"
+#include "../../Inference/FVI/FeatureComponentBuilder.hpp"
 #include "../../Visitors/RegularTargets/Unification/UnificationVisitor.hpp"
 
 namespace optifol
@@ -104,6 +105,11 @@ bool Literal::accept(UnificationVisitor &unification_visitor, const Literal &pre
 const Literal *Literal::accept(const UnificationApplicationVisitor &application_visitor) const
 {
     return application_visitor.visit(*this);
+}
+
+void Literal::accept(FeatureComponentBuilder &feature_builder) const
+{
+    feature_builder.visit(this);
 }
 
 bool Literal::unsigned_equality(const IProcessedSentence &other) const noexcept

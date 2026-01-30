@@ -21,6 +21,7 @@ namespace optifol
 
 class UnificationApplicationVisitor;
 class RepositoryBuildingVisitor;
+class FeatureComponentBuilder;
 
 class Constant;
 class Function;
@@ -75,6 +76,8 @@ public:
      */
     [[nodiscard]] virtual const IProcessedTerm *accept(
         const UnificationApplicationVisitor &unification_application_visitor) const = 0;
+
+    virtual void accept(const FeatureComponentBuilder &feature_builder) const = 0;
 
     /**
      * @brief Test equality between two IProcessedTerm instances.
