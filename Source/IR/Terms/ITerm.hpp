@@ -20,7 +20,6 @@
 namespace optifol
 {
 
-class UnificationVisitor;
 class Variable;
 class Function;
 

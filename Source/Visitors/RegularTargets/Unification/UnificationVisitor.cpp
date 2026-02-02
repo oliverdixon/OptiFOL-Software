@@ -62,6 +62,22 @@ bool UnificationVisitor::visit(const Constant &constant_lhs, const Constant &con
     return constant_lhs.operator==(constant_rhs);
 }
 
+bool UnificationVisitor::visit(const Constant &constant_lhs, const Function &function_rhs)
+{
+    std::ignore = constant_lhs;
+    std::ignore = function_rhs;
+
+    return false;
+}
+
+bool UnificationVisitor::visit(const Constant &constant_lhs, const Variable &variable_rhs)
+{
+    std::ignore = constant_lhs;
+    std::ignore = variable_rhs;
+
+    return false;
+}
+
 bool UnificationVisitor::visit(const Variable &variable_lhs, const Constant &constant_rhs)
 {
     return variable_generic(variable_lhs, constant_rhs);
@@ -100,6 +116,22 @@ bool UnificationVisitor::visit(const Variable &variable_lhs, const Variable &var
     // If all checks pass, we can do a unification between the variables. Register the replacement and indicate success.
     register_substitution(variable_lhs, variable_rhs);
     return true;
+}
+
+bool UnificationVisitor::visit(const Function &function_lhs, const Constant &constant_rhs)
+{
+    std::ignore = function_lhs;
+    std::ignore = constant_rhs;
+
+    return false;
+}
+
+bool UnificationVisitor::visit(const Function &function_lhs, const Variable &variable_rhs)
+{
+    std::ignore = function_lhs;
+    std::ignore = variable_rhs;
+
+    return false;
 }
 
 bool UnificationVisitor::visit(const Function &function_lhs, const Function &function_rhs)

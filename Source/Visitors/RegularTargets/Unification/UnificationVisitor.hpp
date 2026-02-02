@@ -15,15 +15,13 @@
 #define UNIFICATIONVISITOR_H
 
 #include "../../../IR/SymbolRepository.hpp"
+#include "../IObservingBinaryVisitor.hpp"
 #include "UnificationApplicationVisitor.hpp"
 
 namespace optifol
 {
 
-class Function;
 class ITerm;
-class Literal;
-class Constant;
 class SymbolRepository;
 
 /**
@@ -73,7 +71,7 @@ class SymbolRepository;
  *  </p>
  * @see UnificationApplicationVisitor for the mutating visitor to apply Unifier elements to ASTs.
  */
-class UnificationVisitor
+class UnificationVisitor : public IObservingBinaryVisitor
 {
 public:
     /**
@@ -90,7 +88,7 @@ public:
      * @param predicate_rhs The RHS Literal to unify
      * @return Can the LHS and RHS Literal objects be unified?
      */
-    [[nodiscard]] bool visit(const Literal &predicate_lhs, const Literal &predicate_rhs);
+    [[nodiscard]] bool visit(const Literal &predicate_lhs, const Literal &predicate_rhs) override;
 
     /**
      * @brief Attempt to unify two Constant terms
@@ -99,7 +97,24 @@ public:
      * @param constant_rhs The RHS Constant to unify
      * @return Can the LHS and RHS Constant objects be unified?
      */
-    [[nodiscard]] static bool visit(const Constant &constant_lhs, const Constant &constant_rhs);
+    [[nodiscard]] bool visit(const Constant &constant_lhs, const Constant &constant_rhs) override;
+
+
+    /**
+     * @brief Attempt to unify a Constant and a Function.
+     * @param constant_lhs The LHS Constant to unify
+     * @param function_rhs The RHS Function to unify
+     * @return False, since a Constant and a Function cannot be unified.
+     */
+    [[nodiscard]] bool visit(const Constant &constant_lhs, const Function &function_rhs) override;
+
+    /**
+     * @brief Attempt to unify a Constant and a Variable.
+     * @param constant_lhs The LHS Constant to unify
+     * @param variable_rhs The RHS Variable to unify
+     * @return False, since a Constant and a Variable cannot be unified.
+     */
+    [[nodiscard]] bool visit(const Constant &constant_lhs, const Variable &variable_rhs) override;
 
     /**
      * @brief Attempt to unify a Variable and a Constant term.
@@ -109,7 +124,7 @@ public:
      * @param constant_rhs The RHS Constant to unify
      * @return Can the LHS and RHS objects be unified?
      */
-    [[nodiscard]] bool visit(const Variable &variable_lhs, const Constant &constant_rhs);
+    [[nodiscard]] bool visit(const Variable &variable_lhs, const Constant &constant_rhs) override;
 
     /**
      * @brief Attempt to unify a Variable and a Function term.
@@ -119,7 +134,7 @@ public:
      * @param function_rhs The RHS Function to unify
      * @return Can the LHS and RHS objects be unified?
      */
-    [[nodiscard]] bool visit(const Variable &variable_lhs, const Function &function_rhs);
+    [[nodiscard]] bool visit(const Variable &variable_lhs, const Function &function_rhs) override;
 
     /**
      * @brief Attempt to unify two Variable terms.
@@ -129,7 +144,23 @@ public:
      * @param variable_rhs The RHS Variable to unify
      * @return Can the LHS and RHS Variable objects be unified?
      */
-    [[nodiscard]] bool visit(const Variable &variable_lhs, const Variable &variable_rhs);
+    [[nodiscard]] bool visit(const Variable &variable_lhs, const Variable &variable_rhs) override;
+
+    /**
+     * @brief Attempt to unify a Constant and a Function.
+     * @param function_lhs The LHS Function to unify
+     * @param constant_rhs The RHS Constant to unify
+     * @return False, since a Constant and a Function cannot be unified.
+     */
+    [[nodiscard]] bool visit(const Function &function_lhs, const Constant &constant_rhs) override;
+
+    /**
+     * @brief Attempt to unify a Function and a Variable.
+     * @param function_lhs The LHS Function to unify
+     * @param variable_rhs The RHS Variable to unify
+     * @return False, since a Function and a Variable cannot be unified.
+     */
+    [[nodiscard]] bool visit(const Function &function_lhs, const Variable &variable_rhs) override;
 
     /**
      * @brief Attempt to unify two Function terms.
@@ -139,7 +170,7 @@ public:
      * @param function_rhs The RHS Function to unify
      * @return Can the LHS and RHS Function objects be unified?
      */
-    [[nodiscard]] bool visit(const Function &function_lhs, const Function &function_rhs);
+    [[nodiscard]] bool visit(const Function &function_lhs, const Function &function_rhs) override;
 
     /**
      * @brief Observe the working set of substitutions produced since the last @ref reset_substitutions call.

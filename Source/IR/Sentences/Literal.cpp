@@ -18,7 +18,7 @@
 
 #include "../../CompositeSerialisationHelpers.hpp"
 #include "../../Inference/FVI/FeatureComponentBuilder.hpp"
-#include "../../Visitors/RegularTargets/Unification/UnificationVisitor.hpp"
+#include "../../Visitors/RegularTargets/IObservingBinaryVisitor.hpp"
 
 namespace optifol
 {
@@ -92,14 +92,14 @@ const std::vector<const IProcessedTerm *> &Literal::observe_arguments() const no
     return arguments;
 }
 
-bool Literal::accept(UnificationVisitor &unification_visitor, const IProcessedSentence &sentence) const
+bool Literal::accept(IObservingBinaryVisitor &binary_visitor, const IProcessedSentence &sentence) const
 {
-    return sentence.accept(unification_visitor, *this);
+    return sentence.accept(binary_visitor, *this);
 }
 
-bool Literal::accept(UnificationVisitor &unification_visitor, const Literal &predicate) const
+bool Literal::accept(IObservingBinaryVisitor &binary_visitor, const Literal &predicate) const
 {
-    return unification_visitor.visit(*this, predicate);
+    return binary_visitor.visit(*this, predicate);
 }
 
 const Literal *Literal::accept(const UnificationApplicationVisitor &application_visitor) const
@@ -107,7 +107,7 @@ const Literal *Literal::accept(const UnificationApplicationVisitor &application_
     return application_visitor.visit(*this);
 }
 
-void Literal::accept(FeatureComponentBuilder &feature_builder) const
+void Literal::accept(const FeatureComponentBuilder &feature_builder) const
 {
     feature_builder.visit(this);
 }

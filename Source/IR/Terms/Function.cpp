@@ -41,19 +41,19 @@ const std::vector<const IProcessedTerm *> &Function::observe_arguments() const n
     return arguments;
 }
 
-bool Function::accept(UnificationVisitor &unification_visitor, const IProcessedTerm &term) const
+bool Function::accept(IObservingBinaryVisitor &binary_visitor, const IProcessedTerm &term) const
 {
-    return term.accept(unification_visitor, *this);
+    return term.accept(binary_visitor, *this);
 }
 
-bool Function::accept(UnificationVisitor &unification_visitor, const Function &function) const
+bool Function::accept(IObservingBinaryVisitor &binary_visitor, const Function &function) const
 {
-    return unification_visitor.visit(*this, function);
+    return binary_visitor.visit(*this, function);
 }
 
-bool Function::accept(UnificationVisitor &unification_visitor, const Variable &variable) const
+bool Function::accept(IObservingBinaryVisitor &binary_visitor, const Variable &variable) const
 {
-    return unification_visitor.visit(variable, *this);
+    return binary_visitor.visit(variable, *this);
 }
 
 bool Function::is_self_nested(const IProcessedTerm &search_term) const noexcept

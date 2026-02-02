@@ -36,19 +36,19 @@ std::string_view Constant::get_disambiguated_name() const
     return name;
 }
 
-bool Constant::accept(UnificationVisitor &unification_visitor, const IProcessedTerm &term) const
+bool Constant::accept(IObservingBinaryVisitor &binary_visitor, const IProcessedTerm &term) const
 {
-    return term.accept(unification_visitor, *this);
+    return term.accept(binary_visitor, *this);
 }
 
-bool Constant::accept(UnificationVisitor &unification_visitor, const Constant &constant) const
+bool Constant::accept(IObservingBinaryVisitor &binary_visitor, const Constant &constant) const
 {
-    return UnificationVisitor::visit(constant, *this);
+    return binary_visitor.visit(*this, constant);
 }
 
-bool Constant::accept(UnificationVisitor &unification_visitor, const Variable &variable) const
+bool Constant::accept(IObservingBinaryVisitor &binary_visitor, const Variable &variable) const
 {
-    return unification_visitor.visit(variable, *this);
+    return binary_visitor.visit(variable, *this);
 }
 
 bool Constant::is_self_nested(const IProcessedTerm &search_term) const noexcept

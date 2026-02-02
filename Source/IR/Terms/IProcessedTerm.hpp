@@ -19,6 +19,7 @@
 namespace optifol
 {
 
+class IObservingBinaryVisitor;
 class UnificationApplicationVisitor;
 class RepositoryBuildingVisitor;
 class FeatureComponentBuilder;
@@ -38,25 +39,25 @@ class Variable;
 class IProcessedTerm : public ITerm
 {
 public:
-    [[nodiscard]] virtual bool accept(UnificationVisitor &unification_visitor, const IProcessedTerm &term) const = 0;
+    [[nodiscard]] virtual bool accept(IObservingBinaryVisitor &binary_visitor, const IProcessedTerm &term) const = 0;
 
-    [[nodiscard]] virtual bool accept(UnificationVisitor &unification_visitor, const Constant &constant) const
+    [[nodiscard]] virtual bool accept(IObservingBinaryVisitor &binary_visitor, const Constant &constant) const
     {
-        std::ignore = unification_visitor;
+        std::ignore = binary_visitor;
         std::ignore = constant;
         return false;
     }
 
-    [[nodiscard]] virtual bool accept(UnificationVisitor &unification_visitor, const Function &function) const
+    [[nodiscard]] virtual bool accept(IObservingBinaryVisitor &binary_visitor, const Function &function) const
     {
-        std::ignore = unification_visitor;
+        std::ignore = binary_visitor;
         std::ignore = function;
         return false;
     }
 
-    [[nodiscard]] virtual bool accept(UnificationVisitor &unification_visitor, const Variable &variable) const
+    [[nodiscard]] virtual bool accept(IObservingBinaryVisitor &binary_visitor, const Variable &variable) const
     {
-        std::ignore = unification_visitor;
+        std::ignore = binary_visitor;
         std::ignore = variable;
         return false;
     }

@@ -54,24 +54,24 @@ bool Variable::operator==(const Variable &other) const
     return disambiguated_name == other.disambiguated_name;
 }
 
-bool Variable::accept(UnificationVisitor &unification_visitor, const IProcessedTerm &term) const
+bool Variable::accept(IObservingBinaryVisitor &binary_visitor, const IProcessedTerm &term) const
 {
-    return term.accept(unification_visitor, *this);
+    return term.accept(binary_visitor, *this);
 }
 
-bool Variable::accept(UnificationVisitor &unification_visitor, const Constant &constant) const
+bool Variable::accept(IObservingBinaryVisitor &binary_visitor, const Constant &constant) const
 {
-    return unification_visitor.visit(*this, constant);
+    return binary_visitor.visit(*this, constant);
 }
 
-bool Variable::accept(UnificationVisitor &unification_visitor, const Function &function) const
+bool Variable::accept(IObservingBinaryVisitor &binary_visitor, const Function &function) const
 {
-    return unification_visitor.visit(*this, function);
+    return binary_visitor.visit(*this, function);
 }
 
-bool Variable::accept(UnificationVisitor &unification_visitor, const Variable &variable) const
+bool Variable::accept(IObservingBinaryVisitor &binary_visitor, const Variable &variable) const
 {
-    return unification_visitor.visit(*this, variable);
+    return binary_visitor.visit(*this, variable);
 }
 
 bool Variable::is_self_nested(const IProcessedTerm &search_term) const noexcept

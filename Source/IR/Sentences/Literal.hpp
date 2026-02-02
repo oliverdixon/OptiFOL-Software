@@ -79,14 +79,14 @@ public:
      */
     [[nodiscard]] const std::vector<const IProcessedTerm *> &observe_arguments() const noexcept;
 
-    [[nodiscard]] bool accept(UnificationVisitor &unification_visitor, const IProcessedSentence &sentence) const
+    [[nodiscard]] bool accept(IObservingBinaryVisitor &binary_visitor, const IProcessedSentence &sentence) const
         override;
 
-    [[nodiscard]] bool accept(UnificationVisitor &unification_visitor, const Literal &predicate) const override;
+    [[nodiscard]] bool accept(IObservingBinaryVisitor &binary_visitor, const Literal &predicate) const override;
 
     [[nodiscard]] const Literal *accept(const UnificationApplicationVisitor &application_visitor) const;
 
-    void accept(FeatureComponentBuilder &feature_builder) const;
+    void accept(const FeatureComponentBuilder &feature_builder) const;
 
     [[nodiscard]] bool unsigned_equality(const IProcessedSentence &other) const noexcept;
 
