@@ -45,9 +45,11 @@ const NodeDrawingAdapter *AnalysisQueryCanvas::add_node(const ProofTreeNode *nod
 
 void AnalysisQueryCanvas::on_draw(const Cairo::RefPtr<Cairo::Context> &ctx, int width, int height)
 {
-    static constexpr float v_indent = 50;
-    static constexpr float h_spacing = 100;
-    static constexpr float v_spacing = 80;
+    std::ignore = width;
+    std::ignore = height;
+
+    if (nodes.empty())
+        return;
 
     Cairo::FontExtents font_extents;
 
@@ -57,74 +59,40 @@ void AnalysisQueryCanvas::on_draw(const Cairo::RefPtr<Cairo::Context> &ctx, int 
 
     float last_x_pos = 0;
 
+    // Draw edges and prepare the node coordinates and Cairo text extents.
     for (auto& [depth, layer_contents] : nodes)
-        for (auto&& [idx, node] : layer_contents | std::views::enumerate) {
-            ctx->get_text_extents(node.node_label, node.label_extents);
+        for (auto&& node : layer_contents)
+            last_x_pos = draw_edge(*ctx, node, last_x_pos, font_extents);
 
-            node.start.y = v_indent + v_spacing * depth;
-            node.centre.y = node.start.y + node.label_extents.height / 2 + rectangle_padding;
+    int maximised_width = 0;
+    int maximised_height = 0;
 
-            if (depth > 0) {
-                assert(node.lhs != nullptr);
-                assert(node.rhs != nullptr);
-                node.centre.x = node.lhs->centre.x + (node.rhs->centre.x - node.lhs->centre.x) / 2 + rectangle_padding;
-            } else {
-                node.centre.x = last_x_pos + h_spacing + node.label_extents.width / 2 + rectangle_padding;
-                last_x_pos = node.centre.x + node.label_extents.width / 2;
-            }
+    // Draw the first layer of nodes (from which the north-eastern-most point can be deduced).
+    for (const auto& node : nodes.begin()->second) {
+        const auto end_point = draw_proof_node(*ctx, node);
+        maximised_width = std::max(maximised_width, static_cast<int>(end_point.x));
+    }
 
-            node.start.x = node.centre.x - node.label_extents.width / 2;
-
-            if (depth > 0) {
-                const float advance_y = node.edge_label_lines.size() * font_extents.height + 2 * rectangle_padding;
-                node.start.y += advance_y;
-                node.centre.y += advance_y;
-
-                const LineSegment lhs_edge(node.centre, node.lhs->centre);
-                const LineSegment rhs_edge(node.centre, node.rhs->centre);
-
-                edge_colour.apply(*ctx);
-                lhs_edge.draw(*ctx);
-                rhs_edge.draw(*ctx);
-
-                if (!node.edge_label_lines.empty()) {
-                    const auto lhs_avg = (node.centre.y + node.lhs->centre.y) / 2;
-                    const auto rhs_avg = (node.centre.y + node.rhs->centre.y) / 2;
-
-                    const auto [lhs_midpoint, rhs_midpoint] =
-                        draw_unifier(*ctx, node.edge_label_lines, Point(node.centre.x, (lhs_avg + rhs_avg) / 2));
-
-                    const LineSegment lhs_intercepting_segment{
-                        lhs_edge.trace(node.lhs->centre.y + (node.lhs->centre.y - node.lhs->start.y)),
-                        lhs_edge.trace(node.start.y)
-                    };
-
-                    const LineSegment rhs_intercepting_segment{
-                        rhs_edge.trace(node.rhs->centre.y + (node.rhs->centre.y - node.rhs->start.y)),
-                        rhs_edge.trace(node.start.y)
-                    };
-
-                    unifier_edge_colour.apply(*ctx);
-                    LineSegment(lhs_intercepting_segment.get_midpoint(), lhs_midpoint).draw(*ctx);
-                    LineSegment(rhs_intercepting_segment.get_midpoint(), rhs_midpoint).draw(*ctx);
-                }
-            }
-        }
-
-    // Draw the nodes.
-    for (const auto& layer : nodes)
+    // Draw the middle section of nodes.
+    for (const auto& layer : nodes | std::views::drop(1) | std::views::take(nodes.size() - 2))
         for (const auto& node : layer.second)
             draw_proof_node(*ctx, node);
+
+    // Draw the final layer of nodes (from which the south-eastern-most point can be deduced).
+    const auto& last_layer_it = --nodes.end();
+    if (last_layer_it != nodes.begin())
+        for (const auto& node : last_layer_it->second) {
+            const auto end_point = draw_proof_node(*ctx, node);
+            maximised_height = std::max(maximised_height, static_cast<int>(end_point.y));
+        }
+
+    content_width = maximised_width + h_spacing;
+    content_height = maximised_height + v_spacing;
+    set_size_request(content_width, content_height);
 }
 
-void AnalysisQueryCanvas::draw_proof_node(Cairo::Context &ctx, const NodeDrawingAdapter &node)
+Point AnalysisQueryCanvas::draw_proof_node(Cairo::Context &ctx, const NodeDrawingAdapter &node)
 {
-    Cairo::TextExtents node_text_extents;
-    ctx.get_text_extents(node.node_label, node_text_extents);
-
-    const float rect_w = node_text_extents.width + 2 * rectangle_padding;
-    const float rect_h = node_text_extents.height + 2 * rectangle_padding;
-
     // Draw the rectangle body, coloured according to its position in the proof trace.
     if (node.node->get_depth() == 0)
         axiom_node_colour.apply(ctx);
@@ -133,28 +101,119 @@ void AnalysisQueryCanvas::draw_proof_node(Cairo::Context &ctx, const NodeDrawing
     else
         deduction_node_colour.apply(ctx);
 
+    // The rectangle requires space to house the text, plus padding along all sides.
+    const float rect_w = node.label_extents.width + 2 * rectangle_padding;
+    const float rect_h = node.label_extents.height + 2 * rectangle_padding;
+
     ctx.rectangle(node.start.x, node.start.y, rect_w, rect_h);
     ctx.fill();
 
-    // Draw the rectangle border
+    // Draw the rectangle border.
     border_colour.apply(ctx);
     ctx.rectangle(node.start.x, node.start.y, rect_w, rect_h);
     ctx.stroke();
 
-    // Draw text
+    // Draw the text inside the rectangle.
     text_colour.apply(ctx);
-    ctx.move_to(node.start.x - node_text_extents.x_bearing + rectangle_padding,
-        node.start.y - node_text_extents.y_bearing + rectangle_padding);
+    ctx.move_to(
+        node.start.x - node.label_extents.x_bearing + rectangle_padding,
+        node.start.y - node.label_extents.y_bearing + rectangle_padding
+    );
+
     ctx.show_text(node.node_label);
+
+    // Report the south-eastern-most point drawn.
+    return { node.centre.x + rect_w / 2.0f, node.centre.y + rect_h / 2.0f };
 }
 
-std::pair<Point, Point> AnalysisQueryCanvas::draw_unifier(
-        Cairo::Context &ctx, const std::vector<std::string> &unifier_lines, const Point &centre)
+void AnalysisQueryCanvas::draw_unifier(Cairo::Context &ctx, const NodeDrawingAdapter &node, const LineSegment &lhs_edge,
+        const LineSegment &rhs_edge, const Cairo::FontExtents &font_extents)
 {
-    Cairo::FontExtents font_extents;
-    ctx.get_font_extents(font_extents);
-    float max_width = 0;
+    /*
+     * Draw the unifier text entries (each representing a substitution made in the resolution clause) centred above the
+     * resolvent, aligned horizontally with the average of the distances to either parent.
+     */
 
+    const auto lhs_avg = (node.centre.y + node.lhs->centre.y) / 2;
+    const auto rhs_avg = (node.centre.y + node.rhs->centre.y) / 2;
+
+    const auto [lhs_midpoint, rhs_midpoint] =
+        draw_unifier_entries(ctx, node.edge_label_lines, Point(node.centre.x, (lhs_avg + rhs_avg) / 2), font_extents);
+
+    /*
+     * Compute the endpoints of the visible edges, chopping off endpoints that are hidden behind nodes. This is required
+     * for computing the midpoint of the hypotenuse that connects the resolvent with each parent.
+     */
+
+    const LineSegment lhs_intercepting_segment{
+        lhs_edge.trace(node.lhs->centre.y + (node.lhs->centre.y - node.lhs->start.y)),
+        lhs_edge.trace(node.start.y)
+    };
+
+    const LineSegment rhs_intercepting_segment{
+        rhs_edge.trace(node.rhs->centre.y + (node.rhs->centre.y - node.rhs->start.y)),
+        rhs_edge.trace(node.start.y)
+    };
+
+    // Draw lines between the midpoints of the visible parent-child edges and the centre-aligned unifier line block.
+
+    unifier_edge_colour.apply(ctx);
+    LineSegment(lhs_intercepting_segment.get_midpoint(), lhs_midpoint).draw(ctx);
+    LineSegment(rhs_intercepting_segment.get_midpoint(), rhs_midpoint).draw(ctx);
+}
+
+float AnalysisQueryCanvas::draw_edge(Cairo::Context &ctx, CanvasSupport::NodeDrawingAdapter &node, float last_x_pos,
+        const Cairo::FontExtents &font_extents)
+{
+    // Compute the coordinates and the text extents of the node.
+    ctx.get_text_extents(node.node_label, node.label_extents);
+
+    const auto depth = node.node->get_depth();
+    node.start.y = v_spacing * (depth + 1);
+    node.centre.y = node.start.y + node.label_extents.height / 2 + rectangle_padding;
+
+    if (depth > 0) {
+        assert(node.lhs != nullptr);
+        assert(node.rhs != nullptr);
+        node.centre.x = node.lhs->centre.x + (node.rhs->centre.x - node.lhs->centre.x) / 2 + rectangle_padding;
+    } else {
+        node.centre.x = last_x_pos + h_spacing + node.label_extents.width / 2 + rectangle_padding;
+        last_x_pos = node.centre.x + node.label_extents.width / 2;
+    }
+
+    node.start.x = node.centre.x - node.label_extents.width / 2;
+
+    if (depth > 0) {
+        /*
+         * If we're not drawing an axiom (i.e. a resolvent) there will be two edges to each parent (LHS and RHS). There
+         * may also be an applicable multi-line unifier text block to render at the midpoint, which will require the
+         * resolvent to be moved down proportional to the number of unification entries.
+         */
+        const float advance_y = node.edge_label_lines.size() * font_extents.height + 2 * rectangle_padding;
+        node.start.y += advance_y;
+        node.centre.y += advance_y;
+
+        // Draw the edges from each parent to the resolvent.
+        const LineSegment lhs_edge(node.centre, node.lhs->centre);
+        const LineSegment rhs_edge(node.centre, node.rhs->centre);
+
+        edge_colour.apply(ctx);
+        lhs_edge.draw(ctx);
+        rhs_edge.draw(ctx);
+
+        if (!node.edge_label_lines.empty())
+            // If applicable, draw the unifier and connecting lines.
+            draw_unifier(ctx, node, lhs_edge, rhs_edge, font_extents);
+    }
+
+    return last_x_pos;
+}
+
+std::pair<Point, Point> AnalysisQueryCanvas::draw_unifier_entries(Cairo::Context &ctx,
+        const std::vector<std::string> &unifier_lines, const Point &centre, const Cairo::FontExtents &font_extents)
+{
+    // Determine the box width according to the maximum line length of the rendered unifier entries.
+    float max_width = 0;
     for (const auto& line : unifier_lines) {
         Cairo::TextExtents line_extents;
         ctx.get_text_extents(line, line_extents);
@@ -166,7 +225,7 @@ std::pair<Point, Point> AnalysisQueryCanvas::draw_unifier(
 
     const Point start(centre.x - box_width / 2.0, centre.y - box_height / 2.0 );
 
-    // Write lines inside the box
+    // Write lines inside the box, incrementing the cursor by the baseline skip extent.
     text_colour.apply(ctx);
     float cursor_y = start.y + rectangle_padding + font_extents.ascent;
     for (const auto& line : unifier_lines) {
@@ -175,6 +234,7 @@ std::pair<Point, Point> AnalysisQueryCanvas::draw_unifier(
         cursor_y += font_extents.height;
     }
 
+    // Report the midpoints of the vertical bounding lines.
     return { Point( start.x, centre.y ), Point( start.x + box_width, centre.y ) };
 }
 

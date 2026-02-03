@@ -31,23 +31,32 @@ public:
         int &natural_baseline) const override;
 
 private:
-
-
     const CanvasSupport::NodeDrawingAdapter * add_node(const ProofTreeNode *node);
 
     void on_draw(const Cairo::RefPtr<Cairo::Context>& ctx, int width, int height);
 
-    static void draw_proof_node(Cairo::Context &ctx, const CanvasSupport::NodeDrawingAdapter &node);
+    static CanvasSupport::Point draw_proof_node(Cairo::Context &ctx, const CanvasSupport::NodeDrawingAdapter &node);
 
-    static std::pair<CanvasSupport::Point, CanvasSupport::Point> draw_unifier(
-            Cairo::Context &ctx, const std::vector<std::string> &unifier_lines, const CanvasSupport::Point &centre);
+    static void draw_unifier(Cairo::Context &ctx, const CanvasSupport::NodeDrawingAdapter &node,
+            const CanvasSupport::LineSegment &lhs_edge, const CanvasSupport::LineSegment &rhs_edge,
+            const Cairo::FontExtents &font_extents);
+
+    static float draw_edge(Cairo::Context &ctx, CanvasSupport::NodeDrawingAdapter &node, float last_x_pos,
+            const Cairo::FontExtents &font_extents);
+
+    static std::pair<CanvasSupport::Point, CanvasSupport::Point> draw_unifier_entries(Cairo::Context &ctx,
+            const std::vector<std::string> &unifier_lines, const CanvasSupport::Point &centre,
+            const Cairo::FontExtents &font_extents);
 
     static constexpr float rectangle_padding = 6;
 
     std::map<unsigned int, std::deque<CanvasSupport::NodeDrawingAdapter>> nodes;
 
-    int content_width = 500; // TODO measure content properly
-    int content_height = 500;
+    static constexpr float h_spacing = 100;
+    static constexpr float v_spacing = 80;
+
+    int content_width = 0;
+    int content_height = 0;
 };
 
 } // namespace optifol
