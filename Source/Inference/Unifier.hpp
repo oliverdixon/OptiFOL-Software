@@ -56,6 +56,8 @@ struct Unifier : ISerialisable
      */
     std::ostream &serialise(std::ostream &ostream) const override;
 
+    [[nodiscard]] std::vector<std::string> split_serialise() const;
+
     /**
      * @brief The Unifier contents, wherein each entry represents a mapping between a Variable and an IProcessedTerm.
      * @note The key and value are observing pointers to a SymbolRepository, and as such, require all the usual lifetime

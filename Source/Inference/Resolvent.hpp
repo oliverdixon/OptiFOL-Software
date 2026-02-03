@@ -43,7 +43,9 @@ public:
 
     [[nodiscard]] bool is_unit() const noexcept override;
 
-    [[nodiscard]] const Clause * observe_substance() const noexcept override;
+    [[nodiscard]] const Clause * observe_node() const noexcept override;
+
+    [[nodiscard]] std::optional<const Unifier *> observe_edge() const noexcept override;
 
 private:
     friend void ResolventQueue::push(Resolvent, std::unique_ptr<Clause> &&);

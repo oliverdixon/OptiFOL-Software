@@ -157,9 +157,14 @@ bool Clause::is_unit() const noexcept
     return order() == 1;
 }
 
-const Clause *Clause::observe_substance() const noexcept
+const Clause *Clause::observe_node() const noexcept
 {
     return this;
+}
+
+std::optional<const Unifier *> Clause::observe_edge() const noexcept
+{
+    return std::nullopt;
 }
 
 void Clause::force_bottom() noexcept

@@ -37,7 +37,9 @@ public:
         return rhs_parent;
     }
 
-    [[nodiscard]] virtual const Clause * observe_substance() const noexcept = 0;
+    [[nodiscard]] virtual const Clause * observe_node() const noexcept = 0;
+
+    [[nodiscard]] virtual std::optional<const Unifier *> observe_edge() const noexcept = 0;
 
     [[nodiscard]] unsigned int get_depth() const noexcept
     {

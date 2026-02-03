@@ -142,7 +142,9 @@ public:
      */
     [[nodiscard]] bool is_unit() const noexcept override;
 
-    [[nodiscard]] const Clause * observe_substance() const noexcept override;
+    [[nodiscard]] const Clause * observe_node() const noexcept override;
+
+    [[nodiscard]] std::optional<const Unifier *> observe_edge() const noexcept override;
 
     /**
      * @brief Reset the Clause to its bottom state of order zero, where it is trivially unsatisfiable.

@@ -100,12 +100,12 @@ QueryResult KnowledgeBase::run_resolution(std::unique_ptr<SentenceRoot> &&negate
          * seen before, we can just ignore it, as binary resolution can repeat resolutions for different clauses.
          */
         auto [seen_resolution_it, was_unseen] = seen_resolvents.insert(
-            next_resolvent.observe_substance());
+            next_resolvent.observe_node());
         std::ignore = seen_resolution_it;
 
         if (was_unseen) {
             resolution_logger->info(std::format("Step {} is using resolution {}.", result.elapsed_step_count,
-                *next_resolvent.observe_substance()));
+                *next_resolvent.observe_node()));
 
             /*
              * Insert the next-unseen resolvent into the KB by transferring ownership of the corresponding resolution
@@ -286,8 +286,8 @@ std::vector<std::pair<Resolvent, std::unique_ptr<Clause>>> KnowledgeBase::find_r
 {
     std::vector<std::pair<Resolvent, std::unique_ptr<Clause>>> resolvents;
 
-    const auto * const lhs_clause = lhs_node->observe_substance();
-    const auto * const rhs_clause = rhs_node->observe_substance();
+    const auto * const lhs_clause = lhs_node->observe_node();
+    const auto * const rhs_clause = rhs_node->observe_node();
 
     for (const auto lhs_literal : *lhs_clause)
         for (const auto rhs_literal : *rhs_clause) {
@@ -353,7 +353,7 @@ std::vector<std::pair<Resolvent, std::unique_ptr<Clause>>> KnowledgeBase::find_r
                     resolution.get()), std::move(resolution));
 
                 resolution_logger->debug(std::format("Resolved {} and {} to {}.", *lhs_clause, *rhs_clause,
-                    *resolvents.back().first.observe_substance()));
+                    *resolvents.back().first.observe_node()));
 
                 // The applicator might have introduced new symbols, so we inherit them into the SymbolRepository here.
                 applicator.keep_new_symbols();

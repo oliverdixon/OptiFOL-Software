@@ -48,9 +48,14 @@ bool Resolvent::is_unit() const noexcept
     return resolution->is_unit();
 }
 
-const Clause *Resolvent::observe_substance() const noexcept
+const Clause *Resolvent::observe_node() const noexcept
 {
     return resolution;
+}
+
+std::optional<const Unifier *> Resolvent::observe_edge() const noexcept
+{
+    return &unifier;
 }
 
 bool Resolvent::operator<(const Resolvent &other) const noexcept

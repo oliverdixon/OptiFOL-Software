@@ -45,4 +45,19 @@ std::ostream &Unifier::serialise(std::ostream &ostream) const
     return ostream << " }";
 }
 
+std::vector<std::string> Unifier::split_serialise() const
+{
+    std::vector<std::string> substitution_strings;
+    substitution_strings.reserve(unifier.size());
+
+    for (const auto& mapping : unifier) {
+        const auto [var, sub] = mapping;
+        std::ostringstream ostream;
+        ostream << *var << " / " << *sub;
+        substitution_strings.push_back(std::move(ostream.str()));
+    }
+
+    return substitution_strings;
+}
+
 } // namespace optifol

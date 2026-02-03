@@ -309,6 +309,7 @@ add_library(OptifolCommon OBJECT
         Source/IR/Terms/SkolemFunction.hpp
         Source/Inference/FVI/OccurrenceCountFeature.cpp
         Source/Inference/FVI/OccurrenceCountFeature.hpp
+        Source/GUI/AnalysisArea/CanvasSupport.hpp
 )
 
 target_include_directories(OptifolCommon PRIVATE
@@ -333,8 +334,7 @@ find_package(RapidJSON REQUIRED)
 set(RESOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Resources)
 set(RESOURCE_XML_IN ${RESOURCE_DIR}/optifol.gresource.xml.in)
 set(RESOURCE_XML ${GENERATED_SRC_DIR}/optifol.gresource.xml)
-set(RESOURCE_OUT ${GENERATED_SRC_DIR}/resources.c
-        Source/Visitors/RegularTargets/IObservingBinaryVisitor.hpp)
+set(RESOURCE_OUT ${GENERATED_SRC_DIR}/resources.c)
 set(RESOURCE_DEP ${GENERATED_SRC_DIR}/optifol.gresource.d)
 
 set(AWK_SUBSTITUTION_SCRIPT ${RESOURCE_DIR}/substitute.awk)
