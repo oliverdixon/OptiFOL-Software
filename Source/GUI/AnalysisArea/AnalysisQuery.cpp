@@ -77,7 +77,7 @@ void AnalysisQuery::execute_query()
     try {
         latest_result = std::make_unique<QueryResult>(kb_weak.ask(parser.retrieve_sentence()));
         if (latest_result->terminating_resolvent != nullptr)
-            drawing_area.add_resolvent(latest_result->terminating_resolvent);
+            drawing_area.replace_proof(latest_result->terminating_resolvent);
     } catch (const SemanticException& semantic_exception) {
         // TODO log
         assert(0);
