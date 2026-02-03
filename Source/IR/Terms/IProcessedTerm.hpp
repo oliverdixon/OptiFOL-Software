@@ -33,34 +33,18 @@ class Variable;
  * @brief An IProcessedTerm is an ITerm that has undergone the lexing, parsing, and normalisation pipeline and is now
  *  held, in its disambiguated form, in a centralised SymbolRepository.
  * @details Such terms are always immutable and have lifetime guarantees in accordance with their responsible
- *  SymbolRepository. They are also capable of accepting visits from visitors with immutable (a.k.a. "regular") targets,
- *  such as the UnificationVisitor.
+ *  SymbolRepository.
  */
 class IProcessedTerm : public ITerm
 {
 public:
     [[nodiscard]] virtual bool accept(IObservingBinaryVisitor &binary_visitor, const IProcessedTerm &term) const = 0;
 
-    [[nodiscard]] virtual bool accept(IObservingBinaryVisitor &binary_visitor, const Constant &constant) const
-    {
-        std::ignore = binary_visitor;
-        std::ignore = constant;
-        return false;
-    }
+    [[nodiscard]] virtual bool accept(IObservingBinaryVisitor &binary_visitor, const Constant &constant) const = 0;
 
-    [[nodiscard]] virtual bool accept(IObservingBinaryVisitor &binary_visitor, const Function &function) const
-    {
-        std::ignore = binary_visitor;
-        std::ignore = function;
-        return false;
-    }
+    [[nodiscard]] virtual bool accept(IObservingBinaryVisitor &binary_visitor, const Function &function) const = 0;
 
-    [[nodiscard]] virtual bool accept(IObservingBinaryVisitor &binary_visitor, const Variable &variable) const
-    {
-        std::ignore = binary_visitor;
-        std::ignore = variable;
-        return false;
-    }
+    [[nodiscard]] virtual bool accept(IObservingBinaryVisitor &binary_visitor, const Variable &variable) const = 0;
 
     /**
      * @brief Determines whether the given Variable appears in the expansion of the term.

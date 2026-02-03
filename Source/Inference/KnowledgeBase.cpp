@@ -17,6 +17,7 @@
 #include <queue>
 #include <ranges>
 
+#include "../IR/SymbolRepository.hpp"
 #include "../IR/MutableVariants/Sentences/MutableSentenceRoot.hpp"
 #include "../IR/Sentences/Literal.hpp"
 #include "../Logging.hpp"

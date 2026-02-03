@@ -154,8 +154,8 @@ add_library(OptifolCommon OBJECT
         Source/Visitors/MutableTargets/Terms/ScopedTermResolutionVisitor.hpp
         Source/Exceptions/ParseError.hpp
         Source/IHashable.hpp
-        Source/Visitors/RegularTargets/Unification/UnificationVisitor.cpp
-        Source/Visitors/RegularTargets/Unification/UnificationVisitor.hpp
+        Source/Visitors/RegularTargets/Unification/BidirectionalUnificationVisitor.cpp
+        Source/Visitors/RegularTargets/Unification/BidirectionalUnificationVisitor.hpp
         Source/IR/MutableVariants/OwningBuildable.hpp
         Source/IR/SymbolRepository.cpp
         Source/IR/SymbolRepository.hpp
@@ -310,6 +310,9 @@ add_library(OptifolCommon OBJECT
         Source/Inference/FVI/OccurrenceCountFeature.cpp
         Source/Inference/FVI/OccurrenceCountFeature.hpp
         Source/GUI/AnalysisArea/CanvasSupport.hpp
+        Source/Visitors/RegularTargets/Unification/UnificationVisitor.cpp
+        Source/Visitors/RegularTargets/Unification/UnificationVisitor.hpp
+        Source/Visitors/RegularTargets/IObservingBinaryVisitor.hpp
 )
 
 target_include_directories(OptifolCommon PRIVATE

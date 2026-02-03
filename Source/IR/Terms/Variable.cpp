@@ -14,8 +14,7 @@
 #include "Variable.hpp"
 
 #include "../../Inference/FVI/FeatureComponentBuilder.hpp"
-#include "../../Visitors/RegularTargets/Unification/UnificationApplicationVisitor.hpp"
-#include "../../Visitors/RegularTargets/Unification/UnificationVisitor.hpp"
+#include "../../Visitors/RegularTargets/Unification/BidirectionalUnificationVisitor.hpp"
 
 namespace optifol
 {

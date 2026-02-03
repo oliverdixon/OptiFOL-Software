@@ -18,8 +18,7 @@
 
 #include "../../CompositeSerialisationHelpers.hpp"
 #include "../../Inference/FVI/FeatureComponentBuilder.hpp"
-#include "../../Visitors/RegularTargets/Unification/UnificationApplicationVisitor.hpp"
-#include "../../Visitors/RegularTargets/Unification/UnificationVisitor.hpp"
+#include "../../Visitors/RegularTargets/Unification/BidirectionalUnificationVisitor.hpp"
 
 namespace optifol
 {
@@ -46,6 +45,11 @@ bool Function::accept(IObservingBinaryVisitor &binary_visitor, const IProcessedT
     return term.accept(binary_visitor, *this);
 }
 
+bool Function::accept(IObservingBinaryVisitor &binary_visitor, const Constant &constant) const
+{
+    return binary_visitor.visit(*this, constant);
+}
+
 bool Function::accept(IObservingBinaryVisitor &binary_visitor, const Function &function) const
 {
     return binary_visitor.visit(*this, function);
@@ -53,7 +57,7 @@ bool Function::accept(IObservingBinaryVisitor &binary_visitor, const Function &f
 
 bool Function::accept(IObservingBinaryVisitor &binary_visitor, const Variable &variable) const
 {
-    return binary_visitor.visit(variable, *this);
+    return binary_visitor.visit(*this, variable);
 }
 
 bool Function::is_self_nested(const IProcessedTerm &search_term) const noexcept

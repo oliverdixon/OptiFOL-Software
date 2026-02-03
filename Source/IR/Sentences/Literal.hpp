@@ -24,7 +24,7 @@ namespace optifol
 {
 
 class IProcessedTerm;
-class UnificationVisitor;
+class BidirectionalUnificationVisitor;
 class UnificationApplicationVisitor;
 class FeatureComponentBuilder;
 

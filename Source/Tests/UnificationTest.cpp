@@ -17,7 +17,7 @@
 #include "../IR/SymbolRepository.hpp"
 #include "../IR/Terms/Function.hpp"
 #include "../IR/Terms/Variable.hpp"
-#include "../Visitors/RegularTargets/Unification/UnificationVisitor.hpp"
+#include "../Visitors/RegularTargets/Unification/BidirectionalUnificationVisitor.hpp"
 
 namespace optifol
 {
@@ -26,12 +26,12 @@ class UnificationTest :
         public testing::Test
 {
 protected:
-    std::unique_ptr<UnificationVisitor> unification_visitor;
+    std::unique_ptr<BidirectionalUnificationVisitor> unification_visitor;
 
     void SetUp() override
     {
         symbol_repository = std::make_shared<SymbolRepository>();
-        unification_visitor = std::make_unique<UnificationVisitor>(symbol_repository);
+        unification_visitor = std::make_unique<BidirectionalUnificationVisitor>(symbol_repository);
     }
 
     template<typename TermType, class... CtorArgs>
@@ -45,8 +45,8 @@ private:
 };
 
 /**
- * @brief Tests basic functionality of the UnificationVisitor for a single pair of unifiable literals with one
- *  applicable Function / Variable substitution.
+ * @brief Tests basic functionality of the BidirectionalUnificationVisitor for a single pair of unifiable literals with
+ *  one applicable Function / Variable substitution.
  * @details
  *  <ul>
  *      <li>LHS Input: @f$ P \left( C\left(\right), x \right) @f$</li>
@@ -71,8 +71,8 @@ TEST_F(UnificationTest, Positive_SingleBinding_FuncVar)
 }
 
 /**
- * @brief Tests basic functionality of the UnificationVisitor for a single pair of unifiable literals with two
- *  applicable Function / Variable substitutions.
+ * @brief Tests basic functionality of the BidirectionalUnificationVisitor for a single pair of unifiable literals with
+ *  two applicable Function / Variable substitutions.
  * @details
  *  <ul>
  *      <li>LHS Input: @f$ P \left( C\left(\right), x \right) @f$</li>
@@ -98,8 +98,8 @@ TEST_F(UnificationTest, Positive_MultipleBindings_FuncVar)
 }
 
 /**
- * @brief Tests basic functionality of the UnificationVisitor for a single pair of unifiable literals with two
- *  applicable Variable / Variable substitutions.
+ * @brief Tests basic functionality of the BidirectionalUnificationVisitor for a single pair of unifiable literals with
+ *  two applicable Variable / Variable substitutions.
  * @details
  *  <ul>
  *      <li>LHS Input: @f$ P \left( a, b \right) @f$</li>
@@ -125,7 +125,7 @@ TEST_F(UnificationTest, Positive_MultipleBindings_VarVar)
 }
 
 /**
- * @brief Tests basic functionality of the UnificationVisitor for a single pair of non-unifiable literals.
+ * @brief Tests basic functionality of the BidirectionalUnificationVisitor for a single pair of non-unifiable literals.
  * @details
  *  <ul>
  *      <li>LHS Input: @f$ P \left( C\left(\right), x \right) @f$</li>
@@ -146,8 +146,8 @@ TEST_F(UnificationTest, Negative_MultipleBindings_VarVar)
 }
 
 /**
- * @brief Tests occurs-checking functionality of the UnificationVisitor for a single pair of literals, non-unifiable due
- *  to the trivial case of the occurs-check (does not require substitution to discover).
+ * @brief Tests occurs-checking functionality of the BidirectionalUnificationVisitor for a single pair of literals,
+ *  non-unifiable due to the trivial case of the occurs-check (does not require substitution to discover).
  * @details
  *  <ul>
  *      <li>LHS Input: @f$ P \left( C\left(\right), x \right) @f$</li>
@@ -168,8 +168,8 @@ TEST_F(UnificationTest, Negative_OccursCheck_Trivial)
 }
 
 /**
- * @brief Tests occurs-checking functionality of the UnificationVisitor for a single pair of literals, non-unifiable due
- *  to the non-trivial case of the occurs-check (requires substitution to discover).
+ * @brief Tests occurs-checking functionality of the BidirectionalUnificationVisitor for a single pair of literals,
+ *  non-unifiable due to the non-trivial case of the occurs-check (requires substitution to discover).
  * @details
  *  <ul>
  *      <li>LHS Input: @f$ P \left( x, F\left(x\right) \right) @f$</li>

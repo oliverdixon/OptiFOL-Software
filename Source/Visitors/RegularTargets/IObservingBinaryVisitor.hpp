@@ -50,10 +50,10 @@ public:
     // Function on LHS
     
     [[nodiscard]] virtual bool visit(const Function &function_lhs, const Constant &constant_rhs) = 0;
-
-    [[nodiscard]] virtual bool visit(const Function &function_lhs, const Variable &variable_rhs) = 0;
     
     [[nodiscard]] virtual bool visit(const Function &function_lhs, const Function &function_rhs) = 0;
+
+    [[nodiscard]] virtual bool visit(const Function &function_lhs, const Variable &variable_rhs) = 0;
 };
 
 } // namespace optifol

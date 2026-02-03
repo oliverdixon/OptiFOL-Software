@@ -15,8 +15,7 @@
 
 #include "../../Inference/FVI/FeatureComponentBuilder.hpp"
 #include "../../Visitors/MutableTargets/RepositoryBuildingVisitor.hpp"
-#include "../../Visitors/RegularTargets/Unification/UnificationApplicationVisitor.hpp"
-#include "../../Visitors/RegularTargets/Unification/UnificationVisitor.hpp"
+#include "../../Visitors/RegularTargets/Unification/BidirectionalUnificationVisitor.hpp"
 
 namespace optifol
 {
@@ -46,9 +45,14 @@ bool Constant::accept(IObservingBinaryVisitor &binary_visitor, const Constant &c
     return binary_visitor.visit(*this, constant);
 }
 
+bool Constant::accept(IObservingBinaryVisitor &binary_visitor, const Function &function) const
+{
+    return binary_visitor.visit(*this, function);
+}
+
 bool Constant::accept(IObservingBinaryVisitor &binary_visitor, const Variable &variable) const
 {
-    return binary_visitor.visit(variable, *this);
+    return binary_visitor.visit(*this, variable);
 }
 
 bool Constant::is_self_nested(const IProcessedTerm &search_term) const noexcept

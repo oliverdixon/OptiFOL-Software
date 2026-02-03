@@ -18,7 +18,7 @@
 #include <ranges>
 
 #include "../IR/Sentences/Clause.hpp"
-#include "../Visitors/RegularTargets/Unification/UnificationVisitor.hpp"
+#include "../Visitors/RegularTargets/Unification/BidirectionalUnificationVisitor.hpp"
 
 namespace optifol
 {
@@ -175,8 +175,8 @@ private:
 
     std::shared_ptr<SymbolRepository> symbol_repository;
 
-    UnificationVisitor unifier;
-    UnificationVisitor factoring_unifier;
+    BidirectionalUnificationVisitor unifier;
+    BidirectionalUnificationVisitor factoring_unifier;
 
     UnificationApplicationVisitor applicator;
     UnificationApplicationVisitor factoring_applicator;
