@@ -26,7 +26,7 @@ namespace optifol
 class IProcessedTerm;
 class BidirectionalUnificationVisitor;
 class UnificationApplicationVisitor;
-class FeatureComponentBuilder;
+class FeatureBuildingVisitor;
 
 /**
  * @class Literal
@@ -34,7 +34,9 @@ class FeatureComponentBuilder;
  *  all of which are referenced from the centralised SymbolRepository.
  * @see MutablePredicate for the unprocessed, argument-owning dual.
  */
-class Literal : public IProcessedSentence, public OwningBuildable<Literal>
+class Literal :
+        public IProcessedSentence,
+        public OwningBuildable<Literal>
 {
 public:
     /**
@@ -84,9 +86,9 @@ public:
 
     [[nodiscard]] bool accept(IObservingBinaryVisitor &binary_visitor, const Literal &predicate) const override;
 
-    [[nodiscard]] const Literal *accept(const UnificationApplicationVisitor &application_visitor) const;
+    void accept(FeatureBuildingVisitor& feature_component_builder) const;
 
-    void accept(const FeatureComponentBuilder &feature_builder) const;
+    [[nodiscard]] const Literal *accept(const UnificationApplicationVisitor &application_visitor) const;
 
     [[nodiscard]] bool unsigned_equality(const IProcessedSentence &other) const noexcept;
 

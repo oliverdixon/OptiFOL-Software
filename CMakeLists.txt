@@ -302,17 +302,14 @@ add_library(OptifolCommon OBJECT
         Source/Inference/ResolventQueue.hpp
         Source/Inference/ResolventQueue.cpp
         Source/Inference/ProofTreeNode.hpp
-        Source/Inference/FVI/FeatureComponent.hpp
-        Source/Inference/FVI/FeatureComponentBuilder.cpp
-        Source/Inference/FVI/FeatureComponentBuilder.hpp
         Source/IR/Terms/SkolemFunction.cpp
         Source/IR/Terms/SkolemFunction.hpp
-        Source/Inference/FVI/OccurrenceCountFeature.cpp
-        Source/Inference/FVI/OccurrenceCountFeature.hpp
         Source/GUI/AnalysisArea/CanvasSupport.hpp
         Source/Visitors/RegularTargets/Unification/UnificationVisitor.cpp
         Source/Visitors/RegularTargets/Unification/UnificationVisitor.hpp
         Source/Visitors/RegularTargets/IObservingBinaryVisitor.hpp
+        Source/Visitors/RegularTargets/FeatureBuildingVisitor.cpp
+        Source/Visitors/RegularTargets/FeatureBuildingVisitor.hpp
 )
 
 target_include_directories(OptifolCommon PRIVATE

@@ -13,7 +13,7 @@
 
 #include "Variable.hpp"
 
-#include "../../Inference/FVI/FeatureComponentBuilder.hpp"
+#include "../../Visitors/RegularTargets/FeatureBuildingVisitor.hpp"
 #include "../../Visitors/RegularTargets/Unification/BidirectionalUnificationVisitor.hpp"
 
 namespace optifol
@@ -93,14 +93,14 @@ bool Variable::is_self_nested(const IProcessedTerm &search_term) const noexcept
     return search_term == *this;
 }
 
+void Variable::accept(FeatureBuildingVisitor &feature_building_visitor) const noexcept
+{
+    feature_building_visitor.visit(this);
+}
+
 const IProcessedTerm *Variable::accept(const UnificationApplicationVisitor &unification_application_visitor) const
 {
     return unification_application_visitor.visit(*this);
-}
-
-void Variable::accept(const FeatureComponentBuilder &feature_builder) const
-{
-    feature_builder.visit(this);
 }
 
 bool Variable::operator==(const IProcessedTerm &other) const noexcept

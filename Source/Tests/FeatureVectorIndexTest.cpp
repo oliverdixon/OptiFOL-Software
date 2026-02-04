@@ -16,7 +16,7 @@
 #include "../IR/Sentences/Clause.hpp"
 #include "../IR/Sentences/Literal.hpp"
 #include "../IR/SymbolRepository.hpp"
-#include "../Inference/FVI/FeatureComponent.hpp"
+#include "../IR/Terms/Function.hpp"
 
 namespace optifol
 {
@@ -39,12 +39,12 @@ protected:
  */
 TEST_F(FeatureVectorIndexTest, Test1)
 {
-    const auto p_literal = symbol_repository->add_symbol(Literal::build("P"));
+    auto x_var = std::vector<const IProcessedTerm *>{symbol_repository->add_symbol(Variable::build("x"))};
+    auto f_fun = std::vector<const IProcessedTerm *>{symbol_repository->add_symbol(Function::build("F", std::move(x_var)))};
+    const auto p_literal = symbol_repository->add_symbol(Literal::build("P", std::move(f_fun)));
 
     Clause clause;
     clause.add_literal(p_literal);
-
-    FeatureComponent::build(clause);
 }
 
 }

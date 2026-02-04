@@ -17,7 +17,7 @@
 #include <ranges>
 
 #include "../../CompositeSerialisationHelpers.hpp"
-#include "../../Inference/FVI/FeatureComponentBuilder.hpp"
+#include "../../Visitors/RegularTargets/FeatureBuildingVisitor.hpp"
 #include "../../Visitors/RegularTargets/IObservingBinaryVisitor.hpp"
 
 namespace optifol
@@ -102,14 +102,14 @@ bool Literal::accept(IObservingBinaryVisitor &binary_visitor, const Literal &pre
     return binary_visitor.visit(*this, predicate);
 }
 
+void Literal::accept(FeatureBuildingVisitor &feature_component_builder) const
+{
+    feature_component_builder.visit(this);
+}
+
 const Literal *Literal::accept(const UnificationApplicationVisitor &application_visitor) const
 {
     return application_visitor.visit(*this);
-}
-
-void Literal::accept(const FeatureComponentBuilder &feature_builder) const
-{
-    feature_builder.visit(this);
 }
 
 bool Literal::unsigned_equality(const IProcessedSentence &other) const noexcept

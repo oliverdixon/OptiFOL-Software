@@ -9,13 +9,13 @@
 
 #include "SkolemFunction.hpp"
 
-#include "../../Inference/FVI/FeatureComponentBuilder.hpp"
+#include "../../Visitors/RegularTargets/FeatureBuildingVisitor.hpp"
 
 namespace optifol
 {
 
 SkolemFunction::SkolemFunction(std::string name, std::initializer_list<const IProcessedTerm *> arguments) :
-    Function(std::move(name), std::move(arguments))
+    Function(std::move(name), arguments)
 {
 }
 
@@ -24,9 +24,9 @@ SkolemFunction::SkolemFunction(std::string name, std::vector<const IProcessedTer
 {
 }
 
-void SkolemFunction::accept(const FeatureComponentBuilder &feature_builder) const
+void SkolemFunction::accept(FeatureBuildingVisitor &feature_building_visitor) const noexcept
 {
-    feature_builder.visit(this);
+    feature_building_visitor.visit(this);
 }
 
 } // namespace optifol

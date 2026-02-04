@@ -19,10 +19,11 @@
 namespace optifol
 {
 
+class FeatureBuildingVisitor;
+
 class IObservingBinaryVisitor;
 class UnificationApplicationVisitor;
 class RepositoryBuildingVisitor;
-class FeatureComponentBuilder;
 
 class Constant;
 class Function;
@@ -71,6 +72,8 @@ public:
      */
     [[nodiscard]] virtual bool accept(IObservingBinaryVisitor &binary_visitor, const Variable &variable) const = 0;
 
+    virtual void accept(FeatureBuildingVisitor& feature_building_visitor) const noexcept = 0;
+
     /**
      * @brief Accept a visitation from an IObservingBinaryVisitor, using the given Constant as the first operand.
      * @param binary_visitor The binary visitor from whom to accept a visit.
@@ -113,12 +116,6 @@ public:
      */
     [[nodiscard]] virtual const IProcessedTerm *accept(
         const UnificationApplicationVisitor &unification_application_visitor) const = 0;
-
-    /**
-     * @brief Accept a visit from the FeatureComponentBuilder to construct an FIV FeatureComponent from the term/
-     * @param feature_builder The non-mutating visitor to accept.
-     */
-    virtual void accept(const FeatureComponentBuilder &feature_builder) const = 0;
 
     /**
      * @brief Test equality between two IProcessedTerm instances.

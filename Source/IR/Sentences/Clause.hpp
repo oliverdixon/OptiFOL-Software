@@ -16,6 +16,7 @@
 
 #include <vector>
 
+#include "../Visitors/RegularTargets/FeatureBuildingVisitor.hpp"
 #include "../../Inference/ProofTreeNode.hpp"
 #include "Literal.hpp"
 
@@ -151,6 +152,8 @@ public:
      */
     void force_bottom() noexcept;
 
+    void accept(FeatureBuildingVisitor& feature_component_builder) const;
+
 private:
     /**
      * @brief Checks whether there exists a complementary pair of Literal objects in the Clause.
@@ -158,6 +161,13 @@ private:
      * @pre The Literal objects are sorted in the canonical manner; see @ref literals.
      */
     [[nodiscard]] bool is_tautology() const noexcept;
+
+    void recompute_feature_vector() noexcept;
+
+    void recompute_feature_vector(const Literal& literal) noexcept;
+
+    std::vector<unsigned int> features{0};
+    FeatureBuildingVisitor feature_building_visitor;
 };
 
 } // namespace optifol

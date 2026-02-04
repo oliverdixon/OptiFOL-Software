@@ -16,6 +16,7 @@
 
 #include <vector>
 
+#include "../MutableVariants/OwningBuildable.hpp"
 #include "IProcessedTerm.hpp"
 
 namespace optifol
@@ -28,7 +29,8 @@ namespace optifol
  * @see MutableFunction for the unprocessed, argument-owning dual.
  */
 class Function :
-        public IProcessedTerm
+        public IProcessedTerm,
+        public OwningBuildable<Function>
 {
 public:
     /**
@@ -66,10 +68,9 @@ public:
 
     [[nodiscard]] bool is_self_nested(const IProcessedTerm &search_term) const noexcept override;
 
+    void accept(FeatureBuildingVisitor& feature_building_visitor) const noexcept override;
     [[nodiscard]] const IProcessedTerm *accept(
             const UnificationApplicationVisitor &unification_application_visitor) const override;
-
-    void accept(const FeatureComponentBuilder &feature_builder) const override;
 
     [[nodiscard]] bool operator==(const IProcessedTerm &other) const noexcept override;
 

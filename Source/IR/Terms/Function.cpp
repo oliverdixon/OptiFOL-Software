@@ -17,7 +17,7 @@
 #include <ranges>
 
 #include "../../CompositeSerialisationHelpers.hpp"
-#include "../../Inference/FVI/FeatureComponentBuilder.hpp"
+#include "../../Visitors/RegularTargets/FeatureBuildingVisitor.hpp"
 #include "../../Visitors/RegularTargets/Unification/BidirectionalUnificationVisitor.hpp"
 
 namespace optifol
@@ -81,14 +81,14 @@ bool Function::is_self_nested(const IProcessedTerm &search_term) const noexcept
         { return argument->is_self_nested(search_term); });
 }
 
+void Function::accept(FeatureBuildingVisitor &feature_building_visitor) const noexcept
+{
+    feature_building_visitor.visit(this);
+}
+
 const IProcessedTerm *Function::accept(const UnificationApplicationVisitor &unification_application_visitor) const
 {
     return unification_application_visitor.visit(*this);
-}
-
-void Function::accept(const FeatureComponentBuilder &feature_builder) const
-{
-    feature_builder.visit(this);
 }
 
 bool Function::operator==(const IProcessedTerm &other) const noexcept

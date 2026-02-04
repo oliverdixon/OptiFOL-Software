@@ -23,7 +23,7 @@ public:
 
     explicit SkolemFunction(std::string name, std::vector<const IProcessedTerm *>&& arguments);
 
-    void accept(const FeatureComponentBuilder &feature_builder) const override;
+    void accept(FeatureBuildingVisitor& feature_building_visitor) const noexcept override;
 };
 
 } // namespace optifol

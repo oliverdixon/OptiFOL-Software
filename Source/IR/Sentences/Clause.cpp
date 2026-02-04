@@ -12,10 +12,13 @@
  */
 
 #include "Clause.hpp"
-#include "../Inference/Resolvent.hpp"
 
 #include <algorithm>
+#include <assert.h>
 #include <ranges>
+
+#include "../Inference/Resolvent.hpp"
+#include "../Visitors/RegularTargets/FeatureBuildingVisitor.hpp"
 
 namespace optifol
 {
@@ -35,6 +38,8 @@ Clause::Clause(const std::initializer_list<const Literal *> literals) :
         } else
             state = State::NotTrivial;
     }
+
+    recompute_feature_vector();
 }
 
 void Clause::add_literal(const Literal * const new_literal)
@@ -75,6 +80,7 @@ void Clause::add_literal(const Literal * const new_literal)
     // If this is a new unseen literal, insert at the correct position to maintain ordering i.a.w. Literal::operator<.
     literals.insert(nearest_lower, new_literal);
     state = State::NotTrivial;
+    recompute_feature_vector(*new_literal);
 }
 
 Clause::State Clause::get_triviality_state() const noexcept
@@ -173,6 +179,11 @@ void Clause::force_bottom() noexcept
     state = State::TriviallyFalse;
 }
 
+void Clause::accept(FeatureBuildingVisitor &feature_component_builder) const
+{
+    feature_component_builder.visit(this);
+}
+
 bool Clause::is_tautology() const noexcept
 {
     return std::ranges::adjacent_find(literals,
@@ -180,6 +191,22 @@ bool Clause::is_tautology() const noexcept
         {
             return lhs->unsigned_equality(*rhs) && lhs->is_negative_polarity() == !rhs->is_negative_polarity();
         }) != literals.end();
+}
+
+void Clause::recompute_feature_vector() noexcept
+{
+    accept(feature_building_visitor);
+    features = feature_building_visitor.extract_sorted_vector();
+}
+
+void Clause::recompute_feature_vector(const Literal &literal) noexcept
+{
+    literal.accept(feature_building_visitor);
+    const auto new_features = feature_building_visitor.extract_sorted_vector();
+    assert(new_features.size() == features.size());
+
+    for (const auto [idx, increment] : new_features | std::ranges::views::enumerate)
+        features[idx] += increment;
 }
 
 } // namespace optifol

@@ -16,6 +16,7 @@
 
 #include <optional>
 
+#include "../MutableVariants/OwningBuildable.hpp"
 #include "IProcessedTerm.hpp"
 
 namespace optifol
@@ -27,7 +28,9 @@ namespace optifol
  * @see MutableVariable for the owning, mutable dual; MutableVariable also contains more documentation of the semantics
  *  of an Optifol first-order logic variable.
  */
-class Variable : public IProcessedTerm
+class Variable :
+        public IProcessedTerm,
+        public OwningBuildable<Variable>
 {
 public:
     /**
@@ -68,10 +71,9 @@ public:
      */
     [[nodiscard]] bool is_self_nested(const IProcessedTerm &search_term) const noexcept override;
 
+    void accept(FeatureBuildingVisitor& feature_building_visitor) const noexcept override;
     [[nodiscard]] const IProcessedTerm *accept(const UnificationApplicationVisitor &unification_application_visitor)
         const override;
-
-    void accept(const FeatureComponentBuilder &feature_builder) const override;
 
     [[nodiscard]] bool operator==(const IProcessedTerm &other) const noexcept override;
 
