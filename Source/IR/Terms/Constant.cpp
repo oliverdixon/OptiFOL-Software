@@ -37,7 +37,7 @@ std::string_view Constant::get_disambiguated_name() const
 
 bool Constant::accept(IObservingBinaryVisitor &binary_visitor, const IProcessedTerm &term) const
 {
-    return term.accept(binary_visitor, *this);
+    return term.accept_reverse(binary_visitor, *this);
 }
 
 bool Constant::accept(IObservingBinaryVisitor &binary_visitor, const Constant &constant) const
@@ -53,6 +53,21 @@ bool Constant::accept(IObservingBinaryVisitor &binary_visitor, const Function &f
 bool Constant::accept(IObservingBinaryVisitor &binary_visitor, const Variable &variable) const
 {
     return binary_visitor.visit(*this, variable);
+}
+
+bool Constant::accept_reverse(IObservingBinaryVisitor &binary_visitor, const Constant &constant) const
+{
+    return binary_visitor.visit(constant, *this);
+}
+
+bool Constant::accept_reverse(IObservingBinaryVisitor &binary_visitor, const Function &function) const
+{
+    return binary_visitor.visit(function, *this);
+}
+
+bool Constant::accept_reverse(IObservingBinaryVisitor &binary_visitor, const Variable &variable) const
+{
+    return binary_visitor.visit(variable, *this);
 }
 
 bool Constant::is_self_nested(const IProcessedTerm &search_term) const noexcept

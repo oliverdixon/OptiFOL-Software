@@ -46,7 +46,10 @@ bool UnificationVisitor::visit(const Literal &predicate_gen, const Literal &pred
         return false;
 
     return std::ranges::all_of(std::ranges::views::zip(gen_args, inst_args),
-        [this](const auto& arg_pair) { return std::get<0>(arg_pair)->accept(*this, *std::get<1>(arg_pair)); });
+        [this](const auto& arg_pair)
+        {
+            return std::get<0>(arg_pair)->accept(*this, *std::get<1>(arg_pair));
+        });
 }
 
 bool UnificationVisitor::visit(const Constant &constant_gen, const Constant &constant_inst)

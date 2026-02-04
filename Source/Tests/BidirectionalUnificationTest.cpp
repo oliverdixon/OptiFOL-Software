@@ -5,7 +5,7 @@
 
 /**
  * @file
- * @brief Test unification of FOL sentences and terms
+ * @brief Test bidirectional unification of FOL sentences and terms
  * @author Oliver Dixon
  * @date 2025-06-08
  * @version Development
@@ -22,7 +22,12 @@
 namespace optifol
 {
 
-class UnificationTest :
+/**
+ * @class BidirectionalUnificationTest
+ * @brief Tests the BidirectionalUnificationTest to verify that valid substitutions are constructed in the
+ *  Generalisations and Instances to unify pairs of sentences.
+ */
+class BidirectionalUnificationTest :
         public testing::Test
 {
 protected:
@@ -51,11 +56,11 @@ private:
  *  <ul>
  *      <li>LHS Input: @f$ P \left( C\left(\right), x \right) @f$</li>
  *      <li>RHS Input: @f$ P \left( C\left(\right), D\left(\right) \right) @f$</li>
- *      <li>Expected substitutions: @f$ \left\{ D\left(\right) \mapsto x \right\} @f$</li>
+ *      <li>Expected substitutions: @f$ \left\{ x \mapsto D\left(\right) \right\} @f$</li>
  *  </ul>
- * @memberof UnificationTest
+ * @memberof BidirectionalUnificationTest
  */
-TEST_F(UnificationTest, Positive_SingleBinding_FuncVar)
+TEST_F(BidirectionalUnificationTest, Positive_SingleBinding_FuncVar)
 {
     const auto c = register_symbol<Function>("C");
     const auto d = register_symbol<Function>("D");
@@ -77,11 +82,11 @@ TEST_F(UnificationTest, Positive_SingleBinding_FuncVar)
  *  <ul>
  *      <li>LHS Input: @f$ P \left( C\left(\right), x \right) @f$</li>
  *      <li>RHS Input: @f$ P \left( y, D\left(\right) \right) @f$</li>
- *      <li>Expected substitutions: @f$ \left\{ D\left(\right) \mapsto x, C\left(\right) \mapsto y \right\} @f$</li>
+ *      <li>Expected substitutions: @f$ \left\{ x \mapsto D\left(\right), y \mapsto C\left(\right) \right\} @f$</li>
  *  </ul>
- * @memberof UnificationTest
+ * @memberof BidirectionalUnificationTest
  */
-TEST_F(UnificationTest, Positive_MultipleBindings_FuncVar)
+TEST_F(BidirectionalUnificationTest, Positive_MultipleBindings_FuncVar)
 {
     const auto c = register_symbol<Function>("C");
     const auto d = register_symbol<Function>("D");
@@ -104,11 +109,11 @@ TEST_F(UnificationTest, Positive_MultipleBindings_FuncVar)
  *  <ul>
  *      <li>LHS Input: @f$ P \left( a, b \right) @f$</li>
  *      <li>RHS Input: @f$ P \left( c, d \right) @f$</li>
- *      <li>Expected substitutions: @f$ \left\{ a \mapsto c, b \mapsto d \right\} @f$</li>
+ *      <li>Expected substitutions: @f$ \left\{ c \mapsto a, d \mapsto b \right\} @f$</li>
  *  </ul>
- * @memberof UnificationTest
+ * @memberof BidirectionalUnificationTest
  */
-TEST_F(UnificationTest, Positive_MultipleBindings_VarVar)
+TEST_F(BidirectionalUnificationTest, Positive_MultipleBindings_VarVar)
 {
     const auto a = register_symbol<Variable>("a");
     const auto b = register_symbol<Variable>("b");
@@ -120,7 +125,7 @@ TEST_F(UnificationTest, Positive_MultipleBindings_VarVar)
 
     EXPECT_TRUE(p1->accept(*unification_visitor, *p2));
 
-    const Unifier expected_subs{{{c, a}, {d, b}}};
+    const Unifier expected_subs{{{a, c}, {b, d}}};
     EXPECT_EQ(*unification_visitor->observe_substitutions(), expected_subs);
 }
 
@@ -131,9 +136,9 @@ TEST_F(UnificationTest, Positive_MultipleBindings_VarVar)
  *      <li>LHS Input: @f$ P \left( C\left(\right), x \right) @f$</li>
  *      <li>RHS Input: @f$ P \left( x, D\left(\right) \right) @f$</li>
  *  </ul>
- * @memberof UnificationTest
+ * @memberof BidirectionalUnificationTest
  */
-TEST_F(UnificationTest, Negative_MultipleBindings_VarVar)
+TEST_F(BidirectionalUnificationTest, Negative_MultipleBindings_VarVar)
 {
     const auto x = register_symbol<Variable>("x");
     const auto c = register_symbol<Function>("C");
@@ -153,9 +158,9 @@ TEST_F(UnificationTest, Negative_MultipleBindings_VarVar)
  *      <li>LHS Input: @f$ P \left( C\left(\right), x \right) @f$</li>
  *      <li>RHS Input: @f$ P \left( C\left(\right), F\left(x\right) \right) @f$</li>
  *  </ul>
- * @memberof UnificationTest
+ * @memberof BidirectionalUnificationTest
  */
-TEST_F(UnificationTest, Negative_OccursCheck_Trivial)
+TEST_F(BidirectionalUnificationTest, Negative_OccursCheck_Trivial)
 {
     const auto x = register_symbol<Variable>("x");
     const auto c = register_symbol<Function>("C");
@@ -182,9 +187,9 @@ TEST_F(UnificationTest, Negative_OccursCheck_Trivial)
  *      @f$ F\left(G\left( y \right)\right) @f$ exposes the cycle that would be introduced by adding the second
  *      substitution. Hence the LHS and RHS predicates are non-unifiable.
  *  </p>
- * @memberof UnificationTest
+ * @memberof BidirectionalUnificationTest
  */
-TEST_F(UnificationTest, Negative_OccursCheck_Substituted)
+TEST_F(BidirectionalUnificationTest, Negative_OccursCheck_Substituted)
 {
     const auto x = register_symbol<Variable>("x");
     const auto f_x = register_symbol<Function>("F", std::vector<const IProcessedTerm *>{ x });

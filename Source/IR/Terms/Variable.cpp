@@ -55,7 +55,7 @@ bool Variable::operator==(const Variable &other) const
 
 bool Variable::accept(IObservingBinaryVisitor &binary_visitor, const IProcessedTerm &term) const
 {
-    return term.accept(binary_visitor, *this);
+    return term.accept_reverse(binary_visitor, *this);
 }
 
 bool Variable::accept(IObservingBinaryVisitor &binary_visitor, const Constant &constant) const
@@ -71,6 +71,21 @@ bool Variable::accept(IObservingBinaryVisitor &binary_visitor, const Function &f
 bool Variable::accept(IObservingBinaryVisitor &binary_visitor, const Variable &variable) const
 {
     return binary_visitor.visit(*this, variable);
+}
+
+bool Variable::accept_reverse(IObservingBinaryVisitor &binary_visitor, const Constant &constant) const
+{
+    return binary_visitor.visit(constant, *this);
+}
+
+bool Variable::accept_reverse(IObservingBinaryVisitor &binary_visitor, const Function &function) const
+{
+    return binary_visitor.visit(function, *this);
+}
+
+bool Variable::accept_reverse(IObservingBinaryVisitor &binary_visitor, const Variable &variable) const
+{
+    return binary_visitor.visit(variable, *this);
 }
 
 bool Variable::is_self_nested(const IProcessedTerm &search_term) const noexcept

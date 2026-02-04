@@ -482,7 +482,8 @@ enable_testing()
 add_executable(OptifolTesting
         Source/Tests/FOLParserTest.cpp
         Source/Tests/CNFNormalisationTest.cpp
-        Source/Tests/UnificationTest.cpp
+        Source/Tests/BidirectionalUnificationTest.cpp
+        Source/Tests/UnidirectionalUnificationTest.cpp
         Source/Tests/GoogleTestSupport.hpp
         Source/Tests/RepositoryBuildingTest.cpp
         Source/Tests/ResolutionTest.cpp

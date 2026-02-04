@@ -38,13 +38,65 @@ class Variable;
 class IProcessedTerm : public ITerm
 {
 public:
+    /**
+     * @brief Accept a visitation from an IObservingBinaryVisitor, despatching dynamically on the given term as the
+     *  second operand.
+     * @param binary_visitor The binary visitor from whom to accept a visit.
+     * @param term The generic term for the second operand.
+     * @return Visitor return code.
+     */
     [[nodiscard]] virtual bool accept(IObservingBinaryVisitor &binary_visitor, const IProcessedTerm &term) const = 0;
 
+    /**
+     * @brief Accept a visitation from an IObservingBinaryVisitor, using the given Constant as the second operand.
+     * @param binary_visitor The binary visitor from whom to accept a visit.
+     * @param constant The Constant term for the second operand.
+     * @return Visitor return code.
+     */
     [[nodiscard]] virtual bool accept(IObservingBinaryVisitor &binary_visitor, const Constant &constant) const = 0;
 
+    /**
+     * @brief Accept a visitation from an IObservingBinaryVisitor, using the given Function as the second operand.
+     * @param binary_visitor The binary visitor from whom to accept a visit.
+     * @param function The Function term for the second operand.
+     * @return Visitor return code.
+     */
     [[nodiscard]] virtual bool accept(IObservingBinaryVisitor &binary_visitor, const Function &function) const = 0;
 
+    /**
+     * @brief Accept a visitation from an IObservingBinaryVisitor, using the given Variable as the second operand.
+     * @param binary_visitor The binary visitor from whom to accept a visit.
+     * @param variable The Variable term for the second operand.
+     * @return Visitor return code.
+     */
     [[nodiscard]] virtual bool accept(IObservingBinaryVisitor &binary_visitor, const Variable &variable) const = 0;
+
+    /**
+     * @brief Accept a visitation from an IObservingBinaryVisitor, using the given Constant as the first operand.
+     * @param binary_visitor The binary visitor from whom to accept a visit.
+     * @param constant The Constant term for the first operand.
+     * @return Visitor return code.
+     */
+    [[nodiscard]] virtual bool accept_reverse(IObservingBinaryVisitor &binary_visitor, const Constant &constant) const
+        = 0;
+
+    /**
+     * @brief Accept a visitation from an IObservingBinaryVisitor, using the given Function as the first operand.
+     * @param binary_visitor The binary visitor from whom to accept a visit.
+     * @param function The Function term for the first operand.
+     * @return Visitor return code.
+     */
+    [[nodiscard]] virtual bool accept_reverse(IObservingBinaryVisitor &binary_visitor, const Function &function) const
+        = 0;
+
+    /**
+     * @brief Accept a visitation from an IObservingBinaryVisitor, using the given Variable as the first operand.
+     * @param binary_visitor The binary visitor from whom to accept a visit.
+     * @param variable The Variable term for the first operand.
+     * @return Visitor return code.
+     */
+    [[nodiscard]] virtual bool accept_reverse(IObservingBinaryVisitor &binary_visitor, const Variable &variable) const
+        = 0;
 
     /**
      * @brief Determines whether the given Variable appears in the expansion of the term.
@@ -62,6 +114,10 @@ public:
     [[nodiscard]] virtual const IProcessedTerm *accept(
         const UnificationApplicationVisitor &unification_application_visitor) const = 0;
 
+    /**
+     * @brief Accept a visit from the FeatureComponentBuilder to construct an FIV FeatureComponent from the term/
+     * @param feature_builder The non-mutating visitor to accept.
+     */
     virtual void accept(const FeatureComponentBuilder &feature_builder) const = 0;
 
     /**
@@ -71,6 +127,11 @@ public:
      */
     [[nodiscard]] virtual bool operator==(const IProcessedTerm &other) const noexcept = 0;
 
+    /**
+     * @brief Test ordering between two IProcessedTerm instances.
+     * @param other The other IProcessedTerm instance to compare against.
+     * @return Am I strictly less than the other term?
+     */
     [[nodiscard]] virtual bool operator<(const IProcessedTerm& other) const noexcept = 0;
 };
 
