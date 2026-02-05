@@ -15,6 +15,13 @@
 namespace optifol
 {
 
+FeatureBuildingVisitor::FeatureBuildingVisitor()
+{
+    features.reserve(Feature::feature_types.size());
+    for (const auto feature_type : Feature::feature_types)
+        features.emplace_back(feature_type);
+}
+
 void FeatureBuildingVisitor::visit(const Clause *const clause) noexcept
 {
     reset_counters();
@@ -30,7 +37,7 @@ void FeatureBuildingVisitor::visit(const Clause *const clause) noexcept
 void FeatureBuildingVisitor::visit(const Literal *const literal) noexcept
 {
     enter();
-    ++features.literal_count;
+    Feature::get(features, Feature::FeatureType::LiteralCount).increment();
 
     const auto& args = literal->observe_arguments();
     for (const auto argument : args)
@@ -48,7 +55,7 @@ void FeatureBuildingVisitor::visit(const Constant *const constant) noexcept
 
     const auto [it, was_new] = seen_constants.insert(constant);
     if (was_new)
-        ++features.function_count;
+        Feature::get(features, Feature::FeatureType::FunctionCount).increment();
 
     exit();
 }
@@ -59,7 +66,7 @@ void FeatureBuildingVisitor::visit(const Function *const function) noexcept
 
     const auto [it, was_new] = seen_functions.insert(function);
     if (was_new) {
-        ++features.function_count;
+        Feature::get(features, Feature::FeatureType::FunctionCount).increment();
         const auto& args = function->observe_arguments();
         for (const auto argument : args)
             argument->accept(*this);
@@ -83,27 +90,21 @@ void FeatureBuildingVisitor::visit(const Variable *const variable) noexcept
 
     const auto [it, was_new] = seen_variables.insert(variable);
     if (was_new)
-        ++features.variable_count;
+        Feature::get(features, Feature::FeatureType::VariableCount).increment();
 
     exit();
 }
 
-std::vector<unsigned int> FeatureBuildingVisitor::extract_sorted_vector()
+std::vector<Feature> FeatureBuildingVisitor::extract_sorted_vector()
 {
-    auto sorted_vector = std::vector{
-        features.max_depth,
-        features.literal_count,
-        features.function_count,
-        features.variable_count
-    };
-
+    auto saved_features = features;
     reset_counters();
-    return sorted_vector;
+    return saved_features;
 }
 
 void FeatureBuildingVisitor::enter() noexcept
 {
-    features.max_depth = std::max(features.max_depth, ++current_depth);
+    Feature::get(features, Feature::FeatureType::MaxDepth).maximise(++current_depth);
 }
 
 void FeatureBuildingVisitor::exit() noexcept
@@ -115,10 +116,8 @@ void FeatureBuildingVisitor::reset_counters() noexcept
 {
     current_depth = 0;
 
-    features.max_depth = 0;
-    features.literal_count = 0;
-    features.function_count = 0;
-    features.variable_count = 0;
+    for (auto& feature : features)
+        feature.reset();
 }
 
 } // namespace optifol

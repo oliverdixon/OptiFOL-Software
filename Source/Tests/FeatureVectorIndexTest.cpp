@@ -17,6 +17,7 @@
 #include "../IR/Sentences/Literal.hpp"
 #include "../IR/SymbolRepository.hpp"
 #include "../IR/Terms/Function.hpp"
+#include "../Inference/FVIKnowledgeBase.hpp"
 
 namespace optifol
 {
@@ -39,12 +40,26 @@ protected:
  */
 TEST_F(FeatureVectorIndexTest, Test1)
 {
-    auto x_var = std::vector<const IProcessedTerm *>{symbol_repository->add_symbol(Variable::build("x"))};
-    auto f_fun = std::vector<const IProcessedTerm *>{symbol_repository->add_symbol(Function::build("F", std::move(x_var)))};
-    const auto p_literal = symbol_repository->add_symbol(Literal::build("P", std::move(f_fun)));
+    const auto p_literal = symbol_repository->add_symbol(Literal::build("P"));
+    const auto q_literal = symbol_repository->add_symbol(Literal::build("Q"));
+    const auto r_literal = symbol_repository->add_symbol(Literal::build("R"));
 
-    Clause clause;
-    clause.add_literal(p_literal);
+    Clause c1;
+    c1.add_literal(p_literal);
+    c1.add_literal(q_literal);
+
+    Clause c2;
+    c2.add_literal(p_literal);
+    c2.add_literal(r_literal);
+
+    FVIKnowledgeBase kb(symbol_repository);
+    kb.add_clause(&c1);
+    kb.add_clause(&c2);
+
+    Clause ct;
+    ct.add_literal(p_literal);
+
+    kb.replace_subsumed(&ct);
 }
 
 }

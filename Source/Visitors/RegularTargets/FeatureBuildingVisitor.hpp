@@ -12,10 +12,11 @@
 
 #include <vector>
 
-#include "../../Optifol.hpp"
 #include "../../IR/Terms/Constant.hpp"
 #include "../../IR/Terms/Function.hpp"
 #include "../../IR/Terms/Variable.hpp"
+#include "../../Inference/Feature.hpp"
+#include "../../Optifol.hpp"
 
 namespace optifol
 {
@@ -27,6 +28,8 @@ class SkolemFunction;
 class FeatureBuildingVisitor
 {
 public:
+    FeatureBuildingVisitor();
+
     void visit(const Clause *clause) noexcept;
 
     void visit(const Literal *literal) noexcept;
@@ -39,7 +42,7 @@ public:
 
     void visit(const Variable *variable) noexcept;
 
-    std::vector<unsigned int> extract_sorted_vector();
+    std::vector<Feature> extract_sorted_vector();
 
 private:
     void enter() noexcept;
@@ -50,13 +53,7 @@ private:
 
     unsigned int current_depth = 0;
 
-    struct Features
-    {
-        unsigned int max_depth = 0;
-        unsigned int literal_count = 0;
-        unsigned int function_count = 0;
-        unsigned int variable_count = 0;
-    } features;
+    std::vector<Feature> features;
 
     RawUnorderedSet<const Constant> seen_constants;
     RawUnorderedSet<const Function> seen_functions;

@@ -23,6 +23,7 @@
 namespace optifol
 {
 
+class UnificationVisitor;
 class Literal;
 
 /**
@@ -147,12 +148,16 @@ public:
 
     [[nodiscard]] std::optional<const Unifier *> observe_edge() const noexcept override;
 
+    [[nodiscard]] const std::vector<Feature> &observe_features() const noexcept;
+
     /**
      * @brief Reset the Clause to its bottom state of order zero, where it is trivially unsatisfiable.
      */
     void force_bottom() noexcept;
 
     void accept(FeatureBuildingVisitor& feature_component_builder) const;
+
+    [[nodiscard]] bool subsumes(const Clause& other_clause, UnificationVisitor& visitor) const;
 
 private:
     /**
@@ -166,7 +171,7 @@ private:
 
     void recompute_feature_vector(const Literal& literal) noexcept;
 
-    std::vector<unsigned int> features{0};
+    std::vector<Feature> features;
     FeatureBuildingVisitor feature_building_visitor;
 };
 

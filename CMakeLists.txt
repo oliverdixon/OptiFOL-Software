@@ -310,6 +310,9 @@ add_library(OptifolCommon OBJECT
         Source/Visitors/RegularTargets/IObservingBinaryVisitor.hpp
         Source/Visitors/RegularTargets/FeatureBuildingVisitor.cpp
         Source/Visitors/RegularTargets/FeatureBuildingVisitor.hpp
+        Source/Inference/FVIKnowledgeBase.cpp
+        Source/Inference/FVIKnowledgeBase.hpp
+        Source/Inference/Feature.hpp
 )
 
 target_include_directories(OptifolCommon PRIVATE

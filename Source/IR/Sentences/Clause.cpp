@@ -18,6 +18,7 @@
 #include <ranges>
 
 #include "../Inference/Resolvent.hpp"
+#include "../Visitors/RegularTargets/Unification/UnificationVisitor.hpp"
 #include "../Visitors/RegularTargets/FeatureBuildingVisitor.hpp"
 
 namespace optifol
@@ -173,6 +174,11 @@ std::optional<const Unifier *> Clause::observe_edge() const noexcept
     return std::nullopt;
 }
 
+const std::vector<Feature> &Clause::observe_features() const noexcept
+{
+    return features;
+}
+
 void Clause::force_bottom() noexcept
 {
     literals.clear();
@@ -182,6 +188,24 @@ void Clause::force_bottom() noexcept
 void Clause::accept(FeatureBuildingVisitor &feature_component_builder) const
 {
     feature_component_builder.visit(this);
+}
+
+bool Clause::subsumes(const Clause &other_clause, UnificationVisitor &visitor) const
+{
+    if (empty())
+        return false;
+
+    for (const auto literal : *this) {
+        const auto can_be_unified = [&visitor, lhs = literal](const Literal * const rhs)
+        {
+            return lhs->accept(visitor, *rhs);
+        };
+
+        if (!std::ranges::any_of(other_clause.literals, can_be_unified))
+            return false;
+    }
+
+    return true;
 }
 
 bool Clause::is_tautology() const noexcept
@@ -203,10 +227,12 @@ void Clause::recompute_feature_vector(const Literal &literal) noexcept
 {
     literal.accept(feature_building_visitor);
     const auto new_features = feature_building_visitor.extract_sorted_vector();
-    assert(new_features.size() == features.size());
 
-    for (const auto [idx, increment] : new_features | std::ranges::views::enumerate)
-        features[idx] += increment;
+    if (new_features.size() > features.size())
+        recompute_feature_vector();
+    else
+        for (const auto& new_feature : new_features)
+            Feature::get(features, new_feature.get_feature_type()).join(new_feature);
 }
 
 } // namespace optifol
