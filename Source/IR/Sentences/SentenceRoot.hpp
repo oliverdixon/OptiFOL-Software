@@ -36,7 +36,7 @@ public:
 
     [[nodiscard]] bool operator==(const IProcessedSentence &other) const noexcept override;
 
-    void add_clause(const Clause &new_clause);
+    void add_clause(Clause new_clause);
 
     [[nodiscard]] std::vector<Clause>::const_iterator begin() const noexcept;
 

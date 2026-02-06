@@ -27,7 +27,7 @@ std::pair<UniqueUnorderedSet<Clause>::iterator, bool> FVIKnowledgeBase::add_clau
     FVINode * node = &root;
     const auto& clause_features = clause->observe_features();
 
-    for (const auto feature : clause_features) {
+    for (const auto& feature : clause_features) {
         auto& child = node->children[feature];
         if (child == nullptr)
             child = std::make_unique<FVINode>();

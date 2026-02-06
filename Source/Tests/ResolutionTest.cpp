@@ -37,11 +37,11 @@ protected:
     void SetUp() override
     {
         symbol_repository = std::make_shared<SymbolRepository>();
-        knowledge_base = std::make_unique<Prover>(symbol_repository);
+        prover = std::make_unique<Prover>(symbol_repository);
     }
 
     std::shared_ptr<SymbolRepository> symbol_repository;
-    std::unique_ptr<Prover> knowledge_base;
+    std::unique_ptr<Prover> prover;
 };
 
 /**
@@ -107,13 +107,13 @@ TEST_F(ResolutionTest, ModusPonens_Quantified)
         MutablePredicate::build("P", std::move(s2_p_args))
     ), symbol_repository);
 
-    knowledge_base->tell(*sentence1);
-    knowledge_base->tell(*sentence2);
+    prover->tell(*sentence1);
+    prover->tell(*sentence2);
 
     std::vector<std::unique_ptr<IMutableTerm>> query_args;
     query_args.push_back(MutableConstant::build<IMutableTerm>("C"));
 
-    const auto result = knowledge_base->ask(MutableSentenceRoot::build(MutablePredicate::build("Q",
+    const auto result = prover->ask(MutableSentenceRoot::build(MutablePredicate::build("Q",
         std::move(query_args))));
 
     EXPECT_EQ(result.outcome, QueryResult::ConjectureStatus::Consistent);
@@ -138,13 +138,13 @@ TEST_F(ResolutionTest, Reject_Trivial)
         MutablePredicate::build("Q", std::move(s2_p_args))
     ), symbol_repository);
 
-    knowledge_base->tell(*sentence1);
-    knowledge_base->tell(*sentence2);
+    prover->tell(*sentence1);
+    prover->tell(*sentence2);
 
     std::vector<std::unique_ptr<IMutableTerm>> query_args;
     query_args.push_back(MutableConstant::build<IMutableTerm>("C"));
 
-    const auto result = knowledge_base->ask(MutableSentenceRoot::build(MutablePredicate::build("R",
+    const auto result = prover->ask(MutableSentenceRoot::build(MutablePredicate::build("R",
         std::move(query_args))));
 
     EXPECT_EQ(result.outcome, QueryResult::ConjectureStatus::Inconsistent);
@@ -289,22 +289,22 @@ TEST_F(ResolutionTest, CuriosityKilledTheCat)
     ), symbol_repository);
 
     // Tell the KB the facts...
-    knowledge_base->tell(*tuna_is_killed);
-    knowledge_base->tell(*tuna_is_cat);
-    knowledge_base->tell(*loves_all_animals);
-    knowledge_base->tell(*kills_an_animal);
-    knowledge_base->tell(*jack_loves_animals);
-    knowledge_base->tell(*cats_are_animals);
+    prover->tell(*tuna_is_killed);
+    prover->tell(*tuna_is_cat);
+    prover->tell(*loves_all_animals);
+    prover->tell(*kills_an_animal);
+    prover->tell(*jack_loves_animals);
+    prover->tell(*cats_are_animals);
 
     // Did Curiosity kill Tuna?
     std::vector<std::unique_ptr<IMutableTerm>> kills_args_4;
     kills_args_4.push_back(MutableConstant::build("Curiosity"));
     kills_args_4.push_back(MutableConstant::build("Tuna"));
 
-    const auto result = knowledge_base->ask(MutableSentenceRoot::build(MutablePredicate::build("Kills",
+    const auto result = prover->ask(MutableSentenceRoot::build(MutablePredicate::build("Kills", false,
         std::move(kills_args_4))));
 
-    EXPECT_EQ(result.outcome, QueryResult::ConjectureStatus::Consistent);
+    EXPECT_EQ(result.outcome, QueryResult::ConjectureStatus::Inconsistent);
 }
 
 } // namespace optifol

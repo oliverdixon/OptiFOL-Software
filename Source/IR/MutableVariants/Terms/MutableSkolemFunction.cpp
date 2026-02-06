@@ -13,6 +13,9 @@
 
 #include "MutableSkolemFunction.hpp"
 
+#include "../../../Visitors/MutableTargets/RepositoryBuildingVisitor.hpp"
+#include "../../Terms/SkolemFunction.hpp"
+
 namespace optifol
 {
 
@@ -37,6 +40,11 @@ std::unique_ptr<IMutableTerm> MutableSkolemFunction::clone() const
         cloned_arguments.push_back(argument->clone());
 
     return std::make_unique<MutableSkolemFunction>(name, std::move(cloned_arguments));
+}
+
+const IProcessedTerm *MutableSkolemFunction::accept(RepositoryBuildingVisitor &visitor)
+{
+    return visitor.visit(*this);
 }
 
 } // namespace optifol

@@ -33,6 +33,8 @@ public:
             std::string name, const std::vector<std::unique_ptr<IMutableTerm>> &quantified_variables);
 
     [[nodiscard]] std::unique_ptr<IMutableTerm> clone() const override;
+
+    const IProcessedTerm *accept(RepositoryBuildingVisitor &visitor) override;
 };
 
 } // namespace optifol

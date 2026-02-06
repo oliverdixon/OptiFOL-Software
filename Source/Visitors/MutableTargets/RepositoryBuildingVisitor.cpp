@@ -68,10 +68,8 @@ const BinaryConnected *RepositoryBuildingVisitor::visit(MutableBinaryConnected &
     const bool managed_clause = operator_type == BinaryOperatorTypes::Conjunction;
 
     // Create a fresh clause for the LHS operand, committing a previously populated clause if necessary.
-    if (managed_clause && !working_clause.empty()) {
-        root->add_clause(working_clause);
-        working_clause.force_bottom();
-    }
+    if (managed_clause && !working_clause.empty())
+        commit_working_clause();
 
     const auto bound_lhs = node.take_lhs_operand();
     const auto repo_lhs = bound_lhs->accept(*this);
@@ -80,19 +78,15 @@ const BinaryConnected *RepositoryBuildingVisitor::visit(MutableBinaryConnected &
      * If the LHS recursion produced any literals under disjunction, commit the set to the sentence root, and create a
      * fresh clause for the RHS operand.
      */
-    if (managed_clause && !working_clause.empty()) {
-        root->add_clause(working_clause);
-        working_clause.force_bottom();
-    }
+    if (managed_clause && !working_clause.empty())
+        commit_working_clause();
 
     const auto bound_rhs = node.take_rhs_operand();
     const auto repo_rhs = bound_rhs->accept(*this);
 
     // Likewise, commit any disjunctive literals produced by the RHS recursion to the sentence root.
-    if (managed_clause && !working_clause.empty()) {
-        root->add_clause(working_clause);
-        working_clause.force_bottom();
-    }
+    if (managed_clause && !working_clause.empty())
+        commit_working_clause();
 
     return symbol_repository->add_symbol<BinaryConnected>(
             std::make_unique<BinaryConnected>(node.get_operator_type(), repo_lhs, repo_rhs));
@@ -134,16 +128,20 @@ void RepositoryBuildingVisitor::visit(MutableSentenceRoot &node)
 
     symbol_repository->increment_sentence_count();
 
-    if (!working_clause.empty()) {
-        root->add_clause(working_clause);
-        working_clause.force_bottom();
-    }
+    if (!working_clause.empty())
+        commit_working_clause();
 }
 
 std::unique_ptr<SentenceRoot> RepositoryBuildingVisitor::take_last_root() noexcept
 {
     assert(root != nullptr);
     return std::move(root);
+}
+
+void RepositoryBuildingVisitor::commit_working_clause()
+{
+    root->add_clause(std::move(working_clause));
+    working_clause = Clause();
 }
 
 const Variable *RepositoryBuildingVisitor::visit(const MutableVariable &node) const

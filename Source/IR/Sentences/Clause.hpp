@@ -150,11 +150,6 @@ public:
 
     [[nodiscard]] const std::vector<Feature> &observe_features() const noexcept;
 
-    /**
-     * @brief Reset the Clause to its bottom state of order zero, where it is trivially unsatisfiable.
-     */
-    void force_bottom() noexcept;
-
     void accept(FeatureBuildingVisitor& feature_component_builder) const;
 
     [[nodiscard]] bool subsumes(const Clause& other_clause, UnificationVisitor& visitor) const;

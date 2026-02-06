@@ -67,7 +67,7 @@ bool SentenceRoot::operator==(const IProcessedSentence &other) const noexcept
     return std::ranges::equal(clauses, other_root->clauses);
 }
 
-void SentenceRoot::add_clause(const Clause& new_clause)
+void SentenceRoot::add_clause(Clause new_clause)
 {
     /*
      * Don't use std::ranges::lower_bound here. Clause doesn't model std::totally_ordered_with because it defines only
@@ -85,7 +85,7 @@ void SentenceRoot::add_clause(const Clause& new_clause)
          */
         return;
 
-    clauses.insert(nearest_lower, new_clause);
+    clauses.insert(nearest_lower, std::move(new_clause));
 }
 
 std::vector<Clause>::const_iterator SentenceRoot::begin() const noexcept

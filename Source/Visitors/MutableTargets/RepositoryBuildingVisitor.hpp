@@ -206,6 +206,7 @@ public:
     std::unique_ptr<SentenceRoot> take_last_root() noexcept;
 
 private:
+    void commit_working_clause();
 
     /**
      * @brief The working clause stores the working set of literals under disjunction for the current clause. The

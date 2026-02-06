@@ -79,8 +79,8 @@ protected:
             });
 
         // Sample the fixed number of clauses for the SentenceRoot.
-        std::ranges::for_each(clauses_view | std::views::take(clause_count),
-            [&target](const Clause& clause) { target.add_clause(clause); } );
+        for (auto clause : clauses_view | std::views::take(clause_count))
+            target.add_clause(std::move(clause));
 
         return literals_owner;
     }

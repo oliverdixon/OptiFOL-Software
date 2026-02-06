@@ -14,7 +14,6 @@
 #include "Clause.hpp"
 
 #include <algorithm>
-#include <assert.h>
 #include <ranges>
 
 #include "../Inference/Resolvent.hpp"
@@ -179,12 +178,6 @@ const std::vector<Feature> &Clause::observe_features() const noexcept
     return features;
 }
 
-void Clause::force_bottom() noexcept
-{
-    literals.clear();
-    state = State::TriviallyFalse;
-}
-
 void Clause::accept(FeatureBuildingVisitor &feature_component_builder) const
 {
     feature_component_builder.visit(this);
@@ -226,10 +219,10 @@ void Clause::recompute_feature_vector() noexcept
 void Clause::recompute_feature_vector(const Literal &literal) noexcept
 {
     literal.accept(feature_building_visitor);
-    const auto new_features = feature_building_visitor.extract_sorted_vector();
+    auto new_features = feature_building_visitor.extract_sorted_vector();
 
     if (new_features.size() > features.size())
-        recompute_feature_vector();
+        features = std::move(new_features);
     else
         for (const auto& new_feature : new_features)
             Feature::get(features, new_feature.get_feature_type()).join(new_feature);
