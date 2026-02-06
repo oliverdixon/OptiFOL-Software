@@ -19,6 +19,7 @@
 
 #include "../IR/Sentences/Clause.hpp"
 #include "../Visitors/RegularTargets/Unification/BidirectionalUnificationVisitor.hpp"
+#include "FVIKnowledgeBase.hpp"
 
 namespace optifol
 {
@@ -164,16 +165,12 @@ private:
     [[nodiscard]] std::vector<std::pair<Resolvent, std::unique_ptr<Clause>>> find_resolvents(
             const ProofTreeNode *lhs_node, const ProofTreeNode *rhs_node);
 
-    static constexpr auto unwrap_clause = std::views::transform(
-        [](const std::unique_ptr<Clause>& clause){ return clause.get(); });
-
     static const log4cxx::LoggerPtr kb_logger;
     static const log4cxx::LoggerPtr resolution_logger;
     static const log4cxx::LoggerPtr factoring_logger;
 
-    UniqueUnorderedSet<Clause> base_clauses;
-
     std::shared_ptr<SymbolRepository> symbol_repository;
+    FVIKnowledgeBase base_clauses;
 
     BidirectionalUnificationVisitor unifier;
     BidirectionalUnificationVisitor factoring_unifier;

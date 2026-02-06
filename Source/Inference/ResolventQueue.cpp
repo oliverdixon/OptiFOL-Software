@@ -16,6 +16,7 @@
 #include <algorithm>
 #include <cassert>
 
+#include "FVIKnowledgeBase.hpp"
 #include "Resolvent.hpp"
 
 namespace optifol
@@ -78,7 +79,7 @@ std::size_t ResolventQueue::size() const noexcept
     return elements.size();
 }
 
-void ResolventQueue::dump(std::deque<Resolvent> &resolvent_destination, UniqueUnorderedSet<Clause> &clause_destination)
+void ResolventQueue::dump(std::deque<Resolvent> &resolvent_destination, FVIKnowledgeBase &clause_destination)
 {
     while (!empty()) {
         auto resolvent = pop();
@@ -86,7 +87,7 @@ void ResolventQueue::dump(std::deque<Resolvent> &resolvent_destination, UniqueUn
         resolvent_destination.push_back(std::move(resolvent));
 
         if (resolution != nullptr)
-            clause_destination.insert(std::move(resolution));
+            clause_destination.add_clause(std::move(resolution));
     }
 }
 

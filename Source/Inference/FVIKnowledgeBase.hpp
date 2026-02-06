@@ -10,24 +10,26 @@
 #ifndef OPTIFOL_FVIKNOWLEDGEBASE_HPP
 #define OPTIFOL_FVIKNOWLEDGEBASE_HPP
 
+#include <generator>
 #include <map>
 #include <memory>
 #include <vector>
 
+#include "../Optifol.hpp"
+#include "../IR/Sentences/Clause.hpp"
 #include "Feature.hpp"
 
 namespace optifol
 {
 
 class SymbolRepository;
-class Clause;
 
 class FVIKnowledgeBase
 {
 public:
     explicit FVIKnowledgeBase(std::shared_ptr<SymbolRepository> symbol_repository);
 
-    void add_clause(const Clause *clause);
+    std::pair<UniqueUnorderedSet<Clause>::iterator, bool> add_clause(std::unique_ptr<Clause> &&clause);
 
     // Forward subsumption
     std::vector<const Clause *> get_subsuming(const Clause &clause) const;
@@ -37,14 +39,23 @@ public:
 
     void remove_subsumed(const Clause& clause);
 
-    void replace_subsumed(const Clause *clause);
+    void replace_subsumed(std::unique_ptr<Clause> &&clause);
+
+    std::generator<const Clause *> flatten() const;
+
+    [[nodiscard]] unsigned int get_total_clause_count() const noexcept;
 
 private:
     struct FVINode
     {
         std::map<Feature, std::unique_ptr<FVINode>> children;
-        std::vector<const Clause *> clauses;
+        UniqueUnorderedSet<Clause> clause_set;
     };
+
+    static constexpr auto unwrap_clause = std::views::transform(
+        [](const std::unique_ptr<Clause>& clause){ return clause.get(); });
+
+    static std::generator<const Clause *> flatten(const FVINode& node);
 
     void get_subsuming(const Clause &clause, const FVINode &node, unsigned int depth,
             std::vector<const Clause *> &subsuming_clauses) const;
@@ -60,6 +71,7 @@ private:
 
     FVINode root;
     std::shared_ptr<SymbolRepository> symbol_repository;
+    unsigned int total_clause_count = 0;
 };
 
 } // namespace optifol

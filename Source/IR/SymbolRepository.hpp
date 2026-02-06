@@ -15,10 +15,8 @@
 #define SYMBOLREPOSITORY_HPP
 
 #include <memory>
-#include <optional>
 #include <unordered_set>
 
-#include "../IHashable.hpp"
 #include "../Optifol.hpp"
 #include "Sentences/IProcessedSentence.hpp"
 #include "Terms/IProcessedTerm.hpp"

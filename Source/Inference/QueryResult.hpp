@@ -17,6 +17,7 @@
 #include <deque>
 
 #include "../IR/Sentences/Clause.hpp"
+#include "FVIKnowledgeBase.hpp"
 
 namespace optifol
 {
@@ -33,12 +34,14 @@ struct QueryResult
         Inconsistent
     };
 
-    QueryResult() = default;
+    explicit QueryResult(std::shared_ptr<SymbolRepository> symbol_repository) :
+        introduced_clauses(std::move(symbol_repository))
+    { }
 
     ConjectureStatus outcome = ConjectureStatus::NotExecuted;
     std::size_t elapsed_step_count = 1;
 
-    UniqueUnorderedSet<Clause> introduced_clauses;
+    FVIKnowledgeBase introduced_clauses;
     std::deque<Resolvent> relations;
     const Resolvent * terminating_resolvent = nullptr;
 

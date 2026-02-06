@@ -21,7 +21,7 @@
 
 namespace optifol
 {
-
+class FVIKnowledgeBase;
 class Resolvent;
 
 /**
@@ -68,7 +68,7 @@ public:
      */
     [[nodiscard]] std::size_t size() const noexcept;
 
-    void dump(std::deque<Resolvent>& resolvent_destination, UniqueUnorderedSet<Clause>& clause_destination);
+    void dump(std::deque<Resolvent> &resolvent_destination, FVIKnowledgeBase &clause_destination);
 
 private:
     std::deque<Resolvent> elements;

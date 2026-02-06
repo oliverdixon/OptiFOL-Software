@@ -22,7 +22,7 @@ FVIKnowledgeBase::FVIKnowledgeBase(std::shared_ptr<SymbolRepository> symbol_repo
 {
 }
 
-void FVIKnowledgeBase::add_clause(const Clause * const clause)
+std::pair<UniqueUnorderedSet<Clause>::iterator, bool> FVIKnowledgeBase::add_clause(std::unique_ptr<Clause> &&clause)
 {
     FVINode * node = &root;
     const auto& clause_features = clause->observe_features();
@@ -34,7 +34,11 @@ void FVIKnowledgeBase::add_clause(const Clause * const clause)
         node = child.get();
     }
 
-    node->clauses.push_back(clause);
+    auto insertion_result = node->clause_set.insert(std::move(clause));
+    if (insertion_result.second)
+        ++total_clause_count;
+
+    return insertion_result;
 }
 
 std::vector<const Clause *> FVIKnowledgeBase::get_subsuming(const Clause &clause) const
@@ -56,14 +60,31 @@ void FVIKnowledgeBase::remove_subsumed(const Clause &clause)
     remove_subsumed(clause, root, 0);
 }
 
-void FVIKnowledgeBase::replace_subsumed(const Clause *const clause)
+void FVIKnowledgeBase::replace_subsumed(std::unique_ptr<Clause> &&clause)
 {
     const auto subsuming = get_subsuming(*clause);
     if (!subsuming.empty())
         return;
 
     remove_subsumed(*clause);
-    add_clause(clause);
+    add_clause(std::move(clause));
+}
+
+std::generator<const Clause *> FVIKnowledgeBase::flatten() const
+{
+    return flatten(root);
+}
+
+std::generator<const Clause *> FVIKnowledgeBase::flatten(const FVINode &node)
+{
+    for (const auto& my_clause : node.clause_set)
+        co_yield my_clause.get();
+
+    for (const auto& [child_feature, child_node] : node.children) {
+        std::ignore = child_feature;
+        for (const auto child_clause : flatten(*child_node))
+            co_yield child_clause;
+    }
 }
 
 void FVIKnowledgeBase::get_subsuming(const Clause &clause, const FVINode &node, const unsigned int depth,
@@ -73,7 +94,7 @@ void FVIKnowledgeBase::get_subsuming(const Clause &clause, const FVINode &node, 
     if (depth >= features.size())
 
         // The given node is a leaf node.
-        for (const auto contained_clause : node.clauses) {
+        for (const auto contained_clause : node.clause_set | unwrap_clause) {
             auto visitor = UnificationVisitor(symbol_repository);
             if (contained_clause->subsumes(clause, visitor))
                 subsuming_clauses.push_back(contained_clause);
@@ -145,7 +166,7 @@ void FVIKnowledgeBase::get_subsumed(const Clause &clause, const FVINode &node, c
 void FVIKnowledgeBase::explore_leaf(
         const Clause &clause, const FVINode &node, std::vector<const Clause *> &subsumed_clauses) const
 {
-    for (const auto contained_clause : node.clauses) {
+    for (const auto contained_clause : node.clause_set | unwrap_clause) {
         auto visitor = UnificationVisitor(symbol_repository);
         if (clause.subsumes(*contained_clause, visitor))
             subsumed_clauses.push_back(contained_clause);
@@ -187,7 +208,7 @@ void FVIKnowledgeBase::remove_subsumed(const Clause &clause, FVINode &node, unsi
                     child_feature.get_magnitude() >= current_feature.get_magnitude() ? 1 : 0;
 
                 remove_subsumed(clause, *child_node, depth + offset);
-                if (child_node->children.empty() && child_node->clauses.empty())
+                if (child_node->children.empty() && child_node->clause_set.empty())
                     slated_for_removal.push_back(child_feature);
             }
 
@@ -198,21 +219,35 @@ void FVIKnowledgeBase::remove_subsumed(const Clause &clause, FVINode &node, unsi
 
 void FVIKnowledgeBase::explore_and_remove_leaf(const Clause &clause, FVINode &node)
 {
-    std::erase_if(node.clauses, [this, &clause](const auto contained_clause)
+    unsigned int erased_count = 0;
+
+    std::erase_if(node.clause_set, [this, &clause, &erased_count](const auto& contained_clause)
     {
         auto visitor = UnificationVisitor(symbol_repository);
-        return clause.subsumes(*contained_clause, visitor);
+        if (clause.subsumes(*contained_clause, visitor)) {
+            ++erased_count;
+            return true;
+        }
+
+        return false;
     });
+
+    total_clause_count -= erased_count;
 
     std::vector<Feature> slated_for_removal;
     for (const auto& [child_feature, child_node] : node.children) {
         explore_and_remove_leaf(clause, *child_node);
-        if (child_node->children.empty() && child_node->clauses.empty())
+        if (child_node->children.empty() && child_node->clause_set.empty())
             slated_for_removal.push_back(child_feature);
     }
 
     for (const auto& target : slated_for_removal)
         node.children.erase(target);
+}
+
+unsigned int FVIKnowledgeBase::get_total_clause_count() const noexcept
+{
+    return total_clause_count;
 }
 
 } // namespace optifol

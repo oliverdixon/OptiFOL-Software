@@ -36,6 +36,7 @@ const log4cxx::LoggerPtr KnowledgeBase::factoring_logger = Logging::get_logger({
 
 KnowledgeBase::KnowledgeBase(std::shared_ptr<SymbolRepository> symbol_repository) :
     symbol_repository(std::move(symbol_repository)),
+    base_clauses(this->symbol_repository),
     unifier(this->symbol_repository),
     factoring_unifier(this->symbol_repository),
     applicator(unifier.share_substitutions(), this->symbol_repository),
@@ -45,16 +46,15 @@ KnowledgeBase::KnowledgeBase(std::shared_ptr<SymbolRepository> symbol_repository
 
 bool KnowledgeBase::tell(const SentenceRoot &sentence)
 {
-    base_clauses.reserve(base_clauses.size() + sentence.order());
     return std::ranges::all_of(sentence, [this](const Clause& new_clause)
     {
-        return insert_clause(std::make_unique<Clause>(new_clause), base_clauses);
+        return tell(new_clause);
     });
 }
 
 bool KnowledgeBase::tell(const Clause &new_clause)
 {
-    return insert_clause(std::make_unique<Clause>(new_clause), base_clauses);
+    return base_clauses.add_clause(std::make_unique<Clause>(new_clause)).second;
 }
 
 bool KnowledgeBase::PQResolventUnitPref::operator()(
@@ -67,20 +67,19 @@ QueryResult KnowledgeBase::run_resolution(std::unique_ptr<SentenceRoot> &&negate
 {
     RawUnorderedSet<const Clause> seen_resolvents; // Transparent hashing to provide lightweight de-duplication.
     ResolventQueue working_queue; // Generated resolvents not yet committed to introduced knowledge.
-    QueryResult result; // Execution trace, introduced clauses, and metadata built up by the solver.
+    QueryResult result(symbol_repository); // Execution trace, introduced clauses, and metadata built up by the solver.
 
     // Introduce the negated goal clauses into the query instance.
-    result.introduced_clauses.reserve(result.introduced_clauses.size() + negated_query->order());
     for (const auto& clause : *negated_query)
-        insert_clause(std::make_unique<Clause>(clause), result.introduced_clauses);
+        result.introduced_clauses.add_clause(std::make_unique<Clause>(clause));
 
     /*
      * Over the Cartesian product of clauses in the KB, search for resolvents in the initial set and populate the
      * working queue accordingly. Note that binary resolution is a commutative operation, so we restrict the RHS.
      */
-    const auto initial_clauses = std::ranges::concat_view(base_clauses, result.introduced_clauses) | unwrap_clause;
-    for (const auto [clause_idx, lhs_clause] : initial_clauses | std::views::enumerate)
-        for (const auto& rhs_clause : initial_clauses | std::views::take(clause_idx + 1)) {
+
+    for (const auto lhs_clause : std::ranges::concat_view(base_clauses.flatten(), result.introduced_clauses.flatten()))
+        for (const auto& rhs_clause : std::ranges::concat_view(base_clauses.flatten(), result.introduced_clauses.flatten())) {
             auto new_resolvents = find_resolvents(lhs_clause, rhs_clause);
             for (auto&& [resolvent, owning_resolution] : new_resolvents)
                 working_queue.push(std::move(resolvent), std::move(owning_resolution));
@@ -115,7 +114,7 @@ QueryResult KnowledgeBase::run_resolution(std::unique_ptr<SentenceRoot> &&negate
              */
             auto owning_resolution = working_queue.extract_resolution(next_resolvent);
             auto [committed_resolution_it, was_committed] =
-                result.introduced_clauses.insert(std::move(owning_resolution));
+                result.introduced_clauses.add_clause(std::move(owning_resolution));
             result.relations.push_back(std::move(next_resolvent));
 
             if ((*committed_resolution_it)->get_triviality_state() == Clause::State::TriviallyFalse) {
@@ -130,7 +129,7 @@ QueryResult KnowledgeBase::run_resolution(std::unique_ptr<SentenceRoot> &&negate
                 const Resolvent * const lhs = &result.relations.back();
 
                 // Clauses on RHS
-                for (const auto& rhs_clause : base_clauses | unwrap_clause) {
+                for (const auto& rhs_clause : base_clauses.flatten()) {
                     auto new_resolvents = find_resolvents(lhs, rhs_clause);
                     for (auto&& [new_resolvent, new_resolution] : new_resolvents)
                         working_queue.push(std::move(new_resolvent), std::move(new_resolution));
@@ -169,14 +168,14 @@ QueryResult KnowledgeBase::ask(std::unique_ptr<MutableSentenceRoot> &&query, con
     query->flip_polarity();
     auto negated_query = ExpressionFactory::build_sentence(std::move(query), symbol_repository);
 
-    kb_logger->info(std::format("Querying the KB of {} clauses for the negation of {}.", base_clauses.size(),
-        *negated_query));
+    const auto clause_count = base_clauses.get_total_clause_count();
+    kb_logger->info(std::format("Querying the KB of {} clauses for the negation of {}.", clause_count, *negated_query));
 
     if (kb_logger->isTraceEnabled()) {
         kb_logger->trace("Dumping initial knowledge base...");
-        const auto clause_count = base_clauses.size();
-        for (const auto& [clause_idx, clause]: base_clauses | unwrap_clause | std::views::enumerate)
-            kb_logger->trace(std::format("KB Clause {}/{}: {}", clause_idx + 1, clause_count, *clause));
+        unsigned int clause_idx = 1;
+        for (const auto clause : base_clauses.flatten())
+            kb_logger->trace(std::format("KB Clause {}/{}: {}", clause_idx++, clause_count, *clause));
 
         kb_logger->trace(std::format("KB Clause (negated goal): {}", *negated_query->begin()));
     }

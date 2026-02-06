@@ -44,22 +44,22 @@ TEST_F(FeatureVectorIndexTest, Test1)
     const auto q_literal = symbol_repository->add_symbol(Literal::build("Q"));
     const auto r_literal = symbol_repository->add_symbol(Literal::build("R"));
 
-    Clause c1;
-    c1.add_literal(p_literal);
-    c1.add_literal(q_literal);
+    auto c1 = Clause::build();
+    c1->add_literal(p_literal);
+    c1->add_literal(q_literal);
 
-    Clause c2;
-    c2.add_literal(p_literal);
-    c2.add_literal(r_literal);
+    auto c2 = Clause::build();
+    c2->add_literal(p_literal);
+    c2->add_literal(r_literal);
 
     FVIKnowledgeBase kb(symbol_repository);
-    kb.add_clause(&c1);
-    kb.add_clause(&c2);
+    kb.add_clause(std::move(c1));
+    kb.add_clause(std::move(c2));
 
-    Clause ct;
-    ct.add_literal(p_literal);
+    auto ct = Clause::build();
+    ct->add_literal(p_literal);
 
-    kb.replace_subsumed(&ct);
+    kb.replace_subsumed(std::move(ct));
 }
 
 }
