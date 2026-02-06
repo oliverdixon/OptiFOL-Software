@@ -5,14 +5,14 @@
 
 /**
  * @file
- * @brief Class specification for the FOL Resolution Knowledge Base
+ * @brief Class specification for the FOL resolution prover
  * @author Oliver Dixon
  * @date 2025-09-14
  * @version Development
  */
 
-#ifndef OPTIFOL_KNOWLEDGEBASE_HPP
-#define OPTIFOL_KNOWLEDGEBASE_HPP
+#ifndef OPTIFOL_PROVER_HPP
+#define OPTIFOL_PROVER_HPP
 
 #include <log4cxx/logger.h>
 #include <ranges>
@@ -33,37 +33,38 @@ class Resolvent;
 struct QueryResult;
 
 /**
- * @class KnowledgeBase
- * @brief A KnowledgeBase stores CNF-normalised Clause objects and allows users to query the validity of statements
- *  under the specified model.
+ * @class Prover
+ * @brief A Prover manages the storage of CNF-normalised Clause objects and allows users to query the validity of
+ *  statements under the specified model.
  * @details
  *  <p>
  *      The typical workflow is straightforward:
  *      <ol>
- *          <li>The user creates a new KnowledgeBase linked to a persistent SymbolRepository;</li>
- *          <li>The user issues @ref tell commands to incrementally build the axioms of the KnowledgeBase;</li>
- *          <li>Once the KnowledgeBase has been informed of all the axioms, the user issues an @ref ask command with
- *              a query to attempt to derive a contradiction or model proof attesting to the consistency of the given
- *              conjecture under the axioms.</li>
+ *          <li>The user creates a new Prover instance linked to a persistent SymbolRepository;</li>
+ *          <li>The user issues @ref tell commands to incrementally build the axioms of the Prover's contextual
+ *              knowledge base;</li>
+ *          <li>Once the Prover has been informed of all the axioms, the user issues an @ref ask command with a query to
+ *              attempt to derive a contradiction or model proof attesting to the consistency of the given conjecture
+ *              under the axioms.</li>
  *          <li>After the proof has completed, the user browses the execution metadata and proof trace (organised as
  *              a binary tree between Clauses and Resolvents). This can be directly visualised.</li>
  *      </ol>
  *  </p>
  *  <p>
- *      Users should be careful with the data-ownership semantics of the KnowledgeBase. QueryResults may observe any
- *      items in the SymbolRepository, and also any base clauses (issued with @ref tell) maintained by the
- *      KnowledgeBase. Therefore, the KnowledgeBase should outlive the SymbolRepository, which should in turn outlive
- *      the KnowledgeBase. This model is required due to the performance implications of copying Clauses and Resolvents.
+ *      Users should be careful with the data-ownership semantics of the Prover. QueryResults may observe any items in
+ *      the SymbolRepository, and also any base clauses (issued with @ref tell) maintained by the Prover. Therefore, the
+ *      Prover should outlive the SymbolRepository, which should in turn outlive the Prover. This model is required due
+ *      to the performance implications of copying Clauses and Resolvents.
  *  </p>
  */
-class KnowledgeBase
+class Prover
 {
 public:
     /**
-     * @brief Create a new KnowledgeBase to store Clause objects with reference to the shared SymbolRepository.
-     * @param symbol_repository The repository storing symbols used by Clause objects in the KnowledgeBase.
+     * @brief Create a new Prover instance to store Clause objects with reference to the shared SymbolRepository.
+     * @param symbol_repository The repository storing symbols used by Clause objects in the Prover.
      */
-    explicit KnowledgeBase(std::shared_ptr<SymbolRepository> symbol_repository);
+    explicit Prover(std::shared_ptr<SymbolRepository> symbol_repository);
 
     /**
      * @brief Attempt to introduce an entire SentenceRoot into the knowledge base.
@@ -80,16 +81,16 @@ public:
     bool tell(const Clause &new_clause);
 
     /**
-     * @brief Attempt to determine truth of the given query given the knowledge provided to the KnowledgeBase.
+     * @brief Attempt to determine truth of the given query given the knowledge provided to the Prover.
      * @param query The conjecture.
      * @param max_step_count The maximum number of steps taken by the resolution procedure before issuing a time-out.
      * @return The result of the query, including a ConjectureState and execution trace.
-     * @note Take note of the KnowledgeBase class documentation on data lifetimes before making use of the QueryResult.
+     * @note Take note of the Prover class documentation on data lifetimes before making use of the QueryResult.
      */
     QueryResult ask(std::unique_ptr<MutableSentenceRoot> &&query, size_t max_step_count =
         std::numeric_limits<std::size_t>::max());
 
-    KnowledgeBase(KnowledgeBase&&) = default;
+    Prover(Prover&&) = default;
 
 private:
     /**
@@ -113,9 +114,10 @@ private:
      * @param negated_query A CNF-normalised construction of the negation of the goal.
      * @param max_step_count The maximum number of steps to perform in the resolution procedure before bailing out.
      * @return Execution metadata and a proof trace.
-     * @invariant Any Clauses referenced by Resolvents must be present in one of the standard locations:
+     * @invariant Any Clauses referenced by Resolvents must be present in one of the standard FVIKnowledgeBase
+     *  locations:
      *  <ul>
-     *      <li>The <i>base clauses</i> store of the KnowledgeBase; or</li>
+     *      <li>The <i>base clauses</i> store of the Prover; or</li>
      *      <li>The <i>introduced clauses</i> store in QueryResult.</li>
      *  </ul>
      */
@@ -181,4 +183,4 @@ private:
 
 } // namespace optifol
 
-#endif // OPTIFOL_KNOWLEDGEBASE_HPP
+#endif // OPTIFOL_PROVER_HPP

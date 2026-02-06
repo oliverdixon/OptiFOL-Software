@@ -281,8 +281,8 @@ add_library(OptifolCommon OBJECT
         Source/GUI/TestingArea/TestingFailedView.hpp
         Source/UserTesting/Execution/PartialTestResult.cpp
         Source/UserTesting/Execution/PartialTestResult.hpp
-        Source/Inference/KnowledgeBase.cpp
-        Source/Inference/KnowledgeBase.hpp
+        Source/Inference/Prover.cpp
+        Source/Inference/Prover.hpp
         Source/Visitors/RegularTargets/Unification/UnificationApplicationVisitor.cpp
         Source/Visitors/RegularTargets/Unification/UnificationApplicationVisitor.hpp
         Source/Inference/ExpressionFactory.cpp

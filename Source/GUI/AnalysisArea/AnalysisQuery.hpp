@@ -17,7 +17,7 @@
 #include <gtkmm/notebook.h>
 #include <gtkmm/scrolledwindow.h>
 
-#include "../../Inference/KnowledgeBase.hpp"
+#include "../../Inference/Prover.hpp"
 #include "../../Inference/QueryResult.hpp"
 #include "AnalysisQueryCanvas.hpp"
 #include "FOLLexer.hpp"
@@ -34,7 +34,7 @@ namespace optifol
 class AnalysisQuery
 {
 public:
-    explicit AnalysisQuery(const Glib::ustring& query_name, KnowledgeBase& kb_weak);
+    explicit AnalysisQuery(const Glib::ustring& query_name, Prover& kb_weak);
 
     void add_to_notebook(Gtk::Notebook& notebook);
 
@@ -51,7 +51,7 @@ private:
     Gtk::Entry query_entry;
     Gtk::Button execute_query_button;
 
-    KnowledgeBase& kb_weak;
+    Prover& kb_weak;
     std::unique_ptr<QueryResult> latest_result;
 
     static std::istringstream lexer_input_stream;

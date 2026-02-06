@@ -22,7 +22,7 @@ namespace optifol
 
 void AnalysisArea::add_query_page()
 {
-    auto& new_page = query_pages.emplace_back("new query", get_selected_analysis_group()->observe_kb());
+    auto& new_page = query_pages.emplace_back("new query", get_selected_analysis_group()->observe_prover_instance());
     new_page.add_to_notebook(*queries_notebook);
 }
 

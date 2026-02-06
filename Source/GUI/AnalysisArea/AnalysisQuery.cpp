@@ -25,7 +25,7 @@ std::istringstream AnalysisQuery::lexer_input_stream;
 FOLLexer AnalysisQuery::lexer{AnalysisQuery::lexer_input_stream, std::cerr};
 FOLParser AnalysisQuery::parser{&AnalysisQuery::lexer};
 
-AnalysisQuery::AnalysisQuery(const Glib::ustring &query_name, KnowledgeBase& kb_weak) :
+AnalysisQuery::AnalysisQuery(const Glib::ustring &query_name, Prover& kb_weak) :
     kb_weak(kb_weak)
 {
     execute_query_button.signal_clicked().connect(sigc::mem_fun(*this, &AnalysisQuery::execute_query));

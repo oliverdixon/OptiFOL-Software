@@ -37,7 +37,7 @@ AnalysisGroup::AnalysisGroup(
     property_name().set_value(name);
 }
 
-KnowledgeBase &AnalysisGroup::observe_kb() noexcept
+Prover &AnalysisGroup::observe_prover_instance() noexcept
 {
     return kb;
 }

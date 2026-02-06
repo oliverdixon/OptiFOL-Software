@@ -11,7 +11,7 @@
  * @version Development
  */
 
-#include "KnowledgeBase.hpp"
+#include "Prover.hpp"
 
 #include <algorithm>
 #include <queue>
@@ -28,13 +28,13 @@
 namespace optifol
 {
 
-const log4cxx::LoggerPtr KnowledgeBase::kb_logger = Logging::get_logger({"LogicServices", "KnowledgeBase"});
-const log4cxx::LoggerPtr KnowledgeBase::resolution_logger = Logging::get_logger({"LogicServices", "KnowledgeBase",
+const log4cxx::LoggerPtr Prover::kb_logger = Logging::get_logger({"LogicServices", "KnowledgeBase"});
+const log4cxx::LoggerPtr Prover::resolution_logger = Logging::get_logger({"LogicServices", "KnowledgeBase",
     "Resolution"});
-const log4cxx::LoggerPtr KnowledgeBase::factoring_logger = Logging::get_logger({"LogicServices", "KnowledgeBase",
+const log4cxx::LoggerPtr Prover::factoring_logger = Logging::get_logger({"LogicServices", "KnowledgeBase",
     "Factoring"});
 
-KnowledgeBase::KnowledgeBase(std::shared_ptr<SymbolRepository> symbol_repository) :
+Prover::Prover(std::shared_ptr<SymbolRepository> symbol_repository) :
     symbol_repository(std::move(symbol_repository)),
     base_clauses(this->symbol_repository),
     unifier(this->symbol_repository),
@@ -44,7 +44,7 @@ KnowledgeBase::KnowledgeBase(std::shared_ptr<SymbolRepository> symbol_repository
 {
 }
 
-bool KnowledgeBase::tell(const SentenceRoot &sentence)
+bool Prover::tell(const SentenceRoot &sentence)
 {
     return std::ranges::all_of(sentence, [this](const Clause& new_clause)
     {
@@ -52,18 +52,18 @@ bool KnowledgeBase::tell(const SentenceRoot &sentence)
     });
 }
 
-bool KnowledgeBase::tell(const Clause &new_clause)
+bool Prover::tell(const Clause &new_clause)
 {
     return base_clauses.add_clause(std::make_unique<Clause>(new_clause)).second;
 }
 
-bool KnowledgeBase::PQResolventUnitPref::operator()(
+bool Prover::PQResolventUnitPref::operator()(
         const std::unique_ptr<Resolvent> &lhs, const std::unique_ptr<Resolvent> &rhs) noexcept
 {
     return *lhs < *rhs;
 }
 
-QueryResult KnowledgeBase::run_resolution(std::unique_ptr<SentenceRoot> &&negated_query, const size_t max_step_count)
+QueryResult Prover::run_resolution(std::unique_ptr<SentenceRoot> &&negated_query, const size_t max_step_count)
 {
     RawUnorderedSet<const Clause> seen_resolvents; // Transparent hashing to provide lightweight de-duplication.
     ResolventQueue working_queue; // Generated resolvents not yet committed to introduced knowledge.
@@ -162,7 +162,7 @@ QueryResult KnowledgeBase::run_resolution(std::unique_ptr<SentenceRoot> &&negate
     return result;
 }
 
-QueryResult KnowledgeBase::ask(std::unique_ptr<MutableSentenceRoot> &&query, const size_t max_step_count)
+QueryResult Prover::ask(std::unique_ptr<MutableSentenceRoot> &&query, const size_t max_step_count)
 {
     // Produce the negation of the goal.
     query->flip_polarity();
@@ -203,7 +203,7 @@ QueryResult KnowledgeBase::ask(std::unique_ptr<MutableSentenceRoot> &&query, con
     return result;
 }
 
-std::unique_ptr<Clause> KnowledgeBase::collect_unified_literals(
+std::unique_ptr<Clause> Prover::collect_unified_literals(
         const Literal &self, const Clause &source_clause, std::unique_ptr<Clause> &&destination_clause) const
 {
     const auto transformer =
@@ -216,7 +216,7 @@ std::unique_ptr<Clause> KnowledgeBase::collect_unified_literals(
     return destination_clause;
 }
 
-std::unique_ptr<Clause> KnowledgeBase::factor_literals(std::unique_ptr<Clause> &&unified_clause)
+std::unique_ptr<Clause> Prover::factor_literals(std::unique_ptr<Clause> &&unified_clause)
 {
     bool factoring_done = false;
     bool trivially_true = false;
@@ -268,7 +268,7 @@ std::unique_ptr<Clause> KnowledgeBase::factor_literals(std::unique_ptr<Clause> &
     return working_clause;
 }
 
-bool KnowledgeBase::insert_clause(std::unique_ptr<Clause> &&new_clause, UniqueUnorderedSet<Clause> &destination)
+bool Prover::insert_clause(std::unique_ptr<Clause> &&new_clause, UniqueUnorderedSet<Clause> &destination)
 {
     const auto [node_it, added_ok] = destination.emplace(std::move(new_clause));
     std::ignore = node_it;
@@ -281,7 +281,7 @@ bool KnowledgeBase::insert_clause(std::unique_ptr<Clause> &&new_clause, UniqueUn
     return true;
 }
 
-std::vector<std::pair<Resolvent, std::unique_ptr<Clause>>> KnowledgeBase::find_resolvents(
+std::vector<std::pair<Resolvent, std::unique_ptr<Clause>>> Prover::find_resolvents(
         const ProofTreeNode *const lhs_node, const ProofTreeNode *const rhs_node)
 {
     std::vector<std::pair<Resolvent, std::unique_ptr<Clause>>> resolvents;

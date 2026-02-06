@@ -14,7 +14,7 @@
 #ifndef ANALYSISGROUP_HPP
 #define ANALYSISGROUP_HPP
 
-#include "../Inference/KnowledgeBase.hpp"
+#include "../Inference/Prover.hpp"
 #include "ObjectGroup.hpp"
 #include "Requirement.hpp"
 
@@ -37,12 +37,12 @@ public:
     AnalysisGroup(const Glib::ustring& name, BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &builder,
         std::shared_ptr<SymbolRepository> symbol_repository);
 
-    KnowledgeBase& observe_kb() noexcept;
+    Prover& observe_prover_instance() noexcept;
 
 private:
     void handle_group_model_change(guint initial_index, guint removed_count, guint added_count);
 
-    KnowledgeBase kb;
+    Prover kb;
 };
 
 }

@@ -19,11 +19,11 @@
 #include "../IR/MutableVariants/Sentences/MutableSentenceRoot.hpp"
 #include "../IR/MutableVariants/Terms/MutableConstant.hpp"
 #include "../IR/MutableVariants/Terms/MutableVariable.hpp"
-#include "../Inference/QueryResult.hpp"
-#include "../Inference/Resolvent.hpp"
 #include "../IR/SymbolRepository.hpp"
 #include "../Inference/ExpressionFactory.hpp"
-#include "../Inference/KnowledgeBase.hpp"
+#include "../Inference/Prover.hpp"
+#include "../Inference/QueryResult.hpp"
+#include "../Inference/Resolvent.hpp"
 
 namespace optifol
 {
@@ -37,11 +37,11 @@ protected:
     void SetUp() override
     {
         symbol_repository = std::make_shared<SymbolRepository>();
-        knowledge_base = std::make_unique<KnowledgeBase>(symbol_repository);
+        knowledge_base = std::make_unique<Prover>(symbol_repository);
     }
 
     std::shared_ptr<SymbolRepository> symbol_repository;
-    std::unique_ptr<KnowledgeBase> knowledge_base;
+    std::unique_ptr<Prover> knowledge_base;
 };
 
 /**
