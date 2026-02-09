@@ -9,7 +9,7 @@
     <appender name="ConsoleAppender" class="org.apache.log4j.ConsoleAppender">
         <param name="Target" value="System.out"/>
         <layout class="org.apache.log4j.PatternLayout">
-            <param name="ConversionPattern" value="[%d] [%p] [%c] %m%n"/>
+            <param name="ConversionPattern" value="[%d] [%-5p] [%-32c] %m%n"/>
         </layout>
     </appender>
 
@@ -33,8 +33,13 @@
         <appender-ref ref="ConsoleAppender"/>
     </logger>
 
-    <logger name="LogicServices.KnowledgeBase" additivity="false">
+    <logger name="LogicServices.Prover" additivity="false">
         <priority value="info"/>
+        <appender-ref ref="ConsoleAppender"/>
+    </logger>
+
+    <logger name="LogicServices.FVIKnowledgeBase" additivity="false">
+        <priority value="debug"/>
         <appender-ref ref="ConsoleAppender"/>
     </logger>
 

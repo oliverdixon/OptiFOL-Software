@@ -16,10 +16,11 @@
 #include <algorithm>
 #include <queue>
 #include <ranges>
+#include <sigc++/adaptors/bind.h>
 
-#include "../IR/SymbolRepository.hpp"
 #include "../IR/MutableVariants/Sentences/MutableSentenceRoot.hpp"
 #include "../IR/Sentences/Literal.hpp"
+#include "../IR/SymbolRepository.hpp"
 #include "../Logging.hpp"
 #include "ExpressionFactory.hpp"
 #include "QueryResult.hpp"
@@ -28,11 +29,9 @@
 namespace optifol
 {
 
-const log4cxx::LoggerPtr Prover::kb_logger = Logging::get_logger({"LogicServices", "KnowledgeBase"});
-const log4cxx::LoggerPtr Prover::resolution_logger = Logging::get_logger({"LogicServices", "KnowledgeBase",
-    "Resolution"});
-const log4cxx::LoggerPtr Prover::factoring_logger = Logging::get_logger({"LogicServices", "KnowledgeBase",
-    "Factoring"});
+const log4cxx::LoggerPtr Prover::prover_logger = Logging::get_logger({"LogicServices", "Prover"});
+const log4cxx::LoggerPtr Prover::resolution_logger = Logging::get_logger({"LogicServices", "Prover", "Resolution"});
+const log4cxx::LoggerPtr Prover::factoring_logger = Logging::get_logger({"LogicServices", "Prover", "Factoring"});
 
 Prover::Prover(std::shared_ptr<SymbolRepository> symbol_repository) :
     symbol_repository(std::move(symbol_repository)),
@@ -54,7 +53,7 @@ bool Prover::tell(const SentenceRoot &sentence)
 
 bool Prover::tell(const Clause &new_clause)
 {
-    return base_clauses.replace_subsumed(std::make_unique<Clause>(new_clause)).second;
+    return base_clauses.add_clause(std::make_unique<Clause>(new_clause)).second;
 }
 
 bool Prover::PQResolventUnitPref::operator()(
@@ -65,19 +64,18 @@ bool Prover::PQResolventUnitPref::operator()(
 
 QueryResult Prover::run_resolution(std::unique_ptr<SentenceRoot> &&negated_query, const size_t max_step_count)
 {
-    RawUnorderedSet<const Clause> seen_resolvents; // Transparent hashing to provide lightweight de-duplication.
-    ResolventQueue working_queue; // Generated resolvents not yet committed to introduced knowledge.
     QueryResult result(base_clauses); // Execution trace, introduced clauses, and metadata built up by the solver.
 
     // Introduce the negated goal clauses into the query instance.
     for (const auto& clause : *negated_query)
-        result.introduced_clauses.replace_subsumed(std::make_unique<Clause>(clause));
+        result.introduced_clauses.add_clause(std::make_unique<Clause>(clause));
 
     /*
      * Over the Cartesian product of clauses in the KB, search for resolvents in the initial set and populate the
      * working queue accordingly. Note that binary resolution is a commutative operation, so we restrict the RHS.
      */
 
+    ResolventQueue working_queue; // Generated resolvents not yet committed to introduced knowledge.
     for (const auto lhs_clause : result.introduced_clauses.flatten())
         for (const auto& rhs_clause : result.introduced_clauses.flatten()) {
             auto new_resolvents = find_resolvents(lhs_clause, rhs_clause);
@@ -86,6 +84,7 @@ QueryResult Prover::run_resolution(std::unique_ptr<SentenceRoot> &&negated_query
         }
 
     resolution_logger->debug(std::format("Resolution initial search gathered {} resolvents.", working_queue.size()));
+    RawUnorderedSet<const Clause> seen_resolvents; // Transparent hashing to provide lightweight de-duplication.
 
     /*
      * Once the initial set of resolvents has been added to the priority queue, continue stepping until a result has
@@ -99,22 +98,31 @@ QueryResult Prover::run_resolution(std::unique_ptr<SentenceRoot> &&negated_query
          * to the final execution trace, and ownership of the resolved clause is transferred likewise. If it has been
          * seen before, we can just ignore it, as binary resolution can repeat resolutions for different clauses.
          */
-        auto [seen_resolution_it, was_unseen] = seen_resolvents.insert(
-            next_resolvent.observe_node());
-        std::ignore = seen_resolution_it;
+        auto [_, was_unseen] = seen_resolvents.insert(next_resolvent.observe_node());
 
         if (was_unseen) {
             resolution_logger->info(std::format("Step {} is using resolution {}.", result.elapsed_step_count,
                 *next_resolvent.observe_node()));
 
+            if (result.introduced_clauses.is_orphaned(next_resolvent.observe_node()))
+                // Keep the (non-owning) resolvent popped off the working queue, but don't move its resolution.
+                continue;
+
             /*
              * Insert the next-unseen resolvent into the KB by transferring ownership of the corresponding resolution
              * into the QueryResult and recording the resolvent into the trace. If the resolution clause is non-trivial
              * and new, search for more resolvents.
+             *
+             * If the KB refuses ownership of the new Clause (i.e. if it would be subsumed by the existing KB), we take
+             * ownership back and return it to the working queue. Otherwise, it would go out of scope here despite other
+             * resolvents potentially still using it.
              */
             auto owning_resolution = working_queue.extract_resolution(next_resolvent);
+
             auto [committed_resolution_it, was_committed] =
-                result.introduced_clauses.replace_subsumed(std::move(owning_resolution));
+                result.introduced_clauses.add_clause(std::move(owning_resolution),
+                    sigc::mem_fun(working_queue, &ResolventQueue::store_resolution));
+
             result.relations.push_back(std::move(next_resolvent));
 
             if (was_committed) {
@@ -129,7 +137,7 @@ QueryResult Prover::run_resolution(std::unique_ptr<SentenceRoot> &&negated_query
                 const Resolvent * const lhs = &result.relations.back();
 
                 // Clauses on RHS
-                for (const auto& rhs_clause : base_clauses.flatten()) {
+                for (const auto rhs_clause : base_clauses.flatten()) {
                     auto new_resolvents = find_resolvents(lhs, rhs_clause);
                     for (auto&& [new_resolvent, new_resolution] : new_resolvents)
                         working_queue.push(std::move(new_resolvent), std::move(new_resolution));
@@ -169,15 +177,15 @@ QueryResult Prover::ask(std::unique_ptr<MutableSentenceRoot> &&query, const size
     auto negated_query = ExpressionFactory::build_sentence(std::move(query), symbol_repository);
 
     const auto clause_count = base_clauses.get_total_clause_count();
-    kb_logger->info(std::format("Querying the KB of {} clauses for the negation of {}.", clause_count, *negated_query));
+    prover_logger->info(std::format("Querying the KB of {} clauses for the negation of {}.", clause_count, *negated_query));
 
-    if (kb_logger->isTraceEnabled()) {
-        kb_logger->trace("Dumping initial knowledge base...");
+    if (prover_logger->isTraceEnabled()) {
+        prover_logger->trace("Dumping initial knowledge base...");
         unsigned int clause_idx = 1;
         for (const auto clause : base_clauses.flatten())
-            kb_logger->trace(std::format("KB Clause {}/{}: {}", clause_idx++, clause_count, *clause));
+            prover_logger->trace(std::format("KB Clause {}/{}: {}", clause_idx++, clause_count, *clause));
 
-        kb_logger->trace(std::format("KB Clause (negated goal): {}", *negated_query->begin()));
+        prover_logger->trace(std::format("KB Clause (negated goal): {}", *negated_query->begin()));
     }
 
     // Run the theorem-prover.
@@ -185,18 +193,18 @@ QueryResult Prover::ask(std::unique_ptr<MutableSentenceRoot> &&query, const size
 
     switch (result.outcome) {
     case QueryResult::ConjectureStatus::TimedOut:
-        kb_logger->info(std::format("The solver timed out after {} steps.", max_step_count));
+        prover_logger->info(std::format("The solver timed out after {} steps.", max_step_count));
         break;
     case QueryResult::ConjectureStatus::Consistent:
-        kb_logger->info(std::format("A contradiction was derived in {} steps; the queried sentence is consistent.",
+        prover_logger->info(std::format("A contradiction was derived in {} steps; the queried sentence is consistent.",
             result.elapsed_step_count));
         break;
     case QueryResult::ConjectureStatus::Inconsistent:
-        kb_logger->info(std::format("A contradiction could not be derived after {} steps, and no more resolutions were "
+        prover_logger->info(std::format("A contradiction could not be derived after {} steps, and no more resolutions were "
                                     "available. The queried sentence is inconsistent.", result.elapsed_step_count));
         break;
     case QueryResult::ConjectureStatus::NotExecuted:
-        kb_logger->error("The solver panicked, and no proof was attempted.");
+        prover_logger->error("The solver panicked, and no proof was attempted.");
         break;
     }
 
@@ -274,7 +282,7 @@ bool Prover::insert_clause(std::unique_ptr<Clause> &&new_clause, UniqueUnordered
     std::ignore = node_it;
 
     if (!added_ok) {
-        kb_logger->info("Rejecting clause from the KB as it is already present.");
+        prover_logger->info("Rejecting clause from the KB as it is already present.");
         return false;
     }
 

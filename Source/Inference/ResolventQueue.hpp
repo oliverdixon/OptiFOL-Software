@@ -57,6 +57,12 @@ public:
     std::unique_ptr<Clause> extract_resolution(const Resolvent& resolvent);
 
     /**
+     * @brief Confer ownership of a resolution Clause into the ResolventQueue.
+     * @param resolution The resolution to store.
+     */
+    bool store_resolution(std::unique_ptr<Clause> &&resolution);
+
+    /**
      * @brief Checks emptiness state of the queue
      * @return Is the queue empty?
      */

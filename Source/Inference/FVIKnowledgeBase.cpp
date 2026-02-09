@@ -3,32 +3,58 @@
  * 2025 Oliver Dixon <od641@york.ac.uk>
  */
 
-//
-// Created by owd on 2/4/26.
-//
+/**
+ * @file
+ * @brief Class implementation for the Feature Vector Indexing Clause knowledge base
+ * @author Oliver Dixon
+ * @date 2026-02-09
+ * @version Development
+ */
 
 #include "FVIKnowledgeBase.hpp"
 
 #include <ranges>
 
 #include "../IR/Sentences/Clause.hpp"
+#include "../Logging.hpp"
 #include "../Visitors/RegularTargets/Unification/UnificationVisitor.hpp"
 
 namespace optifol
 {
 
+const log4cxx::LoggerPtr FVIKnowledgeBase::kb_logger = Logging::get_logger({"LogicServices", "FVIKnowledgeBase"});
+
 FVIKnowledgeBase::FVIKnowledgeBase(std::shared_ptr<SymbolRepository> symbol_repository) :
-    symbol_repository(std::move(symbol_repository))
+    symbol_repository(std::move(symbol_repository)),
+    unification_visitor(this->symbol_repository)
 {
 }
 
 FVIKnowledgeBase::FVIKnowledgeBase(const FVIKnowledgeBase &other_kb) :
     root(other_kb.root),
-    symbol_repository(other_kb.symbol_repository)
+    symbol_repository(other_kb.symbol_repository),
+    total_clause_count(other_kb.total_clause_count),
+    unification_visitor(this->symbol_repository)
 {
 }
 
-std::pair<UniqueUnorderedSet<Clause>::iterator, bool> FVIKnowledgeBase::add_clause(std::unique_ptr<Clause> &&clause)
+FVIKnowledgeBase::FVIKnowledgeBase(FVIKnowledgeBase &&old_kb) noexcept :
+    root(std::move(old_kb.root)),
+    symbol_repository(std::move(old_kb.symbol_repository)),
+    total_clause_count(old_kb.total_clause_count),
+    unification_visitor(this->symbol_repository)
+{
+}
+
+FVIKnowledgeBase &FVIKnowledgeBase::operator=(FVIKnowledgeBase &&old_kb) noexcept
+{
+    FVIKnowledgeBase new_kb(std::move(old_kb));
+    std::swap(new_kb, *this);
+    return *this;
+}
+
+std::pair<UniqueUnorderedSet<Clause>::iterator, bool> FVIKnowledgeBase::insert_clause(std::unique_ptr<Clause> &&clause,
+        const std::optional<std::function<void(std::unique_ptr<Clause> &&)>> &rejection_handler)
 {
     FVINode * node = &root;
     const auto& clause_features = clause->observe_features();
@@ -40,46 +66,53 @@ std::pair<UniqueUnorderedSet<Clause>::iterator, bool> FVIKnowledgeBase::add_clau
         node = child.get();
     }
 
-    auto insertion_result = node->clause_set.insert(std::move(clause));
-    if (insertion_result.second)
-        ++total_clause_count;
+    if (node->clause_set.contains(clause)) {
+        LOG4CXX_INFO(kb_logger, std::format("Rejecting clause {} because it already exists in the KB trie.", *clause));
+        if (rejection_handler.has_value())
+            (*rejection_handler)(std::move(clause));
+        return { node->clause_set.end(), false };
+    }
 
-    return insertion_result;
+    LOG4CXX_INFO(kb_logger, std::format("Accepting clause {} into the KB.", *clause));
+    auto [it, success] = node->clause_set.insert(std::move(clause));
+    assert(success);
+    ++total_clause_count;
+    LOG4CXX_DEBUG(kb_logger, std::format("The KB now contains {} clauses.", total_clause_count));
+    return {it, success};
 }
 
-std::vector<const Clause *> FVIKnowledgeBase::get_subsuming(const Clause &clause) const
+std::pair<UniqueUnorderedSet<Clause>::iterator, bool> FVIKnowledgeBase::add_clause(std::unique_ptr<Clause> &&clause,
+        const std::optional<std::function<void(std::unique_ptr<Clause> &&)>> &rejection_handler)
 {
     std::vector<const Clause *> subsuming_clauses;
-    get_subsuming(clause, root, 0, subsuming_clauses);
-    return subsuming_clauses;
-}
+    get_subsuming(*clause, root, 0, subsuming_clauses); // TODO don't need to build up a whole vector here...
 
-std::vector<const Clause *> FVIKnowledgeBase::get_subsumed(const Clause &clause) const
-{
-    std::vector<const Clause *> subsumed_clauses;
-    get_subsumed(clause, root, 0, subsumed_clauses);
-    return subsumed_clauses;
-}
-
-void FVIKnowledgeBase::remove_subsumed(const Clause &clause)
-{
-    remove_subsumed(clause, root, 0);
-}
-
-std::pair<UniqueUnorderedSet<Clause>::iterator, bool> FVIKnowledgeBase::replace_subsumed(
-        std::unique_ptr<Clause> &&clause)
-{
-    const auto subsuming = get_subsuming(*clause);
-    if (!subsuming.empty())
+    if (!subsuming_clauses.empty()) {
+        LOG4CXX_INFO(kb_logger, std::format("Rejecting clause {} because it would be subsumed by current KB.", *clause));
+        if (rejection_handler.has_value())
+            (*rejection_handler)(std::move(clause));
         return { root.clause_set.end(), false };
+    }
 
-    remove_subsumed(*clause);
-    return add_clause(std::move(clause));
+    remove_subsumed(*clause, root, 0);
+    return insert_clause(std::move(clause), rejection_handler);
 }
 
 std::generator<const Clause *> FVIKnowledgeBase::flatten() const
 {
-    return flatten(root);
+    std::vector<const FVINode *> stack;
+    stack.push_back(&root);
+
+    while (!stack.empty()) {
+        const auto node = stack.back();
+        stack.pop_back();
+
+        for (const auto& clause : node->clause_set)
+            co_yield clause.get();
+
+        for (const auto& [_, child_node] : node->children)
+            stack.push_back(child_node.get());
+    }
 }
 
 FVIKnowledgeBase::FVINode::FVINode(const FVINode &src_node)
@@ -99,18 +132,6 @@ FVIKnowledgeBase::FVINode& FVIKnowledgeBase::FVINode::operator=(const FVINode &s
     return *this;
 }
 
-std::generator<const Clause *> FVIKnowledgeBase::flatten(const FVINode &node)
-{
-    for (const auto& my_clause : node.clause_set)
-        co_yield my_clause.get();
-
-    for (const auto& [child_feature, child_node] : node.children) {
-        std::ignore = child_feature;
-        for (const auto child_clause : flatten(*child_node))
-            co_yield child_clause;
-    }
-}
-
 void FVIKnowledgeBase::get_subsuming(const Clause &clause, const FVINode &node, const unsigned int depth,
         std::vector<const Clause *> &subsuming_clauses) const
 {
@@ -119,8 +140,9 @@ void FVIKnowledgeBase::get_subsuming(const Clause &clause, const FVINode &node, 
 
         // The given node is a leaf node.
         for (const auto contained_clause : node.clause_set | unwrap_clause) {
-            auto visitor = UnificationVisitor(symbol_repository);
-            if (contained_clause->subsumes(clause, visitor))
+            const auto subsumes = contained_clause->subsumes(clause, unification_visitor);
+            unification_visitor.reset_substitutions();
+            if (subsumes)
                 subsuming_clauses.push_back(contained_clause);
             else
                 return;
@@ -191,8 +213,9 @@ void FVIKnowledgeBase::explore_leaf(
         const Clause &clause, const FVINode &node, std::vector<const Clause *> &subsumed_clauses) const
 {
     for (const auto contained_clause : node.clause_set | unwrap_clause) {
-        auto visitor = UnificationVisitor(symbol_repository);
-        if (clause.subsumes(*contained_clause, visitor))
+        const auto subsumes = clause.subsumes(*contained_clause, unification_visitor);
+        unification_visitor.reset_substitutions();
+        if (subsumes)
             subsumed_clauses.push_back(contained_clause);
     }
 
@@ -227,6 +250,7 @@ void FVIKnowledgeBase::remove_subsumed(const Clause &clause, FVINode &node, unsi
 
         for (const auto& [child_feature, child_node] : node.children |
                 std::ranges::views::reverse | filter_greater_magnitudes)
+
             if (child_feature.get_feature_type() <= current_feature.get_feature_type()) {
                 const std::size_t offset = child_feature.get_feature_type() == current_feature.get_feature_type() &&
                     child_feature.get_magnitude() >= current_feature.get_magnitude() ? 1 : 0;
@@ -241,22 +265,28 @@ void FVIKnowledgeBase::remove_subsumed(const Clause &clause, FVINode &node, unsi
     }
 }
 
-void FVIKnowledgeBase::explore_and_remove_leaf(const Clause &clause, FVINode &node)
+void FVIKnowledgeBase::explore_and_remove_leaf(const Clause &incoming_clause, FVINode &node)
 {
     auto next_clause_it = node.clause_set.begin();
     for (auto clause_it = next_clause_it; clause_it != node.clause_set.end(); clause_it = next_clause_it) {
         ++next_clause_it;
-        auto visitor = UnificationVisitor(symbol_repository);
+        const auto subsumes = incoming_clause.subsumes(**clause_it, unification_visitor);
+        unification_visitor.reset_substitutions();
+        if (subsumes) {
+            LOG4CXX_INFO(kb_logger, std::format("Orphaning clause {} from the KB as it is being subsumed by {}.",
+                **clause_it, incoming_clause));
 
-        if (clause.subsumes(**clause_it, visitor)) {
-            orphaned_clauses.push_back(std::move(node.clause_set.extract(clause_it).value()));
+            orphaned_clauses.insert(std::move(node.clause_set.extract(clause_it).value()));
             --total_clause_count;
+
+            LOG4CXX_DEBUG(kb_logger, std::format("The KB now contains {} active and {} orphaned clauses.",
+                total_clause_count, orphaned_clauses.size()));
         }
     }
 
     std::vector<Feature> slated_for_removal;
     for (const auto& [child_feature, child_node] : node.children) {
-        explore_and_remove_leaf(clause, *child_node);
+        explore_and_remove_leaf(incoming_clause, *child_node);
         if (child_node->children.empty() && child_node->clause_set.empty())
             slated_for_removal.push_back(child_feature);
     }
@@ -268,6 +298,11 @@ void FVIKnowledgeBase::explore_and_remove_leaf(const Clause &clause, FVINode &no
 unsigned int FVIKnowledgeBase::get_total_clause_count() const noexcept
 {
     return total_clause_count;
+}
+
+bool FVIKnowledgeBase::is_orphaned(const Clause *clause) const
+{
+    return orphaned_clauses.contains(clause);
 }
 
 } // namespace optifol

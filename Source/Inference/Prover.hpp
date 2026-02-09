@@ -167,7 +167,7 @@ private:
     [[nodiscard]] std::vector<std::pair<Resolvent, std::unique_ptr<Clause>>> find_resolvents(
             const ProofTreeNode *lhs_node, const ProofTreeNode *rhs_node);
 
-    static const log4cxx::LoggerPtr kb_logger;
+    static const log4cxx::LoggerPtr prover_logger;
     static const log4cxx::LoggerPtr resolution_logger;
     static const log4cxx::LoggerPtr factoring_logger;
 

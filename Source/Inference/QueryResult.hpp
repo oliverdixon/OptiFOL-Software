@@ -16,13 +16,11 @@
 
 #include <deque>
 
-#include "../IR/Sentences/Clause.hpp"
+#include "Resolvent.hpp"
 #include "FVIKnowledgeBase.hpp"
 
 namespace optifol
 {
-
-class Resolvent;
 
 struct QueryResult
 {

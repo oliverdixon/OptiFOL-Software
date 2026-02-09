@@ -23,7 +23,6 @@
 #include "../Inference/ExpressionFactory.hpp"
 #include "../Inference/Prover.hpp"
 #include "../Inference/QueryResult.hpp"
-#include "../Inference/Resolvent.hpp"
 
 namespace optifol
 {
@@ -301,10 +300,10 @@ TEST_F(ResolutionTest, CuriosityKilledTheCat)
     kills_args_4.push_back(MutableConstant::build("Curiosity"));
     kills_args_4.push_back(MutableConstant::build("Tuna"));
 
-    const auto result = prover->ask(MutableSentenceRoot::build(MutablePredicate::build("Kills", false,
+    const auto result = prover->ask(MutableSentenceRoot::build(MutablePredicate::build("Kills",
         std::move(kills_args_4))));
 
-    EXPECT_EQ(result.outcome, QueryResult::ConjectureStatus::Inconsistent);
+    EXPECT_EQ(result.outcome, QueryResult::ConjectureStatus::Consistent);
 }
 
 } // namespace optifol

@@ -59,7 +59,7 @@ TEST_F(FeatureVectorIndexTest, Test1)
     auto ct = Clause::build();
     ct->add_literal(p_literal);
 
-    kb.replace_subsumed(std::move(ct));
+    kb.add_clause(std::move(ct));
 }
 
 }
