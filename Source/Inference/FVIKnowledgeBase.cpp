@@ -22,6 +22,12 @@ FVIKnowledgeBase::FVIKnowledgeBase(std::shared_ptr<SymbolRepository> symbol_repo
 {
 }
 
+FVIKnowledgeBase::FVIKnowledgeBase(const FVIKnowledgeBase &other_kb) :
+    root(other_kb.root),
+    symbol_repository(other_kb.symbol_repository)
+{
+}
+
 std::pair<UniqueUnorderedSet<Clause>::iterator, bool> FVIKnowledgeBase::add_clause(std::unique_ptr<Clause> &&clause)
 {
     FVINode * node = &root;
@@ -60,19 +66,37 @@ void FVIKnowledgeBase::remove_subsumed(const Clause &clause)
     remove_subsumed(clause, root, 0);
 }
 
-void FVIKnowledgeBase::replace_subsumed(std::unique_ptr<Clause> &&clause)
+std::pair<UniqueUnorderedSet<Clause>::iterator, bool> FVIKnowledgeBase::replace_subsumed(
+        std::unique_ptr<Clause> &&clause)
 {
     const auto subsuming = get_subsuming(*clause);
     if (!subsuming.empty())
-        return;
+        return { root.clause_set.end(), false };
 
     remove_subsumed(*clause);
-    add_clause(std::move(clause));
+    return add_clause(std::move(clause));
 }
 
 std::generator<const Clause *> FVIKnowledgeBase::flatten() const
 {
     return flatten(root);
+}
+
+FVIKnowledgeBase::FVINode::FVINode(const FVINode &src_node)
+{
+    clause_set.reserve(src_node.clause_set.size());
+    for (const auto child_clause : src_node.clause_set | unwrap_clause)
+        clause_set.insert(std::make_unique<Clause>(*child_clause));
+
+    for (const auto& [child_feature, child_node] : src_node.children)
+        children.emplace(child_feature, std::make_unique<FVINode>(*child_node.get()));
+}
+
+FVIKnowledgeBase::FVINode& FVIKnowledgeBase::FVINode::operator=(const FVINode &src_node)
+{
+    FVINode new_node = src_node;
+    std::swap(new_node, *this);
+    return *this;
 }
 
 std::generator<const Clause *> FVIKnowledgeBase::flatten(const FVINode &node)
@@ -219,20 +243,16 @@ void FVIKnowledgeBase::remove_subsumed(const Clause &clause, FVINode &node, unsi
 
 void FVIKnowledgeBase::explore_and_remove_leaf(const Clause &clause, FVINode &node)
 {
-    unsigned int erased_count = 0;
-
-    std::erase_if(node.clause_set, [this, &clause, &erased_count](const auto& contained_clause)
-    {
+    auto next_clause_it = node.clause_set.begin();
+    for (auto clause_it = next_clause_it; clause_it != node.clause_set.end(); clause_it = next_clause_it) {
+        ++next_clause_it;
         auto visitor = UnificationVisitor(symbol_repository);
-        if (clause.subsumes(*contained_clause, visitor)) {
-            ++erased_count;
-            return true;
+
+        if (clause.subsumes(**clause_it, visitor)) {
+            orphaned_clauses.push_back(std::move(node.clause_set.extract(clause_it).value()));
+            --total_clause_count;
         }
-
-        return false;
-    });
-
-    total_clause_count -= erased_count;
+    }
 
     std::vector<Feature> slated_for_removal;
     for (const auto& [child_feature, child_node] : node.children) {

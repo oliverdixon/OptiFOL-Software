@@ -29,6 +29,8 @@ class FVIKnowledgeBase
 public:
     explicit FVIKnowledgeBase(std::shared_ptr<SymbolRepository> symbol_repository);
 
+    FVIKnowledgeBase(const FVIKnowledgeBase& other_kb);
+
     std::pair<UniqueUnorderedSet<Clause>::iterator, bool> add_clause(std::unique_ptr<Clause> &&clause);
 
     // Forward subsumption
@@ -39,7 +41,7 @@ public:
 
     void remove_subsumed(const Clause& clause);
 
-    void replace_subsumed(std::unique_ptr<Clause> &&clause);
+    std::pair<UniqueUnorderedSet<Clause>::iterator, bool> replace_subsumed(std::unique_ptr<Clause> &&clause);
 
     std::generator<const Clause *> flatten() const;
 
@@ -50,6 +52,11 @@ private:
     {
         std::map<Feature, std::unique_ptr<FVINode>> children;
         UniqueUnorderedSet<Clause> clause_set;
+
+        FVINode() = default;
+
+        FVINode(const FVINode& src_node);
+        FVINode& operator=(const FVINode& src_node);
     };
 
     static constexpr auto unwrap_clause = std::views::transform(
@@ -72,6 +79,7 @@ private:
     FVINode root;
     std::shared_ptr<SymbolRepository> symbol_repository;
     unsigned int total_clause_count = 0;
+    std::vector<std::unique_ptr<Clause>> orphaned_clauses;
 };
 
 } // namespace optifol

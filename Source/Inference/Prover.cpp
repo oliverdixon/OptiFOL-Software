@@ -54,7 +54,7 @@ bool Prover::tell(const SentenceRoot &sentence)
 
 bool Prover::tell(const Clause &new_clause)
 {
-    return base_clauses.add_clause(std::make_unique<Clause>(new_clause)).second;
+    return base_clauses.replace_subsumed(std::make_unique<Clause>(new_clause)).second;
 }
 
 bool Prover::PQResolventUnitPref::operator()(
@@ -67,19 +67,19 @@ QueryResult Prover::run_resolution(std::unique_ptr<SentenceRoot> &&negated_query
 {
     RawUnorderedSet<const Clause> seen_resolvents; // Transparent hashing to provide lightweight de-duplication.
     ResolventQueue working_queue; // Generated resolvents not yet committed to introduced knowledge.
-    QueryResult result(symbol_repository); // Execution trace, introduced clauses, and metadata built up by the solver.
+    QueryResult result(base_clauses); // Execution trace, introduced clauses, and metadata built up by the solver.
 
     // Introduce the negated goal clauses into the query instance.
     for (const auto& clause : *negated_query)
-        result.introduced_clauses.add_clause(std::make_unique<Clause>(clause));
+        result.introduced_clauses.replace_subsumed(std::make_unique<Clause>(clause));
 
     /*
      * Over the Cartesian product of clauses in the KB, search for resolvents in the initial set and populate the
      * working queue accordingly. Note that binary resolution is a commutative operation, so we restrict the RHS.
      */
 
-    for (const auto lhs_clause : std::ranges::concat_view(base_clauses.flatten(), result.introduced_clauses.flatten()))
-        for (const auto& rhs_clause : std::ranges::concat_view(base_clauses.flatten(), result.introduced_clauses.flatten())) {
+    for (const auto lhs_clause : result.introduced_clauses.flatten())
+        for (const auto& rhs_clause : result.introduced_clauses.flatten()) {
             auto new_resolvents = find_resolvents(lhs_clause, rhs_clause);
             for (auto&& [resolvent, owning_resolution] : new_resolvents)
                 working_queue.push(std::move(resolvent), std::move(owning_resolution));
@@ -114,18 +114,18 @@ QueryResult Prover::run_resolution(std::unique_ptr<SentenceRoot> &&negated_query
              */
             auto owning_resolution = working_queue.extract_resolution(next_resolvent);
             auto [committed_resolution_it, was_committed] =
-                result.introduced_clauses.add_clause(std::move(owning_resolution));
+                result.introduced_clauses.replace_subsumed(std::move(owning_resolution));
             result.relations.push_back(std::move(next_resolvent));
 
-            if ((*committed_resolution_it)->get_triviality_state() == Clause::State::TriviallyFalse) {
-                // An empty derived clause indicates that a contradiction was derived in the KB.
-                result.outcome = QueryResult::ConjectureStatus::Consistent;
-                result.terminating_resolvent = &result.relations.back();
-                working_queue.dump(result.relations, result.introduced_clauses);
-                return result;
-            }
-
             if (was_committed) {
+                if ((*committed_resolution_it)->get_triviality_state() == Clause::State::TriviallyFalse) {
+                    // An empty derived clause indicates that a contradiction was derived in the KB.
+                    result.outcome = QueryResult::ConjectureStatus::Consistent;
+                    result.terminating_resolvent = &result.relations.back();
+                    working_queue.dump(result.relations, result.introduced_clauses);
+                    return result;
+                }
+
                 const Resolvent * const lhs = &result.relations.back();
 
                 // Clauses on RHS

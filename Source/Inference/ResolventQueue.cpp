@@ -87,7 +87,7 @@ void ResolventQueue::dump(std::deque<Resolvent> &resolvent_destination, FVIKnowl
         resolvent_destination.push_back(std::move(resolvent));
 
         if (resolution != nullptr)
-            clause_destination.add_clause(std::move(resolution));
+            clause_destination.replace_subsumed(std::move(resolution));
     }
 }
 
