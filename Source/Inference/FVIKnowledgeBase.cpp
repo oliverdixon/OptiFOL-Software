@@ -30,29 +30,6 @@ FVIKnowledgeBase::FVIKnowledgeBase(std::shared_ptr<SymbolRepository> symbol_repo
 {
 }
 
-FVIKnowledgeBase::FVIKnowledgeBase(const FVIKnowledgeBase &other_kb) :
-    root(other_kb.root),
-    symbol_repository(other_kb.symbol_repository),
-    total_clause_count(other_kb.total_clause_count),
-    unification_visitor(this->symbol_repository)
-{
-}
-
-FVIKnowledgeBase::FVIKnowledgeBase(FVIKnowledgeBase &&old_kb) noexcept :
-    root(std::move(old_kb.root)),
-    symbol_repository(std::move(old_kb.symbol_repository)),
-    total_clause_count(old_kb.total_clause_count),
-    unification_visitor(this->symbol_repository)
-{
-}
-
-FVIKnowledgeBase &FVIKnowledgeBase::operator=(FVIKnowledgeBase &&old_kb) noexcept
-{
-    FVIKnowledgeBase new_kb(std::move(old_kb));
-    std::swap(new_kb, *this);
-    return *this;
-}
-
 std::pair<UniqueUnorderedSet<Clause>::iterator, bool> FVIKnowledgeBase::insert_clause(std::unique_ptr<Clause> &&clause,
         const std::optional<std::function<void(std::unique_ptr<Clause> &&)>> &rejection_handler)
 {
@@ -113,23 +90,6 @@ std::generator<const Clause *> FVIKnowledgeBase::flatten() const
         for (const auto& [_, child_node] : node->children)
             stack.push_back(child_node.get());
     }
-}
-
-FVIKnowledgeBase::FVINode::FVINode(const FVINode &src_node)
-{
-    clause_set.reserve(src_node.clause_set.size());
-    for (const auto child_clause : src_node.clause_set | unwrap_clause)
-        clause_set.insert(std::make_unique<Clause>(*child_clause));
-
-    for (const auto& [child_feature, child_node] : src_node.children)
-        children.emplace(child_feature, std::make_unique<FVINode>(*child_node.get()));
-}
-
-FVIKnowledgeBase::FVINode& FVIKnowledgeBase::FVINode::operator=(const FVINode &src_node)
-{
-    FVINode new_node = src_node;
-    std::swap(new_node, *this);
-    return *this;
 }
 
 void FVIKnowledgeBase::get_subsuming(const Clause &clause, const FVINode &node, const unsigned int depth,

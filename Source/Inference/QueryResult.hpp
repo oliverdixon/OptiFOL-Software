@@ -36,19 +36,12 @@ struct QueryResult
         introduced_clauses(std::move(symbol_repository))
     { }
 
-    explicit QueryResult(const FVIKnowledgeBase& base_knowledge) :
-        introduced_clauses(base_knowledge)
-    { }
-
     ConjectureStatus outcome = ConjectureStatus::NotExecuted;
     std::size_t elapsed_step_count = 1;
 
     FVIKnowledgeBase introduced_clauses;
     std::deque<Resolvent> relations;
     const Resolvent * terminating_resolvent = nullptr;
-
-    QueryResult(QueryResult&&) = default;
-    QueryResult& operator=(QueryResult&&) = default;
 };
 
 } // namespace optifol

@@ -64,7 +64,7 @@ bool Prover::PQResolventUnitPref::operator()(
 
 QueryResult Prover::run_resolution(std::unique_ptr<SentenceRoot> &&negated_query, const size_t max_step_count)
 {
-    QueryResult result(base_clauses); // Execution trace, introduced clauses, and metadata built up by the solver.
+    QueryResult result(symbol_repository); // Execution trace, introduced clauses, and metadata built up by the solver.
 
     // Introduce the negated goal clauses into the query instance.
     for (const auto& clause : *negated_query)
@@ -76,8 +76,8 @@ QueryResult Prover::run_resolution(std::unique_ptr<SentenceRoot> &&negated_query
      */
 
     ResolventQueue working_queue; // Generated resolvents not yet committed to introduced knowledge.
-    for (const auto lhs_clause : result.introduced_clauses.flatten())
-        for (const auto& rhs_clause : result.introduced_clauses.flatten()) {
+    for (const auto lhs_clause : std::ranges::concat_view(base_clauses.flatten(), result.introduced_clauses.flatten()))
+        for (const auto& rhs_clause : std::ranges::concat_view(base_clauses.flatten(), result.introduced_clauses.flatten())) {
             auto new_resolvents = find_resolvents(lhs_clause, rhs_clause);
             for (auto&& [resolvent, owning_resolution] : new_resolvents)
                 working_queue.push(std::move(resolvent), std::move(owning_resolution));
@@ -122,18 +122,17 @@ QueryResult Prover::run_resolution(std::unique_ptr<SentenceRoot> &&negated_query
             auto [committed_resolution_it, was_committed] =
                 result.introduced_clauses.add_clause(std::move(owning_resolution),
                     sigc::mem_fun(working_queue, &ResolventQueue::store_resolution));
-
             result.relations.push_back(std::move(next_resolvent));
 
-            if (was_committed) {
-                if ((*committed_resolution_it)->get_triviality_state() == Clause::State::TriviallyFalse) {
-                    // An empty derived clause indicates that a contradiction was derived in the KB.
-                    result.outcome = QueryResult::ConjectureStatus::Consistent;
-                    result.terminating_resolvent = &result.relations.back();
-                    working_queue.dump(result.relations, result.introduced_clauses);
-                    return result;
-                }
+            if ((*committed_resolution_it)->get_triviality_state() == Clause::State::TriviallyFalse) {
+                // An empty derived clause indicates that a contradiction was derived in the KB.
+                result.outcome = QueryResult::ConjectureStatus::Consistent;
+                result.terminating_resolvent = &result.relations.back();
+                working_queue.dump(result.relations, result.introduced_clauses);
+                return result;
+            }
 
+            if (was_committed) {
                 const Resolvent * const lhs = &result.relations.back();
 
                 // Clauses on RHS

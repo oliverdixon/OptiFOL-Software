@@ -36,12 +36,6 @@ class FVIKnowledgeBase
 public:
     explicit FVIKnowledgeBase(std::shared_ptr<SymbolRepository> symbol_repository);
 
-    FVIKnowledgeBase(const FVIKnowledgeBase& other_kb);
-    FVIKnowledgeBase& operator=(FVIKnowledgeBase& other_kb) = delete;
-
-    FVIKnowledgeBase(FVIKnowledgeBase&& old_kb) noexcept;
-    FVIKnowledgeBase& operator=(FVIKnowledgeBase&& old_kb) noexcept;
-
     /**
      * @brief Introduces (and transfers ownership of) a new Clause into the knowledge base.
      * @details This function introduces a Clause to the KB on the condition that it is not subsumed by the existing KB.
@@ -65,8 +59,6 @@ private:
     struct FVINode
     {
         FVINode() = default;
-        FVINode(const FVINode& src_node);
-        FVINode& operator=(const FVINode& src_node);
 
         std::map<Feature, std::unique_ptr<FVINode>> children;
         UniqueUnorderedSet<Clause> clause_set;
