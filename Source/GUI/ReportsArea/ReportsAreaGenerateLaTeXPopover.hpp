@@ -153,6 +153,13 @@ private:
     void open_directory_finished(const Glib::RefPtr<Gio::AsyncResult> &result);
 
     /**
+     * @brief Handle completion of the asynchronous executor.
+     * @note This callback does not reset the generator instance, as it would be typically called from the instance.
+     *  Hence, the generator instance persists in memory until it is replaced by another despatcher.
+     */
+    void post_generation_callback() const;
+
+    /**
      * @brief Handle a toggle of the <i>Show Details</i> button by showing or hiding the latexmk/pdflatex output
      */
     void show_details_toggled() const;

@@ -55,25 +55,30 @@ void ReportsAreaGenerateLaTeXPopover::confirm_button_clicked()
     confirm_button->set_sensitive(false);
     buffer->set_text("");
 
+    /*
+     * Create a new generator instance (possibly replacing the previous one) to produce a file in the given output
+     * directory indicated by the user. Populate it with the Requirements, the Test Groups, and the Analysis Groups,
+     * and despatch the asynchronous generation of the report with a callback to run on completion.
+     */
     generator.emplace(output_directory);
 
+    // Populate the Requirements Index.
     reports_area.observe_active_subsystem()->for_each(
         [this](const Requirement &requirement)
         {
             generator->add_requirement(requirement);
         });
 
+    // Populate the Test Groups.
     const auto test_groups = reports_area.observe_active_subsystem()->get_test_groups();
     const auto test_group_count = test_groups->get_n_items();
     for (guint test_group_index = 0; test_group_index < test_group_count; ++test_group_index)
         generator->add_test_group(*test_groups->get_item(test_group_index));
 
-    generator->generate(buffer,
-            [this]
-            {
-                generator.reset();
-                confirm_button->set_sensitive();
-            });
+    // TODO: populate the Analysis Groups.
+
+    // Run the generator.
+    generator->generate(buffer, sigc::mem_fun(*this, &ReportsAreaGenerateLaTeXPopover::post_generation_callback));
 }
 
 void ReportsAreaGenerateLaTeXPopover::cancel_button_clicked()
@@ -114,6 +119,11 @@ void ReportsAreaGenerateLaTeXPopover::open_directory_finished(const Glib::RefPtr
 
     // Always update the read-only text entry with the up-to-date output directory path
     output_directory_entry->set_text(output_directory == nullptr ? "" : output_directory->get_path());
+}
+
+void ReportsAreaGenerateLaTeXPopover::post_generation_callback() const
+{
+    confirm_button->set_sensitive();
 }
 
 void ReportsAreaGenerateLaTeXPopover::show_details_toggled() const
