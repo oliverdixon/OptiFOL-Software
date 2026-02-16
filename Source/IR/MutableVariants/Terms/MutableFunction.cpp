@@ -28,14 +28,6 @@ MutableFunction::MutableFunction(std::string name, std::vector<std::unique_ptr<I
 {
 }
 
-MutableFunction::MutableFunction(std::string name, const std::vector<std::unique_ptr<IMutableTerm>> &arguments) :
-    name(std::move(name))
-{
-    this->arguments.reserve(arguments.size());
-    for (const auto &argument: arguments)
-        this->arguments.push_back(argument->clone());
-}
-
 std::string MutableFunction::to_string() const
 {
     return CompositeSerialisationHelpers::string_serialise(name, arguments.cbegin(), arguments.cend());

@@ -40,14 +40,6 @@ public:
     [[maybe_unused]] explicit MutableFunction(
             std::string name, std::vector<std::unique_ptr<IMutableTerm>> &&arguments = {});
 
-    /**
-     * @brief Create an owning unsigned function with an initial set of owned arguments.
-     * @param name Display name of the function
-     * @param arguments A referenced ordered container containing the moveable arguments
-     */
-    [[maybe_unused]] explicit MutableFunction(
-            std::string name, const std::vector<std::unique_ptr<IMutableTerm>> &arguments = {});
-
     [[nodiscard]] std::string to_string() const override;
 
     [[nodiscard]] std::unique_ptr<IMutableTerm> clone() const override;

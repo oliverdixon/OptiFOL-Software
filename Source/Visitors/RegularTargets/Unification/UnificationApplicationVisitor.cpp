@@ -18,7 +18,6 @@
 #include "../../../IR/Sentences/Literal.hpp"
 
 // ReSharper disable CppUnusedIncludeDirective - Full definitions required for transparent hashing of sub. map.
-#include "../../../IR/Terms/Constant.hpp"
 #include "../../../IR/Terms/Variable.hpp"
 // ReSharper restore CppUnusedIncludeDirective
 
@@ -31,11 +30,6 @@ UnificationApplicationVisitor::UnificationApplicationVisitor(
     existing_symbol_repository(std::move(symbol_repository)),
     new_symbol_repository(std::make_unique<SymbolRepository>())
 {
-}
-
-const IProcessedTerm *UnificationApplicationVisitor::visit(const Constant &node) const
-{
-    return existing_symbol_repository->get_symbol_handle(node);
 }
 
 const IProcessedTerm *UnificationApplicationVisitor::visit(const Variable &node) const

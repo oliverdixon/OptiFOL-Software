@@ -168,9 +168,17 @@ void SkolemIntroducingVisitor::close_latest_scope(MutableQuantified &node)
 
 void SkolemIntroducingVisitor::eliminate_existential(const IMutableTerm &target_bound_variable)
 {
+    // Clone the universally quantified variables in the current scope.
+    const auto& arguments = universally_quantified_variables.top();
+    std::vector<std::unique_ptr<IMutableTerm>> argument_copy;
+    argument_copy.reserve(arguments.size());
+
+    for (const auto& argument : arguments)
+        argument_copy.push_back(argument->clone());
+
     // Create a new Skolem function to be parameterised by all universally quantified variables in the current scope.
     auto skolem = std::make_unique<MutableSkolemFunction>('S' + std::to_string(skolem_counter++),
-        universally_quantified_variables.top());
+        std::move(argument_copy));
 
     /*
      * Indicate to the visitor that all instances of the existentially quantified variable should be replaced by a

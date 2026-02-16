@@ -105,7 +105,6 @@ add_library(OptifolCommon OBJECT
         Source/IR/MutableVariants/Terms/IMutableTerm.hpp
         Source/IR/MutableVariants/Sentences/IMutableSentence.hpp
         Source/IR/MutableVariants/Terms/MutableVariable.hpp
-        Source/IR/MutableVariants/Terms/MutableConstant.hpp
         Source/IR/MutableVariants/Terms/MutableFunction.hpp
         Source/IR/MutableVariants/Sentences/MutablePredicate.hpp
         Source/IR/MutableVariants/Sentences/MutableBinaryConnected.hpp
@@ -145,7 +144,6 @@ add_library(OptifolCommon OBJECT
         Source/Logging.cpp
         Source/IR/MutableVariants/Sentences/MutableSentenceRoot.hpp
         Source/IR/MutableVariants/Sentences/MutableSentenceRoot.cpp
-        Source/IR/MutableVariants/Terms/MutableConstant.cpp
         Source/IR/MutableVariants/Terms/MutableFunction.cpp
         Source/IR/MutableVariants/Terms/MutableVariable.cpp
         Source/IR/MutableVariants/Terms/MutableSkolemFunction.cpp
@@ -173,8 +171,6 @@ add_library(OptifolCommon OBJECT
         Source/IR/Sentences/BinaryConnected.hpp
         Source/IR/Sentences/Identity.cpp
         Source/IR/Sentences/Identity.hpp
-        Source/IR/Terms/Constant.cpp
-        Source/IR/Terms/Constant.hpp
         Source/Visitors/MutableTargets/RepositoryBuildingVisitor.cpp
         Source/Visitors/MutableTargets/RepositoryBuildingVisitor.hpp
         Source/IR/Sentences/SentenceRoot.cpp

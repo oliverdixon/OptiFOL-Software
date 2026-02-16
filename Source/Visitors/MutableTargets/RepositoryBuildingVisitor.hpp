@@ -36,8 +36,6 @@ class MutableVariable;
 class Variable;
 class MutableFunction;
 class Function;
-class MutableConstant;
-class Constant;
 class MutableSkolemFunction;
 class SkolemFunction;
 
@@ -110,11 +108,6 @@ class IProcessedSentence;
  *              <th>Mutable Term Target</th>
  *              <th>Immutable Production</th>
  *              <th>Extractable Terms</th>
- *          </tr>
- *          <tr>
- *              <td>MutableConstant</td>
- *              <td>Constant</td>
- *              <td>None</td>
  *          </tr>
  *          <tr>
  *              <td>MutableFunction</td>
@@ -196,8 +189,6 @@ public:
     const Variable *visit(const MutableVariable &node) const;
 
     const Function *visit(MutableFunction& node);
-
-    const Constant *visit(const MutableConstant & node) const;
 
     const SkolemFunction *visit(const MutableSkolemFunction& node);
 

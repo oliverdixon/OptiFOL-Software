@@ -14,7 +14,6 @@
 #include "BidirectionalUnificationVisitor.hpp"
 
 #include "../../../IR/SymbolRepository.hpp"
-#include "../../../IR/Terms/Constant.hpp"
 #include "../../../IR/Terms/ITerm.hpp"
 #include "../../../IR/Terms/Variable.hpp"
 #include "UnificationApplicationVisitor.hpp"
@@ -28,17 +27,13 @@ BidirectionalUnificationVisitor::BidirectionalUnificationVisitor(std::shared_ptr
 {
 }
 
-bool BidirectionalUnificationVisitor::visit(const Constant &constant_lhs, const Variable &variable_rhs)
-{
-    return UnificationVisitor::visit(variable_rhs, constant_lhs);
-}
-
 bool BidirectionalUnificationVisitor::visit(const Function &function_lhs, const Variable &variable_rhs)
 {
     return UnificationVisitor::visit(variable_rhs, function_lhs);
 }
 
-bool BidirectionalUnificationVisitor::variable_generic(const Variable &variable_lhs, const IProcessedTerm &generic_term_rhs)
+bool BidirectionalUnificationVisitor::variable_generic(const Variable &variable_lhs,
+    const IProcessedTerm &generic_term_rhs)
 {
     if (variable_lhs.hash() == generic_term_rhs.hash())
         // If atomics (e.g. variables) are trivially identical, they can be unified without an explicit substitution.

@@ -17,7 +17,7 @@
 #include "../IR/MutableVariants/Sentences/MutablePredicate.hpp"
 #include "../IR/MutableVariants/Sentences/MutableQuantified.hpp"
 #include "../IR/MutableVariants/Sentences/MutableSentenceRoot.hpp"
-#include "../IR/MutableVariants/Terms/MutableConstant.hpp"
+#include "../IR/MutableVariants/Terms/MutableFunction.hpp"
 #include "../IR/MutableVariants/Terms/MutableVariable.hpp"
 #include "../IR/SymbolRepository.hpp"
 #include "../Inference/ExpressionFactory.hpp"
@@ -84,7 +84,7 @@ TEST_F(ResolutionTest, ModusPonens_Quantified)
     s1_q_args.push_back(MutableVariable::build<IMutableTerm>("x"));
 
     std::vector<std::unique_ptr<IMutableTerm>> s2_p_args;
-    s2_p_args.push_back(MutableConstant::build<IMutableTerm>("C"));
+    s2_p_args.push_back(MutableFunction::build<IMutableTerm>("C"));
 
     // clang-format off
 
@@ -110,7 +110,7 @@ TEST_F(ResolutionTest, ModusPonens_Quantified)
     prover->tell(*sentence2);
 
     std::vector<std::unique_ptr<IMutableTerm>> query_args;
-    query_args.push_back(MutableConstant::build<IMutableTerm>("C"));
+    query_args.push_back(MutableFunction::build<IMutableTerm>("C"));
 
     const auto result = prover->ask(MutableSentenceRoot::build(MutablePredicate::build("Q",
         std::move(query_args))));
@@ -127,7 +127,7 @@ TEST_F(ResolutionTest, Reject_Trivial)
     s1_q_args.push_back(MutableVariable::build<IMutableTerm>("x"));
 
     std::vector<std::unique_ptr<IMutableTerm>> s2_p_args;
-    s2_p_args.push_back(MutableConstant::build<IMutableTerm>("C"));
+    s2_p_args.push_back(MutableFunction::build<IMutableTerm>("C"));
 
     const auto sentence1 = ExpressionFactory::build_sentence(MutableSentenceRoot::build(
         MutablePredicate::build("P", std::move(s2_p_args))
@@ -141,7 +141,7 @@ TEST_F(ResolutionTest, Reject_Trivial)
     prover->tell(*sentence2);
 
     std::vector<std::unique_ptr<IMutableTerm>> query_args;
-    query_args.push_back(MutableConstant::build<IMutableTerm>("C"));
+    query_args.push_back(MutableFunction::build<IMutableTerm>("C"));
 
     const auto result = prover->ask(MutableSentenceRoot::build(MutablePredicate::build("R",
         std::move(query_args))));
@@ -228,7 +228,7 @@ TEST_F(ResolutionTest, CuriosityKilledTheCat)
     animal_args_3.push_back(MutableVariable::build("x"));
 
     std::vector<std::unique_ptr<IMutableTerm>> loves_args_4;
-    loves_args_4.push_back(MutableConstant::build("Jack"));
+    loves_args_4.push_back(MutableFunction::build("Jack"));
     loves_args_4.push_back(MutableVariable::build("x"));
 
     const auto jack_loves_animals = ExpressionFactory::build_sentence(MutableSentenceRoot::build(
@@ -245,12 +245,12 @@ TEST_F(ResolutionTest, CuriosityKilledTheCat)
 
     // Tuna is killed by Jack or Curiosity.
     std::vector<std::unique_ptr<IMutableTerm>> kills_args_2;
-    kills_args_2.push_back(MutableConstant::build("Jack"));
-    kills_args_2.push_back(MutableConstant::build("Tuna"));
+    kills_args_2.push_back(MutableFunction::build("Jack"));
+    kills_args_2.push_back(MutableFunction::build("Tuna"));
 
     std::vector<std::unique_ptr<IMutableTerm>> kills_args_3;
-    kills_args_3.push_back(MutableConstant::build("Curiosity"));
-    kills_args_3.push_back(MutableConstant::build("Tuna"));
+    kills_args_3.push_back(MutableFunction::build("Curiosity"));
+    kills_args_3.push_back(MutableFunction::build("Tuna"));
 
     const auto tuna_is_killed = ExpressionFactory::build_sentence(MutableSentenceRoot::build(
         MutableBinaryConnected::build(
@@ -262,7 +262,7 @@ TEST_F(ResolutionTest, CuriosityKilledTheCat)
 
     // Tuna is a cat.
     std::vector<std::unique_ptr<IMutableTerm>> cat_args_1;
-    cat_args_1.push_back(MutableConstant::build("Tuna"));
+    cat_args_1.push_back(MutableFunction::build("Tuna"));
 
     const auto tuna_is_cat = ExpressionFactory::build_sentence(MutableSentenceRoot::build(
         MutablePredicate::build("Cat", std::move(cat_args_1))
@@ -297,8 +297,8 @@ TEST_F(ResolutionTest, CuriosityKilledTheCat)
 
     // Did Curiosity kill Tuna?
     std::vector<std::unique_ptr<IMutableTerm>> kills_args_4;
-    kills_args_4.push_back(MutableConstant::build("Curiosity"));
-    kills_args_4.push_back(MutableConstant::build("Tuna"));
+    kills_args_4.push_back(MutableFunction::build("Curiosity"));
+    kills_args_4.push_back(MutableFunction::build("Tuna"));
 
     const auto result = prover->ask(MutableSentenceRoot::build(MutablePredicate::build("Kills",
         std::move(kills_args_4))));

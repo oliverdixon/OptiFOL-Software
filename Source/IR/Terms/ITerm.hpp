@@ -32,7 +32,6 @@ class Function;
  *      <ul>
  *          <li>Functions (inc. introduced Skolem functions)</li>
  *          <li>Bound variables</li>
- *          <li>Constants</li>
  *      </ul>
  *  </p>
  *  <p>

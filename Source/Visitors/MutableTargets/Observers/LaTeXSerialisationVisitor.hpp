@@ -34,8 +34,6 @@ public:
 
     void visit(const MutablePredicate &node) override;
 
-    void visit(const MutableConstant &node) override;
-
     void visit(const MutableFunction &node) override;
 
     void visit(const MutableVariable &node) override;

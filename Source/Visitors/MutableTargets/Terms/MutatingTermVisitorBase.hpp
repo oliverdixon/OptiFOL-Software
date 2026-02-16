@@ -18,7 +18,6 @@ namespace optifol
 {
 
 class MutableFunction;
-class MutableConstant;
 class MutableVariable;
 class MutableSkolemFunction;
 
@@ -28,8 +27,6 @@ public:
     virtual ~MutatingTermVisitorBase() = default;
 
     virtual void visit(MutableFunction &node);
-
-    virtual void visit(MutableConstant &node);
 
     virtual void visit(MutableVariable &node);
 

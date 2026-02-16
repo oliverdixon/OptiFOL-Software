@@ -19,7 +19,6 @@
 #include "../Exceptions/SemanticException.hpp"
 #include "../../../IR/SymbolRepository.hpp"
 #include "../../../IR/Sentences/Literal.hpp"
-#include "../../../IR/Terms/Constant.hpp"
 #include "../../../IR/Terms/Function.hpp"
 
 namespace optifol
@@ -52,32 +51,6 @@ bool UnificationVisitor::visit(const Literal &predicate_gen, const Literal &pred
         });
 }
 
-bool UnificationVisitor::visit(const Constant &constant_gen, const Constant &constant_inst)
-{
-    return constant_gen.operator==(constant_inst);
-}
-
-bool UnificationVisitor::visit(const Constant &constant_gen, const Function &function_inst)
-{
-    std::ignore = constant_gen;
-    std::ignore = function_inst;
-    
-    return false;
-}
-
-bool UnificationVisitor::visit(const Constant &constant_gen, const Variable &variable_inst)
-{
-    std::ignore = constant_gen;
-    std::ignore = variable_inst;
-
-    return false;
-}
-
-bool UnificationVisitor::visit(const Variable &variable_gen, const Constant &constant_inst)
-{
-    return variable_generic(variable_gen, constant_inst);
-}
-
 bool UnificationVisitor::visit(const Variable &variable_gen, const Function &function_inst)
 {
     return variable_generic(variable_gen, function_inst);
@@ -86,14 +59,6 @@ bool UnificationVisitor::visit(const Variable &variable_gen, const Function &fun
 bool UnificationVisitor::visit(const Variable &variable_gen, const Variable &variable_inst)
 {
     return variable_generic(variable_gen, variable_inst);
-}
-
-bool UnificationVisitor::visit(const Function &function_gen, const Constant &constant_inst)
-{
-    std::ignore = function_gen;
-    std::ignore = constant_inst;
-
-    return false;
 }
 
 bool UnificationVisitor::visit(const Function &function_gen, const Variable &variable_inst)

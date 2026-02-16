@@ -58,11 +58,9 @@ public:
 
     [[nodiscard]] bool accept(IObservingBinaryVisitor &binary_visitor, const IProcessedTerm &term) const override;
 
-    [[nodiscard]] bool accept(IObservingBinaryVisitor &binary_visitor, const Constant &constant) const override;
     [[nodiscard]] bool accept(IObservingBinaryVisitor &binary_visitor, const Function &function) const override;
     [[nodiscard]] bool accept(IObservingBinaryVisitor &binary_visitor, const Variable &variable) const override;
 
-    [[nodiscard]] bool accept_reverse(IObservingBinaryVisitor &binary_visitor, const Constant &constant) const override;
     [[nodiscard]] bool accept_reverse(IObservingBinaryVisitor &binary_visitor, const Function &function) const override;
     [[nodiscard]] bool accept_reverse(IObservingBinaryVisitor &binary_visitor, const Variable &variable) const override;
 

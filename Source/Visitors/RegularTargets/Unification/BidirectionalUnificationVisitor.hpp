@@ -38,8 +38,6 @@ public:
      */
     explicit BidirectionalUnificationVisitor(std::shared_ptr<SymbolRepository> symbol_repository);
 
-    [[nodiscard]] bool visit(const Constant &constant_lhs, const Variable &variable_rhs) override;
-
     [[nodiscard]] bool visit(const Function &function_lhs, const Variable &variable_rhs) override;
 
 protected:

@@ -25,12 +25,6 @@ MutableSkolemFunction::MutableSkolemFunction(
 {
 }
 
-MutableSkolemFunction::MutableSkolemFunction(
-        std::string name, const std::vector<std::unique_ptr<IMutableTerm>> &quantified_variables) :
-    MutableFunction(std::move(name), quantified_variables)
-{
-}
-
 std::unique_ptr<IMutableTerm> MutableSkolemFunction::clone() const
 {
     std::vector<std::unique_ptr<IMutableTerm>> cloned_arguments;

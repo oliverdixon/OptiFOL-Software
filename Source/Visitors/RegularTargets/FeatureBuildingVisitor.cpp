@@ -26,7 +26,6 @@ void FeatureBuildingVisitor::visit(const Clause *const clause) noexcept
 {
     reset_counters();
 
-    seen_constants.clear();
     seen_functions.clear();
     seen_variables.clear();
 
@@ -42,20 +41,6 @@ void FeatureBuildingVisitor::visit(const Literal *const literal) noexcept
     const auto& args = literal->observe_arguments();
     for (const auto argument : args)
         argument->accept(*this);
-
-    exit();
-}
-
-void FeatureBuildingVisitor::visit(const Constant *const constant) noexcept
-{
-    std::ignore = *constant;
-
-    // A constant symbol is a 0-arity function symbol.
-    enter();
-
-    const auto [it, was_new] = seen_constants.insert(constant);
-    if (was_new)
-        Feature::get(features, Feature::FeatureType::FunctionCount).increment();
 
     exit();
 }

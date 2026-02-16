@@ -19,13 +19,11 @@ lowercase_sequence ([a-z]+)
 uppercase_sequence ([A-Z]+)
 whitespace         ([ \t]+)
 symbol_prefix      "%"
-constant_prefix    "_"
-function_prefix    "$"
+function_prefix    "#"
 character_sequence ([a-zA-Z]+)
 
 %%
 
-{constant_prefix}{character_sequence}   yylval->emplace<std::string>(YYText()); return FOLParser::token::Constant;
 {function_prefix}{character_sequence}   yylval->emplace<std::string>(YYText()); return FOLParser::token::Function;
 {lowercase_sequence}                    yylval->emplace<std::string>(YYText()); return FOLParser::token::Variable;
 {uppercase_sequence}                    yylval->emplace<std::string>(YYText()); return FOLParser::token::Predicate;

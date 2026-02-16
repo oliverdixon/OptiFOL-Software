@@ -19,7 +19,6 @@
 {
     #include "../IR/MutableVariants/Terms/MutableVariable.hpp"
     #include "../IR/MutableVariants/Terms/MutableFunction.hpp"
-    #include "../IR/MutableVariants/Terms/MutableConstant.hpp"
 
     #include "../IR/MutableVariants/Sentences/MutablePredicate.hpp"
     #include "../IR/MutableVariants/Sentences/MutableIdentity.hpp"
@@ -39,7 +38,6 @@
     #define yylex(x) scanner->lex(x)
 }
 
-%token <std::string> Constant
 %token <std::string> Function
 %token <std::string> Variable
 %token <std::string> Predicate
@@ -183,14 +181,14 @@ term_vector :
     ;
 
 term :
+    Function
+    {
+        $$ = new MutableFunction($1);
+    }
+    |
     Function LeftParenthesis term_vector RightParenthesis
     {
         $$ = new MutableFunction($1, std::move($3));
-    }
-    |
-    Constant
-    {
-        $$ = new MutableConstant($1);
     }
     |
     Variable

@@ -39,8 +39,6 @@ public:
 
     void visit(const MutableSentenceRoot& node) override;
 
-    void visit(const MutableConstant &node) override;
-
     void visit(const MutableFunction &node) override;
 
     void visit(const MutableVariable &node) override;

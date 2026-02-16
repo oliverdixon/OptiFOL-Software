@@ -121,11 +121,11 @@ TEST_F(FOLParserTest, Identity_Constants)
 {
     // clang-format off
     equality_on_input(
-        "_X = _Y",
+        "#X = #Y",
 
         MutableIdentity::build(
-            MutableConstant::build("_X"),
-            MutableConstant::build("_Y")
+            MutableFunction::build("#X"),
+            MutableFunction::build("#Y")
         )
     );
 }

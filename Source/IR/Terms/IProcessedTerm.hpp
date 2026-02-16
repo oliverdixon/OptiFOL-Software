@@ -25,7 +25,6 @@ class IObservingBinaryVisitor;
 class UnificationApplicationVisitor;
 class RepositoryBuildingVisitor;
 
-class Constant;
 class Function;
 class Variable;
 
@@ -49,14 +48,6 @@ public:
     [[nodiscard]] virtual bool accept(IObservingBinaryVisitor &binary_visitor, const IProcessedTerm &term) const = 0;
 
     /**
-     * @brief Accept a visitation from an IObservingBinaryVisitor, using the given Constant as the second operand.
-     * @param binary_visitor The binary visitor from whom to accept a visit.
-     * @param constant The Constant term for the second operand.
-     * @return Visitor return code.
-     */
-    [[nodiscard]] virtual bool accept(IObservingBinaryVisitor &binary_visitor, const Constant &constant) const = 0;
-
-    /**
      * @brief Accept a visitation from an IObservingBinaryVisitor, using the given Function as the second operand.
      * @param binary_visitor The binary visitor from whom to accept a visit.
      * @param function The Function term for the second operand.
@@ -73,15 +64,6 @@ public:
     [[nodiscard]] virtual bool accept(IObservingBinaryVisitor &binary_visitor, const Variable &variable) const = 0;
 
     virtual void accept(FeatureBuildingVisitor& feature_building_visitor) const noexcept = 0;
-
-    /**
-     * @brief Accept a visitation from an IObservingBinaryVisitor, using the given Constant as the first operand.
-     * @param binary_visitor The binary visitor from whom to accept a visit.
-     * @param constant The Constant term for the first operand.
-     * @return Visitor return code.
-     */
-    [[nodiscard]] virtual bool accept_reverse(IObservingBinaryVisitor &binary_visitor, const Constant &constant) const
-        = 0;
 
     /**
      * @brief Accept a visitation from an IObservingBinaryVisitor, using the given Function as the first operand.

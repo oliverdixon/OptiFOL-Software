@@ -14,7 +14,6 @@
 #include "../../../IR/MutableVariants/Sentences/MutablePredicate.hpp"
 #include "../../../IR/MutableVariants/Sentences/MutableQuantified.hpp"
 #include "../../../IR/MutableVariants/Sentences/MutableSentenceRoot.hpp"
-#include "../../../IR/MutableVariants/Terms/MutableConstant.hpp"
 #include "../../../IR/MutableVariants/Terms/MutableFunction.hpp"
 #include "../../../IR/MutableVariants/Terms/MutableVariable.hpp"
 
@@ -69,11 +68,6 @@ void LaTeXSerialisationVisitor::visit(const MutablePredicate &node)
     }
 
     latex << "\\right)";
-}
-
-void LaTeXSerialisationVisitor::visit(const MutableConstant &node)
-{
-    latex << node.to_string();
 }
 
 void LaTeXSerialisationVisitor::visit(const MutableFunction &node)

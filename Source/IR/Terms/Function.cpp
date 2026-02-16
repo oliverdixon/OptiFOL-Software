@@ -45,11 +45,6 @@ bool Function::accept(IObservingBinaryVisitor &binary_visitor, const IProcessedT
     return term.accept_reverse(binary_visitor, *this);
 }
 
-bool Function::accept(IObservingBinaryVisitor &binary_visitor, const Constant &constant) const
-{
-    return binary_visitor.visit(*this, constant);
-}
-
 bool Function::accept(IObservingBinaryVisitor &binary_visitor, const Function &function) const
 {
     return binary_visitor.visit(*this, function);
@@ -58,11 +53,6 @@ bool Function::accept(IObservingBinaryVisitor &binary_visitor, const Function &f
 bool Function::accept(IObservingBinaryVisitor &binary_visitor, const Variable &variable) const
 {
     return binary_visitor.visit(*this, variable);
-}
-
-bool Function::accept_reverse(IObservingBinaryVisitor &binary_visitor, const Constant &constant) const
-{
-    return binary_visitor.visit(constant, *this);
 }
 
 bool Function::accept_reverse(IObservingBinaryVisitor &binary_visitor, const Function &function) const

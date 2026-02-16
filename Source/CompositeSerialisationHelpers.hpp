@@ -79,7 +79,12 @@ public:
         if (is_negative_polarity)
             ostream << '~';
 
-        ostream << display_name << '(';
+        ostream << display_name;
+
+        if (arguments_begin == arguments_end)
+            return ostream;
+
+        ostream << '(';
 
         if (arguments_begin < arguments_end) {
             --arguments_end;
@@ -112,6 +117,9 @@ public:
 
         if (is_negative_polarity)
             result = '~';
+
+        if (arguments_begin == arguments_end)
+            return result + display_name;
 
         result += std::move(display_name) + '(';
 

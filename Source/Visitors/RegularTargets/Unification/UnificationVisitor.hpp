@@ -49,7 +49,6 @@ class SymbolRepository;
  *      <ul>
  *          <li>Predicates might unify with predicates only;</li>
  *          <li>Variables might unify with any term;</li>
- *          <li>Constants might unify with constants only;</li>
  *          <li>Functions might unify with functions only; and</li>
  *          <li>Any term might unify with variables only.</li>
  *      </ul>
@@ -98,45 +97,7 @@ public:
     [[nodiscard]] bool visit(const Literal &predicate_gen, const Literal &predicate_inst) override;
 
     /**
-     * @brief Attempt to unify two Constant terms
-     * @details Unification between two Constant terms will succeed if and only if they are identically named.
-     * @param constant_gen The LHS Constant to unify
-     * @param constant_inst The RHS Constant to unify
-     * @return Can the LHS and RHS Constant objects be unified?
-     */
-    [[nodiscard]] bool visit(const Constant &constant_gen, const Constant &constant_inst) override;
-
-    /**
-     * @brief Attempt to unify a Constant and a Function.
-     * @param constant_gen The LHS Constant to unify
-     * @param function_inst The RHS Function to unify
-     * @return False, since a Constant and a Function cannot be unified.
-     */
-    [[nodiscard]] bool visit(const Constant &constant_gen, const Function &function_inst) override;
-
-    /**
-     * @brief Attempt to unify a Constant and a Variable.
-     * @param constant_gen The LHS Constant to unify
-     * @param variable_inst The RHS Variable to unify
-     * @return False, since a Constant and a Variable could only be unified if the Variable could be substituted. In
-     *  this case, it's in the instance.
-     */
-    [[nodiscard]] bool visit(const Constant &constant_gen, const Variable &variable_inst) override;
-
-    /**
-     * @brief Attempt to unify a Variable and a Constant term.
-     * @details Unification between a Variable and a Constant will succeed if and only if they are identically named and
-     *  substitution does not result in an infinite cycle (the "occurs check" condition).
-     * @param variable_gen The LHS Variable to unify
-     * @param constant_inst The RHS Constant to unify
-     * @return Can the LHS and RHS objects be unified?
-     */
-    [[nodiscard]] bool visit(const Variable &variable_gen, const Constant &constant_inst) override;
-
-    /**
      * @brief Attempt to unify a Variable and a Function term.
-     * @details Unification between a Variable and Function will succeed according to the same conditions as those
-     *  required by @ref visit(const Variable&, const Constant&).
      * @param variable_gen The LHS Variable to unify
      * @param function_inst The RHS Function to unify
      * @return Can the LHS and RHS objects be unified?
@@ -152,14 +113,6 @@ public:
      * @return Can the LHS and RHS Variable objects be unified?
      */
     [[nodiscard]] bool visit(const Variable &variable_gen, const Variable &variable_inst) override;
-
-    /**
-     * @brief Attempt to unify a Constant and a Function.
-     * @param function_gen The LHS Function to unify
-     * @param constant_inst The RHS Constant to unify
-     * @return False, since a Constant and a Function cannot be unified.
-     */
-    [[nodiscard]] bool visit(const Function &function_gen, const Constant &constant_inst) override;
 
     /**
      * @brief Attempt to unify a Function and a Variable.

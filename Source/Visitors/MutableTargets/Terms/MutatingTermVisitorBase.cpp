@@ -25,11 +25,6 @@ void MutatingTermVisitorBase::visit(MutableFunction &node)
         argument->accept(*this);
 }
 
-void MutatingTermVisitorBase::visit(MutableConstant &node)
-{
-    std::ignore = node;
-}
-
 void MutatingTermVisitorBase::visit(MutableVariable &node)
 {
     std::ignore = node;

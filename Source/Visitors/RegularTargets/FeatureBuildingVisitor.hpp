@@ -12,7 +12,6 @@
 
 #include <vector>
 
-#include "../../IR/Terms/Constant.hpp"
 #include "../../IR/Terms/Function.hpp"
 #include "../../IR/Terms/Variable.hpp"
 #include "../../Inference/Feature.hpp"
@@ -34,8 +33,6 @@ public:
 
     void visit(const Literal *literal) noexcept;
 
-    void visit(const Constant *constant) noexcept;
-
     void visit(const Function *function) noexcept;
 
     void visit(const SkolemFunction *skolem_function) noexcept;
@@ -55,7 +52,6 @@ private:
 
     std::vector<Feature> features;
 
-    RawUnorderedSet<const Constant> seen_constants;
     RawUnorderedSet<const Function> seen_functions;
     RawUnorderedSet<const Variable> seen_variables;
 };

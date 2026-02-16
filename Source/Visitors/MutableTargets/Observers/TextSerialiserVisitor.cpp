@@ -18,7 +18,6 @@
 #include "../../../IR/MutableVariants/Sentences/MutablePredicate.hpp"
 #include "../../../IR/MutableVariants/Sentences/MutableQuantified.hpp"
 #include "../../../IR/MutableVariants/Sentences/MutableSentenceRoot.hpp"
-#include "../../../IR/MutableVariants/Terms/MutableConstant.hpp"
 #include "../../../IR/MutableVariants/Terms/MutableVariable.hpp"
 #include "../../../IR/MutableVariants/Terms/MutableFunction.hpp"
 
@@ -72,11 +71,6 @@ void TextSerialiserVisitor::visit(const MutablePredicate &node)
 void TextSerialiserVisitor::visit(const MutableSentenceRoot &node)
 {
     node.observe_sentence()->accept(*this);
-}
-
-void TextSerialiserVisitor::visit(const MutableConstant &node)
-{
-    output_stream << node.to_string();
 }
 
 void TextSerialiserVisitor::visit(const MutableFunction &node)

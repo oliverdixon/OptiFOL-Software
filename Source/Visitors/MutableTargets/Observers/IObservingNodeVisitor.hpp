@@ -23,7 +23,6 @@ class MutableIdentity;
 class MutablePredicate;
 class MutableSentenceRoot;
 
-class MutableConstant;
 class MutableFunction;
 class MutableSkolemFunction;
 class MutableVariable;
@@ -42,8 +41,6 @@ public:
     virtual void visit(const MutablePredicate& node) = 0;
 
     virtual void visit(const MutableSentenceRoot& node) = 0;
-
-    virtual void visit(const MutableConstant& node) = 0;
 
     virtual void visit(const MutableFunction& node) = 0;
 

@@ -25,7 +25,6 @@ namespace optifol
 class SymbolRepository;
 
 class Function;
-class Constant;
 class BinaryConnected;
 class Identity;
 class Literal;
@@ -36,15 +35,6 @@ class UnificationApplicationVisitor
 public:
     explicit UnificationApplicationVisitor(std::shared_ptr<Unifier> unifier,
         std::shared_ptr<SymbolRepository> symbol_repository);
-
-    /**
-     * @brief Attempt to unify with a Constant.
-     * @note This member function is provided only for API consistency. It is always a no-op, since Constant terms
-     *  cannot be substituted with a Variable.
-     * @param node The input Constant node.
-     * @return An observing pointer to the given Constant node in the SymbolRepository.
-     */
-    [[nodiscard]] const IProcessedTerm *visit(const Constant &node) const;
 
     [[nodiscard]] const IProcessedTerm *visit(const Variable &node) const;
 
