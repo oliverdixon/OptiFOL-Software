@@ -39,8 +39,6 @@ public:
 
     void visit(MutablePredicate &node) override;
 
-    void visit(MutableIdentity &node) override;
-
     void visit(MutableBinaryConnected &node) override;
 
     void visit(MutableSentenceRoot &node) override;

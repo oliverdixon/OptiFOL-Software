@@ -26,8 +26,6 @@ class LaTeXSerialisationVisitor :
 public:
     void visit(const MutableSentenceRoot &node) override;
 
-    void visit(const MutableIdentity &node) override;
-
     void visit(const MutableBinaryConnected &node) override;
 
     void visit(const MutableQuantified &node) override;

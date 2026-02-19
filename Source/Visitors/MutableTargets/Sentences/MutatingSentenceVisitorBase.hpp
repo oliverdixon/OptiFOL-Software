@@ -21,7 +21,6 @@ namespace optifol
 
 class MutableQuantified;
 class MutableBinaryConnected;
-class MutableIdentity;
 class MutablePredicate;
 class MutableSentenceRoot;
 
@@ -48,12 +47,6 @@ public:
      * @param node The connected sentence root node of the transformation target.
      */
     virtual void visit(MutableBinaryConnected& node);
-
-    /**
-     * @brief Applies a mutating transformation to the given term-identity sentence node and both operands.
-     * @param node The identity sentence root node of the transformation target.
-     */
-    virtual void visit(MutableIdentity& node);
 
     /**
      * @brief Applies a mutating transformation to the given predicate sentence node and all arguments.

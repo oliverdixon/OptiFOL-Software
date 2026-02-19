@@ -36,7 +36,6 @@ character_sequence ([a-zA-Z]+)
 "~"     return FOLParser::token::Negation;
 "=>"    return FOLParser::token::Implication;
 "<=>"   return FOLParser::token::Biconditional;
-"="     return FOLParser::token::Identity;
 
 "(" return FOLParser::token::LeftParenthesis;
 ")" return FOLParser::token::RightParenthesis;

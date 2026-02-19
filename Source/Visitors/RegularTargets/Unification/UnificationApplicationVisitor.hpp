@@ -26,7 +26,6 @@ class SymbolRepository;
 
 class Function;
 class BinaryConnected;
-class Identity;
 class Literal;
 class SentenceRoot;
 

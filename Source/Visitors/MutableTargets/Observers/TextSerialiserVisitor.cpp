@@ -14,7 +14,6 @@
 #include "TextSerialiserVisitor.hpp"
 
 #include "../../../IR/MutableVariants/Sentences/MutableBinaryConnected.hpp"
-#include "../../../IR/MutableVariants/Sentences/MutableIdentity.hpp"
 #include "../../../IR/MutableVariants/Sentences/MutablePredicate.hpp"
 #include "../../../IR/MutableVariants/Sentences/MutableQuantified.hpp"
 #include "../../../IR/MutableVariants/Sentences/MutableSentenceRoot.hpp"
@@ -43,13 +42,6 @@ void TextSerialiserVisitor::visit(const MutableBinaryConnected &node)
     node.observe_rhs_operand()->accept(*this);
 
     output_stream << ')';
-}
-
-void TextSerialiserVisitor::visit(const MutableIdentity &node)
-{
-    print_polarity(&node);
-    output_stream << '(' << node.observe_lhs_operand()->to_string() << ' ' << '=' << ' '
-                  << node.observe_rhs_operand()->to_string() << ')';
 }
 
 void TextSerialiserVisitor::visit(const MutablePredicate &node)

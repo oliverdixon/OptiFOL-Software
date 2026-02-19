@@ -108,7 +108,6 @@ add_library(OptifolCommon OBJECT
         Source/IR/MutableVariants/Terms/MutableFunction.hpp
         Source/IR/MutableVariants/Sentences/MutablePredicate.hpp
         Source/IR/MutableVariants/Sentences/MutableBinaryConnected.hpp
-        Source/IR/MutableVariants/Sentences/MutableIdentity.hpp
         Source/IR/MutableVariants/Sentences/MutableQuantified.hpp
         Source/Interpreter/FOLParser.hpp
         Source/Visitors/MutableTargets/Sentences/CNFNormalisers/ImplicationEliminationVisitor.hpp
@@ -116,7 +115,6 @@ add_library(OptifolCommon OBJECT
         Source/Visitors/MutableTargets/Sentences/CNFNormalisers/DMLVisitor.hpp
         Source/IR/MutableVariants/Sentences/MutableBinaryConnected.cpp
         Source/IR/MutableVariants/Sentences/MutableQuantified.cpp
-        Source/IR/MutableVariants/Sentences/MutableIdentity.cpp
         Source/IR/MutableVariants/Sentences/MutablePredicate.cpp
         Source/Visitors/MutableTargets/Sentences/CNFNormalisers/UniversalEliminationVisitor.hpp
         Source/Visitors/MutableTargets/Sentences/CNFNormalisers/DisjunctionDistributionVisitor.hpp
@@ -169,8 +167,6 @@ add_library(OptifolCommon OBJECT
         Source/CompositeSerialisationHelpers.hpp
         Source/IR/Sentences/BinaryConnected.cpp
         Source/IR/Sentences/BinaryConnected.hpp
-        Source/IR/Sentences/Identity.cpp
-        Source/IR/Sentences/Identity.hpp
         Source/Visitors/MutableTargets/RepositoryBuildingVisitor.cpp
         Source/Visitors/MutableTargets/RepositoryBuildingVisitor.hpp
         Source/IR/Sentences/SentenceRoot.cpp

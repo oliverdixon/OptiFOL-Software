@@ -18,7 +18,6 @@
 #include <algorithm>
 
 #include "../../../../Exceptions/SemanticException.hpp"
-#include "../../../../IR/MutableVariants/Sentences/MutableIdentity.hpp"
 #include "../../../../IR/MutableVariants/Sentences/MutablePredicate.hpp"
 #include "../../../../IR/MutableVariants/Sentences/MutableQuantified.hpp"
 #include "../../../../IR/MutableVariants/Terms/MutableVariable.hpp"
@@ -59,29 +58,6 @@ void SymbolStandardisingVisitor::visit(MutablePredicate &node)
 
         args[i]->accept(term_visitor);
     }
-}
-
-void SymbolStandardisingVisitor::visit(MutableIdentity &node)
-{
-    auto borrowed_lhs = node.take_lhs_operand();
-
-    // Apply any relevant disambiguation rewriting to the LHS operand.
-    const auto& lhs_rule = rewriting_rules.find(borrowed_lhs->get_disambiguated_name());
-    if (lhs_rule != rewriting_rules.cend())
-        node.put_lhs_operand(lhs_rule->second->clone());
-
-    borrowed_lhs->accept(term_visitor);
-    node.put_lhs_operand(std::move(borrowed_lhs));
-
-    auto borrowed_rhs = node.take_rhs_operand();
-
-    // Apply any relevant disambiguation rewriting to the RHS operand.
-    const auto& rhs_rule = rewriting_rules.find(borrowed_rhs->get_disambiguated_name());
-    if (rhs_rule != rewriting_rules.cend())
-        node.put_rhs_operand(rhs_rule->second->clone());
-
-    borrowed_rhs->accept(term_visitor);
-    node.put_rhs_operand(std::move(borrowed_rhs));
 }
 
 std::optional<decltype(SymbolStandardisingVisitor::rewriting_rules)::iterator> SymbolStandardisingVisitor::open_scope(

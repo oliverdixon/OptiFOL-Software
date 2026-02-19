@@ -10,7 +10,6 @@
 #include "LaTeXSerialisationVisitor.hpp"
 
 #include "../../../IR/MutableVariants/Sentences/MutableBinaryConnected.hpp"
-#include "../../../IR/MutableVariants/Sentences/MutableIdentity.hpp"
 #include "../../../IR/MutableVariants/Sentences/MutablePredicate.hpp"
 #include "../../../IR/MutableVariants/Sentences/MutableQuantified.hpp"
 #include "../../../IR/MutableVariants/Sentences/MutableSentenceRoot.hpp"
@@ -25,13 +24,6 @@ void LaTeXSerialisationVisitor::visit(const MutableSentenceRoot &node)
     latex << '$';
     node.observe_sentence()->accept(*this);
     latex << '$';
-}
-
-void LaTeXSerialisationVisitor::visit(const MutableIdentity &node)
-{
-    node.observe_lhs_operand()->accept(*this);
-    latex << "=";
-    node.observe_rhs_operand()->accept(*this);
 }
 
 void LaTeXSerialisationVisitor::visit(const MutableBinaryConnected &node)

@@ -16,13 +16,11 @@
 #include <cassert>
 
 #include "../../IR/MutableVariants/Sentences/MutableBinaryConnected.hpp"
-#include "../../IR/MutableVariants/Sentences/MutableIdentity.hpp"
 #include "../../IR/MutableVariants/Sentences/MutablePredicate.hpp"
 #include "../../IR/MutableVariants/Sentences/MutableSentenceRoot.hpp"
 #include "../../IR/MutableVariants/Terms/MutableFunction.hpp"
 #include "../../IR/MutableVariants/Terms/MutableSkolemFunction.hpp"
 #include "../../IR/MutableVariants/Terms/MutableVariable.hpp"
-#include "../../IR/Sentences/Identity.hpp"
 #include "../../IR/Sentences/Literal.hpp"
 #include "../../IR/Sentences/SentenceRoot.hpp"
 #include "../../IR/Terms/Function.hpp"
@@ -88,17 +86,6 @@ const BinaryConnected *RepositoryBuildingVisitor::visit(MutableBinaryConnected &
 
     return symbol_repository->add_symbol<BinaryConnected>(
             std::make_unique<BinaryConnected>(node.get_operator_type(), repo_lhs, repo_rhs));
-}
-
-const Identity *RepositoryBuildingVisitor::visit(MutableIdentity &node)
-{
-    const auto bound_lhs = node.take_lhs_operand();
-    const auto repo_lhs = bound_lhs->accept(*this);
-
-    const auto bound_rhs = node.take_rhs_operand();
-    const auto repo_rhs = bound_rhs->accept(*this);
-
-    return symbol_repository->add_symbol<Identity>(std::make_unique<Identity>(repo_lhs, repo_rhs));
 }
 
 const Literal *RepositoryBuildingVisitor::visit(MutablePredicate &node)

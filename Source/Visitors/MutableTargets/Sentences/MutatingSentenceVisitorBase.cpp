@@ -38,11 +38,6 @@ void MutatingSentenceVisitorBase::visit(MutableBinaryConnected &node)
     node.put_rhs_operand(std::move(borrowed_operand));
 }
 
-void MutatingSentenceVisitorBase::visit(MutableIdentity &node)
-{
-    (void) node;
-}
-
 void MutatingSentenceVisitorBase::visit(MutablePredicate &node)
 {
     (void) node;

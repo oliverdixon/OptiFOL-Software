@@ -21,7 +21,6 @@
     #include "../IR/MutableVariants/Terms/MutableFunction.hpp"
 
     #include "../IR/MutableVariants/Sentences/MutablePredicate.hpp"
-    #include "../IR/MutableVariants/Sentences/MutableIdentity.hpp"
     #include "../IR/MutableVariants/Sentences/MutableBinaryConnected.hpp"
     #include "../IR/MutableVariants/Sentences/MutableQuantified.hpp"
     #include "../IR/MutableVariants/Sentences/MutableSentenceRoot.hpp"
@@ -43,7 +42,7 @@
 %token <std::string> Predicate
 
 %token Universal Existential
-%token Conjunction Disjunction Negation Implication Biconditional Identity
+%token Conjunction Disjunction Negation Implication Biconditional
 %token LeftParenthesis RightParenthesis Comma
 %token End
 
@@ -106,11 +105,6 @@ sentence :
     Predicate LeftParenthesis term_vector RightParenthesis
     {
         $$ = new MutablePredicate($1, std::move($3));
-    }
-    |
-    term Identity term
-    {
-        $$ = new MutableIdentity(std::unique_ptr<IMutableTerm>($1), std::unique_ptr<IMutableTerm>($3));
     }
     |
     Negation sentence

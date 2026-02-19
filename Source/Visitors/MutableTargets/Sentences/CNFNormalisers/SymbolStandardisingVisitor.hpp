@@ -66,13 +66,6 @@ public:
      */
     void visit(MutablePredicate &node) override;
 
-    /**
-     * @brief Recursively applies the symbol-standardisation procedures to the given identity sentence node.
-     * @param node The root identity sentence node
-     * @throws SemanticException TODO
-     */
-    void visit(MutableIdentity &node) override;
-
 private:
     static const char * visitor_name;
 

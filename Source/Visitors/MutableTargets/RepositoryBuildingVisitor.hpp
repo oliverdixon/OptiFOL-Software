@@ -30,8 +30,6 @@ class MutableSentenceRoot;
 class SentenceRoot;
 class MutableBinaryConnected;
 class BinaryConnected;
-class MutableIdentity;
-class Identity;
 class MutableVariable;
 class Variable;
 class MutableFunction;
@@ -76,12 +74,6 @@ class IProcessedSentence;
  *              <td>BinaryConnected</td>
  *              <td>None</td>
  *              <td>LHS sentence; RHS sentence</td>
- *          </tr>
- *          <tr>
- *              <td>MutableIdentity</td>
- *              <td>Identity</td>
- *              <td>LHS term; RHS term</td>
- *              <td>None</td>
  *          </tr>
  *          <tr>
  *              <td>MutablePredicate</td>
@@ -169,14 +161,6 @@ public:
      *  operator indicates a non-normalised tree.
      */
     const BinaryConnected *visit(MutableBinaryConnected &node);
-
-    /**
-     * @brief Transforms a MutableIdentity node into an Identity, registering the operand terms in the central
-     *  SymbolRepository. The Identity itself is also added to the central SymbolRepository.
-     * @param node The MutableIdentity node to be transformed into the corresponding immutable representation.
-     * @return A non-owning immutable pointer to the SymbolRepository Identity node.
-     */
-    const Identity *visit(MutableIdentity &node);
 
     /**
      * @brief Transforms a MutablePredicate node into a Literal, registering the argument terms in the central

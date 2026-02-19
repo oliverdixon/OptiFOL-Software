@@ -19,7 +19,6 @@ namespace optifol
 
 class MutableQuantified;
 class MutableBinaryConnected;
-class MutableIdentity;
 class MutablePredicate;
 class MutableSentenceRoot;
 
@@ -35,8 +34,6 @@ public:
     virtual void visit(const MutableQuantified& node) = 0;
 
     virtual void visit(const MutableBinaryConnected& node) = 0;
-
-    virtual void visit(const MutableIdentity& node) = 0;
 
     virtual void visit(const MutablePredicate& node) = 0;
 

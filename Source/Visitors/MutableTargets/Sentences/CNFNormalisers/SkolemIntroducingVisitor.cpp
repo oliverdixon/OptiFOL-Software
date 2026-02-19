@@ -16,7 +16,6 @@
 #include <cassert>
 
 #include "../../../../IR/MutableVariants/Sentences/MutableBinaryConnected.hpp"
-#include "../../../../IR/MutableVariants/Sentences/MutableIdentity.hpp"
 #include "../../../../IR/MutableVariants/Sentences/MutablePredicate.hpp"
 #include "../../../../IR/MutableVariants/Sentences/MutableQuantified.hpp"
 #include "../../../../IR/MutableVariants/Sentences/MutableSentenceRoot.hpp"
@@ -85,31 +84,6 @@ void SkolemIntroducingVisitor::visit(MutablePredicate &node)
 
         args[i]->accept(term_visitor);
     }
-}
-
-void SkolemIntroducingVisitor::visit(MutableIdentity &node)
-{
-    auto borrowed_lhs = node.take_lhs_operand();
-
-    // Apply any relevant disambiguation rewriting to the LHS operand.
-    const auto& lhs_rule =
-        skolem_replacements.find(std::string(borrowed_lhs->get_disambiguated_name()));
-    if (lhs_rule != skolem_replacements.cend())
-        node.put_lhs_operand(lhs_rule->second->clone());
-
-    borrowed_lhs->accept(term_visitor);
-    node.put_lhs_operand(std::move(borrowed_lhs));
-
-    auto borrowed_rhs = node.take_rhs_operand();
-
-    // Apply any relevant disambiguation rewriting to the RHS operand.
-    const auto& rhs_rule =
-        skolem_replacements.find(borrowed_rhs->get_disambiguated_name());
-    if (rhs_rule != skolem_replacements.cend())
-        node.put_rhs_operand(rhs_rule->second->clone());
-
-    borrowed_rhs->accept(term_visitor);
-    node.put_rhs_operand(std::move(borrowed_rhs));
 }
 
 void SkolemIntroducingVisitor::visit(MutableBinaryConnected &node)

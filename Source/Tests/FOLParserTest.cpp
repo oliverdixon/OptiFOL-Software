@@ -117,19 +117,6 @@ TEST_F(FOLParserTest, Quantifier_Nested)
     );
 }
 
-TEST_F(FOLParserTest, Identity_Constants)
-{
-    // clang-format off
-    equality_on_input(
-        "#X = #Y",
-
-        MutableIdentity::build(
-            MutableFunction::build("#X"),
-            MutableFunction::build("#Y")
-        )
-    );
-}
-
 TEST_F(FOLParserTest, TermBuilder_NoArguments)
 {
     // clang-format off

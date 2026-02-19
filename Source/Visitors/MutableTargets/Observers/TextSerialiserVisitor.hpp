@@ -33,8 +33,6 @@ public:
 
     void visit(const MutableBinaryConnected& node) override;
 
-    void visit(const MutableIdentity& node) override;
-
     void visit(const MutablePredicate& node) override;
 
     void visit(const MutableSentenceRoot& node) override;
