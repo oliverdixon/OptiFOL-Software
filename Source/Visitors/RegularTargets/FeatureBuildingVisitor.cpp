@@ -3,9 +3,13 @@
  * 2025 Oliver Dixon <od641@york.ac.uk>
  */
 
-//
-// Created by owd on 2/4/26.
-//
+/**
+ * @file
+ * @brief Class implementation for the feature-building visitor
+ * @author Oliver Dixon
+ * @date 2026-02-04
+ * @version Development
+ */
 
 #include "FeatureBuildingVisitor.hpp"
 

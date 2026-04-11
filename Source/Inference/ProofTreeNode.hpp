@@ -3,9 +3,13 @@
  * 2025 Oliver Dixon <od641@york.ac.uk>
  */
 
-//
-// Created by owd on 1/29/26.
-//
+/**
+ * @file
+ * @brief Class specification and implementation for the Proof Tree Node base class
+ * @author Oliver Dixon
+ * @date 2026-01-29
+ * @version Development
+ */
 
 #ifndef OPTIFOL_PROOFTREENODE_HPP
 #define OPTIFOL_PROOFTREENODE_HPP
@@ -21,6 +25,11 @@ struct Unifier;
 class Clause;
 class Resolvent;
 
+/**
+ * @class ProofTreeNode
+ * @brief A Proof Tree Node is a graphical object that may appear within a deduction trace, or, a Minimally Spanning
+ *  Deduction Graph. They consist of zero or two parents, an optional unifier clause, and a resolvent or axiom node.
+ */
 class ProofTreeNode : public ISerialisable
 {
 public:

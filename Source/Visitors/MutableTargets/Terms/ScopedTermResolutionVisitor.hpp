@@ -11,8 +11,6 @@
  * @version Development
  */
 
-// TODO document: no idea what this class is doing.
-
 #ifndef SCOPEDTERMRESOLUTIONVISITOR_HPP
 #define SCOPEDTERMRESOLUTIONVISITOR_HPP
 

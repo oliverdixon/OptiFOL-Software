@@ -19,6 +19,7 @@ namespace optifol
 IndexEditRequirementPopover::IndexEditRequirementPopover(
         Gtk::Builder &builder, RequirementsIndexArea &index_area)
 {
+    // TODO
 }
 
 } // namespace optifol

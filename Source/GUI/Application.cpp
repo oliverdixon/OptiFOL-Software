@@ -78,7 +78,7 @@ void Application::show_about_dialog() const
 
 void Application::open_application_help()
 {
-    Gio::AppInfo::launch_default_for_uri("https://www-users.york.ac.uk/~od641");
+    Gio::AppInfo::launch_default_for_uri("https://www-users.york.ac.uk/~od641/l6-project");
 }
 
 void Application::quit_application()

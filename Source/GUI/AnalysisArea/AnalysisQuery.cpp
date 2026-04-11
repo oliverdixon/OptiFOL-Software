@@ -3,9 +3,13 @@
  * 2025 Oliver Dixon <od641@york.ac.uk>
  */
 
-//
-// Created by owd on 1/25/26.
-//
+/**
+ * @file
+ * @brief Class implementation for the Analysis Query GTK page
+ * @author Oliver Dixon
+ * @date 2026-01-25
+ * @version Development
+ */
 
 #include "AnalysisQuery.hpp"
 

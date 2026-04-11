@@ -3,9 +3,13 @@
  * 2025 Oliver Dixon <od641@york.ac.uk>
  */
 
-//
-// Created by owd on 1/30/26.
-//
+/**
+ * @file
+ * @brief Class specification for the Skolem Function IR node
+ * @author Oliver Dixon
+ * @date 2025-01-30
+ * @version Development
+ */
 
 #ifndef OPTIFOL_SKOLEMFUNCTION_HPP
 #define OPTIFOL_SKOLEMFUNCTION_HPP
@@ -15,6 +19,11 @@
 namespace optifol
 {
 
+/**
+ * @class SkolemFunction
+ * @brief A Skolem Function is a Function symbol used to preserve equivalence with existentially quantified expressions
+ *  in CNF. It is typically introduced by the normalisation pipeline.
+ */
 class SkolemFunction : public Function
 {
 public:
