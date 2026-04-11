@@ -20,13 +20,31 @@
 namespace optifol
 {
 
+/**
+ * @class ISerialisable
+ * @brief An interface for objects that may be serialised to a @ref std::ostream
+ */
 class ISerialisable
 {
 public:
+    /**
+     * @brief Destruct the serialisable object
+     */
     virtual ~ISerialisable() = default;
 
+    /**
+     * @brief Serialise the object to the given output stream
+     * @param ostream The destination output stream
+     * @return The populated output stream
+     */
     virtual std::ostream &serialise(std::ostream &ostream) const = 0;
 
+    /**
+     * @brief Operator overload to serialise the object to the given output stream
+     * @param ostream The destination output stream
+     * @param object The object to serialise
+     * @return The populated output stream
+     */
     friend std::ostream &operator<<(std::ostream &ostream, const ISerialisable &object)
     {
         return object.serialise(ostream);

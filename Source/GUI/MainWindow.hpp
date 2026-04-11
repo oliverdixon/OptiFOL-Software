@@ -27,10 +27,17 @@
 namespace optifol
 {
 
+/**
+ * @class MainWindow
+ * @brief GTK class representing the main Optifol window
+ */
 class MainWindow :
         public Gtk::ApplicationWindow
 {
 public:
+    /**
+     * @brief Construct a new main window
+     */
     MainWindow();
 
 private:

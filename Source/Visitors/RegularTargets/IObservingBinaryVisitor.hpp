@@ -21,6 +21,10 @@ class Literal;
 class Variable;
 class Function;
 
+/**
+ * @class IObservingBinaryVisitor
+ * @brief Interface for observing visitors to despatch on two objects.
+ */
 class IObservingBinaryVisitor
 {
 public:

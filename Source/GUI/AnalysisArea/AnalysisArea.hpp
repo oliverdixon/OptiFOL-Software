@@ -105,7 +105,7 @@ namespace optifol
  *              <td><code>delete_selected_query</code></td>
  *              <td>Button for deleting the selected query</td>
  *          </tr>
-*           <tr>
+ *          <tr>
  *              <td>Gtk::Notebook</td>
  *              <td><code>analysis_queries</code></td>
  *              <td>Notebook containing the executed queries for the selected AnalysisGroup</td>

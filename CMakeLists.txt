@@ -255,8 +255,6 @@ add_library(OptifolCommon OBJECT
         Source/Reporting/IReportGenerator.hpp
         Source/Reporting/LaTeXReportGenerator.cpp
         Source/Reporting/LaTeXReportGenerator.hpp
-        Source/Reporting/HTMLReportGenerator.cpp
-        Source/Reporting/HTMLReportGenerator.hpp
         Source/GUI/TestingArea/TestingNewTestGroupPopover.cpp
         Source/GUI/TestingArea/TestingNewTestGroupPopover.hpp
         Source/GUI/TestingArea/TestingCopyToTestGroupPopover.cpp

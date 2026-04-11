@@ -3,6 +3,14 @@
  * 2025 Oliver Dixon <od641@york.ac.uk>
  */
 
+/**
+ * @file
+ * @brief Class implementation for the Context Menu-Menu Button correspondence helper
+ * @author Oliver Dixon
+ * @date 2026-04-11
+ * @version Development
+ */
+
 #include <gtkmm/gestureclick.h>
 
 #include "ContextButtonCorrespondence.hpp"

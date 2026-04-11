@@ -18,8 +18,11 @@
 namespace optifol
 {
 
-class ParseError final :
-        public std::runtime_error
+/**
+ * @class ParseError
+ * @brief An exception indicating some sort of parsing error
+ */
+class ParseError final : public std::runtime_error
 {
 public:
     explicit ParseError(const std::string& message):

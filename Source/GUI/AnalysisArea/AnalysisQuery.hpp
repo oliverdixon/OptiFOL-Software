@@ -3,9 +3,13 @@
  * 2025 Oliver Dixon <od641@york.ac.uk>
  */
 
-//
-// Created by owd on 1/25/26.
-//
+/**
+ * @file
+ * @brief Class specification for the Analysis Query GTK page
+ * @author Oliver Dixon
+ * @date 2026-01-25
+ * @version Development
+ */
 
 #ifndef OPTIFOL_ANALYSISQUERY_HPP
 #define OPTIFOL_ANALYSISQUERY_HPP
@@ -34,11 +38,24 @@ namespace optifol
 class AnalysisQuery
 {
 public:
+    /**
+     * @brief Create a new page for another query on the KB.
+     * @param query_name The human-readable string of the query.
+     * @param kb_weak A weak reference to the prover instance encapsulating the KB to be queried.
+     */
     explicit AnalysisQuery(const Glib::ustring& query_name, Prover& kb_weak);
 
+    /**
+     * @brief Append the built page to an arbitrary notebook.
+     * @param notebook The notebook to which the page should be appended.
+     */
     void add_to_notebook(Gtk::Notebook& notebook);
 
 private:
+    /**
+     * @brief Check consistency of the current query (in the text box) with the KB. If a contradiction is derived, a
+     *  proof trace is generated in the drawing area.
+     */
     void execute_query();
 
     std::vector<std::unique_ptr<Literal>> literal_store;

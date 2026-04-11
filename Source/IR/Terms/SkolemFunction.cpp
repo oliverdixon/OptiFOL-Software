@@ -3,9 +3,13 @@
  * 2025 Oliver Dixon <od641@york.ac.uk>
  */
 
-//
-// Created by owd on 1/30/26.
-//
+/**
+ * @file
+ * @brief Class implementation for the Skolem Function IR node
+ * @author Oliver Dixon
+ * @date 2025-01-30
+ * @version Development
+ */
 
 #include "SkolemFunction.hpp"
 

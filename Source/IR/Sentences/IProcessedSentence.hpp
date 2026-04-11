@@ -3,9 +3,13 @@
  * 2025 Oliver Dixon <od641@york.ac.uk>
  */
 
-//
-// Created by owd on 7/6/25.
-//
+/**
+ * @file
+ * @brief Class specification for the IProcessedSentence interface
+ * @author Oliver Dixon
+ * @date 2025-06-07
+ * @version Development
+ */
 
 #ifndef IPROCESSEDSENTENCE_HPP
 #define IPROCESSEDSENTENCE_HPP
@@ -18,6 +22,11 @@ namespace optifol
 class IObservingBinaryVisitor;
 class Literal;
 
+/**
+ * @class IProcessedSentence
+ * @brief An IProcessedSentence is the interface for immutable sentence AST nodes that have been normalised and are no
+ *  longer editable. They're typically stored in a global SymbolRepository and referenced with observing pointers.
+ */
 class IProcessedSentence : public ISentence
 {
 public:
