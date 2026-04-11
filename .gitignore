@@ -17,3 +17,13 @@
 /Resources/ReportTemplates/LaTeX/*.log
 /Resources/ReportTemplates/LaTeX/*.pdf
 /Resources/ReportTemplates/LaTeX/*.synctex*
+
+/Typeset/*.aux
+/Typeset/*.fdb_latexmk
+/Typeset/*.fls
+/Typeset/*.log
+/Typeset/*.pdf
+/Typeset/*.synctex*
+/Typeset/*.toc
+/Typeset/sources.tex
+

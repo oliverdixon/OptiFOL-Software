@@ -95,7 +95,7 @@
 
         <property name="website-label">Optifol Software Source Repository</property>
         <property name="website">https://github.com/oliverdixon/Optifol-Software</property>
-        <property name="copyright">Copyright © 2025 Oliver Dixon. All rights reserved.</property>
+        <property name="copyright">Copyright (C) 2025 Oliver Dixon. All rights reserved.</property>
 
         <property name="authors">Oliver Dixon &lt;od641@york.ac.uk&gt;</property>
         <property name="artists">Maia Dixon&#10;Theos Studio (SVG Repo Logo)</property>

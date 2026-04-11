@@ -28,5 +28,5 @@ The standard CMake configurations provided in this repository use the preset nam
 }
 ```
 
-Copyright © 2025 [Oliver Dixon](mailto:Oliver%20Dixon%20<od641@york.ac.uk>).
+Copyright (C) 2025 [Oliver Dixon](mailto:Oliver%20Dixon%20<od641@york.ac.uk>).
 All rights reserved.
