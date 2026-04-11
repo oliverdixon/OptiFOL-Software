@@ -23,8 +23,8 @@ namespace optifol
 
 /**
  * @class Resolvent
- * @brief A Resolvent is a ProofTreeNode containing a LHS and RHS parent, a resolvent Clause deduced from the parents,
- *  and a Unifier map to induce the resolution.
+ * @brief A Resolvent is a ProofTreeNode containing a LHS and RHS parent, a resolvent Clause deduced from the
+ * parents, and a Unifier map to induce the resolution.
  */
 class Resolvent : public IHashable,
                   public ProofTreeNode

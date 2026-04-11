@@ -35,13 +35,10 @@ namespace optifol
  *
  * @details
  *  <p>
- *      The <i>Analysis and Optimisation</i> area provides controls for categorising Requirement objects from the
- *      RequirementsIndexArea into AnalysisGroup groups. Groups may then be individually subject to mathematical
- *      analysis under the FOL engine, with the results of analysis displayed in a tabbed paned view. The following GTK
- *      elements are expected from the given Gtk::Builder:
- *      <table>
- *          <tr>
- *              <th>GTK C++ Class</th>
+ *      The <i>Analysis and Optimisation</i> area provides controls for categorising Requirement objects from
+ * the RequirementsIndexArea into AnalysisGroup groups. Groups may then be individually subject to
+ * mathematical analysis under the FOL engine, with the results of analysis displayed in a tabbed paned view.
+ * The following GTK elements are expected from the given Gtk::Builder: <table> <tr> <th>GTK C++ Class</th>
  *              <th>Unique Identifier</th>
  *              <th>Purpose</th>
  *          </tr>
@@ -126,26 +123,24 @@ namespace optifol
  *              <td>Table column for the Requirement statement in normalised CNF</td>
  *          </tr>
  *      </table>
- *      A @ref std::runtime_error will be thrown by the class constructor if any of these are inaccessible in the
- *      expected type instantiations.
+ *      A @ref std::runtime_error will be thrown by the class constructor if any of these are inaccessible in
+ * the expected type instantiations.
  *  </p>
  *  <p>
- *      In addition to the stated required GTK elements, constituent popovers of this view will require their own,
- *      possibly distinct, set of elements:
- *      <ul>
- *          <li>@ref AnalysisAreaNewAnalysisGroupPopover</li>
+ *      In addition to the stated required GTK elements, constituent popovers of this view will require their
+ * own, possibly distinct, set of elements: <ul> <li>@ref AnalysisAreaNewAnalysisGroupPopover</li>
  *      </ul>
  *  </p>
  */
-class AnalysisArea :
-        public IWindowArea
+class AnalysisArea : public IWindowArea
 {
 public:
     /**
-      * @brief Construct a new compartmentalised area for displaying and managing sets of subsystem requirements
-      * @param builder The GTK builder attached to the main window
-      */
-    explicit AnalysisArea(Gtk::Builder& builder);
+     * @brief Construct a new compartmentalised area for displaying and managing sets of subsystem
+     * requirements
+     * @param builder The GTK builder attached to the main window
+     */
+    explicit AnalysisArea(Gtk::Builder &builder);
 
     ~AnalysisArea() override;
 
@@ -162,23 +157,23 @@ private:
 
     void add_query_page();
 
-    static const char * const area_name;
+    static const char *const area_name;
 
     Glib::RefPtr<Subsystem> active_subsystem;
     Glib::RefPtr<Gtk::SingleSelection> selection_model = Gtk::SingleSelection::create();
     Glib::RefPtr<Gtk::TreeListModel> tree_model;
 
-    std::pair<Gtk::Widget*, Gtk::Widget*> on_off_widgets;
+    std::pair<Gtk::Widget *, Gtk::Widget *> on_off_widgets;
     std::vector<AnalysisQuery> query_pages;
 
-    Gtk::ColumnView * groups_view;
-    Gtk::Notebook * queries_notebook;
+    Gtk::ColumnView *groups_view;
+    Gtk::Notebook *queries_notebook;
 
     ContextButtonCorrespondence context_menu;
 
     AnalysisAreaNewAnalysisGroupPopover new_analysis_group_popover;
 };
 
-}
+} // namespace optifol
 
 #endif

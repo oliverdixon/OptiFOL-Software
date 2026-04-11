@@ -29,8 +29,8 @@ class Application : public Gtk::Application
 {
 public:
     /**
-     * @brief Create a new Application from a static context, producing a reference to the created Application in the
-     *  GTK memory model.
+     * @brief Create a new Application from a static context, producing a reference to the created Application
+     * in the GTK memory model.
      * @return
      */
     static Glib::RefPtr<Application> create();

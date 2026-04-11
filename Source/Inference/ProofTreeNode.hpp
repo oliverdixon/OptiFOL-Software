@@ -27,8 +27,9 @@ class Resolvent;
 
 /**
  * @class ProofTreeNode
- * @brief A Proof Tree Node is a graphical object that may appear within a deduction trace, or, a Minimally Spanning
- *  Deduction Graph. They consist of zero or two parents, an optional unifier clause, and a resolvent or axiom node.
+ * @brief A Proof Tree Node is a graphical object that may appear within a deduction trace, or, a Minimally
+ * Spanning Deduction Graph. They consist of zero or two parents, an optional unifier clause, and a resolvent
+ * or axiom node.
  */
 class ProofTreeNode : public ISerialisable
 {

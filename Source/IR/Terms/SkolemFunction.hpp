@@ -21,8 +21,8 @@ namespace optifol
 
 /**
  * @class SkolemFunction
- * @brief A Skolem Function is a Function symbol used to preserve equivalence with existentially quantified expressions
- *  in CNF. It is typically introduced by the normalisation pipeline.
+ * @brief A Skolem Function is a Function symbol used to preserve equivalence with existentially quantified
+ * expressions in CNF. It is typically introduced by the normalisation pipeline.
  */
 class SkolemFunction : public Function
 {

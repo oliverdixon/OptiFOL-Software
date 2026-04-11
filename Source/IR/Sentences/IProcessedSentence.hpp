@@ -24,8 +24,9 @@ class Literal;
 
 /**
  * @class IProcessedSentence
- * @brief An IProcessedSentence is the interface for immutable sentence AST nodes that have been normalised and are no
- *  longer editable. They're typically stored in a global SymbolRepository and referenced with observing pointers.
+ * @brief An IProcessedSentence is the interface for immutable sentence AST nodes that have been normalised
+ * and are no longer editable. They're typically stored in a global SymbolRepository and referenced with
+ * observing pointers.
  */
 class IProcessedSentence : public ISentence
 {

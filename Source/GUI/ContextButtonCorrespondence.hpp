@@ -33,8 +33,8 @@ public:
      * @brief Create a new correspondence
      * @param parent The parent widget of the PopoverMenu containing the menu option
      * @param menu_source The GTK list model populating the PopoverMenu
-     * @param map A tuple containing the action name, the menu button to which it is linked, the popover linked to the
-     *  action, and whether it should be enabled by default.
+     * @param map A tuple containing the action name, the menu button to which it is linked, the popover
+     * linked to the action, and whether it should be enabled by default.
      */
     explicit ContextButtonCorrespondence(Gtk::Widget *parent, const Glib::RefPtr<Gio::Menu> &menu_source,
             std::initializer_list<std::tuple<std::string, Gtk::MenuButton *, Gtk::Popover *, bool>> &&map);

@@ -24,8 +24,8 @@ namespace optifol
 
 /**
  * @class QueryResult
- * @brief A QueryResult is a deduction environment for a single query on a FOL KB. It contains an overall result, any
- *  derived clauses introduced during deduction, and some metadata.
+ * @brief A QueryResult is a deduction environment for a single query on a FOL KB. It contains an overall
+ * result, any derived clauses introduced during deduction, and some metadata.
  */
 struct QueryResult
 {

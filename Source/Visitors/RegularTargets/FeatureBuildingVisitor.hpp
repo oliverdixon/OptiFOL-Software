@@ -30,8 +30,8 @@ class SkolemFunction;
 
 /**
  * @class FeatureBuildingVisitor
- * @brief The FeatureBuildingVisitor recurses over a Clause structure and builds up features according to the state of
- *  the immutable AST.
+ * @brief The FeatureBuildingVisitor recurses over a Clause structure and builds up features according to the
+ * state of the immutable AST.
  */
 class FeatureBuildingVisitor
 {

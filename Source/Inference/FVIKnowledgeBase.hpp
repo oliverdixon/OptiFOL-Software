@@ -33,8 +33,8 @@ class SymbolRepository;
 
 /**
  * @class FVIKnowledgeBase
- * @brief The FVI (feature vector-indexed) KB stores clauses in a KB-like structure i.a.w. their features. See the
- *  Schulz paper for more information on its nature and supported operations.
+ * @brief The FVI (feature vector-indexed) KB stores clauses in a KB-like structure i.a.w. their features. See
+ * the Schulz paper for more information on its nature and supported operations.
  */
 class FVIKnowledgeBase
 {
