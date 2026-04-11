@@ -26,4 +26,5 @@
 /Typeset/*.synctex*
 /Typeset/*.toc
 /Typeset/sources.tex
+!/Typeset/logo.pdf
 
