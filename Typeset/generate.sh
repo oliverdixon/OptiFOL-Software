@@ -45,7 +45,6 @@ declare -A LANGUAGES=(
     [xml]="XML"
     [gresource.xml.in]="XML"
     [ui.in]="XML"
-    [svg]="XML"
     [txt]="PlainText"
     [html]="HTML"
     [awk]="Awk"

@@ -18,6 +18,7 @@
 \usepackage{listings}
 \usepackage{xcolor}
 \usepackage{titlesec}
+\usepackage{tikz}
 \usepackage{bookmark}
 
 %
@@ -47,7 +48,8 @@
     breakatwhitespace=true,
     breaklines=true,
     showstringspaces=false,
-    showtabs=false
+    showtabs=false,
+    belowskip=2em
 }
 
 %
@@ -84,25 +86,72 @@
     {1em}
     {}
 
-\titlespacing*{\subsubparagraph}
-    {\parindent}
-    {3.25ex plus 1ex minus .2ex}
-    {1em}
+% Make spacing across all sectioning commands consistent
+\titlespacing*{\section}{0pt}{1em}{1em}
+\titlespacing*{\subsection}{0pt}{1em}{1em}
+\titlespacing*{\subsubsection}{0pt}{1em}{1em}
+\titlespacing*{\paragraph}{0pt}{1em}{1em}
+\titlespacing*{\subparagraph}{0pt}{1em}{1em}
+\titlespacing*{\subsubparagraph}{0pt}{1em}{1em}
 
 % TOC entry format
 \makeatletter
 \def\l@subsubparagraph{\@dottedtocline{6}{12em}{6em}}
 \def\toclevel@subsubparagraph{6}
+\renewcommand\@dotsep{9999}
 \makeatother
 \setcounter{secnumdepth}{6}
 \setcounter{tocdepth}{6}
 
 %
+% Logo tiling for frontmatter pages
+%
+
+\newcommand\TileAngle{30} % rotation angle in degrees
+\newcommand\TileWidth{2.8cm} % width of each tile
+\newcommand\TileXStep{3.4} % horizontal spacing (cm)
+\newcommand\TileYStep{3.4} % vertical spacing (cm)
+\newcommand\TileOpacity{0.1} % opacity, normalised 0--1
+
+\makeatletter
+\renewcommand\maketitle{%
+    \begin{center}
+        {\LARGE \@title \par}
+        \vskip 1.5em
+        {\large \@author \par}
+        \vskip 1em
+        {\large \@date \par}
+        \vskip 1.5em
+    \end{center}
+}
+\makeatother
+
+\newif\iffrontmatter
+\frontmatterfalse
+
+\AddToHook{shipout/background}{%
+    \iffrontmatter
+    \begin{tikzpicture}[remember picture, overlay]
+        \begin{scope}[shift={(current page.center)}, rotate=\TileAngle,
+                transform shape]
+            \foreach \i in {-8,-7,...,8} {
+                \foreach \j in {-8,-7,...,8} {
+                    \node[inner sep=0pt, outer sep=0pt, opacity=\TileOpacity] at
+                        ({\i*\TileXStep cm}, {\j*\TileYStep cm})
+                        {\includegraphics[width=\TileWidth]{logo.pdf}};
+                }
+            }
+        \end{scope}
+    \end{tikzpicture}
+    \fi
+}
+
+%
 % Document metadata
 %
 
-\DTMsavedate{gitdate}{2026-04-10} % TODO: update
-\newcommand\githash{87f8e4a4ddf92dea4a93763dd582be926aad59ff} % TODO: update
+\DTMsavedate{gitdate}{2026-04-11}
+\newcommand\githash{a6a52a2e300767c384f3843f35872474a18f1c6d}
 
 \title{\emph{Optifol} Source Code Listing}
 \author{Oliver Dixon}
@@ -115,15 +164,17 @@
 }
 
 \begin{document}
+\frontmattertrue
 \pagenumbering{roman}
 \maketitle
 \begin{abstract}
     The following document is a typeset listing of the entire \emph{Optifol}
     code base as of \DTMusedate{gitdate}. It corresponds with the Git commit
-    hash \texttt{\githash}. The repository is available to browse online at
-    \url{https://github.com/oliverdixon/OptiFOL-Software}. The \LaTeX\
-    dissertation describing the planning, development, and evaluation of the
-    software is available at
+    hash \texttt{\githash} on branch \texttt{typeset}. The repository is
+    available to browse online at
+    \url{https://github.com/oliverdixon/OptiFOL-Software/tree/typeset}. The
+    \LaTeX\ dissertation describing the planning, development, and evaluation of
+    the software is available at
     \url{https://github.com/oliverdixon/OptiFOL-Documentation}. All additional
     materials, such as compiled documents, are available on my academic website
     at \url{https://www-users.york.ac.uk/~od641/l6-project/}. Please direct any
@@ -134,11 +185,25 @@
 
 \begingroup%
 \setlength\parskip{1em}%
+This document is not intended to reflect a finish product; rather an archive of
+the source at the point of submission for the B. Eng. (L6) dissertation. Given
+that not all functional requirements were met in the timeline, some code is
+annotated with \texttt{TODO} markers, and Doxygen documentation is occasionally
+incomplete.
+
 From the front-matter onwards, the page margins shrink from $2$cm to $0.5$cm to
-accommodate the 100-column source listings. As some printers may not be able to
-handle such large text areas, printing a couple of test pages prior to printing
-the entire document is recommended! Page numbering is also omitted for the
-remainder of the document for similar typographical reasons.
+accommodate the 110-column source listings\footnotemark. As some printers may
+not be able to handle such large text areas, printing a couple of test pages
+prior to printing the entire document is recommended! Page numbering is also
+omitted for the remainder of the document for similar typographical reasons.
+%
+\footnotetext{The software was initially developed with 120-column files. The
+sources have been automatically reset to 110 columns using the
+\href{https://clang.llvm.org/docs/ClangFormat.html}{\texttt{clang-format}}
+utility, configured by the \texttt{.clang-format} directive file provided
+herein. This process may have caused very occasional quirks in formatting. The
+original sources can be found via version control on the \texttt{master}
+branch.}
 
 The \emph{File Index} structure below corresponds to the directory hierarchy of
 the \emph{Optifol} code base: the ``core'' files are detained in
@@ -164,6 +229,7 @@ Doxygen HTML documentation of the sources can be found at
 
 \tableofcontents
 \clearpage
+\frontmatterfalse
 \pagenumbering{gobble}
 \newgeometry{margin=.5cm}
 \input{sources.tex}
