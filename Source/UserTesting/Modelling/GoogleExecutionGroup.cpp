@@ -41,21 +41,16 @@ void GoogleExecutionGroup::run()
         invalidate_cache();
 
     /*
-     * TODO: if the binding fails due to the port number being taken, we should continue to try until we (a) hit the
-     *  max, or (b) find an unused port and bind successfully. The bound port may not be the same as the one passed, so
-     *  TestListenerBase should provide functionality to interrogate the effective address of the socket once bound.
+     * TODO: if the binding fails due to the port number being taken, we should continue to try until we (a)
+     * hit the max, or (b) find an unused port and bind successfully. The bound port may not be the same as
+     * the one passed, so TestListenerBase should provide functionality to interrogate the effective address
+     * of the socket once bound.
      */
     listener = std::make_unique<GoogleTestListener>(port_number);
-    executor = std::make_unique<ProcessExecutor>(
-        "",
-        std::vector<std::string>{
-            get_executable_name(),
-            "--gtest_filter=" + filter_line_cache,
-            "--gtest_stream_result_to=127.0.0.1:" + std::to_string(port_number)
-        },
-        std::vector<std::string>{},
-        sigc::mem_fun(*this, &GoogleExecutionGroup::distribute_results)
-    );
+    executor = std::make_unique<ProcessExecutor>("",
+            std::vector<std::string>{get_executable_name(), "--gtest_filter=" + filter_line_cache,
+                    "--gtest_stream_result_to=127.0.0.1:" + std::to_string(port_number)},
+            std::vector<std::string>{}, sigc::mem_fun(*this, &GoogleExecutionGroup::distribute_results));
 
     if (++port_number == maximum_port_number) {
         port_number = minimum_port_number;
@@ -86,7 +81,7 @@ std::size_t GoogleExecutionGroup::is_empty() const noexcept
 void GoogleExecutionGroup::distribute_results(const int exit_code) const
 {
     std::ignore = exit_code;
-    for (auto& test : tests)
+    for (auto &test: tests)
         listener->endow_test(*test);
 }
 
@@ -94,8 +89,9 @@ void GoogleExecutionGroup::invalidate_cache()
 {
     filter_line_cache.clear();
 
-    for (const auto& test : tests)
-        filter_line_cache += test->property_fixture().get_value() + '.' + test->property_name().get_value() + ':';
+    for (const auto &test: tests)
+        filter_line_cache +=
+                test->property_fixture().get_value() + '.' + test->property_name().get_value() + ':';
 
     cache_ok = true;
 }

@@ -30,13 +30,12 @@ class FeatureBuildingVisitor;
 
 /**
  * @class Literal
- * @brief A Literal represents a non-owning IR node sentence consisting of a display name and zero to many arguments,
- *  all of which are referenced from the centralised SymbolRepository.
+ * @brief A Literal represents a non-owning IR node sentence consisting of a display name and zero to many
+ * arguments, all of which are referenced from the centralised SymbolRepository.
  * @see MutablePredicate for the unprocessed, argument-owning dual.
  */
-class Literal :
-        public IProcessedSentence,
-        public OwningBuildable<Literal>
+class Literal : public IProcessedSentence,
+                public OwningBuildable<Literal>
 {
 public:
     /**
@@ -45,8 +44,8 @@ public:
      * @param arguments Set of non-owning pointers to immutable arguments
      * @param is_positive Should the predicate be instantiated with a positive polarity?
      */
-    explicit Literal(
-            std::string name, std::initializer_list<const IProcessedTerm *> arguments = {}, bool is_positive = true);
+    explicit Literal(std::string name, std::initializer_list<const IProcessedTerm *> arguments = {},
+            bool is_positive = true);
 
     /**
      * @brief Create a signed predicate with an initial set of referenced arguments
@@ -55,19 +54,19 @@ public:
      * @param is_positive Should the predicate be instantiated with a positive polarity?
      */
     explicit Literal(
-            std::string name, std::vector<const IProcessedTerm *>&& arguments, bool is_positive = true);
+            std::string name, std::vector<const IProcessedTerm *> &&arguments, bool is_positive = true);
 
     [[nodiscard]] bool is_negative_polarity() const noexcept override;
 
     std::ostream &serialise(std::ostream &ostream) const override;
 
-    friend std::ostream& operator<<(std::ostream& ostream, const Literal& literal);
+    friend std::ostream &operator<<(std::ostream &ostream, const Literal &literal);
 
     [[nodiscard]] std::size_t hash() const noexcept override;
 
     [[nodiscard]] bool operator==(const IProcessedSentence &other) const noexcept override;
 
-    [[nodiscard]] bool operator<(const Literal& other) const noexcept;
+    [[nodiscard]] bool operator<(const Literal &other) const noexcept;
 
     /**
      * @brief Get the display name of the predicate, not including any arguments or metadata
@@ -81,12 +80,13 @@ public:
      */
     [[nodiscard]] const std::vector<const IProcessedTerm *> &observe_arguments() const noexcept;
 
-    [[nodiscard]] bool accept(IObservingBinaryVisitor &binary_visitor, const IProcessedSentence &sentence) const
-        override;
+    [[nodiscard]] bool accept(
+            IObservingBinaryVisitor &binary_visitor, const IProcessedSentence &sentence) const override;
 
-    [[nodiscard]] bool accept(IObservingBinaryVisitor &binary_visitor, const Literal &predicate) const override;
+    [[nodiscard]] bool accept(
+            IObservingBinaryVisitor &binary_visitor, const Literal &predicate) const override;
 
-    void accept(FeatureBuildingVisitor& feature_component_builder) const;
+    void accept(FeatureBuildingVisitor &feature_component_builder) const;
 
     [[nodiscard]] const Literal *accept(const UnificationApplicationVisitor &application_visitor) const;
 

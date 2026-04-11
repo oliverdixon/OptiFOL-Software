@@ -20,7 +20,7 @@
 namespace optifol
 {
 
-const char * UniversalEliminationVisitor::visitor_name = "UniversalElimination";
+const char *UniversalEliminationVisitor::visitor_name = "UniversalElimination";
 
 std::string_view UniversalEliminationVisitor::get_visitor_name() const
 {
@@ -67,4 +67,4 @@ void UniversalEliminationVisitor::visit(MutableSentenceRoot &node)
         node.put_sentence(std::move(extracted_sentence));
 }
 
-}
+} // namespace optifol

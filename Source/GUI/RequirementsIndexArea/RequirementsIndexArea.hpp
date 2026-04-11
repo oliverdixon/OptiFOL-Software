@@ -36,8 +36,8 @@ namespace optifol
  * @brief Manage the <i>Requirements Index</i> area
  * @details
  *  <p>
- *      The <i>Requirements Index</i> area provides controls for reviewing and manipulating requirements for a single
- *      Subsystem. The basic set of operations on the atomic Requirement object includes creation, deletion,
+ *      The <i>Requirements Index</i> area provides controls for reviewing and manipulating requirements for a
+ * single Subsystem. The basic set of operations on the atomic Requirement object includes creation, deletion,
  *      modification, and duplication. The following GTK elements are expected from the given Gtk::Builder:
  *      <table>
  *          <tr>
@@ -53,7 +53,8 @@ namespace optifol
  *          <tr>
  *              <td>Gtk::Widget (abstract)</td>
  *              <td><code>requirements_index_content</code></td>
- *              <td>Replacement to <code>requirements_index_advice_unselected</code>, containing all active content</td>
+ *              <td>Replacement to <code>requirements_index_advice_unselected</code>, containing all active
+ * content</td>
  *          </tr>
  *          <tr>
  *              <td>Gtk::ColumnView</td>
@@ -138,25 +139,22 @@ namespace optifol
  *      </table>
  *  </p>
  *  <p>
- *      In addition to the stated required GTK elements, constituent popovers of this view will require their own,
- *      possibly distinct, set of elements:
- *      <ul>
- *          <li>@ref IndexNewRequirementPopover</li>
- *          <li>@ref IndexEditRequirementPopover</li>
- *          <li>@ref IndexDuplicateRequirementPopover</li>
- *          <li>@ref IndexDeleteRequirementPopover</li>
+ *      In addition to the stated required GTK elements, constituent popovers of this view will require their
+ * own, possibly distinct, set of elements: <ul> <li>@ref IndexNewRequirementPopover</li> <li>@ref
+ * IndexEditRequirementPopover</li> <li>@ref IndexDuplicateRequirementPopover</li> <li>@ref
+ * IndexDeleteRequirementPopover</li>
  *      </ul>
  *  </p>
  */
-class RequirementsIndexArea :
-        public IWindowArea
+class RequirementsIndexArea : public IWindowArea
 {
 public:
     /**
-     * @brief Construct a new compartmentalised area for displaying and managing sets of subsystem requirements
+     * @brief Construct a new compartmentalised area for displaying and managing sets of subsystem
+     * requirements
      * @param builder The GTK builder attached to the main window
      */
-    explicit RequirementsIndexArea(Gtk::Builder& builder);
+    explicit RequirementsIndexArea(Gtk::Builder &builder);
 
     void select_model(const Glib::RefPtr<Subsystem> &new_subsystem) override;
 
@@ -203,11 +201,11 @@ private:
     Glib::RefPtr<Gio::ListStore<Requirement>> data_model;
     Glib::RefPtr<Gtk::SingleSelection> selection_model = Gtk::SingleSelection::create();
 
-    std::pair<Gtk::Widget*, Gtk::Widget*> on_off_widgets;
+    std::pair<Gtk::Widget *, Gtk::Widget *> on_off_widgets;
 
-    static const char * const area_name;
+    static const char *const area_name;
 
-    Gtk::ColumnView * view;
+    Gtk::ColumnView *view;
 
     ContextButtonCorrespondence context_menu;
 
@@ -217,6 +215,6 @@ private:
     IndexDeleteRequirementPopover delete_requirement_popover;
 };
 
-}
+} // namespace optifol
 
 #endif

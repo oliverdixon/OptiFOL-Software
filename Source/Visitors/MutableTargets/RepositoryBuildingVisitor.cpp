@@ -53,13 +53,15 @@ const IProcessedSentence *RepositoryBuildingVisitor::visit(const MutableQuantifi
 const BinaryConnected *RepositoryBuildingVisitor::visit(MutableBinaryConnected &node)
 {
     const auto operator_type = node.get_operator_type();
-    assert(operator_type == BinaryOperatorTypes::Conjunction || operator_type == BinaryOperatorTypes::Disjunction);
+    assert(operator_type == BinaryOperatorTypes::Conjunction ||
+            operator_type == BinaryOperatorTypes::Disjunction);
 
     /*
      * The "manage clause" flag indicates that this function is responsible for committing and resetting the
-     * working clause member function, and that its callees are exclusively allowed to insert literals into the working
-     * clause. Note that this should be set for any conjunctive node, and if an existing non-empty working clause is
-     * present, it may be safely assumed to be fully populated and committed to the sentence root.
+     * working clause member function, and that its callees are exclusively allowed to insert literals into
+     * the working clause. Note that this should be set for any conjunctive node, and if an existing non-empty
+     * working clause is present, it may be safely assumed to be fully populated and committed to the sentence
+     * root.
      */
     const bool managed_clause = operator_type == BinaryOperatorTypes::Conjunction;
 
@@ -71,8 +73,8 @@ const BinaryConnected *RepositoryBuildingVisitor::visit(MutableBinaryConnected &
     const auto repo_lhs = bound_lhs->accept(*this);
 
     /*
-     * If the LHS recursion produced any literals under disjunction, commit the set to the sentence root, and create a
-     * fresh clause for the RHS operand.
+     * If the LHS recursion produced any literals under disjunction, commit the set to the sentence root, and
+     * create a fresh clause for the RHS operand.
      */
     if (managed_clause && !working_clause.empty())
         commit_working_clause();
@@ -133,8 +135,8 @@ const Variable *RepositoryBuildingVisitor::visit(const MutableVariable &node) co
 {
     return symbol_repository->add_symbol<Variable>(
             std::make_unique<Variable>(std::string(node.get_base_name()),
-                std::string(node.get_base_name()) + MutableVariable::disambiguating_delimiter +
-                    std::to_string(symbol_repository->get_sentence_count())));
+                    std::string(node.get_base_name()) + MutableVariable::disambiguating_delimiter +
+                            std::to_string(symbol_repository->get_sentence_count())));
 }
 
 const Function *RepositoryBuildingVisitor::visit(MutableFunction &node)
@@ -146,8 +148,8 @@ const Function *RepositoryBuildingVisitor::visit(MutableFunction &node)
     for (const auto &term: owned_terms)
         processed_terms.push_back(term->accept(*this));
 
-    return symbol_repository->add_symbol<Function>(
-            std::make_unique<Function>(std::string(node.get_disambiguated_name()), std::move(processed_terms)));
+    return symbol_repository->add_symbol<Function>(std::make_unique<Function>(
+            std::string(node.get_disambiguated_name()), std::move(processed_terms)));
 }
 
 const SkolemFunction *RepositoryBuildingVisitor::visit(const MutableSkolemFunction &node)
@@ -159,8 +161,8 @@ const SkolemFunction *RepositoryBuildingVisitor::visit(const MutableSkolemFuncti
     for (const auto &term: quantified_terms)
         processed_terms.push_back(term->accept(*this));
 
-    return symbol_repository->add_symbol<SkolemFunction>(
-            std::make_unique<SkolemFunction>(std::string(node.get_disambiguated_name()), std::move(processed_terms)));
+    return symbol_repository->add_symbol<SkolemFunction>(std::make_unique<SkolemFunction>(
+            std::string(node.get_disambiguated_name()), std::move(processed_terms)));
 }
 
 } // namespace optifol

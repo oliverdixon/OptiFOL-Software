@@ -28,7 +28,7 @@ class ListItem;
 class Label;
 class Builder;
 
-}
+} // namespace Gtk
 
 namespace optifol
 {
@@ -37,9 +37,8 @@ namespace optifol
  * @class StorageObjectBase
  * @brief Defines the base class for a Glib-registered storable object in the Optifol storage hierarchy
  */
-class StorageObjectBase :
-        public Glib::Object,
-        public IHashable
+class StorageObjectBase : public Glib::Object,
+                          public IHashable
 {
 public:
     /**
@@ -87,36 +86,37 @@ public:
     [[nodiscard]] Glib::PropertyProxy_ReadOnly<TimeT> property_modified_time() const;
 
     /**
-     * @brief Establish a property-synched binding between the 'name' property of a StorableObjectBase object, and
-     *  a flat (non-expandable) label in a Gtk::ListView.
+     * @brief Establish a property-synched binding between the 'name' property of a StorableObjectBase object,
+     * and a flat (non-expandable) label in a Gtk::ListView.
      * @param list_item The list item provided by the GTK callback invocation
      */
     static void bind_name(const Glib::RefPtr<Gtk::ListItem> &list_item);
 
     /**
-     * @brief Establish a property-synched binding between the 'creation time' property of a StorableObjectBase
-     *  object, and a flat (non-expandable) label in a Gtk::ListView by means of a locale-dependent formatting routine.
+     * @brief Establish a property-synched binding between the 'creation time' property of a
+     * StorableObjectBase object, and a flat (non-expandable) label in a Gtk::ListView by means of a
+     * locale-dependent formatting routine.
      * @param list_item The list item provided by the GTK callback invocation
      */
     static void bind_creation_time(const Glib::RefPtr<Gtk::ListItem> &list_item);
 
     /**
-     * @brief Establish a property-synched binding between the 'last-modified time' property of a StorableObjectBase-
-     *  like object, and a flat (non-expandable) label in a Gtk::ListView by means of a locale-dependent formatting
-     *  routine.
+     * @brief Establish a property-synched binding between the 'last-modified time' property of a
+     * StorableObjectBase- like object, and a flat (non-expandable) label in a Gtk::ListView by means of a
+     * locale-dependent formatting routine.
      * @param list_item The list item provided by the GTK callback invocation
      */
     static void bind_modification_time(const Glib::RefPtr<Gtk::ListItem> &list_item);
 
     /**
-     * @brief Establish a property-synched binding between the 'name' property of a StorableObjectBase-like object, and
-     *  a tree-expandable label in a Gtk::ListView with nested expanders.
+     * @brief Establish a property-synched binding between the 'name' property of a StorableObjectBase-like
+     * object, and a tree-expandable label in a Gtk::ListView with nested expanders.
      * @param list_item The list item provided by the GTK callback invocation
-     * @param tree_model The tree model in which the list item exists, required to update expander responsibility
-     *  delegation
+     * @param tree_model The tree model in which the list item exists, required to update expander
+     * responsibility delegation
      */
-    static void bind_name_property_expandable(
-            const Glib::RefPtr<Gtk::ListItem> &list_item, const Glib::RefPtr<Gtk::TreeListModel> &tree_model) noexcept;
+    static void bind_name_property_expandable(const Glib::RefPtr<Gtk::ListItem> &list_item,
+            const Glib::RefPtr<Gtk::TreeListModel> &tree_model) noexcept;
 
 protected:
     /**
@@ -129,7 +129,7 @@ protected:
      * @param cobject The C cast-item used by Glib::Object
      * @param builder Currently unused builder parameter to provide to the Glib::Object instance
      */
-    StorageObjectBase(BaseObjectType* cobject, const Glib::RefPtr<Gtk::Builder>& builder);
+    StorageObjectBase(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &builder);
 
 private:
     Glib::Property<Glib::ustring> name;
@@ -152,6 +152,6 @@ template<typename Type>
 concept StorableType = std::derived_from<Type, StorageObjectBase>;
 #pragma clang diagnostic pop
 
-}
+} // namespace optifol
 
 #endif

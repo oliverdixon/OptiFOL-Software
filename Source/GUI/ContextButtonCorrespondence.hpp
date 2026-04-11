@@ -17,17 +17,12 @@ namespace optifol
 class ContextButtonCorrespondence
 {
 public:
-    explicit ContextButtonCorrespondence(Gtk::Widget * parent, const Glib::RefPtr<Gio::Menu>& menu_source,
-        std::initializer_list<std::tuple<
-            std::string,
-            Gtk::MenuButton *,
-            Gtk::Popover *,
-            bool>
-        >&& map);
+    explicit ContextButtonCorrespondence(Gtk::Widget *parent, const Glib::RefPtr<Gio::Menu> &menu_source,
+            std::initializer_list<std::tuple<std::string, Gtk::MenuButton *, Gtk::Popover *, bool>> &&map);
 
-    void enable_action(const Glib::ustring& action_name) const;
+    void enable_action(const Glib::ustring &action_name) const;
 
-    void disable_action(const Glib::ustring& action_name) const;
+    void disable_action(const Glib::ustring &action_name) const;
 
 private:
     std::unordered_map<std::string, Gtk::MenuButton *> map;
@@ -37,6 +32,6 @@ private:
     Gtk::PopoverMenu menu;
 };
 
-}
+} // namespace optifol
 
 #endif

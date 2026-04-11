@@ -21,7 +21,8 @@ namespace optifol
 {
 
 MutableBinaryConnected::MutableBinaryConnected(const BinaryOperatorTypes operator_type,
-        std::unique_ptr<IMutableSentence> &&lhs, std::unique_ptr<IMutableSentence> &&rhs, const bool is_positive) :
+        std::unique_ptr<IMutableSentence> &&lhs, std::unique_ptr<IMutableSentence> &&rhs,
+        const bool is_positive) :
     operator_type(operator_type),
     lhs(std::move(lhs)),
     rhs(std::move(rhs)),
@@ -101,7 +102,8 @@ const IProcessedSentence *MutableBinaryConnected::accept(RepositoryBuildingVisit
 
 std::size_t MutableBinaryConnected::hash() const noexcept
 {
-    return BinaryConnected::hash_binary_connected(operator_type, lhs.get(), rhs.get(), is_negative_polarity());
+    return BinaryConnected::hash_binary_connected(
+            operator_type, lhs.get(), rhs.get(), is_negative_polarity());
 }
 
 std::ostream &MutableBinaryConnected::serialise(std::ostream &ostream) const
@@ -117,7 +119,8 @@ bool MutableBinaryConnected::operator==(const IMutableSentence &other) const noe
         // Other IMutableSentence isn't a MutableBinaryConnected.
         return false;
 
-    return commutative_ptr_compare(lhs.get(), rhs.get(), other_connected->lhs.get(), other_connected->rhs.get());
+    return commutative_ptr_compare(
+            lhs.get(), rhs.get(), other_connected->lhs.get(), other_connected->rhs.get());
 }
 
 } // namespace optifol

@@ -24,13 +24,14 @@ namespace optifol
 
 /**
  * @class MutableVariable
- * @brief A MutableVariable is an owning IR node representing a first-order logic non-free variable. Within the
- *  semantics of Optifol, it must be used in the context of a MutableQuantified IR node. Variables have display names
- *  and disambiguated names, which may or may not be identical, although the disambiguated name is unique in the scope
- *  of the outermost sentence.
+ * @brief A MutableVariable is an owning IR node representing a first-order logic non-free variable. Within
+ * the semantics of Optifol, it must be used in the context of a MutableQuantified IR node. Variables have
+ * display names and disambiguated names, which may or may not be identical, although the disambiguated name
+ * is unique in the scope of the outermost sentence.
  * @see Variable for the non-owning, immutable dual
  */
-class MutableVariable : public IMutableTerm, public OwningBuildable<MutableVariable>
+class MutableVariable : public IMutableTerm,
+                        public OwningBuildable<MutableVariable>
 {
 public:
     /**

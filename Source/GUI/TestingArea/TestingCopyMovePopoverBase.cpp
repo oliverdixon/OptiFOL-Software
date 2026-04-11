@@ -23,13 +23,9 @@ const char *const TestingCopyMovePopoverBase::popover_name = "Copy/Move Requirem
 const log4cxx::LoggerPtr TestingCopyMovePopoverBase::popover_logger =
         Logging::get_logger({"GUI", "TestingCompliance", "CopyMoveRequirement"});
 
-TestingCopyMovePopoverBase::TestingCopyMovePopoverBase(
-        TestingArea &testing_area,
-        Gtk::Popover * my_popover,
-        Gtk::Entry *requirement_entry,
-        Gtk::DropDown *new_test_group_dropdown,
-        Gtk::Button * const confirm_button,
-        Gtk::Button * const cancel_button) :
+TestingCopyMovePopoverBase::TestingCopyMovePopoverBase(TestingArea &testing_area, Gtk::Popover *my_popover,
+        Gtk::Entry *requirement_entry, Gtk::DropDown *new_test_group_dropdown,
+        Gtk::Button *const confirm_button, Gtk::Button *const cancel_button) :
     testing_area(testing_area),
     my_popover(my_popover),
     new_test_group_dropdown(new_test_group_dropdown),
@@ -37,11 +33,14 @@ TestingCopyMovePopoverBase::TestingCopyMovePopoverBase(
 {
     // Set up buttons and self.
     my_popover->signal_show().connect(sigc::mem_fun(*this, &TestingCopyMovePopoverBase::popover_show));
-    confirm_button->signal_clicked().connect(sigc::mem_fun(*this, &TestingCopyMovePopoverBase::confirm_button_clicked));
-    cancel_button->signal_clicked().connect(sigc::mem_fun(*this, &TestingCopyMovePopoverBase::cancel_button_clicked));
+    confirm_button->signal_clicked().connect(
+            sigc::mem_fun(*this, &TestingCopyMovePopoverBase::confirm_button_clicked));
+    cancel_button->signal_clicked().connect(
+            sigc::mem_fun(*this, &TestingCopyMovePopoverBase::cancel_button_clicked));
 
     // Set up dropdown factory.
-    new_test_group_dropdown->set_factory(configure_combo_box_factory(sigc::ptr_fun(&TestGroup::bind_name_to_label)));
+    new_test_group_dropdown->set_factory(
+            configure_combo_box_factory(sigc::ptr_fun(&TestGroup::bind_name_to_label)));
 }
 
 void TestingCopyMovePopoverBase::popover_show() const noexcept
@@ -56,7 +55,7 @@ void TestingCopyMovePopoverBase::popover_show() const noexcept
     try {
         const auto selected_requirement = testing_area.get_selected_requirement();
         requirement_entry->set_text(selected_requirement->property_name().get_value());
-    } catch (const std::runtime_error& exception) {
+    } catch (const std::runtime_error &exception) {
         popover_logger->error(exception.what());
         my_popover->popdown();
     }

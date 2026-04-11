@@ -22,8 +22,8 @@ TestExecutable::TestExecutable(const Glib::ustring &executable_path) :
     property_name().set_value(executable_path);
 }
 
-TestExecutable::TestExecutable(
-        const Glib::ustring &executable_path, BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &builder) :
+TestExecutable::TestExecutable(const Glib::ustring &executable_path, BaseObjectType *cobject,
+        const Glib::RefPtr<Gtk::Builder> &builder) :
     Glib::ObjectBase("TestExecutable"),
     StorageObjectBase(cobject, builder)
 {

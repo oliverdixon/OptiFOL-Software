@@ -42,8 +42,9 @@ AnalysisAreaNewAnalysisGroupPopover::AnalysisAreaNewAnalysisGroupPopover(
 void AnalysisAreaNewAnalysisGroupPopover::confirm_button_clicked() const
 {
     my_popover->popdown();
-    analysis_area.observe_active_subsystem()->get_analysis_groups()->append(Glib::make_refptr_for_instance(
-        new AnalysisGroup(name_entry->get_text(), analysis_area.get_active_subsystem()->share_symbol_repository())));
+    analysis_area.observe_active_subsystem()->get_analysis_groups()->append(
+            Glib::make_refptr_for_instance(new AnalysisGroup(name_entry->get_text(),
+                    analysis_area.get_active_subsystem()->share_symbol_repository())));
 
     popover_logger->debug("Created new analysis group with name \"" + name_entry->get_text() + "\".");
     clear_inputs();

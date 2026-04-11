@@ -35,18 +35,19 @@ enum class QuantifierTypes
 
 /**
  * @class MutableQuantified
- * @brief A MutableQuantified IR node owns a bound variable/term and a bound sentence ("operands"), and detains the
- *  first-order logic operator by which the sentence is bound by the variable. Metadata and operands are mutable, and
- *  owned by the instance of the IR node.
- * @note There is no immutable, non-owning dual of the MutableQuantified node as it may not appear in CNF-normalised
- *  expression trees.
+ * @brief A MutableQuantified IR node owns a bound variable/term and a bound sentence ("operands"), and
+ * detains the first-order logic operator by which the sentence is bound by the variable. Metadata and
+ * operands are mutable, and owned by the instance of the IR node.
+ * @note There is no immutable, non-owning dual of the MutableQuantified node as it may not appear in
+ * CNF-normalised expression trees.
  */
 class MutableQuantified : public IMutableSentence,
                           public OwningBuildable<MutableQuantified>
 {
 public:
-    [[maybe_unused]] MutableQuantified(QuantifierTypes quantifier_type, std::unique_ptr<IMutableTerm> &&bound_term,
-            std::unique_ptr<IMutableSentence> &&sentence, bool is_positive = true);
+    [[maybe_unused]] MutableQuantified(QuantifierTypes quantifier_type,
+            std::unique_ptr<IMutableTerm> &&bound_term, std::unique_ptr<IMutableSentence> &&sentence,
+            bool is_positive = true);
 
     [[nodiscard]] std::unique_ptr<IMutableSentence> clone() const override;
 

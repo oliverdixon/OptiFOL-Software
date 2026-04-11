@@ -33,8 +33,8 @@ enum class BinaryOperatorTypes
 
 /**
  * @class BinaryConnected
- * @brief A BinaryConnected IR node references two operands semantically joined with an operator. Metadata and operands
- *  are immutable; operands are held centrally in a SymbolRepository.
+ * @brief A BinaryConnected IR node references two operands semantically joined with an operator. Metadata and
+ * operands are immutable; operands are held centrally in a SymbolRepository.
  * @see BinaryOperatorTypes for modes of connection
  * @see MutableBinaryConnected for the owning dual
  */
@@ -48,9 +48,8 @@ public:
      * @param rhs The right-hand operand reference in the SymbolRepository
      * @param is_positive Should the node be instantiated with in a positive polarity?
      */
-    explicit BinaryConnected(
-            BinaryOperatorTypes operator_type, const IProcessedSentence *lhs, const IProcessedSentence *rhs,
-            bool is_positive = true);
+    explicit BinaryConnected(BinaryOperatorTypes operator_type, const IProcessedSentence *lhs,
+            const IProcessedSentence *rhs, bool is_positive = true);
 
     [[nodiscard]] bool is_negative_polarity() const noexcept override;
 
@@ -86,8 +85,8 @@ public:
      * @param is_negative_polarity Has the target been instantiated with a negative polarity?
      * @return Numeric hash of the binary-connected node described by the given parameters
      */
-    [[nodiscard]] static std::size_t hash_binary_connected(BinaryOperatorTypes operator_type, const ISentence *lhs,
-            const ISentence *rhs, bool is_negative_polarity) noexcept;
+    [[nodiscard]] static std::size_t hash_binary_connected(BinaryOperatorTypes operator_type,
+            const ISentence *lhs, const ISentence *rhs, bool is_negative_polarity) noexcept;
 
     /**
      * @brief Serialise any type of binary-connected IR node from a static context into an output stream

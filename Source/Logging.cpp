@@ -48,7 +48,8 @@ log4cxx::LoggerPtr Logging::get_logger(std::vector<std::string> &&name)
 
 Logging::LifecycleManager::LifecycleManager()
 {
-    if (log4cxx::xml::DOMConfigurator::configure(properties_file) == log4cxx::spi::ConfigurationStatus::NotConfigured) {
+    if (log4cxx::xml::DOMConfigurator::configure(properties_file) ==
+            log4cxx::spi::ConfigurationStatus::NotConfigured) {
         // If we couldn't load the custom configurator, send events to the console.
         log4cxx::BasicConfigurator::configure();
         LOG4CXX_WARN(get_logger(), "Could not load logging properties file at " << properties_file);

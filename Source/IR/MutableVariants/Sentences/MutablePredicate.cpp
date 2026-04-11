@@ -31,8 +31,8 @@ MutablePredicate::MutablePredicate(
 {
 }
 
-MutablePredicate::MutablePredicate(
-        std::string name, const bool is_positive, const std::vector<std::unique_ptr<IMutableTerm>> &arguments) :
+MutablePredicate::MutablePredicate(std::string name, const bool is_positive,
+        const std::vector<std::unique_ptr<IMutableTerm>> &arguments) :
     name(std::move(name)),
     is_positive(is_positive)
 {
@@ -46,7 +46,8 @@ MutablePredicate::MutablePredicate(std::string name, std::vector<std::unique_ptr
 {
 }
 
-MutablePredicate::MutablePredicate(std::string name, const std::vector<std::unique_ptr<IMutableTerm>> &arguments) :
+MutablePredicate::MutablePredicate(
+        std::string name, const std::vector<std::unique_ptr<IMutableTerm>> &arguments) :
     MutablePredicate(std::move(name), true, arguments)
 {
 }
@@ -119,8 +120,8 @@ bool MutablePredicate::operator==(const IMutableSentence &other) const noexcept
         return false;
 
     for (std::size_t argument_idx = 0; argument_idx < argument_count; ++argument_idx) {
-        const auto& lhs_arg_ptr = arguments[argument_idx];
-        const auto& rhs_arg_ptr = other_predicate->arguments[argument_idx];
+        const auto &lhs_arg_ptr = arguments[argument_idx];
+        const auto &rhs_arg_ptr = other_predicate->arguments[argument_idx];
 
         if (lhs_arg_ptr == nullptr) {
             if (rhs_arg_ptr != nullptr)
@@ -128,7 +129,7 @@ bool MutablePredicate::operator==(const IMutableSentence &other) const noexcept
         } else if (rhs_arg_ptr == nullptr)
             return false;
         else if (*lhs_arg_ptr != *rhs_arg_ptr)
-                return false;
+            return false;
     }
 
     return true;

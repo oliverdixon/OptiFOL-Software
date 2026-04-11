@@ -34,14 +34,15 @@ class RepositoryBuildingTest : public testing::Test
 {
 protected:
     /**
-     * @brief Despatches the RepositoryBuildingVisitor with a fresh SymbolRepository over the given IMutableSentence and
-     *  compares the actual results to the expected.
-     * @param test The initial node to test, not wrapped inside of a MutableSentenceRoot. The tree must be normalised to
-     *  CNF.
-     * @param expected The expected set of ordered clauses, each of which contains the expected set of ordered literals.
+     * @brief Despatches the RepositoryBuildingVisitor with a fresh SymbolRepository over the given
+     * IMutableSentence and compares the actual results to the expected.
+     * @param test The initial node to test, not wrapped inside of a MutableSentenceRoot. The tree must be
+     * normalised to CNF.
+     * @param expected The expected set of ordered clauses, each of which contains the expected set of ordered
+     * literals.
      */
-    static void repo_build_test(
-            std::unique_ptr<IMutableSentence> &&test, const std::vector<std::vector<const Literal *>> &expected)
+    static void repo_build_test(std::unique_ptr<IMutableSentence> &&test,
+            const std::vector<std::vector<const Literal *>> &expected)
     {
         const auto repository = std::make_shared<SymbolRepository>();
         RepositoryBuildingVisitor visitor(repository);
@@ -61,7 +62,8 @@ protected:
             const auto actual_literal_end = actual_clause_begin->end();
 
             for (const auto expected_literal: expected_clause) {
-                // Verify that the actual literal list does not exceed the expected literal list for the fixed clause.
+                // Verify that the actual literal list does not exceed the expected literal list for the fixed
+                // clause.
                 EXPECT_NE(actual_literal_begin, actual_literal_end);
 
                 // Verify equality of the Literals.
@@ -73,7 +75,8 @@ protected:
                 ++actual_literal_begin;
             }
 
-            // Verify that the actual literal list is exhausted at the same point as the expected literal list.
+            // Verify that the actual literal list is exhausted at the same point as the expected literal
+            // list.
             EXPECT_EQ(actual_literal_begin, actual_literal_end);
             ++actual_clause_begin;
         }
@@ -88,8 +91,8 @@ protected:
  * @details
  *  <ul>
  *      <li>Input: @f$ P \left( x, y, z \right) @f$</li>
- *      <li>Expected output: @f$ \left\{ \left\{ P \left( x_0, y_0, z_0 \right) \right\} \right\} @f$, where the
- *          subscripted suffixes are introduced to disambiguate across sentences.</li>
+ *      <li>Expected output: @f$ \left\{ \left\{ P \left( x_0, y_0, z_0 \right) \right\} \right\} @f$, where
+ * the subscripted suffixes are introduced to disambiguate across sentences.</li>
  *  </ul>
  * @memberof RepositoryBuildingTest
  */
@@ -116,7 +119,8 @@ TEST_F(RepositoryBuildingTest, SingleClause_SinglePredicate)
 }
 
 /**
- * @brief Tests basic functionality of the RepositoryBuildingVisitor for multiple predicates within a single CNF clause.
+ * @brief Tests basic functionality of the RepositoryBuildingVisitor for multiple predicates within a single
+ * CNF clause.
  * @details
  *  <ul>
  *      <li>Input: @f$ P \lor Q @f$</li>
@@ -145,7 +149,8 @@ TEST_F(RepositoryBuildingTest, SingleClause_MultiplePredicates)
 }
 
 /**
- * @brief Tests basic functionality of the RepositoryBuildingVisitor for single predicates over multiple CNF clauses.
+ * @brief Tests basic functionality of the RepositoryBuildingVisitor for single predicates over multiple CNF
+ * clauses.
  * @details
  *  <ul>
  *      <li>Input: @f$ P \land Q @f$</li>
@@ -174,7 +179,8 @@ TEST_F(RepositoryBuildingTest, MultipleClauses_SinglePredicate)
 }
 
 /**
- * @brief Tests basic functionality of the RepositoryBuildingVisitor for multiple predicates over multiple CNF clauses.
+ * @brief Tests basic functionality of the RepositoryBuildingVisitor for multiple predicates over multiple CNF
+ * clauses.
  * @details
  *  <ul>
  *      <li>Input: @f$ \left( P \lor Q \right) \land \left( R \lor S \right) @f$</li>
@@ -213,8 +219,8 @@ TEST_F(RepositoryBuildingTest, MultipleClauses_MultiplePredicates)
 }
 
 /**
- * @brief Tests basic functionality of the RepositoryBuildingVisitor for multiple predicates over multiple CNF clauses,
- *  including nested CNF formulas.
+ * @brief Tests basic functionality of the RepositoryBuildingVisitor for multiple predicates over multiple CNF
+ * clauses, including nested CNF formulas.
  * @details
  *  <ul>
  *      <li>

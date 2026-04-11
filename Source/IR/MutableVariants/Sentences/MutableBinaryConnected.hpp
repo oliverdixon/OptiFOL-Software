@@ -41,8 +41,9 @@ public:
      * @param rhs Transferred owning container of the right-hand operand
      * @param is_positive Should the node be instantiated with in a positive polarity?
      */
-    [[maybe_unused]] MutableBinaryConnected(BinaryOperatorTypes operator_type, std::unique_ptr<IMutableSentence> &&lhs,
-            std::unique_ptr<IMutableSentence> &&rhs, bool is_positive = true);
+    [[maybe_unused]] MutableBinaryConnected(BinaryOperatorTypes operator_type,
+            std::unique_ptr<IMutableSentence> &&lhs, std::unique_ptr<IMutableSentence> &&rhs,
+            bool is_positive = true);
 
     [[nodiscard]] std::unique_ptr<IMutableSentence> clone() const override;
 

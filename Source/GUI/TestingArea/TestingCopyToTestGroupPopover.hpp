@@ -29,14 +29,10 @@ class TestingArea;
  * @see TestingArea for the parent area.
  *
  * @details
- *  The <i>Copy Requirement to Test Group</i> popover provides controls for copying an existing Requirement in a
- *  TestGroup to another existing TestGroup. The control automatically populates its entries with likely defaults using
- *  the TestGroup/Requirement/Test models from the parental TestArea. The following GTK elements are expected from the
- *  given Gtk::Builder:
- *  <table>
- *      <tr>
- *          <th>GTK C++ Class</th>
- *          <th>Unique Identifier</th>
+ *  The <i>Copy Requirement to Test Group</i> popover provides controls for copying an existing Requirement in
+ * a TestGroup to another existing TestGroup. The control automatically populates its entries with likely
+ * defaults using the TestGroup/Requirement/Test models from the parental TestArea. The following GTK elements
+ * are expected from the given Gtk::Builder: <table> <tr> <th>GTK C++ Class</th> <th>Unique Identifier</th>
  *          <th>Purpose</th>
  *      </tr>
  *      <tr>
@@ -65,8 +61,8 @@ class TestingArea;
  *          <td>Selection of destination TestGroup/move</td>
  *      </tr>
  *  </table>
- *  A @ref std::runtime_error will be thrown by the class constructor if any of these are inaccessible in the expected
- *  type instantiations.
+ *  A @ref std::runtime_error will be thrown by the class constructor if any of these are inaccessible in the
+ * expected type instantiations.
  */
 class TestingCopyToTestGroupPopover : public TestingCopyMovePopoverBase
 {
@@ -77,17 +73,17 @@ public:
      * @param testing_area A mutating reference to the TestingArea of which the popover is a member
      * @throws std::runtime_error A required GTK element/widget could not be loaded from the given builder
      */
-    TestingCopyToTestGroupPopover(Gtk::Builder& builder, TestingArea& testing_area);
+    TestingCopyToTestGroupPopover(Gtk::Builder &builder, TestingArea &testing_area);
 
 private:
     /**
      * @copybrief TestingCopyMovePopoverBase::confirm_button_clicked
-     * @details Copies the Requirement from its current TestGroup to the selected destination TestGroup. The source
-     *  TestGroup retains its copy of the Requirement.
+     * @details Copies the Requirement from its current TestGroup to the selected destination TestGroup. The
+     * source TestGroup retains its copy of the Requirement.
      */
     void confirm_button_clicked() const noexcept override;
 
-    static const char * const popover_name;
+    static const char *const popover_name;
     static const log4cxx::LoggerPtr popover_logger;
 };
 

@@ -32,8 +32,8 @@ class SentenceRoot;
 class UnificationApplicationVisitor
 {
 public:
-    explicit UnificationApplicationVisitor(std::shared_ptr<Unifier> unifier,
-        std::shared_ptr<SymbolRepository> symbol_repository);
+    explicit UnificationApplicationVisitor(
+            std::shared_ptr<Unifier> unifier, std::shared_ptr<SymbolRepository> symbol_repository);
 
     [[nodiscard]] const IProcessedTerm *visit(const Variable &node) const;
 

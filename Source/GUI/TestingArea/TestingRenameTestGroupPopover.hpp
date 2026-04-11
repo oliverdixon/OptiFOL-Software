@@ -31,11 +31,8 @@ class TestingArea;
  * @see TestingArea for the parent area
  *
  * @details
- *  The <i>Rename Test Group</i> popover provides controls for renaming an existing TestGroup. The following GTK
- *  elements are expected to be available from the given Gtk::Builder:
- *  <table>
- *      <tr>
- *          <th>GTK C++ Class</th>
+ *  The <i>Rename Test Group</i> popover provides controls for renaming an existing TestGroup. The following
+ * GTK elements are expected to be available from the given Gtk::Builder: <table> <tr> <th>GTK C++ Class</th>
  *          <th>Unique Identifier</th>
  *          <th>Purpose</th>
  *      </tr>
@@ -75,7 +72,7 @@ public:
      * @param testing_area A mutating reference to the TestingArea of which the popover is a member
      * @throws std::runtime_error A required GTK element/widget could not be loaded from the given builder
      */
-    TestingRenameTestGroupPopover(Gtk::Builder& builder, TestingArea& testing_area);
+    TestingRenameTestGroupPopover(Gtk::Builder &builder, TestingArea &testing_area);
 
 private:
     /**
@@ -99,20 +96,20 @@ private:
     void clear_inputs() const noexcept;
 
     /**
-     * @brief React to a change in the @ref new_name_entry contents; in particular, enable or disable the <i>Confirm</i>
-     *  button.
+     * @brief React to a change in the @ref new_name_entry contents; in particular, enable or disable the
+     * <i>Confirm</i> button.
      */
     void new_name_changed() const noexcept;
 
-    static const char * const popover_name;
+    static const char *const popover_name;
     static const log4cxx::LoggerPtr popover_logger;
 
-    TestingArea& testing_area;
+    TestingArea &testing_area;
 
-    Gtk::Popover * const my_popover;
-    Gtk::Button * const confirm_button;
-    Gtk::Entry * const old_name_entry;
-    Gtk::Entry * const new_name_entry;
+    Gtk::Popover *const my_popover;
+    Gtk::Button *const confirm_button;
+    Gtk::Entry *const old_name_entry;
+    Gtk::Entry *const new_name_entry;
 };
 
 } // namespace optifol

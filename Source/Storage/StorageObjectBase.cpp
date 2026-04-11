@@ -63,7 +63,8 @@ void StorageObjectBase::bind_name(const Glib::RefPtr<Gtk::ListItem> &list_item)
     const auto item = std::dynamic_pointer_cast<StorageObjectBase>(list_item->get_item());
 
     if (label != nullptr && item != nullptr)
-        Glib::Binding::bind_property(item->property_name(), label->property_label(), Glib::Binding::Flags::SYNC_CREATE);
+        Glib::Binding::bind_property(
+                item->property_name(), label->property_label(), Glib::Binding::Flags::SYNC_CREATE);
 }
 
 void StorageObjectBase::bind_creation_time(const Glib::RefPtr<Gtk::ListItem> &list_item)
@@ -88,8 +89,8 @@ void StorageObjectBase::bind_modification_time(const Glib::RefPtr<Gtk::ListItem>
                 [](const std::chrono::system_clock::time_point &time) { return std::format("{:%c}", time); });
 }
 
-void StorageObjectBase::bind_name_property_expandable(
-        const Glib::RefPtr<Gtk::ListItem> &list_item, const Glib::RefPtr<Gtk::TreeListModel> &tree_model) noexcept
+void StorageObjectBase::bind_name_property_expandable(const Glib::RefPtr<Gtk::ListItem> &list_item,
+        const Glib::RefPtr<Gtk::TreeListModel> &tree_model) noexcept
 {
     const auto position = list_item->get_position();
     const auto model_item = std::dynamic_pointer_cast<StorageObjectBase>(list_item->get_item());

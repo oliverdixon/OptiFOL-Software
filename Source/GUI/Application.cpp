@@ -13,10 +13,10 @@
 
 #include <iostream>
 
+#include "../Storage/Subsystem.hpp"
 #include "Application.hpp"
 #include "GTKHelpers.hpp"
 #include "MainWindow.hpp"
-#include "../Storage/Subsystem.hpp"
 
 namespace optifol
 {
@@ -27,7 +27,7 @@ Glib::RefPtr<Application> Application::create()
 }
 
 Application::Application() :
-        Gtk::Application("uk.ac.york.www_users.od641.optifol")
+    Gtk::Application("uk.ac.york.www_users.od641.optifol")
 {
     Glib::set_application_name("Optifol");
 }
@@ -57,7 +57,7 @@ void Application::on_activate()
     // ReSharper disable once CppDFAMemoryLeak
 }
 
-MainWindow * Application::create_main_window()
+MainWindow *Application::create_main_window()
 {
     // Memory leak warning here is a false positive, as windows are managed by the GTK management engine
     // ReSharper disable once CppDFAMemoryLeak
@@ -65,7 +65,7 @@ MainWindow * Application::create_main_window()
     add_window(*main_window);
 
     main_window->set_show_menubar();
-    main_window->signal_hide().connect([main_window](){ delete main_window; });
+    main_window->signal_hide().connect([main_window]() { delete main_window; });
 
     return main_window;
 }
@@ -86,8 +86,8 @@ void Application::quit_application()
     quit();
 
     // Destruct all windows constituting the Application instance.
-    for (const auto windows = get_windows(); const auto window : windows)
+    for (const auto windows = get_windows(); const auto window: windows)
         window->set_visible(false);
 }
 
-}
+} // namespace optifol

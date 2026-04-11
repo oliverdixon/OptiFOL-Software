@@ -36,31 +36,31 @@ public:
     [[nodiscard]] virtual std::string_view get_visitor_name() const = 0;
 
     /**
-     * @brief Applies a mutating transformation to the given quantified sentence node, including the quantified
-     *  sentence.
+     * @brief Applies a mutating transformation to the given quantified sentence node, including the
+     * quantified sentence.
      * @param node The quantified sentence root node of the transformation target.
      */
-    virtual void visit(MutableQuantified& node);
+    virtual void visit(MutableQuantified &node);
 
     /**
      * @brief Applies a mutating transformation to the given connected sentence node and both operands.
      * @param node The connected sentence root node of the transformation target.
      */
-    virtual void visit(MutableBinaryConnected& node);
+    virtual void visit(MutableBinaryConnected &node);
 
     /**
      * @brief Applies a mutating transformation to the given predicate sentence node and all arguments.
      * @param node The predicate sentence root node of the transformation target.
      */
-    virtual void visit(MutablePredicate& node);
+    virtual void visit(MutablePredicate &node);
 
     /**
      * @brief Applies a mutating transformation to the given sentence root
      * @param node The sentence root container containing the root of the sentence.
      */
-    virtual void visit(MutableSentenceRoot& node);
+    virtual void visit(MutableSentenceRoot &node);
 };
 
-}
+} // namespace optifol
 
 #endif

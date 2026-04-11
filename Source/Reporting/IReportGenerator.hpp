@@ -22,8 +22,9 @@ class TestGroup;
 
 /**
  * @class IReportGenerator
- * @brief The report generator interface provides a set of operations for generating reports based on subsystems,
- *  enumerating their constituent Requirements index, analysis results, and automated test evidence.
+ * @brief The report generator interface provides a set of operations for generating reports based on
+ * subsystems, enumerating their constituent Requirements index, analysis results, and automated test
+ * evidence.
  */
 class IReportGenerator
 {
@@ -40,7 +41,8 @@ public:
     virtual void add_requirement(const Requirement &requirement) = 0;
 
     /**
-     * @brief Add a TestGroup, and all containing Requirement and Test objects, to the automated tests section.
+     * @brief Add a TestGroup, and all containing Requirement and Test objects, to the automated tests
+     * section.
      * @param test_group The TestGroup to serialise.
      */
     virtual void add_test_group(const TestGroup &test_group) = 0;

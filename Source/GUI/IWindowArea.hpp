@@ -24,9 +24,9 @@ class Subsystem;
 
 /**
  * @class IWindowArea
- * @brief A window area is a loosely defined "major" area of the Optifol GUI that is largely dependent on the presently
- *  selected model in the ProjectHierarchyPane. It is trackable to support the usage of its member functions as
- *  libsigc++ callbacks.
+ * @brief A window area is a loosely defined "major" area of the Optifol GUI that is largely dependent on the
+ *  presently selected model in the ProjectHierarchyPane. It is trackable to support the usage of its member
+ *  functions as libsigc++ callbacks.
  */
 class IWindowArea : public sigc::trackable
 {
@@ -38,8 +38,8 @@ public:
 
     // ReSharper disable once CppHidingFunction
     /*
-     * A well-document and understood sigc++ constraint prevents deletions through sigc::trackable pointers. Hiding the
-     * non-virtual ~sigc::trackable is a non-issue for our API use-case.
+     * A well-document and understood sigc++ constraint prevents deletions through sigc::trackable pointers.
+     * Hiding the non-virtual ~sigc::trackable is a non-issue for our API use-case.
      */
     /**
      * @brief Destruct the window area
@@ -49,12 +49,12 @@ public:
     /**
      * @brief Disallow copying of entire areas, as semantically invalid and presumed to be singleton.
      */
-    IWindowArea(const IWindowArea&) = delete;
+    IWindowArea(const IWindowArea &) = delete;
 
     /**
      * @brief Disallow moving of entire areas, as semantically invalid and presumed to be singleton.
      */
-    IWindowArea(IWindowArea&&) = delete;
+    IWindowArea(IWindowArea &&) = delete;
 
     /**
      * @brief Handle a change in the present selection to a new Subsystem model
@@ -78,8 +78,8 @@ public:
 
     /**
      * @brief Retrieves an observing raw pointer to the active Subsystem loaded into the area
-     * @return The observing pointer, designed to be use for transitory single-threaded use only due to lack of
-     *  documented lifetime guarantees.
+     * @return The observing pointer, designed to be use for transitory single-threaded use only due to lack
+     *  of documented lifetime guarantees.
      */
     virtual const Subsystem *observe_active_subsystem() const noexcept = 0;
 };

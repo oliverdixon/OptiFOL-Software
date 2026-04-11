@@ -42,14 +42,10 @@ class TestSpecificationEntry;
  *
  * @details
  *  The <i>Test Management</i> popover is a sub-popover of the IndexNewRequirementPopover or the
- *  IndexEditRequirementPopover. It provides controls to review and intelligently define software-level unit tests
- *  for a fixed Requirement i.a.w. a test executable. For the purposes of querying test executables, the popover also
- *  maintains a cache of Subsystem-agnostic discovery executables. The following GTK elements are expected from the
- *  given Gtk::Builder:
- *  <table>
- *      <tr>
- *          <th>GTK C++ Class</th>
- *          <th>Unique Identifier</th>
+ *  IndexEditRequirementPopover. It provides controls to review and intelligently define software-level unit
+ * tests for a fixed Requirement i.a.w. a test executable. For the purposes of querying test executables, the
+ * popover also maintains a cache of Subsystem-agnostic discovery executables. The following GTK elements are
+ * expected from the given Gtk::Builder: <table> <tr> <th>GTK C++ Class</th> <th>Unique Identifier</th>
  *          <th>Purpose</th>
  *      </tr>
  *      <tr>
@@ -98,8 +94,8 @@ class TestSpecificationEntry;
  *          <td>View column for the target test case name Gtk::DropDown</td>
  *      </tr>
  *  </table>
- *  A @ref std::runtime_error will be thrown by the class constructor if any of these are inaccessible in the expected
- *  type instantiations.
+ *  A @ref std::runtime_error will be thrown by the class constructor if any of these are inaccessible in the
+ * expected type instantiations.
  */
 class ManageTestsPopover : public sigc::trackable
 {
@@ -109,13 +105,13 @@ public:
      * @param builder A GTK builder containing popover UI elements
      * @throws std::runtime_error A required GTK element/widget could not be loaded from the given builder
      */
-    explicit ManageTestsPopover(Gtk::Builder& builder);
+    explicit ManageTestsPopover(Gtk::Builder &builder);
 
     /**
      * @brief Sets a new model for the TestSpecificationEntry objects, discarding the existing one.
      * @param model The new model.
      */
-    void set_model(const Glib::RefPtr<Gio::ListStore<TestSpecificationEntry>>& model) noexcept;
+    void set_model(const Glib::RefPtr<Gio::ListStore<TestSpecificationEntry>> &model) noexcept;
 
     /**
      * @brief Provide a human-readable summary of a model containing tests or specifications thereof.
@@ -126,7 +122,7 @@ public:
     static std::string format_test_summary(const Gio::ListModel &test_model) noexcept;
 
 private:
-    static const char * const popover_name;
+    static const char *const popover_name;
     static const log4cxx::LoggerPtr popover_logger;
 
     /**
@@ -144,18 +140,19 @@ private:
 
     void bind_test_executable(const Glib::RefPtr<Gtk::ListItem> &list_item);
 
-    static void bind_test_fixture(const Glib::RefPtr<Gtk::ListItem>& list_item) noexcept;
+    static void bind_test_fixture(const Glib::RefPtr<Gtk::ListItem> &list_item) noexcept;
 
-    static void bind_test_name(const Glib::RefPtr<Gtk::ListItem>& list_item) noexcept;
+    static void bind_test_name(const Glib::RefPtr<Gtk::ListItem> &list_item) noexcept;
 
-    void handle_executable_change(const Glib::RefPtr<TestSpecificationEntry> &test_spec, const Gtk::Entry *exe_entry);
+    void handle_executable_change(
+            const Glib::RefPtr<TestSpecificationEntry> &test_spec, const Gtk::Entry *exe_entry);
 
-    Gtk::Popover * const popover;
-    Gtk::Button * const confirm_button;
-    Gtk::Button * const new_test_button;
-    Gtk::Button * const duplicate_test_button;
-    Gtk::Button * const delete_test_button;
-    Gtk::ColumnView * const view;
+    Gtk::Popover *const popover;
+    Gtk::Button *const confirm_button;
+    Gtk::Button *const new_test_button;
+    Gtk::Button *const duplicate_test_button;
+    Gtk::Button *const delete_test_button;
+    Gtk::ColumnView *const view;
 
     Glib::RefPtr<Gtk::SingleSelection> selection_model = Gtk::SingleSelection::create();
     Glib::RefPtr<Gio::ListStore<TestSpecificationEntry>> test_spec_model;

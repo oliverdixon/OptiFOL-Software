@@ -46,14 +46,16 @@
                                     </child>
                                     <child>
                                         <object class="GtkMenuButton" id="edit_structure">
-                                            <property name="icon-name">accessories-text-editor-symbolic</property>
+                                            <property name="icon-name">
+                                                accessories-text-editor-symbolic</property>
                                             <property name="tooltip-text">Edit Structure</property>
                                         </object>
                                     </child>
                                     <child>
                                         <object class="GtkMenuButton" id="delete_structure">
                                             <property name="icon-name">edit-delete-symbolic</property>
-                                            <property name="tooltip-text">Delete Structure from Here</property>
+                                            <property name="tooltip-text">
+                                                Delete Structure from Here</property>
                                         </object>
                                     </child>
                                 </object>

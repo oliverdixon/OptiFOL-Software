@@ -82,7 +82,8 @@ public:
     /**
      * @brief Retrieve a GTK object as a Glib-wrapped ref-counted pointer from a GTK builder
      * @tparam ObjectType The expected concrete GTK object return type from the builder
-     * @param segment_name A view of the name of the context requesting the item; used for enhanced error logging.
+     * @param segment_name A view of the name of the context requesting the item; used for enhanced error
+     *  logging.
      * @param builder The builder with an expected reference to the item
      * @param object_name The ID of the target GTK object
      * @return A Glib-wrapped instance of the GTK object typed according to the template parameter
@@ -100,9 +101,11 @@ public:
     }
 
     /**
-     * @brief Retrieve a GTK widget as a raw pointer (ultimately managed by the GTK object system) from a GTK builder
+     * @brief Retrieve a GTK widget as a raw pointer (ultimately managed by the GTK object system) from a GTK
+     *  builder
      * @tparam WidgetType The expected concrete GTK widget return type from the builder
-     * @param segment_name A view of the name of the context requesting the item; used for enhanced error logging.
+     * @param segment_name A view of the name of the context requesting the item; used for enhanced error
+     *  logging.
      * @param builder The builder with an expected reference to the item
      * @param widget_name The ID of the target GTK widget
      * @return A Glib-wrapped instance of the GTK widget typed according to the template parameter
@@ -163,7 +166,8 @@ public:
      * @param list_item The container into which the label should be emplaced
      * @param mono_styling Should the label be styled according to the standard monospace style?
      */
-    static void setup_expandable_label(const Glib::RefPtr<Gtk::ListItem> &list_item, const bool mono_styling = false)
+    static void setup_expandable_label(
+            const Glib::RefPtr<Gtk::ListItem> &list_item, const bool mono_styling = false)
     {
         const auto expander = Gtk::make_managed<Gtk::TreeExpander>();
         const auto label = Gtk::make_managed<Gtk::Label>();
@@ -184,48 +188,48 @@ public:
      *  Glib::PropertyProxy_ReadOnly.
      * @param object The object instance containing the property to be bound
      * @param label The destination label to contain a string representation of the property
-     * @details If the property functor provides a @ref std::optional containing a value, the populated label is
-     *  equivalent to the one provided by the non-@ref std::optional @ref bind_any_property. If the supplied property
-     *  does not contain a value, the label is marked "Empty" and styled with the @ref unknown_css_class_name CSS class.
+     * @details If the property functor provides a @ref std::optional containing a value, the populated label
+     *  is equivalent to the one provided by the non-@ref std::optional @ref bind_any_property. If the
+     *  supplied property does not contain a value, the label is marked "Empty" and styled with the
+     *  @ref unknown_css_class_name CSS class.
      */
-    template<typename BoundType, typename StoredType> requires mp_helpers::is_optional<BoundType>::value
+    template<typename BoundType, typename StoredType>
+        requires mp_helpers::is_optional<BoundType>::value
     static void bind_any_property(
-            sigc::mem_functor<Glib::PropertyProxy_ReadOnly<BoundType> (StoredType::*)() const> property_functor,
+            sigc::mem_functor<Glib::PropertyProxy_ReadOnly<BoundType> (StoredType::*)() const>
+                    property_functor,
             const StoredType &object, Gtk::Label *const label)
     {
         if (label == nullptr)
             return;
 
-        Glib::Binding::bind_property(
-            property_functor.operator()(object),
-            label->property_label(),
-            Glib::Binding::Flags::SYNC_CREATE,
-            [label](const BoundType &from) -> std::optional<Glib::ustring>
-            {
-                const bool is_already_unknown = label->has_css_class(unknown_css_class_name);
-                bool unknown_value = false;
-                std::string string_value;
+        Glib::Binding::bind_property(property_functor.operator()(object), label->property_label(),
+                Glib::Binding::Flags::SYNC_CREATE,
+                [label](const BoundType &from) -> std::optional<Glib::ustring>
+                {
+                    const bool is_already_unknown = label->has_css_class(unknown_css_class_name);
+                    bool unknown_value = false;
+                    std::string string_value;
 
-                if (from.has_value()) {
-                    if constexpr (std::is_convertible_v<Glib::ustring, decltype(*from)>)
-                        // If we have plain string value, just pass it through.
-                        string_value = *from;
-                    else
-                        // Otherwise, rely on the standard conversion functions with ADR.
-                        string_value = std::to_string(*from);
-                } else {
-                    unknown_value = true;
-                    string_value = "Empty";
-                }
+                    if (from.has_value()) {
+                        if constexpr (std::is_convertible_v<Glib::ustring, decltype(*from)>)
+                            // If we have plain string value, just pass it through.
+                            string_value = *from;
+                        else
+                            // Otherwise, rely on the standard conversion functions with ADR.
+                            string_value = std::to_string(*from);
+                    } else {
+                        unknown_value = true;
+                        string_value = "Empty";
+                    }
 
-                if (is_already_unknown && !unknown_value)
-                    label->remove_css_class(unknown_css_class_name);
-                else if (!is_already_unknown && unknown_value)
-                    label->add_css_class(unknown_css_class_name);
+                    if (is_already_unknown && !unknown_value)
+                        label->remove_css_class(unknown_css_class_name);
+                    else if (!is_already_unknown && unknown_value)
+                        label->add_css_class(unknown_css_class_name);
 
-                return string_value;
-            }
-        );
+                    return string_value;
+                });
     }
 
     /**
@@ -239,17 +243,15 @@ public:
      */
     template<typename BoundType, typename StoredType>
     static void bind_any_property(
-            sigc::mem_functor<Glib::PropertyProxy_ReadOnly<BoundType> (StoredType::*)() const> property_functor,
+            sigc::mem_functor<Glib::PropertyProxy_ReadOnly<BoundType> (StoredType::*)() const>
+                    property_functor,
             const StoredType &object, Gtk::Label *const label)
     {
         if (label == nullptr)
             return;
 
-        Glib::Binding::bind_property(
-            property_functor.operator()(object),
-            label->property_label(),
-            Glib::Binding::Flags::SYNC_CREATE
-        );
+        Glib::Binding::bind_property(property_functor.operator()(object), label->property_label(),
+                Glib::Binding::Flags::SYNC_CREATE);
     }
 
 private:

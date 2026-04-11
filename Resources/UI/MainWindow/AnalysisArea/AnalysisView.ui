@@ -21,11 +21,13 @@
             <property name="label">
                 <![CDATA[<b>The Analysis View is not applicable to Project-level scopes.</b>
 
-The <i>Analysis View</i> allows organisation of Requirements defined in the selected Subsystem into <i>Analysis Groups</i>.
+The <i>Analysis View</i> allows organisation of Requirements defined in the selected Subsystem into
+<i>Analysis Groups</i>.
 
 Analysis Groups can be individually checked for logical consistency and scanned for redundant entries.
 
-To prepare Analysis Groups, select a Subsystem from the left-hand <i>Project Explorer</i> pane and define some Requirements in the <i>Requirements Index</i> view.]]>
+To prepare Analysis Groups, select a Subsystem from the left-hand <i>Project Explorer</i> pane and define some
+Requirements in the <i>Requirements Index</i> view.]]>
             </property>
         </object>
     </child>
@@ -69,21 +71,27 @@ To prepare Analysis Groups, select a Subsystem from the left-hand <i>Project Exp
                             <child>
                                 <object class="GtkMenuButton">
                                     <property name="icon-name">edit-copy-symbolic</property>
-                                    <property name="tooltip-text">Copy Selected Requirement to Analysis Group</property>
+                                    <property name="tooltip-text">Copy Selected Requirement to Analysis
+                                        Group
+                                    </property>
                                     <property name="sensitive">FALSE</property>
                                 </object>
                             </child>
                             <child>
                                 <object class="GtkMenuButton">
                                     <property name="icon-name">go-bottom-symbolic</property>
-                                    <property name="tooltip-text">Move Selected Requirement to Analysis Group</property>
+                                    <property name="tooltip-text">Move Selected Requirement to Analysis
+                                        Group
+                                    </property>
                                     <property name="sensitive">FALSE</property>
                                 </object>
                             </child>
                             <child>
                                 <object class="GtkMenuButton">
                                     <property name="icon-name">list-remove-symbolic</property>
-                                    <property name="tooltip-text">Remove Selected Requirement from Analysis Group</property>
+                                    <property name="tooltip-text">Remove Selected Requirement from Analysis
+                                        Group
+                                    </property>
                                     <property name="sensitive">FALSE</property>
                                 </object>
                             </child>

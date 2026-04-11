@@ -21,11 +21,13 @@
             <property name="label">
                 <![CDATA[<b>The Releases and Reports View is not applicable to Project-level scopes.</b>
 
-The <i>Releases and Reports View</i> allows automatic generation of HTML and LaTeX/PDF reports based on the Requirements and related Analysis of a Subsystem.
+The <i>Releases and Reports View</i> allows automatic generation of HTML and LaTeX/PDF reports based on the
+Requirements and related Analysis of a Subsystem.
 
 The content of exported Reports can be cherry-picked, and formatting can be extensively customised.
 
-To prepare a Report, select a Subsystem from the left-hand <i>Project Explorer</i> pane and define some Requirements in the <i>Requirements Index</i> view.]]>
+To prepare a Report, select a Subsystem from the left-hand <i>Project Explorer</i> pane and define some
+Requirements in the <i>Requirements Index</i> view.]]>
             </property>
         </object>
     </child>

@@ -26,28 +26,25 @@ namespace optifol
 
 /**
  * @class SymbolStandardisingVisitor
- * @brief The symbol-standardising visitor validates the semantic correctness of variables and standardises the names
- *  thereof throughout the model.
+ * @brief The symbol-standardising visitor validates the semantic correctness of variables and standardises
+ * the names thereof throughout the model.
  *
- * @details The symbol-standardising visitor recurses through the model, paying particular attention to variables. It
- *  performs two overarching tasks:
- *  <ol>
- *    <li><b>Verifying semantic correctness:</b> enforces the rules surrounding the usage of variables. In particular,
- *      variables may only be introduced by way of a quantifier. If a variable is referenced without having been
- *      bound by a quantifier in the relevant scope, an exception is thrown. Dually, if a variable is bound by a
- *      quantifier having already been defined in the relevant scope, an exception is thrown.</li>
- *    <li><b>Standardising naming of adjacent variables:</b> ensures that syntactically and semantically valid sentences
- *      discriminate between variables of the same name when used across different scopes. For example,
- *      <code>%Ux(P(x)) | %Ex(Q(x))</code> would be suitably rewritten as <code>%Ux(P(x)) | %Ex_0(Q(x_0))</code>, where
- *      <code>x_0</code> is the introduced variable.</li>
+ * @details The symbol-standardising visitor recurses through the model, paying particular attention to
+ * variables. It performs two overarching tasks: <ol> <li><b>Verifying semantic correctness:</b> enforces the
+ * rules surrounding the usage of variables. In particular, variables may only be introduced by way of a
+ * quantifier. If a variable is referenced without having been bound by a quantifier in the relevant scope, an
+ * exception is thrown. Dually, if a variable is bound by a quantifier having already been defined in the
+ * relevant scope, an exception is thrown.</li> <li><b>Standardising naming of adjacent variables:</b> ensures
+ * that syntactically and semantically valid sentences discriminate between variables of the same name when
+ * used across different scopes. For example, <code>%Ux(P(x)) | %Ex(Q(x))</code> would be suitably rewritten
+ * as <code>%Ux(P(x)) | %Ex_0(Q(x_0))</code>, where <code>x_0</code> is the introduced variable.</li>
  *  </ol>
  *
- * @warning Although multiple passes are not required for this symbol-standardising visitor, it does recurse on any
- *  produced terms to ensure a full reduction. On extremely deeply nested sentences, this could cause a machine stack
- *  overflow.
+ * @warning Although multiple passes are not required for this symbol-standardising visitor, it does recurse
+ * on any produced terms to ensure a full reduction. On extremely deeply nested sentences, this could cause a
+ * machine stack overflow.
  */
-class SymbolStandardisingVisitor :
-        public MutatingSentenceVisitorBase
+class SymbolStandardisingVisitor : public MutatingSentenceVisitorBase
 {
 public:
     [[nodiscard]] std::string_view get_visitor_name() const override;
@@ -67,15 +64,16 @@ public:
     void visit(MutablePredicate &node) override;
 
 private:
-    static const char * visitor_name;
+    static const char *visitor_name;
 
     /**
      * @brief Name-rewriting rules for variables encountered in the current scope.
-     * @details Any variable with a name matching a key of the map should be completely replaced by the variable unique
-     *  pointer in the corresponding value. Only variables with disambiguated names occupy entries in the map, and the
-     *  map should be cleared down when the scope is released.
+     * @details Any variable with a name matching a key of the map should be completely replaced by the
+     * variable unique pointer in the corresponding value. Only variables with disambiguated names occupy
+     * entries in the map, and the map should be cleared down when the scope is released.
      */
-    std::unordered_map<std::string, std::unique_ptr<IMutableTerm>, StringHash, std::equal_to<>> rewriting_rules;
+    std::unordered_map<std::string, std::unique_ptr<IMutableTerm>, StringHash, std::equal_to<>>
+            rewriting_rules;
 
     /**
      * @brief The set of pre-disambiguated names bound in the current scope.
@@ -93,38 +91,38 @@ private:
     unsigned int unique_name_counter = 0;
 
     /**
-     * @brief The nested term visitor used to assist rewriting of variables nested in terms that are not accessible
-     *  through the sentence interface (i.e. functions).
+     * @brief The nested term visitor used to assist rewriting of variables nested in terms that are not
+     * accessible through the sentence interface (i.e. functions).
      */
     ScopedTermResolutionVisitor term_visitor{scope, rewriting_rules};
 
     /**
-     * @brief Establishes a new scope, introducing the variable bound by the given quantifier. If necessary, the bound
-     *  name is disambiguated, in which case a rewriting rule entry is added.
+     * @brief Establishes a new scope, introducing the variable bound by the given quantifier. If necessary,
+     * the bound name is disambiguated, in which case a rewriting rule entry is added.
      * @param node The bounding quantifier responsible for the opened scope
      * @return TODO
      */
     std::optional<decltype(rewriting_rules)::iterator> open_scope(MutableQuantified &node);
 
     /**
-     * @brief Closes the current scope, clearing applicable entries from the scope naming set and the rewriting rule
-     *  map. The bound variable of the closed scope is comitted to the adjacents naming set.
+     * @brief Closes the current scope, clearing applicable entries from the scope naming set and the
+     * rewriting rule map. The bound variable of the closed scope is comitted to the adjacents naming set.
      * @pre The scope naming set must contain a variable name of the given node.
      * @param node The variable bound by the scope
      * @param rule_reference TODO
      */
     void close_scope(MutableQuantified &node,
-        const std::optional<decltype(rewriting_rules)::iterator> &rule_reference);
+            const std::optional<decltype(rewriting_rules)::iterator> &rule_reference);
 
     /**
-     * @brief Suffix the given variable name with a unique identifier, until it does not conflict with any member of the
-     *  adjacents naming set.
+     * @brief Suffix the given variable name with a unique identifier, until it does not conflict with any
+     * member of the adjacents naming set.
      * @param name The ambiguous name
      * @return The disambiguated name
      */
     std::string generate_name(const std::string &name);
 };
 
-}
+} // namespace optifol
 
 #endif

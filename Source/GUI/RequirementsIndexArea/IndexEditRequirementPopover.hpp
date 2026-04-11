@@ -30,7 +30,7 @@ public:
      * @param index_area A mutating reference to the view of which the popover is a member
      * @throws std::runtime_error A required GTK element/widget could not be loaded from the given builder
      */
-    IndexEditRequirementPopover(Gtk::Builder& builder, RequirementsIndexArea& index_area);
+    IndexEditRequirementPopover(Gtk::Builder &builder, RequirementsIndexArea &index_area);
 };
 
 } // namespace optifol

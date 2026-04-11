@@ -30,10 +30,8 @@ std::ostream &SentenceRoot::serialise(std::ostream &ostream) const
     ostream << '{' << ' ';
 
     if (!clauses.empty()) {
-        std::ranges::for_each_n(clauses.begin(), clauses.size() - 1, [&ostream](const Clause& clause)
-        {
-            ostream << clause << ',' << ' ';
-        });
+        std::ranges::for_each_n(clauses.begin(), clauses.size() - 1,
+                [&ostream](const Clause &clause) { ostream << clause << ',' << ' '; });
 
         ostream << clauses.back();
     }
@@ -70,18 +68,18 @@ bool SentenceRoot::operator==(const IProcessedSentence &other) const noexcept
 void SentenceRoot::add_clause(Clause new_clause)
 {
     /*
-     * Don't use std::ranges::lower_bound here. Clause doesn't model std::totally_ordered_with because it defines only
-     * operator<, hence std::ranges::less cannot be used, and it's not worth the hassle of defining a custom comparator
-     * here.
+     * Don't use std::ranges::lower_bound here. Clause doesn't model std::totally_ordered_with because it
+     * defines only operator<, hence std::ranges::less cannot be used, and it's not worth the hassle of
+     * defining a custom comparator here.
      */
     const auto nearest_lower = std::lower_bound(clauses.begin(), clauses.end(), new_clause);
 
     if ((nearest_lower != clauses.end() && *nearest_lower == new_clause) ||
             (nearest_lower != clauses.begin() && *std::prev(nearest_lower) == new_clause))
         /*
-         * Reject the new clause if it already exists within the SentenceRoot. Note that the only two positions at which
-         * it could appear, assuming correct lexicographical ordering provided by Clause::operator<, is at the proposed
-         * insertion point or immediately prior.
+         * Reject the new clause if it already exists within the SentenceRoot. Note that the only two
+         * positions at which it could appear, assuming correct lexicographical ordering provided by
+         * Clause::operator<, is at the proposed insertion point or immediately prior.
          */
         return;
 

@@ -17,8 +17,8 @@
 #include <ranges>
 
 #include "../Inference/Resolvent.hpp"
-#include "../Visitors/RegularTargets/Unification/UnificationVisitor.hpp"
 #include "../Visitors/RegularTargets/FeatureBuildingVisitor.hpp"
+#include "../Visitors/RegularTargets/Unification/UnificationVisitor.hpp"
 
 namespace optifol
 {
@@ -27,10 +27,8 @@ Clause::Clause(const std::initializer_list<const Literal *> literals) :
     literals(literals)
 {
     if (!this->literals.empty()) {
-        std::ranges::sort(this->literals, [](const Literal * const lhs, const Literal * const rhs)
-        {
-            return *lhs < *rhs;
-        });
+        std::ranges::sort(this->literals,
+                [](const Literal *const lhs, const Literal *const rhs) { return *lhs < *rhs; });
 
         if (is_tautology()) {
             this->literals.clear();
@@ -42,18 +40,14 @@ Clause::Clause(const std::initializer_list<const Literal *> literals) :
     recompute_feature_vector();
 }
 
-void Clause::add_literal(const Literal * const new_literal)
+void Clause::add_literal(const Literal *const new_literal)
 {
-    const auto nearest_lower = std::ranges::lower_bound(
-        literals, new_literal, [](const Literal * const lhs, const Literal * const rhs)
-        {
-            return *lhs < *rhs;
-        }
-    );
+    const auto nearest_lower = std::ranges::lower_bound(literals, new_literal,
+            [](const Literal *const lhs, const Literal *const rhs) { return *lhs < *rhs; });
 
     /*
-     * The nearest lower element is already either identical to the new literal, or its complement. In the former case,
-     * we can omit adding it entirely; in the latter case, the entire clause becomes trivial.
+     * The nearest lower element is already either identical to the new literal, or its complement. In the
+     * former case, we can omit adding it entirely; in the latter case, the entire clause becomes trivial.
      */
     if (nearest_lower != literals.cend() && (*nearest_lower)->unsigned_equality(*new_literal)) {
         if ((*nearest_lower)->is_negative_polarity() != new_literal->is_negative_polarity()) {
@@ -77,7 +71,8 @@ void Clause::add_literal(const Literal * const new_literal)
         }
     }
 
-    // If this is a new unseen literal, insert at the correct position to maintain ordering i.a.w. Literal::operator<.
+    // If this is a new unseen literal, insert at the correct position to maintain ordering i.a.w.
+    // Literal::operator<.
     literals.insert(nearest_lower, new_literal);
     state = State::NotTrivial;
     recompute_feature_vector(*new_literal);
@@ -103,14 +98,9 @@ std::ostream &Clause::serialise(std::ostream &ostream) const
     ostream << '{' << ' ';
 
     if (!literals.empty()) {
-        std::ranges::for_each_n(
-            literals.begin(),
-            literals.size() - 1, // NOLINT(*-narrowing-conversions)
-            [&ostream](const Literal * literal)
-            {
-                ostream << *literal << ',' << ' ';
-            }
-        );
+        std::ranges::for_each_n(literals.begin(),
+                literals.size() - 1, // NOLINT(*-narrowing-conversions)
+                [&ostream](const Literal *literal) { ostream << *literal << ',' << ' '; });
 
         ostream << *literals.back();
     }
@@ -120,32 +110,21 @@ std::ostream &Clause::serialise(std::ostream &ostream) const
 
 std::size_t Clause::hash() const noexcept
 {
-    return std::ranges::fold_left(
-        literals, std::size_t{0},
-        [](const std::size_t seed, const Literal * const literal)
-        {
-            return hash_combine(seed, std::hash<Literal>{}(*literal));
-        });
+    return std::ranges::fold_left(literals, std::size_t{0},
+            [](const std::size_t seed, const Literal *const literal)
+            { return hash_combine(seed, std::hash<Literal>{}(*literal)); });
 }
 
 bool Clause::operator<(const Clause &other) const noexcept
 {
-    return std::ranges::lexicographical_compare(literals, other.literals, [](const Literal * lhs, const Literal * rhs)
-    {
-        return *lhs < *rhs;
-    });
+    return std::ranges::lexicographical_compare(
+            literals, other.literals, [](const Literal *lhs, const Literal *rhs) { return *lhs < *rhs; });
 }
 
 bool Clause::operator==(const Clause &other) const noexcept
 {
-    return std::ranges::equal(
-        literals,
-        other.literals,
-        [](const Literal * lhs, const Literal * rhs)
-        {
-            return lhs->operator==(*rhs);
-        }
-    );
+    return std::ranges::equal(literals, other.literals,
+            [](const Literal *lhs, const Literal *rhs) { return lhs->operator==(*rhs); });
 }
 
 std::size_t Clause::order() const noexcept
@@ -188,11 +167,9 @@ bool Clause::subsumes(const Clause &other_clause, UnificationVisitor &visitor) c
     if (empty())
         return false;
 
-    for (const auto literal : *this) {
-        const auto can_be_unified = [&visitor, lhs = literal](const Literal * const rhs)
-        {
-            return lhs->accept(visitor, *rhs);
-        };
+    for (const auto literal: *this) {
+        const auto can_be_unified = [&visitor, lhs = literal](const Literal *const rhs)
+        { return lhs->accept(visitor, *rhs); };
 
         if (!std::ranges::any_of(other_clause.literals, can_be_unified))
             return false;
@@ -204,10 +181,11 @@ bool Clause::subsumes(const Clause &other_clause, UnificationVisitor &visitor) c
 bool Clause::is_tautology() const noexcept
 {
     return std::ranges::adjacent_find(literals,
-        [](const Literal * lhs, const Literal * rhs)
-        {
-            return lhs->unsigned_equality(*rhs) && lhs->is_negative_polarity() == !rhs->is_negative_polarity();
-        }) != literals.end();
+                   [](const Literal *lhs, const Literal *rhs)
+                   {
+                       return lhs->unsigned_equality(*rhs) &&
+                               lhs->is_negative_polarity() == !rhs->is_negative_polarity();
+                   }) != literals.end();
 }
 
 void Clause::recompute_feature_vector() noexcept
@@ -224,7 +202,7 @@ void Clause::recompute_feature_vector(const Literal &literal) noexcept
     if (new_features.size() > features.size())
         features = std::move(new_features);
     else
-        for (const auto& new_feature : new_features)
+        for (const auto &new_feature: new_features)
             Feature::get(features, new_feature.get_feature_type()).join(new_feature);
 }
 

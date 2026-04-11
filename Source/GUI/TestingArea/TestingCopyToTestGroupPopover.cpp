@@ -22,15 +22,14 @@ const char *const TestingCopyToTestGroupPopover::popover_name = "Copy Requiremen
 const log4cxx::LoggerPtr TestingCopyToTestGroupPopover::popover_logger =
         Logging::get_logger({"GUI", "TestingCompliance", "CopyMoveRequirement", "Copy"});
 
-TestingCopyToTestGroupPopover::TestingCopyToTestGroupPopover(Gtk::Builder &builder, TestingArea &testing_area) :
-    TestingCopyMovePopoverBase(
-        testing_area,
-        GTKHelpers::get_widget<Gtk::Popover>(popover_name, builder, "copy_to_test_group_popover"),
-        GTKHelpers::get_widget<Gtk::Entry>(popover_name, builder, "copy_to_test_group_requirement"),
-        GTKHelpers::get_widget<Gtk::DropDown>(popover_name, builder, "copy_to_test_group_new_group"),
-        GTKHelpers::get_widget<Gtk::Button>(popover_name, builder, "copy_to_test_group_confirm"),
-        GTKHelpers::get_widget<Gtk::Button>(popover_name, builder, "copy_to_test_group_cancel")
-    )
+TestingCopyToTestGroupPopover::TestingCopyToTestGroupPopover(
+        Gtk::Builder &builder, TestingArea &testing_area) :
+    TestingCopyMovePopoverBase(testing_area,
+            GTKHelpers::get_widget<Gtk::Popover>(popover_name, builder, "copy_to_test_group_popover"),
+            GTKHelpers::get_widget<Gtk::Entry>(popover_name, builder, "copy_to_test_group_requirement"),
+            GTKHelpers::get_widget<Gtk::DropDown>(popover_name, builder, "copy_to_test_group_new_group"),
+            GTKHelpers::get_widget<Gtk::Button>(popover_name, builder, "copy_to_test_group_confirm"),
+            GTKHelpers::get_widget<Gtk::Button>(popover_name, builder, "copy_to_test_group_cancel"))
 {
 }
 
@@ -40,7 +39,8 @@ void TestingCopyToTestGroupPopover::confirm_button_clicked() const noexcept
 
     try {
         const auto requirement = testing_area.get_selected_requirement();
-        const auto target_test_group = dynamic_cast<TestGroup *>(new_test_group_dropdown->get_selected_item().get());
+        const auto target_test_group =
+                dynamic_cast<TestGroup *>(new_test_group_dropdown->get_selected_item().get());
 
         if (requirement == nullptr) {
             popover_logger->warn("Not copying Requirement, as no Requirement selected.");
@@ -54,8 +54,8 @@ void TestingCopyToTestGroupPopover::confirm_button_clicked() const noexcept
 
         target_test_group->insert_object(requirement);
         popover_logger->debug("Copied Requirement \"" + requirement->property_name().get_value() +
-            "\" into Test Group \"" + target_test_group->property_name().get_value() + "\".");
-    } catch (const std::runtime_error& exception) {
+                "\" into Test Group \"" + target_test_group->property_name().get_value() + "\".");
+    } catch (const std::runtime_error &exception) {
         popover_logger->error("Not copying Requirement: " + std::string(exception.what()));
     }
 }

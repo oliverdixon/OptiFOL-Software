@@ -88,7 +88,8 @@ void Variable::accept(FeatureBuildingVisitor &feature_building_visitor) const no
     feature_building_visitor.visit(this);
 }
 
-const IProcessedTerm *Variable::accept(const UnificationApplicationVisitor &unification_application_visitor) const
+const IProcessedTerm *Variable::accept(
+        const UnificationApplicationVisitor &unification_application_visitor) const
 {
     return unification_application_visitor.visit(*this);
 }

@@ -31,13 +31,9 @@ namespace optifol
  *
  * @details
  *  <p>
- *      The quantifier-extracting visitor rewrites the model such that quantifiers may only occur in the initial
- *      prefix of a formula, but never inside a negation, conjunction, or disjunction. In particular, the following
- *      transformations are repeatedly applied:
- *      <table>
- *          <tr>
- *              <th>#</th>
- *              <th>Match</th>
+ *      The quantifier-extracting visitor rewrites the model such that quantifiers may only occur in the
+ * initial prefix of a formula, but never inside a negation, conjunction, or disjunction. In particular, the
+ * following transformations are repeatedly applied: <table> <tr> <th>#</th> <th>Match</th>
  *              <th>Replacement</th>
  *          </tr>
  *          <tr>
@@ -63,9 +59,9 @@ namespace optifol
  *      </table>
  *  </p>
  *  <p>
- *      Note that the above transformations are commutative in the binary operator. That is, the above transformations
- *      match equally for quantifiers on the LHS and non-quantifiers on the RHS. Cruically, binary sentences with
- *      quantifiers in both or neither operand slot(s) are not eligible for transformation.
+ *      Note that the above transformations are commutative in the binary operator. That is, the above
+ * transformations match equally for quantifiers on the LHS and non-quantifiers on the RHS. Cruically, binary
+ * sentences with quantifiers in both or neither operand slot(s) are not eligible for transformation.
  *  </p>
  */
 class QuantifierExtractingVisitor : public MutatingSentenceVisitorBase
@@ -82,19 +78,19 @@ public:
 private:
     /**
      * @class QuantifiedTemplate
-     * @brief A basic owning structure for quantifier data (type, bound term, and bound sentence) with an owner to which
-     *  it can be returned.
+     * @brief A basic owning structure for quantifier data (type, bound term, and bound sentence) with an
+     * owner to which it can be returned.
      */
     struct QuantifiedTemplate
     {
         /**
-         * @brief Construct a new QuantifiedTemplate to hold ownership of the given bound term and sentence, borrowed
-         *  from the specified owner
+         * @brief Construct a new QuantifiedTemplate to hold ownership of the given bound term and sentence,
+         * borrowed from the specified owner
          * @param type The characteristic type of the quantifier
          * @param bound_term The variable term bound by the quantifier, to be owned by the template
          * @param sentence The sentence bound by the quantifier, to be owned by the template
-         * @param owner The owner of the bound term and sentence to which responsibility may be returned at any point
-         *  throughout the lifetime of the QuantifiedTemplate.
+         * @param owner The owner of the bound term and sentence to which responsibility may be returned at
+         * any point throughout the lifetime of the QuantifiedTemplate.
          */
         QuantifiedTemplate(const QuantifierTypes type, std::unique_ptr<IMutableTerm> &&bound_term,
                 std::unique_ptr<IMutableSentence> &&sentence, MutableQuantified *owner) :
@@ -125,40 +121,43 @@ private:
     /**
      * @enum TrackingMode
      * @brief Indicate the current state of 'tracking', as required by a calling visitor.
-     * @details When tracking is enabled (left- or right-major), operands/children of binary-connected nodes should
-     *  be tracked by the QuantifierExtractingVisitor instance.
+     * @details When tracking is enabled (left- or right-major), operands/children of binary-connected nodes
+     * should be tracked by the QuantifierExtractingVisitor instance.
      */
     enum class TrackingMode
     {
         NotTracking, /**< Not tracking; nested children shouldn't record their operands. */
-        LeftMajor, /**< Tracking to the left: nested children should record their left operands in the major slot */
-        RightMajor /**< Tracking to the right: nested children should record their right operands in the major slot */
+        LeftMajor, /**< Tracking to the left: nested children should record their left operands in the major
+                      slot */
+        RightMajor /**< Tracking to the right: nested children should record their right operands in the major
+                      slot */
     };
 
     /**
      * @brief Apply any pending quantification transformation to the given (borrowed) target
-     * @param transform_target The target sentence to be transformed/wrapped by the pending transformation quantifier
-     * @return An owning container to the wrapped target sentence, or the original sentence if there was no suitable
-     *  pending transform.
+     * @param transform_target The target sentence to be transformed/wrapped by the pending transformation
+     * quantifier
+     * @return An owning container to the wrapped target sentence, or the original sentence if there was no
+     * suitable pending transform.
      * @details There are two possible cases:
      *  <ol>
      *      <li>
-     *          There is no pending transformation. This function does nothing, and returns an owning container to
-     *          the borrowed target.
+     *          There is no pending transformation. This function does nothing, and returns an owning
+     * container to the borrowed target.
      *      </li>
      *      <li>
      *          <p>
-     *              There is a pending transformation encoding a type and bound term. The transformation target is
-     *              interpreted as a sentence that should be wrapped by a MutableQuantifierNode with the character
-     *              and bound variable described by the transformation pair. The transformation is applied to the
+     *              There is a pending transformation encoding a type and bound term. The transformation
+     * target is interpreted as a sentence that should be wrapped by a MutableQuantifierNode with the
+     * character and bound variable described by the transformation pair. The transformation is applied to the
      *              target, thus making it a MutableQuantifierNode binding the sentence previously held by the
      *              target, and the owning container is returned.
      *          </p>
      *          <p>
-     *              In general, if the transformation metadata holds a <code>T</code>-type quantifier binding the
-     *              variable <code>x</code>, and the transformation target holds a sentence <code>S</code>, the
-     *              returned value is an owning container for a <code>T</code>-type quantifier binding the variable
-     *              <code>x</code> with the sentence <code>S</code>.
+     *              In general, if the transformation metadata holds a <code>T</code>-type quantifier binding
+     * the variable <code>x</code>, and the transformation target holds a sentence <code>S</code>, the
+     *              returned value is an owning container for a <code>T</code>-type quantifier binding the
+     * variable <code>x</code> with the sentence <code>S</code>.
      *          </p>
      *      </li>
      *  </ol>

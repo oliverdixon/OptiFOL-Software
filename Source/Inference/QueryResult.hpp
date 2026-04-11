@@ -16,8 +16,8 @@
 
 #include <deque>
 
-#include "Resolvent.hpp"
 #include "FVIKnowledgeBase.hpp"
+#include "Resolvent.hpp"
 
 namespace optifol
 {
@@ -34,14 +34,15 @@ struct QueryResult
 
     explicit QueryResult(std::shared_ptr<SymbolRepository> symbol_repository) :
         introduced_clauses(std::move(symbol_repository))
-    { }
+    {
+    }
 
     ConjectureStatus outcome = ConjectureStatus::NotExecuted;
     std::size_t elapsed_step_count = 1;
 
     FVIKnowledgeBase introduced_clauses;
     std::deque<Resolvent> relations;
-    const Resolvent * terminating_resolvent = nullptr;
+    const Resolvent *terminating_resolvent = nullptr;
 };
 
 } // namespace optifol

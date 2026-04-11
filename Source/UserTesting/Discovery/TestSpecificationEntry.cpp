@@ -24,7 +24,8 @@ TestSpecificationEntry::TestSpecificationEntry() :
     setup_sync_callbacks();
 }
 
-TestSpecificationEntry::TestSpecificationEntry(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &builder) :
+TestSpecificationEntry::TestSpecificationEntry(
+        BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &builder) :
     Glib::ObjectBase("TestSpecificationEntry"),
     StorageObjectBase(cobject, builder),
     executable(*this, "TestSpecificationEntry-executable"),
@@ -51,22 +52,22 @@ Glib::PropertyProxy<Glib::RefPtr<DiscoveryTestFixture>> TestSpecificationEntry::
     return fixture.get_proxy();
 }
 
-Glib::PropertyProxy_ReadOnly<Glib::RefPtr<DiscoveryTestExecutable>> TestSpecificationEntry::property_executable() const
+Glib::PropertyProxy_ReadOnly<Glib::RefPtr<DiscoveryTestExecutable>>
+TestSpecificationEntry::property_executable() const
 {
     return executable.get_proxy();
 }
 
-Glib::PropertyProxy_ReadOnly<Glib::RefPtr<DiscoveryTestFixture>> TestSpecificationEntry::property_fixture() const
+Glib::PropertyProxy_ReadOnly<Glib::RefPtr<DiscoveryTestFixture>>
+TestSpecificationEntry::property_fixture() const
 {
     return fixture.get_proxy();
 }
 
 void TestSpecificationEntry::setup_sync_callbacks()
 {
-    property_executable().signal_changed().connect([this]
-    {
-        property_fixture().set_value(executable.get_value()->get_default_fixture());
-    });
+    property_executable().signal_changed().connect(
+            [this] { property_fixture().set_value(executable.get_value()->get_default_fixture()); });
 }
 
 } // namespace optifol

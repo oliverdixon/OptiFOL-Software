@@ -36,22 +36,24 @@ public:
 
     /**
      * @brief Replace any existing proofs with a new proof, terminating by the given node in the tree.
-     * @param terminating_node The derived contradiction, representing the deepest element in the execution trace.
+     * @param terminating_node The derived contradiction, representing the deepest element in the execution
+     * trace.
      */
     void replace_proof(const ProofTreeNode *terminating_node);
 
     Gtk::SizeRequestMode get_request_mode_vfunc() const override;
 
-    void measure_vfunc(Gtk::Orientation orientation, int for_size, int &minimum, int &natural, int &minimum_baseline,
-        int &natural_baseline) const override;
+    void measure_vfunc(Gtk::Orientation orientation, int for_size, int &minimum, int &natural,
+            int &minimum_baseline, int &natural_baseline) const override;
 
 private:
     /**
-     * @brief Recursively wrap the given ProofTreeNode (and its parents) in drawing adapters and add to the store.
+     * @brief Recursively wrap the given ProofTreeNode (and its parents) in drawing adapters and add to the
+     * store.
      * @param node The root node to add.
      * @return An observing pointer to the registered root node.
      */
-    const CanvasSupport::NodeDrawingAdapter * add_node(const ProofTreeNode *node);
+    const CanvasSupport::NodeDrawingAdapter *add_node(const ProofTreeNode *node);
 
     /**
      * @brief Redraws a visualisation of the current proof trace to the given Cairo::Context.
@@ -59,12 +61,13 @@ private:
      * @param width Not used, required by the GTKmm interface.
      * @param height Not used, required by the GTKmm interface.
      */
-    void on_draw(const Cairo::RefPtr<Cairo::Context>& ctx, int width, int height);
+    void on_draw(const Cairo::RefPtr<Cairo::Context> &ctx, int width, int height);
 
     /**
      * @brief Draw a single ProofTreeNode encapsulated by the given NodeDrawingAdapter.
      * @details For any type of ProofTreeNode, this renderer draws a bordered box containing a single
-     *  monospace-formatted text representing the serialisation of the node. This represents a Clause in the proof.
+     *  monospace-formatted text representing the serialisation of the node. This represents a Clause in the
+     * proof.
      * @param ctx The Cairo::Context to which the node should be drawn.
      * @param node The NodeDrawingAdapter containing the node to be drawn.
      * @return The Point at the south-eastern-most (i.e. most extreme) point drawn by the function.
@@ -72,14 +75,17 @@ private:
      * @pre The Y coordinate of the NodeDrawingAdapter has been properly initialised.
      * @pre The text extents of the label has been properly initialised.
      */
-    static CanvasSupport::Point draw_proof_node(Cairo::Context &ctx, const CanvasSupport::NodeDrawingAdapter &node);
+    static CanvasSupport::Point draw_proof_node(
+            Cairo::Context &ctx, const CanvasSupport::NodeDrawingAdapter &node);
 
     /**
      * @brief Render a unifier on an edge, with adjoining lines indicating the source Clauses and Resolvent.
      * @param ctx The Cairo::Context to which the unifier and lines should be drawn.
      * @param node The NodeDrawingAdapter encapsulating the Resolvent with the Unifier to be drawn.
-     * @param lhs_edge The LineSegment joining the centre of the Resolvent node with the centre of its LHS parent.
-     * @param rhs_edge The LineSegment joining the centre of the Resolvent node with the centre of its RHS parent.
+     * @param lhs_edge The LineSegment joining the centre of the Resolvent node with the centre of its LHS
+     * parent.
+     * @param rhs_edge The LineSegment joining the centre of the Resolvent node with the centre of its RHS
+     * parent.
      * @param font_extents The precomputed extents of the font, required for baseline skip calculations.
      * @pre The X coordinate of the NodeDrawingAdapter has been properly initialised.
      * @pre The Y coordinate of the NodeDrawingAdapter has been properly initialised.

@@ -35,8 +35,7 @@ namespace optifol
  * @brief Base class for the Flex-generated C++ lexer to lex Google Test results payloads.
  * @see GoogleTestParser for the parsing dual.
  */
-class GoogleTestLexer :
-        public yyFlexLexer
+class GoogleTestLexer : public yyFlexLexer
 {
 public:
     /**
@@ -45,7 +44,7 @@ public:
      * @param yy_out The output stream.
      */
     GoogleTestLexer(std::istream &yy_in, std::ostream &yy_out) :
-            yyFlexLexer(yy_in, yy_out)
+        yyFlexLexer(yy_in, yy_out)
     {
     }
 
@@ -57,7 +56,7 @@ public:
     int lex(GoogleTestParser::semantic_type *yylval);
 };
 
-}
+} // namespace optifol
 
 #pragma clang diagnostic pop
 

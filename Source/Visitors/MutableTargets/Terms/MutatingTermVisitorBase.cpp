@@ -19,9 +19,9 @@ namespace optifol
 
 void MutatingTermVisitorBase::visit(MutableFunction &node)
 {
-    const auto& arguments = node.observe_arguments();
+    const auto &arguments = node.observe_arguments();
 
-    for (const auto& argument : arguments)
+    for (const auto &argument: arguments)
         argument->accept(*this);
 }
 
@@ -35,4 +35,4 @@ void MutatingTermVisitorBase::visit(MutableSkolemFunction &node)
     std::ignore = node;
 }
 
-}
+} // namespace optifol

@@ -31,13 +31,9 @@ class TestingArea;
  * @see TestingArea for the parent area
  *
  * @details
- *  The <i>New Test Group</i> popover provides controls for creating a new TestGroup to hold Requirement objects, which
- *  in turn detain one or more Test entities. The following GTK elements are expected to be available from the given
- *  Gtk::Builder:
- *  <table>
- *      <tr>
- *          <th>GTK C++ Class</th>
- *          <th>Unique Identifier</th>
+ *  The <i>New Test Group</i> popover provides controls for creating a new TestGroup to hold Requirement
+ * objects, which in turn detain one or more Test entities. The following GTK elements are expected to be
+ * available from the given Gtk::Builder: <table> <tr> <th>GTK C++ Class</th> <th>Unique Identifier</th>
  *          <th>Purpose</th>
  *      </tr>
  *      <tr>
@@ -65,7 +61,7 @@ class TestingArea;
 class TestingNewTestGroupPopover : public sigc::trackable
 {
 public:
-    TestingNewTestGroupPopover(Gtk::Builder& builder, TestingArea& testing_area);
+    TestingNewTestGroupPopover(Gtk::Builder &builder, TestingArea &testing_area);
 
 private:
     void confirm_button_clicked() const;
@@ -78,14 +74,14 @@ private:
 
     void name_entry_changed() const noexcept;
 
-    static const char * const popover_name;
+    static const char *const popover_name;
     static const log4cxx::LoggerPtr popover_logger;
 
-    TestingArea& testing_area;
+    TestingArea &testing_area;
 
-    Gtk::Popover * const my_popover;
-    Gtk::Button * const confirm_button;
-    Gtk::Entry * const name_entry;
+    Gtk::Popover *const my_popover;
+    Gtk::Button *const confirm_button;
+    Gtk::Entry *const name_entry;
 };
 
 } // namespace optifol

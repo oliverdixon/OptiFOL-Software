@@ -22,23 +22,25 @@ namespace optifol
 /**
  * @class SemanticException
  * @brief The Semantic Exception expresses a logical/semantic error in the meaning of a Requirement statement.
- * @details The Semantic Exception can be used to express errors of a nature that, while syntactically unproblematic,
- *  do not make meaningful sense in the present context. The most canonical usage would be to indicate a logical
- *  inconsistency in a requirement sentence according to the rules of FOL. See, for example, SymbolStandardisingVisitor.
+ * @details The Semantic Exception can be used to express errors of a nature that, while syntactically
+ *  unproblematic, do not make meaningful sense in the present context. The most canonical usage would be to
+ *  indicate a logical inconsistency in a requirement sentence according to the rules of FOL. See, for
+ *  example, SymbolStandardisingVisitor.
  */
-class SemanticException final :
-        public std::runtime_error
+class SemanticException final : public std::runtime_error
 {
 public:
-    explicit SemanticException(const std::string& message):
+    explicit SemanticException(const std::string &message) :
         std::runtime_error(std::string("Semantic Exception: ") + message)
-    { }
+    {
+    }
 
-    explicit SemanticException(const char* message):
+    explicit SemanticException(const char *message) :
         std::runtime_error(std::string("Semantic Exception: ") + message)
-    { }
+    {
+    }
 };
 
-}
+} // namespace optifol
 
 #endif

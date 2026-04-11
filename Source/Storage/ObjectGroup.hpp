@@ -15,8 +15,8 @@
 #define OBJECTGROUP_HPP
 
 #include <giomm/liststore.h>
-#include <gtkmm/singleselection.h>
 #include <gtkmm/dropdown.h>
+#include <gtkmm/singleselection.h>
 
 #include "../Optifol.hpp"
 #include "StorageObjectBase.hpp"
@@ -26,9 +26,9 @@ namespace optifol
 
 /**
  * @class ObjectGroup
- * @brief Provide a common CRTP interface for all structures grouping objects in a mutable list for iteration, but also
- *  require fast lookup. The base provides a skeleton set of observing and mutating operations on the model to make
- *  optimal use of the dual-storage (list and map) model.
+ * @brief Provide a common CRTP interface for all structures grouping objects in a mutable list for iteration,
+ * but also require fast lookup. The base provides a skeleton set of observing and mutating operations on the
+ * model to make optimal use of the dual-storage (list and map) model.
  * @tparam Derived The IHashable type to store.
  *
  * @details
@@ -37,9 +37,9 @@ namespace optifol
  *      <li>Gtk::ListStore of the type. This is a linear Gtk model that can be attached to views.</li>
  *      <li>@ref std::unordered_map of the types, mapped to their positions in the Gtk::ListStore.</li>
  *  </ul>
- *  Duplicating references across two structures provides benefits of Gtk integration through the linear model, and fast
- *  lookup and hashing capability through the @ref std::unordered_map model. The models are internally synchronised
- *  using the <i>libsigc++</i> callbacks provided natively by Gtkmm.
+ *  Duplicating references across two structures provides benefits of Gtk integration through the linear
+ * model, and fast lookup and hashing capability through the @ref std::unordered_map model. The models are
+ * internally synchronised using the <i>libsigc++</i> callbacks provided natively by Gtkmm.
  */
 template<typename Derived>
     requires std::derived_from<Derived, IHashable>
@@ -48,7 +48,7 @@ class ObjectGroup
 public:
     ObjectGroup() = default;
 
-    explicit ObjectGroup(sigc::slot<void(guint, guint, guint)>&& model_changed_callback)
+    explicit ObjectGroup(sigc::slot<void(guint, guint, guint)> &&model_changed_callback)
     {
         model->signal_items_changed().connect(std::move(model_changed_callback));
     }
@@ -59,9 +59,11 @@ public:
     virtual ~ObjectGroup() = default;
 
     /**
-     * @brief Retrieves the untyped Gio::ListModel from a static context; this is required for GUI integration.
+     * @brief Retrieves the untyped Gio::ListModel from a static context; this is required for GUI
+     * integration.
      * @param untyped_item The Glib-enforced argument containing the object representing the object group.
-     * @return The Gio::ListModel held by the object group, or the null pointer if no such model could be retrieved.
+     * @return The Gio::ListModel held by the object group, or the null pointer if no such model could be
+     * retrieved.
      */
     static Glib::RefPtr<Gio::ListModel> get_model_callback(const Glib::RefPtr<Glib::ObjectBase> &untyped_item)
     {
@@ -135,9 +137,9 @@ public:
             return false;
 
         /*
-         * Record as a deletion and remove from the linear model. The removal from the linear model will likely trigger
-         * a user-defined callback to indicate the removal; the removed object can be retrieved from the callback with
-         * 'steal_deleted_object'.
+         * Record as a deletion and remove from the linear model. The removal from the linear model will
+         * likely trigger a user-defined callback to indicate the removal; the removed object can be retrieved
+         * from the callback with 'steal_deleted_object'.
          */
         pending_deleted_items[index_it->second] = std::move(slated_object);
         model->remove(index_it->second);
@@ -145,23 +147,23 @@ public:
         // Recalculate the index map.
         for (auto &it: index_map)
             /*
-             * TODO this is very inefficient. We should maintain a shift map to correspond offsets from the index map to
-             *  be applied only when required. Should be done with reasonable urgency. We're reindexing the entire map
-             *  for every deletion!
+             * TODO this is very inefficient. We should maintain a shift map to correspond offsets from the
+             * index map to be applied only when required. Should be done with reasonable urgency. We're
+             * reindexing the entire map for every deletion!
              *
              * Sketch of a solution:
              *
-             * Keep an ordered map to maintain a correspondence between the index in the index map ("stored index") and
-             * shifts that have been applied to that elements. If you had A, B, and C; and B was deleted; the stored
-             * index of C would be 2 but we could record a shift of -1. When the index of C was queried again, we would
-             * apply the shift lazily.
+             * Keep an ordered map to maintain a correspondence between the index in the index map ("stored
+             * index") and shifts that have been applied to that elements. If you had A, B, and C; and B was
+             * deleted; the stored index of C would be 2 but we could record a shift of -1. When the index of
+             * C was queried again, we would apply the shift lazily.
              *
-             * Of course, changes need to cascade. So if A was also deleted, a shift of -1 would be recorded for B, but
-             * the C shift should be updated to -2. When the shift map became sufficiently large, an entire re-index
-             * could be done to clear down the shift records.
+             * Of course, changes need to cascade. So if A was also deleted, a shift of -1 would be recorded
+             * for B, but the C shift should be updated to -2. When the shift map became sufficiently large,
+             * an entire re-index could be done to clear down the shift records.
              *
-             * I did attempt this but it was finicky, and wasn't completely clear on the problem I was trying to solve.
-             * Needs a second attempt soon.
+             * I did attempt this but it was finicky, and wasn't completely clear on the problem I was trying
+             * to solve. Needs a second attempt soon.
              */
             if (it.second > index_it->second)
                 --it.second;
@@ -171,13 +173,14 @@ public:
     }
 
     /**
-     * @brief Determines if the model contains a reference to the given object. The comparison is exact in the sense
-     *  that pointer addresses are compared, and does not use <code>Derived::operator==(const Derived&)</code>. This is
-     *  useful when working with <code>Derived</code> types adjacent to @ref std::shared_ptr.
+     * @brief Determines if the model contains a reference to the given object. The comparison is exact in the
+     * sense that pointer addresses are compared, and does not use <code>Derived::operator==(const
+     * Derived&)</code>. This is useful when working with <code>Derived</code> types adjacent to @ref
+     * std::shared_ptr.
      * @param search_address The address of the item to query in the model.
      * @return Does the model already detain an item with the given address?
      */
-    bool contains_exact(const Derived * search_address)
+    bool contains_exact(const Derived *search_address)
     {
         const auto it = index_map.find(*search_address);
         if (it == index_map.cend())
@@ -187,8 +190,8 @@ public:
     }
 
     /**
-     * @brief Steal a recently deleted object from the cache. After this operation, the object is no longer present in
-     *  any of the models, including the deletion cache.
+     * @brief Steal a recently deleted object from the cache. After this operation, the object is no longer
+     * present in any of the models, including the deletion cache.
      * @param old_index The index of the object in the linear model prior to its deletion.
      * @return The deleted object.
      * @throws std::runtime_error if no suitable object exists in the deletion cache.
@@ -198,8 +201,9 @@ public:
         const auto deleted_it = pending_deleted_items.find(old_index);
 
         if (deleted_it == pending_deleted_items.cend())
-            throw std::runtime_error("Requested object at index " + std::to_string(old_index) + " does not exist in "
-                "the deletion map.");
+            throw std::runtime_error("Requested object at index " + std::to_string(old_index) +
+                    " does not exist in "
+                    "the deletion map.");
 
         const auto copy = deleted_it->second;
         pending_deleted_items.erase(deleted_it);
@@ -246,14 +250,15 @@ private:
     Glib::RefPtr<Gio::ListStore<Derived>> model = Gio::ListStore<Derived>::create();
 
     /**
-     * @brief Mapping of hashable objects present in the models, associated with their respective indices in the linear
+     * @brief Mapping of hashable objects present in the models, associated with their respective indices in
+     * the linear
      *  @ref model.
      */
     SharedUnorderedMap<Derived, guint> index_map;
 
     /**
-     * @brief Items deleted from the linear @ref model but not the @ref index_map. Keys indicate the old positions of
-     *  the values in @ref model.
+     * @brief Items deleted from the linear @ref model but not the @ref index_map. Keys indicate the old
+     * positions of the values in @ref model.
      */
     std::unordered_map<guint, Glib::RefPtr<Derived>> pending_deleted_items;
 };

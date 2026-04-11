@@ -67,8 +67,8 @@ bool Function::accept_reverse(IObservingBinaryVisitor &binary_visitor, const Var
 
 bool Function::is_self_nested(const IProcessedTerm &search_term) const noexcept
 {
-    return std::ranges::any_of(arguments, [&search_term](const IProcessedTerm * const argument)
-        { return argument->is_self_nested(search_term); });
+    return std::ranges::any_of(arguments, [&search_term](const IProcessedTerm *const argument)
+            { return argument->is_self_nested(search_term); });
 }
 
 void Function::accept(FeatureBuildingVisitor &feature_building_visitor) const noexcept
@@ -76,7 +76,8 @@ void Function::accept(FeatureBuildingVisitor &feature_building_visitor) const no
     feature_building_visitor.visit(this);
 }
 
-const IProcessedTerm *Function::accept(const UnificationApplicationVisitor &unification_application_visitor) const
+const IProcessedTerm *Function::accept(
+        const UnificationApplicationVisitor &unification_application_visitor) const
 {
     return unification_application_visitor.visit(*this);
 }
@@ -119,10 +120,8 @@ bool Function::operator<(const IProcessedTerm &other) const noexcept
         // Other IProcessedTerm isn't a MutableFunction.
         return false;
 
-    return std::ranges::any_of(std::views::zip(arguments, other_function->arguments), [](const auto& pair)
-    {
-        return *std::get<0>(pair) < *std::get<1>(pair);
-    });
+    return std::ranges::any_of(std::views::zip(arguments, other_function->arguments),
+            [](const auto &pair) { return *std::get<0>(pair) < *std::get<1>(pair); });
 }
 
 std::string Function::to_string() const
@@ -137,7 +136,8 @@ std::string_view Function::get_disambiguated_name() const
 
 std::ostream &Function::serialise(std::ostream &ostream) const
 {
-    return CompositeSerialisationHelpers::stream_serialise(ostream, name, arguments.cbegin(), arguments.cend());
+    return CompositeSerialisationHelpers::stream_serialise(
+            ostream, name, arguments.cbegin(), arguments.cend());
 }
 
 std::size_t Function::hash() const noexcept

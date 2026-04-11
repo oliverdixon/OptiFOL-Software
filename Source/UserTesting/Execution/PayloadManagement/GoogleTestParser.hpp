@@ -29,21 +29,19 @@ namespace optifol
 
 /**
  * @class GoogleTestParser
- * @brief Provide additional functionality to the Bison-generated impl::BaseGoogleTestParser for enhanced ownership
- *  semantics of produced results.
+ * @brief Provide additional functionality to the Bison-generated impl::BaseGoogleTestParser for enhanced
+ * ownership semantics of produced results.
  *
- * @details In particular, the parser should obey the following sequence for all individually parsed test results within
- *  their respective G-Test test cases:
- *  <ol>
- *      <li>
- *          Construct the TestResult and transfer ownership to the parser in the <i>Pending</i> state with
+ * @details In particular, the parser should obey the following sequence for all individually parsed test
+ * results within their respective G-Test test cases: <ol> <li> Construct the TestResult and transfer
+ * ownership to the parser in the <i>Pending</i> state with
  *          @ref add_pending_test_result. Pending results are held in @ref std::unique_ptr containers.
  *      </li>
  *      <li>
- *          Once the test fixture name is known by the innermost TestCase production, extract all pending results and
- *          populate with the fixture name. Ownership of the pending TestResult is transferred back to the grammar
- *          production generated member function. Use @ref steal_next_pending_result until it indicates that there are
- *          no further pending results owned by the parser instance.
+ *          Once the test fixture name is known by the innermost TestCase production, extract all pending
+ * results and populate with the fixture name. Ownership of the pending TestResult is transferred back to the
+ * grammar production generated member function. Use @ref steal_next_pending_result until it indicates that
+ * there are no further pending results owned by the parser instance.
  *      </li>
  *      <li>
  *          As TestResult objects are populated with the test case name, use @ref push_result to invoke the
@@ -59,7 +57,8 @@ public:
      * @param lexer The Flex-created lexer with which the parser should be acquainted
      * @param push_callback The callback to which newly parsed TestResult objects should be sent
      */
-    explicit GoogleTestParser(GoogleTestLexer *lexer, sigc::slot<void(std::unique_ptr<TestResult>&&)>&& push_callback) :
+    explicit GoogleTestParser(
+            GoogleTestLexer *lexer, sigc::slot<void(std::unique_ptr<TestResult> &&)> &&push_callback) :
         BaseGoogleTestParser(lexer),
         push_callback(std::move(push_callback))
     {
@@ -74,7 +73,8 @@ public:
     /**
      * @brief Invoke the callback to indicate a new TestResult has been produced by the parser
      * @param test_result An exclusively owning container for the constructed TestResult object
-     * @note This member function must be public as it is accessed by the Bison-generated C++ grammar productions code.
+     * @note This member function must be public as it is accessed by the Bison-generated C++ grammar
+     * productions code.
      */
     void push_result(std::unique_ptr<TestResult> &&test_result) const
     {
@@ -82,10 +82,11 @@ public:
     }
 
     /**
-     * @brief Provide a new TestResult to be stored in the pending state, such that the TestResult is temporarily held
-     *  by the parser for further mutation before it is suitable for the push callback.
+     * @brief Provide a new TestResult to be stored in the pending state, such that the TestResult is
+     * temporarily held by the parser for further mutation before it is suitable for the push callback.
      * @param test_result The exclusively owning container for the pending TestResult object
-     * @note This member function must be public as it is accessed by the Bison-generated C++ grammar productions code.
+     * @note This member function must be public as it is accessed by the Bison-generated C++ grammar
+     * productions code.
      */
     void add_pending_test_result(std::unique_ptr<TestResult> &&test_result)
     {
@@ -93,10 +94,12 @@ public:
     }
 
     /**
-     * @brief Extract and provide the next pending test result; this function should typically be polled until there are
-     *  no more pending results, as the ordering is not defined.
-     * @return An exclusively owning container for the stolen TestResult, or nullptr if there are no pending results.
-     * @note This member function must be public as it is accessed by the Bison-generated C++ grammar productions code.
+     * @brief Extract and provide the next pending test result; this function should typically be polled until
+     * there are no more pending results, as the ordering is not defined.
+     * @return An exclusively owning container for the stolen TestResult, or nullptr if there are no pending
+     * results.
+     * @note This member function must be public as it is accessed by the Bison-generated C++ grammar
+     * productions code.
      */
     std::unique_ptr<TestResult> steal_next_pending_result() noexcept
     {
@@ -111,7 +114,7 @@ public:
 private:
     std::vector<std::unique_ptr<TestResult>> pending_test_results;
 
-    sigc::slot<void(std::unique_ptr<TestResult>&&)> push_callback;
+    sigc::slot<void(std::unique_ptr<TestResult> &&)> push_callback;
 };
 
 } // namespace optifol

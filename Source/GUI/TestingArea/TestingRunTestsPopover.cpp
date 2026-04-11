@@ -32,8 +32,10 @@ TestingRunTestsPopover::TestingRunTestsPopover(Gtk::Builder &builder, TestingAre
     test_group_name_entry(GTKHelpers::get_widget<Gtk::Entry>(popover_name, builder, "test_group_name"))
 {
     my_popover->signal_show().connect(sigc::mem_fun(*this, &TestingRunTestsPopover::show_popover));
-    confirm_button->signal_clicked().connect(sigc::mem_fun(*this, &TestingRunTestsPopover::confirm_button_clicked));
-    cancel_button->signal_clicked().connect(sigc::mem_fun(*this, &TestingRunTestsPopover::cancel_button_clicked));
+    confirm_button->signal_clicked().connect(
+            sigc::mem_fun(*this, &TestingRunTestsPopover::confirm_button_clicked));
+    cancel_button->signal_clicked().connect(
+            sigc::mem_fun(*this, &TestingRunTestsPopover::cancel_button_clicked));
 }
 
 void TestingRunTestsPopover::confirm_button_clicked() noexcept
@@ -63,7 +65,7 @@ void TestingRunTestsPopover::show_popover() const noexcept
 {
     try {
         test_group_name_entry->set_text(testing_area.get_selected_test_group()->property_name().get_value());
-    } catch (const std::runtime_error& selection_error) {
+    } catch (const std::runtime_error &selection_error) {
         popover_logger->error("Could not discover the selected Test Group entry.");
         popover_logger->error(selection_error.what());
     }

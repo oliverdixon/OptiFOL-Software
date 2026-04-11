@@ -31,13 +31,9 @@ class RequirementsIndexArea;
  * @see RequirementsIndexArea
  *
  * @details
- *  The <i>Delete Requirements</i> popover provides controls for deleting an existing Requirement from the requirements
- *  index for the currently selected Subsystem. The following GTK elements are expected to be available from the given
- *  Gtk::Builder:
- *  <table>
- *      <tr>
- *          <th>GTK C++ Class</th>
- *          <th>Unique Identifier</th>
+ *  The <i>Delete Requirements</i> popover provides controls for deleting an existing Requirement from the
+ * requirements index for the currently selected Subsystem. The following GTK elements are expected to be
+ * available from the given Gtk::Builder: <table> <tr> <th>GTK C++ Class</th> <th>Unique Identifier</th>
  *          <th>Purpose</th>
  *      </tr>
  *      <tr>
@@ -71,7 +67,7 @@ public:
      * @param index_area A mutating reference to the view of which the popover is a member
      * @throws std::runtime_error A required GTK element/widget could not be loaded from the given builder
      */
-    IndexDeleteRequirementPopover(Gtk::Builder& builder, RequirementsIndexArea& index_area);
+    IndexDeleteRequirementPopover(Gtk::Builder &builder, RequirementsIndexArea &index_area);
 
 private:
     /**
@@ -94,14 +90,14 @@ private:
      */
     void show_popover() const;
 
-    static const char * const popover_name;
+    static const char *const popover_name;
     static const log4cxx::LoggerPtr popover_logger;
 
-    RequirementsIndexArea& index_area;
-    Gtk::Popover * const my_popover;
-    Gtk::Button * const confirm_button;
-    Gtk::Button * const cancel_button;
-    Gtk::Entry * const name_entry;
+    RequirementsIndexArea &index_area;
+    Gtk::Popover *const my_popover;
+    Gtk::Button *const confirm_button;
+    Gtk::Button *const cancel_button;
+    Gtk::Entry *const name_entry;
 };
 
 } // namespace optifol

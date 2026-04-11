@@ -18,7 +18,7 @@
 namespace optifol
 {
 
-const char * DMLVisitor::visitor_name = "DeMorgan";
+const char *DMLVisitor::visitor_name = "DeMorgan";
 
 std::string_view DMLVisitor::get_visitor_name() const
 {
@@ -28,8 +28,8 @@ std::string_view DMLVisitor::get_visitor_name() const
 void DMLVisitor::visit(MutableBinaryConnected &node)
 {
     /*
-     * If we're in an immediately negative context ~(MutableBinaryConnected), we apply the transformation according to
-     * the binary operator type. This requires taking temporary ownership of the operands.
+     * If we're in an immediately negative context ~(MutableBinaryConnected), we apply the transformation
+     * according to the binary operator type. This requires taking temporary ownership of the operands.
      */
     if (node.is_negative_polarity()) {
         auto borrowed_lhs = node.take_lhs_operand();
@@ -59,8 +59,8 @@ void DMLVisitor::visit(MutableBinaryConnected &node)
     }
 
     /*
-     * Regardless of whether we did a transformation, there may be further opportunities for transformation on the
-     * individual operands.
+     * Regardless of whether we did a transformation, there may be further opportunities for transformation on
+     * the individual operands.
      */
     MutatingSentenceVisitorBase::visit(node);
 }
@@ -68,8 +68,8 @@ void DMLVisitor::visit(MutableBinaryConnected &node)
 void DMLVisitor::visit(MutableQuantified &node)
 {
     /*
-     * If we're in an immediately negative context ~(MutableQuantified), we apply the transformation according to
-     * the quantification type. This requires taking temporary ownership of the quantified sentence.
+     * If we're in an immediately negative context ~(MutableQuantified), we apply the transformation according
+     * to the quantification type. This requires taking temporary ownership of the quantified sentence.
      */
     if (node.is_negative_polarity()) {
         auto borrowed_sentence = node.take_sentence();
@@ -91,10 +91,10 @@ void DMLVisitor::visit(MutableQuantified &node)
     }
 
     /*
-     * Regardless of whether we did a transformation, there may be further opportunities for transformation on the
-     * quantified sentence.
+     * Regardless of whether we did a transformation, there may be further opportunities for transformation on
+     * the quantified sentence.
      */
     MutatingSentenceVisitorBase::visit(node);
 }
 
-}
+} // namespace optifol

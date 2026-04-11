@@ -28,17 +28,17 @@ class Test;
 
 /**
  * @class TestListenerBase
- * @brief Provides a test-framework-agnostic listener to accept network-streamed payloads describing results of
- *  automated tests. Asynchronous network operations are provided by the Glib socket abstraction layers. Received
- *  TestResult objects are stored by the listener in a blob and can be distributed (through shared ownership) to
- *  relevant Test objects with @ref endow_test.
+ * @brief Provides a test-framework-agnostic listener to accept network-streamed payloads describing results
+ * of automated tests. Asynchronous network operations are provided by the Glib socket abstraction layers.
+ * Received TestResult objects are stored by the listener in a blob and can be distributed (through shared
+ * ownership) to relevant Test objects with @ref endow_test.
  */
 class TestListenerBase
 {
 public:
     /**
-     * @brief Destruct the TestListenerBase, discarding any unused TestResult objects and closing any opened network
-     *  state.
+     * @brief Destruct the TestListenerBase, discarding any unused TestResult objects and closing any opened
+     * network state.
      */
     virtual ~TestListenerBase() = default;
 
@@ -49,8 +49,9 @@ public:
     void accept_result(std::unique_ptr<TestResult> &&test_result);
 
     /**
-     * @brief Given a Requirement with an associated Test object, determine whether a stored TestResult matches the test
-     *  specification of the Requirement. If it does, share the TestResult with the Requirement.
+     * @brief Given a Requirement with an associated Test object, determine whether a stored TestResult
+     * matches the test specification of the Requirement. If it does, share the TestResult with the
+     * Requirement.
      * @param candidate The Requirement to consider sharing the TestResult
      * @throws SemanticException if the Requirement refused the TestResult
      * @see Requirement::emplace_test_result
@@ -61,9 +62,9 @@ protected:
     /**
      * @brief Handle an Glib-asynchronously accepted connection from a client, ready to receive data.
      * @param result The result of the asynchronous socket operation.
-     * @note All implementations of this member function must be noexcept as they are called from an asynchronous
-     *  Glib-defined context. Any exceptions thrown by composed routines should be absorbed by the callback and logged
-     *  using log4cxx instance for the implementation class.
+     * @note All implementations of this member function must be noexcept as they are called from an
+     * asynchronous Glib-defined context. Any exceptions thrown by composed routines should be absorbed by the
+     * callback and logged using log4cxx instance for the implementation class.
      */
     virtual void connection_callback(const Glib::RefPtr<Gio::AsyncResult> &result) noexcept = 0;
 

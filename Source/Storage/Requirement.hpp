@@ -38,7 +38,8 @@ namespace optifol
 
 /**
  * @class Requirement
- * @brief The Requirement storage object is the atomic unit of measure in Optifol. It belongs to a single Subsystem.
+ * @brief The Requirement storage object is the atomic unit of measure in Optifol. It belongs to a single
+ * Subsystem.
  */
 class Requirement : public StorageObjectBase,
                     public ITestModelNode
@@ -53,11 +54,12 @@ public:
      * @param priority The initial priority of the Requirement
      * @param tests The initial set of TestSpecificationEntry objects to template Test objects.
      * @param symbol_repository A null pointer to explicitly signify the lacking SymbolRepository
-     * @warning As no system-wide symbol repository has been provided, this Requirement will not supply its symbols to
-     *  the wider system. Logical analysis will produce unexpected results.
+     * @warning As no system-wide symbol repository has been provided, this Requirement will not supply its
+     * symbols to the wider system. Logical analysis will produce unexpected results.
      */
-    explicit Requirement(std::string&& name, std::string&& statement, std::string&& description, guint priority,
-        Glib::RefPtr<Gio::ListStore<TestSpecificationEntry>>&& tests, std::nullptr_t symbol_repository);
+    explicit Requirement(std::string &&name, std::string &&statement, std::string &&description,
+            guint priority, Glib::RefPtr<Gio::ListStore<TestSpecificationEntry>> &&tests,
+            std::nullptr_t symbol_repository);
 
     /**
      * @brief Create a new Requirement with the given name and register in the Glib GType system
@@ -66,12 +68,12 @@ public:
      * @param description The initial long-form description of the Requirement
      * @param priority The initial priority of the Requirement
      * @param tests The initial set of TestSpecificationEntry objects to template Test objects.
-     * @param symbol_repository The system-wide symbol repository with lifetimes guaranteed to cover that of the
-     *  Requirement
+     * @param symbol_repository The system-wide symbol repository with lifetimes guaranteed to cover that of
+     * the Requirement
      */
-    explicit Requirement(std::string&& name, std::string&& statement, std::string&& description, guint priority,
-        Glib::RefPtr<Gio::ListStore<TestSpecificationEntry>>&& tests,
-        std::shared_ptr<SymbolRepository> symbol_repository);
+    explicit Requirement(std::string &&name, std::string &&statement, std::string &&description,
+            guint priority, Glib::RefPtr<Gio::ListStore<TestSpecificationEntry>> &&tests,
+            std::shared_ptr<SymbolRepository> symbol_repository);
 
     /**
      * @brief Create a new Requirement with the given name and register in the Glib GType system
@@ -82,12 +84,12 @@ public:
      * @param tests The initial set of TestSpecificationEntry objects to template Test objects.
      * @param cobject The C cast-item used by Glib::Object
      * @param builder Currently unused builder parameter to provide to the Glib::Object instance
-     * @param symbol_repository The system-wide symbol repository with lifetimes guaranteed to cover that of the
-     *  Requirement
+     * @param symbol_repository The system-wide symbol repository with lifetimes guaranteed to cover that of
+     * the Requirement
      */
-    Requirement(std::string&& name, std::string&& statement, std::string&& description, guint priority,
-        Glib::RefPtr<Gio::ListStore<TestSpecificationEntry>>&& tests, BaseObjectType* cobject,
-        const Glib::RefPtr<Gtk::Builder>& builder, std::shared_ptr<SymbolRepository> symbol_repository);
+    Requirement(std::string &&name, std::string &&statement, std::string &&description, guint priority,
+            Glib::RefPtr<Gio::ListStore<TestSpecificationEntry>> &&tests, BaseObjectType *cobject,
+            const Glib::RefPtr<Gtk::Builder> &builder, std::shared_ptr<SymbolRepository> symbol_repository);
 
     [[nodiscard]] Glib::RefPtr<Gtk::TreeListModel> get_tests_tree() const noexcept override;
 
@@ -124,7 +126,7 @@ public:
      */
     [[nodiscard]] Glib::PropertyProxy<Glib::ustring> property_normalised();
 
-    [[nodiscard]] const Gio::ListStore<Test> * observe_tests() const noexcept;
+    [[nodiscard]] const Gio::ListStore<Test> *observe_tests() const noexcept;
 
     [[nodiscard]] Glib::RefPtr<Gio::ListStore<Test>> get_tests() const noexcept;
 
@@ -173,7 +175,7 @@ public:
 
     static void bind_name_to_label(const Glib::RefPtr<Gtk::ListItem> &item) noexcept;
 
-    const SentenceRoot& observe_prepared_sentence() const;
+    const SentenceRoot &observe_prepared_sentence() const;
 
 private:
     static const log4cxx::LoggerPtr control_logger;
@@ -208,7 +210,8 @@ private:
             Glib::RefPtr<Gio::ListStore<TestSpecificationEntry>> &&requirement_tests);
 
     /**
-     * @brief Handle a change in the Requirement statement by re-parsing and updating internal state where necessary.
+     * @brief Handle a change in the Requirement statement by re-parsing and updating internal state where
+     * necessary.
      */
     void handle_statement_change();
 
@@ -219,7 +222,8 @@ private:
     Glib::Property<Glib::ustring> description;
     Glib::Property<guint> priority;
 
-    Glib::RefPtr<Gio::ListStore<TestSpecificationEntry>> test_specs = Gio::ListStore<TestSpecificationEntry>::create();
+    Glib::RefPtr<Gio::ListStore<TestSpecificationEntry>> test_specs =
+            Gio::ListStore<TestSpecificationEntry>::create();
     const Glib::RefPtr<Gio::ListStore<Test>> tests = Gio::ListStore<Test>::create();
     const Glib::RefPtr<Gtk::TreeListModel> tests_tree =
             Gtk::TreeListModel::create(tests, &ITestModelNode::get_given_tests_tree, true);

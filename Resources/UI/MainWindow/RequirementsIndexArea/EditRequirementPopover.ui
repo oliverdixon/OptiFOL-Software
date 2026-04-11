@@ -81,7 +81,7 @@
                     </child>
 
                     <child>
-                        <object class="GtkLabel"> <!-- TODO URGENT update to match new requirement popover. -->
+                        <object class="GtkLabel">
                             <property name="label">Associated Test</property>
                             <property name="halign">GTK_ALIGN_END</property>
                             <layout>

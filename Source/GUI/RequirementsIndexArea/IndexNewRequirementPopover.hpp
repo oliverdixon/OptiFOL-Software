@@ -32,8 +32,8 @@ class RequirementsIndexArea;
  * @see RequirementsIndexArea for the parent area
  *
  * @details
- *  The <i>New Requirement</i> popover provides controls for creating a new Requirement for the currently selected
- *  Subsystem. The following GTK elements are expected to be available from the given Gtk::Builder:
+ *  The <i>New Requirement</i> popover provides controls for creating a new Requirement for the currently
+ * selected Subsystem. The following GTK elements are expected to be available from the given Gtk::Builder:
  *  <table>
  *      <tr>
  *          <th>GTK C++ Class</th>
@@ -91,8 +91,8 @@ class RequirementsIndexArea;
  *          <td>Button for activating <code>manage_tests_popover</code> popover</td>
  *      </tr>
  *  </table>
- *  A @ref std::runtime_error will be thrown by the class constructor if any of these are inaccessible in the expected
- *  type instantiations.
+ *  A @ref std::runtime_error will be thrown by the class constructor if any of these are inaccessible in the
+ * expected type instantiations.
  */
 class IndexNewRequirementPopover : public sigc::trackable
 {
@@ -103,11 +103,12 @@ public:
      * @param index_area A mutating reference to the view of which the popover is a member
      * @throws std::runtime_error A required GTK element/widget could not be loaded from the given builder
      */
-    IndexNewRequirementPopover(Gtk::Builder& builder, RequirementsIndexArea& index_area);
+    IndexNewRequirementPopover(Gtk::Builder &builder, RequirementsIndexArea &index_area);
 
 private:
     /**
-     * @brief Handle a click of the <i>Confirm</i> by attempting to create a Requirement with the given characteristics.
+     * @brief Handle a click of the <i>Confirm</i> by attempting to create a Requirement with the given
+     * characteristics.
      */
     void confirm_button_clicked() noexcept;
 
@@ -132,18 +133,18 @@ private:
      */
     void name_entry_changed() const noexcept;
 
-    static const char * const popover_name;
+    static const char *const popover_name;
     static const log4cxx::LoggerPtr popover_logger;
 
-    RequirementsIndexArea& index_area;
+    RequirementsIndexArea &index_area;
 
-    Gtk::Popover * const my_popover;
-    Gtk::Button * const confirm_button;
-    Gtk::Entry * const name_entry;
-    Gtk::TextView * const description_entry;
-    Gtk::Entry * const statement_entry;
-    Gtk::Entry * const test_summary;
-    Gtk::DropDown * const priority_entry;
+    Gtk::Popover *const my_popover;
+    Gtk::Button *const confirm_button;
+    Gtk::Entry *const name_entry;
+    Gtk::TextView *const description_entry;
+    Gtk::Entry *const statement_entry;
+    Gtk::Entry *const test_summary;
+    Gtk::DropDown *const priority_entry;
 
     ManageTestsPopover manage_tests_popover;
     Glib::RefPtr<Gio::ListStore<TestSpecificationEntry>> test_specification;

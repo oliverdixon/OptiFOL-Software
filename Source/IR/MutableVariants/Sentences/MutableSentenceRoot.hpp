@@ -22,8 +22,8 @@ namespace optifol
 
 /**
  * @class MutableSentenceRoot
- * @brief A MutableSentenceRoot denotes the root node of a mutable IR node tree. It owns a single sub-sentence that may
- *  be mutated and transferred.
+ * @brief A MutableSentenceRoot denotes the root node of a mutable IR node tree. It owns a single sub-sentence
+ * that may be mutated and transferred.
  */
 class MutableSentenceRoot : public IMutableSentence,
                             public OwningBuildable<MutableSentenceRoot>
@@ -31,7 +31,8 @@ class MutableSentenceRoot : public IMutableSentence,
 public:
     /**
      * @brief Construct a new SentenceRoot to encapsulate and own the given sub-sentence
-     * @param sentence The container of the sentence whose ownership is to be transferred into the SentenceRoot
+     * @param sentence The container of the sentence whose ownership is to be transferred into the
+     * SentenceRoot
      */
     [[maybe_unused]] explicit MutableSentenceRoot(std::unique_ptr<IMutableSentence> &&sentence);
 

@@ -44,7 +44,8 @@ protected:
 };
 
 /**
- * @brief Tests Resolution functionality for a Modus Ponens knowledge base over a single universally quantified variable
+ * @brief Tests Resolution functionality for a Modus Ponens knowledge base over a single universally
+ * quantified variable
  *  @f$ x @f$ and a constant @f$ C @f$.
  * @details
  *  <table>
@@ -102,9 +103,9 @@ TEST_F(ResolutionTest, ModusPonens_Quantified)
 
     // clang-format on
 
-    const auto sentence2 = ExpressionFactory::build_sentence(MutableSentenceRoot::build(
-        MutablePredicate::build("P", std::move(s2_p_args))
-    ), symbol_repository);
+    const auto sentence2 = ExpressionFactory::build_sentence(
+            MutableSentenceRoot::build(MutablePredicate::build("P", std::move(s2_p_args))),
+            symbol_repository);
 
     prover->tell(*sentence1);
     prover->tell(*sentence2);
@@ -112,8 +113,8 @@ TEST_F(ResolutionTest, ModusPonens_Quantified)
     std::vector<std::unique_ptr<IMutableTerm>> query_args;
     query_args.push_back(MutableFunction::build<IMutableTerm>("C"));
 
-    const auto result = prover->ask(MutableSentenceRoot::build(MutablePredicate::build("Q",
-        std::move(query_args))));
+    const auto result =
+            prover->ask(MutableSentenceRoot::build(MutablePredicate::build("Q", std::move(query_args))));
 
     EXPECT_EQ(result.outcome, QueryResult::ConjectureStatus::Consistent);
 }
@@ -129,13 +130,13 @@ TEST_F(ResolutionTest, Reject_Trivial)
     std::vector<std::unique_ptr<IMutableTerm>> s2_p_args;
     s2_p_args.push_back(MutableFunction::build<IMutableTerm>("C"));
 
-    const auto sentence1 = ExpressionFactory::build_sentence(MutableSentenceRoot::build(
-        MutablePredicate::build("P", std::move(s2_p_args))
-    ), symbol_repository);
+    const auto sentence1 = ExpressionFactory::build_sentence(
+            MutableSentenceRoot::build(MutablePredicate::build("P", std::move(s2_p_args))),
+            symbol_repository);
 
-    const auto sentence2 = ExpressionFactory::build_sentence(MutableSentenceRoot::build(
-        MutablePredicate::build("Q", std::move(s2_p_args))
-    ), symbol_repository);
+    const auto sentence2 = ExpressionFactory::build_sentence(
+            MutableSentenceRoot::build(MutablePredicate::build("Q", std::move(s2_p_args))),
+            symbol_repository);
 
     prover->tell(*sentence1);
     prover->tell(*sentence2);
@@ -143,8 +144,8 @@ TEST_F(ResolutionTest, Reject_Trivial)
     std::vector<std::unique_ptr<IMutableTerm>> query_args;
     query_args.push_back(MutableFunction::build<IMutableTerm>("C"));
 
-    const auto result = prover->ask(MutableSentenceRoot::build(MutablePredicate::build("R",
-        std::move(query_args))));
+    const auto result =
+            prover->ask(MutableSentenceRoot::build(MutablePredicate::build("R", std::move(query_args))));
 
     EXPECT_EQ(result.outcome, QueryResult::ConjectureStatus::Inconsistent);
 }
@@ -163,29 +164,18 @@ TEST_F(ResolutionTest, CuriosityKilledTheCat)
     loves_args_2.push_back(MutableVariable::build("y"));
     loves_args_2.push_back(MutableVariable::build("x"));
 
-    const auto loves_all_animals = ExpressionFactory::build_sentence(MutableSentenceRoot::build(
-        MutableQuantified::build(
-            QuantifierTypes::Universal,
-            MutableVariable::build("x"),
-            MutableBinaryConnected::build(
-                BinaryOperatorTypes::Implication,
-                MutableQuantified::build(
-                    QuantifierTypes::Universal,
-                    MutableVariable::build("y"),
-                    MutableBinaryConnected::build(
-                        BinaryOperatorTypes::Implication,
-                        MutablePredicate::build("Animal", std::move(animal_args_1)),
-                        MutablePredicate::build("Loves", std::move(loves_args_1))
-                    )
-                ),
-                MutableQuantified::build(
-                    QuantifierTypes::Existential,
-                    MutableVariable::build("y"),
-                    MutablePredicate::build("Loves", std::move(loves_args_2))
-                )
-            )
-        )
-    ), symbol_repository);
+    const auto loves_all_animals = ExpressionFactory::build_sentence(
+            MutableSentenceRoot::build(MutableQuantified::build(QuantifierTypes::Universal,
+                    MutableVariable::build("x"),
+                    MutableBinaryConnected::build(BinaryOperatorTypes::Implication,
+                            MutableQuantified::build(QuantifierTypes::Universal, MutableVariable::build("y"),
+                                    MutableBinaryConnected::build(BinaryOperatorTypes::Implication,
+                                            MutablePredicate::build("Animal", std::move(animal_args_1)),
+                                            MutablePredicate::build("Loves", std::move(loves_args_1)))),
+                            MutableQuantified::build(QuantifierTypes::Existential,
+                                    MutableVariable::build("y"),
+                                    MutablePredicate::build("Loves", std::move(loves_args_2)))))),
+            symbol_repository);
 
     // Anybody who kills an animal is loved by nobody.
     std::vector<std::unique_ptr<IMutableTerm>> animal_args_2;
@@ -199,29 +189,18 @@ TEST_F(ResolutionTest, CuriosityKilledTheCat)
     loves_args_3.push_back(MutableVariable::build("y"));
     loves_args_3.push_back(MutableVariable::build("x"));
 
-    const auto kills_an_animal = ExpressionFactory::build_sentence(MutableSentenceRoot::build(
-        MutableQuantified::build(
-            QuantifierTypes::Universal,
-            MutableVariable::build("x"),
-            MutableBinaryConnected::build(
-                BinaryOperatorTypes::Implication,
-                MutableQuantified::build(
-                    QuantifierTypes::Existential,
-                    MutableVariable::build("z"),
-                    MutableBinaryConnected::build(
-                        BinaryOperatorTypes::Conjunction,
-                        MutablePredicate::build("Animal", std::move(animal_args_2)),
-                        MutablePredicate::build("Kills", std::move(kills_args_1))
-                    )
-                ),
-                MutableQuantified::build(
-                    QuantifierTypes::Universal,
-                    MutableVariable::build("y"),
-                    MutablePredicate::build("Loves", false, std::move(loves_args_3))
-                )
-            )
-        )
-    ), symbol_repository);
+    const auto kills_an_animal = ExpressionFactory::build_sentence(
+            MutableSentenceRoot::build(MutableQuantified::build(QuantifierTypes::Universal,
+                    MutableVariable::build("x"),
+                    MutableBinaryConnected::build(BinaryOperatorTypes::Implication,
+                            MutableQuantified::build(QuantifierTypes::Existential,
+                                    MutableVariable::build("z"),
+                                    MutableBinaryConnected::build(BinaryOperatorTypes::Conjunction,
+                                            MutablePredicate::build("Animal", std::move(animal_args_2)),
+                                            MutablePredicate::build("Kills", std::move(kills_args_1)))),
+                            MutableQuantified::build(QuantifierTypes::Universal, MutableVariable::build("y"),
+                                    MutablePredicate::build("Loves", false, std::move(loves_args_3)))))),
+            symbol_repository);
 
     // Jack loves all animals.
     std::vector<std::unique_ptr<IMutableTerm>> animal_args_3;
@@ -231,17 +210,13 @@ TEST_F(ResolutionTest, CuriosityKilledTheCat)
     loves_args_4.push_back(MutableFunction::build("Jack"));
     loves_args_4.push_back(MutableVariable::build("x"));
 
-    const auto jack_loves_animals = ExpressionFactory::build_sentence(MutableSentenceRoot::build(
-        MutableQuantified::build(
-            QuantifierTypes::Universal,
-            MutableVariable::build("x"),
-            MutableBinaryConnected::build(
-                BinaryOperatorTypes::Implication,
-                MutablePredicate::build("Animal", std::move(animal_args_3)),
-                MutablePredicate::build("Loves", std::move(loves_args_4))
-            )
-        )
-    ), symbol_repository);
+    const auto jack_loves_animals = ExpressionFactory::build_sentence(
+            MutableSentenceRoot::build(
+                    MutableQuantified::build(QuantifierTypes::Universal, MutableVariable::build("x"),
+                            MutableBinaryConnected::build(BinaryOperatorTypes::Implication,
+                                    MutablePredicate::build("Animal", std::move(animal_args_3)),
+                                    MutablePredicate::build("Loves", std::move(loves_args_4))))),
+            symbol_repository);
 
     // Tuna is killed by Jack or Curiosity.
     std::vector<std::unique_ptr<IMutableTerm>> kills_args_2;
@@ -252,21 +227,19 @@ TEST_F(ResolutionTest, CuriosityKilledTheCat)
     kills_args_3.push_back(MutableFunction::build("Curiosity"));
     kills_args_3.push_back(MutableFunction::build("Tuna"));
 
-    const auto tuna_is_killed = ExpressionFactory::build_sentence(MutableSentenceRoot::build(
-        MutableBinaryConnected::build(
-            BinaryOperatorTypes::Disjunction,
-            MutablePredicate::build("Kills", std::move(kills_args_2)),
-            MutablePredicate::build("Kills", std::move(kills_args_3))
-        )
-    ), symbol_repository);
+    const auto tuna_is_killed = ExpressionFactory::build_sentence(
+            MutableSentenceRoot::build(MutableBinaryConnected::build(BinaryOperatorTypes::Disjunction,
+                    MutablePredicate::build("Kills", std::move(kills_args_2)),
+                    MutablePredicate::build("Kills", std::move(kills_args_3)))),
+            symbol_repository);
 
     // Tuna is a cat.
     std::vector<std::unique_ptr<IMutableTerm>> cat_args_1;
     cat_args_1.push_back(MutableFunction::build("Tuna"));
 
-    const auto tuna_is_cat = ExpressionFactory::build_sentence(MutableSentenceRoot::build(
-        MutablePredicate::build("Cat", std::move(cat_args_1))
-    ), symbol_repository);
+    const auto tuna_is_cat = ExpressionFactory::build_sentence(
+            MutableSentenceRoot::build(MutablePredicate::build("Cat", std::move(cat_args_1))),
+            symbol_repository);
 
     // Cats are animals.
     std::vector<std::unique_ptr<IMutableTerm>> cat_args_2;
@@ -275,17 +248,13 @@ TEST_F(ResolutionTest, CuriosityKilledTheCat)
     std::vector<std::unique_ptr<IMutableTerm>> animal_args_4;
     animal_args_4.push_back(MutableVariable::build("x"));
 
-    const auto cats_are_animals = ExpressionFactory::build_sentence(MutableSentenceRoot::build(
-        MutableQuantified::build(
-            QuantifierTypes::Universal,
-            MutableVariable::build("x"),
-            MutableBinaryConnected::build(
-                BinaryOperatorTypes::Implication,
-                MutablePredicate::build("Cat", std::move(cat_args_2)),
-                MutablePredicate::build("Animal", std::move(animal_args_4))
-            )
-        )
-    ), symbol_repository);
+    const auto cats_are_animals = ExpressionFactory::build_sentence(
+            MutableSentenceRoot::build(
+                    MutableQuantified::build(QuantifierTypes::Universal, MutableVariable::build("x"),
+                            MutableBinaryConnected::build(BinaryOperatorTypes::Implication,
+                                    MutablePredicate::build("Cat", std::move(cat_args_2)),
+                                    MutablePredicate::build("Animal", std::move(animal_args_4))))),
+            symbol_repository);
 
     // Tell the KB the facts...
     prover->tell(*tuna_is_killed);
@@ -300,8 +269,8 @@ TEST_F(ResolutionTest, CuriosityKilledTheCat)
     kills_args_4.push_back(MutableFunction::build("Curiosity"));
     kills_args_4.push_back(MutableFunction::build("Tuna"));
 
-    const auto result = prover->ask(MutableSentenceRoot::build(MutablePredicate::build("Kills",
-        std::move(kills_args_4))));
+    const auto result = prover->ask(
+            MutableSentenceRoot::build(MutablePredicate::build("Kills", std::move(kills_args_4))));
 
     EXPECT_EQ(result.outcome, QueryResult::ConjectureStatus::Consistent);
 }

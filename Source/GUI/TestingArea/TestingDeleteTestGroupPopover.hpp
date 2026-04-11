@@ -15,8 +15,8 @@
 #define OPTIFOL_TESTINGDELETETESTGROUPPOPOVER_HPP
 
 #include <gtkmm/builder.h>
-#include <gtkmm/popover.h>
 #include <gtkmm/entry.h>
+#include <gtkmm/popover.h>
 #include <log4cxx/logger.h>
 
 namespace optifol
@@ -30,11 +30,8 @@ class TestingArea;
  * @see TestingArea for the parent area
  *
  * @details
- *  The <i>Delete Test Group</i> popover provides controls for deleting an existing TestGroup. The following GTK
- *  elements are expected to be available from the given Gtk::Builder:
- *  <table>
- *      <tr>
- *          <th>GTK C++ Class</th>
+ *  The <i>Delete Test Group</i> popover provides controls for deleting an existing TestGroup. The following
+ * GTK elements are expected to be available from the given Gtk::Builder: <table> <tr> <th>GTK C++ Class</th>
  *          <th>Unique Identifier</th>
  *          <th>Purpose</th>
  *      </tr>
@@ -69,7 +66,7 @@ public:
      * @param testing_area A mutating reference to the TestingArea of which the popover is a member
      * @throws std::runtime_error A required GTK element/widget could not be loaded from the given builder
      */
-    TestingDeleteTestGroupPopover(Gtk::Builder& builder, TestingArea& testing_area);
+    TestingDeleteTestGroupPopover(Gtk::Builder &builder, TestingArea &testing_area);
 
 private:
     /**
@@ -87,13 +84,13 @@ private:
      */
     void popover_shown() const noexcept;
 
-    static const char * const popover_name;
+    static const char *const popover_name;
     static const log4cxx::LoggerPtr popover_logger;
 
-    TestingArea& testing_area;
+    TestingArea &testing_area;
 
-    Gtk::Popover * const my_popover;
-    Gtk::Entry * const test_group_entry;
+    Gtk::Popover *const my_popover;
+    Gtk::Entry *const test_group_entry;
 };
 
 } // namespace optifol

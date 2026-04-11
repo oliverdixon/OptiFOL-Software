@@ -36,7 +36,7 @@ const Variable *SymbolRepository::get_symbol_handle(const Variable &variable) co
     return it->get();
 }
 
-bool SymbolRepository::operator==(const SymbolRepository & other) const noexcept
+bool SymbolRepository::operator==(const SymbolRepository &other) const noexcept
 {
     return sentences == other.sentences && terms == other.terms;
 }

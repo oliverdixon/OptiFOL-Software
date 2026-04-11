@@ -27,7 +27,7 @@ class ScopedTermResolutionVisitor : public TermResolutionVisitor
 public:
     ScopedTermResolutionVisitor(const std::unordered_set<std::string> &scope_hook,
             const std::unordered_map<std::string, std::unique_ptr<IMutableTerm>, StringHash, std::equal_to<>>
-                &rewriting_rules_hook);
+                    &rewriting_rules_hook);
 
     void visit(MutableFunction &node) override;
 

@@ -25,11 +25,12 @@ namespace optifol
 
 /**
  * @class MutableFunction
- * @brief A MutableFunction represents an owning IR node term consisting of a display name and zero to many arguments,
- * all of which are owned as transferable @ref std::unique_ptr objects by the node.
+ * @brief A MutableFunction represents an owning IR node term consisting of a display name and zero to many
+ * arguments, all of which are owned as transferable @ref std::unique_ptr objects by the node.
  * @see Function for the processed, argument-observing dual.
  */
-class MutableFunction : public IMutableTerm, public OwningBuildable<MutableFunction>
+class MutableFunction : public IMutableTerm,
+                        public OwningBuildable<MutableFunction>
 {
 public:
     /**
@@ -67,7 +68,8 @@ public:
     /**
      * @brief Observe the mutable owning ordered argument collection
      * @return The arguments owned by the function
-     * @note This non-constant overload is useful for propagation of <code>accept</code> calls on mutating visitors.
+     * @note This non-constant overload is useful for propagation of <code>accept</code> calls on mutating
+     * visitors.
      */
     [[nodiscard]] std::vector<std::unique_ptr<IMutableTerm>> &observe_arguments() noexcept;
 

@@ -41,10 +41,9 @@ namespace optifol
  *
  * @details
  *  The <i>Testing and Compliance</i> area provides controls for aggregating existing Requirement objects into
- *  TestGroup objects, and then executing unit test frameworks over the groups. The results of Requirement-wise unit
- *  tests can be reviewed in the area, or exported to a report using the <i>Releases and Reports</i> area
- *  capabilities. The following GTK elements are expected from the given Gtk::Builder:
- *  <table>
+ *  TestGroup objects, and then executing unit test frameworks over the groups. The results of
+ * Requirement-wise unit tests can be reviewed in the area, or exported to a report using the <i>Releases and
+ * Reports</i> area capabilities. The following GTK elements are expected from the given Gtk::Builder: <table>
  *      <tr>
  *          <th>GTK C++ Class</th>
  *          <th>Unique Identifier</th>
@@ -136,8 +135,8 @@ namespace optifol
  *          <td>Button for opening <code>delete_test_group_popover</code></td>
  *      </tr>
  *  </table>
- *  A @ref std::runtime_error will be thrown by the class constructor if any of these are inaccessible in the expected
- *  type instantiations.
+ *  A @ref std::runtime_error will be thrown by the class constructor if any of these are inaccessible in the
+ * expected type instantiations.
  */
 class TestingArea : public IWindowArea
 {
@@ -162,16 +161,16 @@ public:
     Glib::RefPtr<const Gtk::TreeListRow> get_selected_row() const noexcept;
 
     /**
-     * @brief Copies the ref-counted pointer to the selected TestGroup. If a Requirement or Test is selected, the owning
-     *  TestGroup is returned.
+     * @brief Copies the ref-counted pointer to the selected TestGroup. If a Requirement or Test is selected,
+     * the owning TestGroup is returned.
      * @return The owning TestGroup of the selected object.
      * @throws std::runtime_error There is no selected object.
      */
     Glib::RefPtr<TestGroup> get_selected_test_group();
 
     /**
-     * @brief Copies the ref-counted pointer to the selected Requirement. If a Test is selected, the owning Requirement
-     *  is returned.
+     * @brief Copies the ref-counted pointer to the selected Requirement. If a Test is selected, the owning
+     * Requirement is returned.
      * @return The owning Requirement of the selected Test.
      * @throws std::runtime_error There is no selected object, or the selected object is unsuitable.
      */
@@ -182,8 +181,9 @@ private:
      * @brief Format a string encoding the TestResult passed state and execution time.
      * @param result An owning container of the TestResult to format.
      * @return A string describing the TestResult passed state and execution time.
-     * @note The semantics of this function is poor. Ownership of the argument is not shared by the function. It is
-     *  required by the calling conventions of GTKmm. Ditto for the return type being encoded in @ref std::optional.
+     * @note The semantics of this function is poor. Ownership of the argument is not shared by the function.
+     * It is required by the calling conventions of GTKmm. Ditto for the return type being encoded in @ref
+     * std::optional.
      * @post The return value is such that @ref std::optional::has_value returns <code>true</code>.
      */
     static std::optional<Glib::ustring> bind_test_result(const std::shared_ptr<TestResult> &result) noexcept;

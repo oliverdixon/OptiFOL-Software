@@ -30,9 +30,9 @@ public:
 
     virtual void visit(MutableVariable &node);
 
-    virtual void visit(MutableSkolemFunction& node);
+    virtual void visit(MutableSkolemFunction &node);
 };
 
-}
+} // namespace optifol
 
 #endif

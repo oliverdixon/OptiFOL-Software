@@ -24,8 +24,8 @@ DiscoveryTestExecutable::DiscoveryTestExecutable(const Glib::ustring &executable
     property_name().set_value(executable_path);
 }
 
-DiscoveryTestExecutable::DiscoveryTestExecutable(
-        const Glib::ustring &executable_path, BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &builder) :
+DiscoveryTestExecutable::DiscoveryTestExecutable(const Glib::ustring &executable_path,
+        BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &builder) :
     Glib::ObjectBase("DiscoveryTestExecutable"),
     StorageObjectBase(cobject, builder),
     fixtures(Gio::ListStore<DiscoveryTestFixture>::create())

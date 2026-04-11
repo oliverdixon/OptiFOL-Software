@@ -5,9 +5,9 @@
 ## CMake Presets
 
 A single CMake preset has been defined to support `vcpkg`-provided shared libraries on x86-64 Linux systems:
-`x64-linux-dynamic-vcpkg`. Users wishing to build *Optifol* under this configuration should inherit the preset with a
-user profile that specifies the absolute path of the `vcpkg` installation root. The path should be given by exporting
-the `VCPKG_ROOT` environment variable.
+`x64-linux-dynamic-vcpkg`. Users wishing to build *Optifol* under this configuration should inherit the preset
+with a  user profile that specifies the absolute path of the `vcpkg` installation root. The path should be
+given by exporting the `VCPKG_ROOT` environment variable.
 
 The standard CMake configurations provided in this repository use the preset named `default`.
 

@@ -40,4 +40,4 @@ std::string Project::get_path() const
     return '/' + property_name().get_value();
 }
 
-}
+} // namespace optifol

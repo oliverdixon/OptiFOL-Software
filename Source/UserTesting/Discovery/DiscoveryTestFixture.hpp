@@ -19,12 +19,12 @@ namespace optifol
 class DiscoveryTestFixture : public StorageObjectBase
 {
 public:
-    explicit DiscoveryTestFixture(const Glib::ustring& name);
+    explicit DiscoveryTestFixture(const Glib::ustring &name);
 
-    DiscoveryTestFixture(const Glib::ustring& name, BaseObjectType *cobject,
-        const Glib::RefPtr<Gtk::Builder> &builder);
+    DiscoveryTestFixture(
+            const Glib::ustring &name, BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &builder);
 
-    void add_test(const Glib::ustring& name) const;
+    void add_test(const Glib::ustring &name) const;
 
     Glib::RefPtr<Gtk::StringList> get_test_model() noexcept;
 

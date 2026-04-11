@@ -31,11 +31,11 @@ public:
     {
         return object.serialise(ostream);
     }
-    
-    ISerialisable(const ISerialisable&) = default;
-    ISerialisable& operator=(const ISerialisable&) = default;
-    ISerialisable(ISerialisable&&) = default;
-    ISerialisable& operator=(ISerialisable&&) = default;
+
+    ISerialisable(const ISerialisable &) = default;
+    ISerialisable &operator=(const ISerialisable &) = default;
+    ISerialisable(ISerialisable &&) = default;
+    ISerialisable &operator=(ISerialisable &&) = default;
 
 protected:
     ISerialisable() = default;
@@ -50,7 +50,8 @@ protected:
  * @brief Helper for C++20 @ref std::format support on serialisable Optifol types.
  * @tparam Serialisable The derived ISerialisable type to format
  */
-template<typename Serialisable> requires std::derived_from<Serialisable, optifol::ISerialisable>
+template<typename Serialisable>
+    requires std::derived_from<Serialisable, optifol::ISerialisable>
 struct std::formatter<Serialisable> : formatter<string> // NOLINT(*-dcl58-cpp)
 {
     /**

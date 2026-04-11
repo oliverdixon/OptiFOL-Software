@@ -23,8 +23,8 @@
 namespace optifol
 {
 
-Literal::Literal(
-        std::string name, const std::initializer_list<const IProcessedTerm *> arguments, const bool is_positive) :
+Literal::Literal(std::string name, const std::initializer_list<const IProcessedTerm *> arguments,
+        const bool is_positive) :
     name(std::move(name)),
     arguments(arguments),
     is_positive(is_positive)
@@ -76,10 +76,8 @@ bool Literal::operator<(const Literal &other) const noexcept
         return false;
 
     // Literals are superficially equal, so order based on arguments.
-    return std::ranges::any_of(std::ranges::views::zip(arguments, other.arguments), [](const auto& pair)
-    {
-        return *std::get<0>(pair) < *std::get<1>(pair);
-    });
+    return std::ranges::any_of(std::ranges::views::zip(arguments, other.arguments),
+            [](const auto &pair) { return *std::get<0>(pair) < *std::get<1>(pair); });
 }
 
 std::string_view Literal::get_name() const noexcept

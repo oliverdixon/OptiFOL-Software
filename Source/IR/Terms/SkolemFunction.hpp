@@ -18,12 +18,12 @@ namespace optifol
 class SkolemFunction : public Function
 {
 public:
-    [[maybe_unused]] explicit SkolemFunction(std::string name,
-        std::initializer_list<const IProcessedTerm *> arguments = {});
+    [[maybe_unused]] explicit SkolemFunction(
+            std::string name, std::initializer_list<const IProcessedTerm *> arguments = {});
 
-    explicit SkolemFunction(std::string name, std::vector<const IProcessedTerm *>&& arguments);
+    explicit SkolemFunction(std::string name, std::vector<const IProcessedTerm *> &&arguments);
 
-    void accept(FeatureBuildingVisitor& feature_building_visitor) const noexcept override;
+    void accept(FeatureBuildingVisitor &feature_building_visitor) const noexcept override;
 };
 
 } // namespace optifol

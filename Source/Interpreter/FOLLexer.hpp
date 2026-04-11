@@ -22,18 +22,18 @@
 namespace optifol
 {
 
-class FOLLexer :
-        public yyFlexLexer
+class FOLLexer : public yyFlexLexer
 {
 public:
     FOLLexer(std::istream &yy_in, std::ostream &yy_out) :
-            yyFlexLexer(yy_in, yy_out)
-    {}
+        yyFlexLexer(yy_in, yy_out)
+    {
+    }
 
     int lex(FOLParser::semantic_type *yylval);
 };
 
-}
+} // namespace optifol
 
 #pragma clang diagnostic pop
 

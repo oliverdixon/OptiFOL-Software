@@ -13,11 +13,12 @@
 
 #include "UnificationApplicationVisitor.hpp"
 
+#include "../../../IR/Sentences/Literal.hpp"
 #include "../../../IR/SymbolRepository.hpp"
 #include "../../../IR/Terms/Function.hpp"
-#include "../../../IR/Sentences/Literal.hpp"
 
-// ReSharper disable CppUnusedIncludeDirective - Full definitions required for transparent hashing of sub. map.
+// ReSharper disable CppUnusedIncludeDirective - Full definitions required for transparent hashing of sub.
+// map.
 #include "../../../IR/Terms/Variable.hpp"
 // ReSharper restore CppUnusedIncludeDirective
 
@@ -35,7 +36,8 @@ UnificationApplicationVisitor::UnificationApplicationVisitor(
 const IProcessedTerm *UnificationApplicationVisitor::visit(const Variable &node) const
 {
     const auto it = substitutions->unifier.find(node);
-    return it == substitutions->unifier.cend() ? existing_symbol_repository->get_symbol_handle(node) : it->second;
+    return it == substitutions->unifier.cend() ? existing_symbol_repository->get_symbol_handle(node)
+                                               : it->second;
 }
 
 const IProcessedTerm *UnificationApplicationVisitor::visit(const Function &node) const
@@ -43,26 +45,24 @@ const IProcessedTerm *UnificationApplicationVisitor::visit(const Function &node)
     auto transformed_arguments = apply_to_term_vector(node.observe_arguments());
 
     /*
-     * If the unifier could be successfully applied component-wise to the arguments (indicated by the std::optional
-     * containing a vector), create the applied Function symbol and add it to the SymbolRepository. Otherwise, provide
-     * a handle to the original unmutated Function.
+     * If the unifier could be successfully applied component-wise to the arguments (indicated by the
+     * std::optional containing a vector), create the applied Function symbol and add it to the
+     * SymbolRepository. Otherwise, provide a handle to the original unmutated Function.
      */
-    return transformed_arguments.has_value() ?
-        existing_symbol_repository->add_symbol(std::make_unique<Function>(
-            std::string(node.get_disambiguated_name()),
-            std::move(*transformed_arguments))
-        ) : existing_symbol_repository->get_symbol_handle(node);
+    return transformed_arguments.has_value()
+            ? existing_symbol_repository->add_symbol(std::make_unique<Function>(
+                      std::string(node.get_disambiguated_name()), std::move(*transformed_arguments)))
+            : existing_symbol_repository->get_symbol_handle(node);
 }
 
 const Literal *UnificationApplicationVisitor::visit(const Literal &node) const
 {
     auto transformed_arguments = apply_to_term_vector(node.observe_arguments());
-    return transformed_arguments.has_value() ?
-        existing_symbol_repository->add_symbol<Literal>(std::make_unique<Literal>(
-            std::string(node.get_name()),
-            std::move(*transformed_arguments),
-            !node.is_negative_polarity())
-        ) : existing_symbol_repository->get_symbol_handle<Literal>(node);
+    return transformed_arguments.has_value()
+            ? existing_symbol_repository->add_symbol<Literal>(
+                      std::make_unique<Literal>(std::string(node.get_name()),
+                              std::move(*transformed_arguments), !node.is_negative_polarity()))
+            : existing_symbol_repository->get_symbol_handle<Literal>(node);
 }
 
 void UnificationApplicationVisitor::discard_new_symbols()
@@ -94,8 +94,9 @@ std::optional<std::vector<const IProcessedTerm *>> UnificationApplicationVisitor
 
     if (!changed)
         /*
-         * It's only worth reporting our transformed argument vector if a transformation occurred on at least one of the
-         * arguments. Else it's just the orginal argument vector, and we can indicate this with an empty optional.
+         * It's only worth reporting our transformed argument vector if a transformation occurred on at least
+         * one of the arguments. Else it's just the orginal argument vector, and we can indicate this with an
+         * empty optional.
          */
         return std::nullopt;
 

@@ -24,20 +24,20 @@ class Resolvent;
 class ProofTreeNode : public ISerialisable
 {
 public:
-    ProofTreeNode(const ProofTreeNode&) = default;
-    ProofTreeNode& operator=(const ProofTreeNode&) = default;
+    ProofTreeNode(const ProofTreeNode &) = default;
+    ProofTreeNode &operator=(const ProofTreeNode &) = default;
 
-    [[nodiscard]] const ProofTreeNode * observe_lhs_parent() const noexcept
+    [[nodiscard]] const ProofTreeNode *observe_lhs_parent() const noexcept
     {
         return lhs_parent;
     }
 
-    [[nodiscard]] const ProofTreeNode * observe_rhs_parent() const noexcept
+    [[nodiscard]] const ProofTreeNode *observe_rhs_parent() const noexcept
     {
         return rhs_parent;
     }
 
-    [[nodiscard]] virtual const Clause * observe_node() const noexcept = 0;
+    [[nodiscard]] virtual const Clause *observe_node() const noexcept = 0;
 
     [[nodiscard]] virtual std::optional<const Unifier *> observe_edge() const noexcept = 0;
 
@@ -51,15 +51,16 @@ public:
 protected:
     ProofTreeNode() = default;
 
-    ProofTreeNode(const ProofTreeNode * const lhs_parent, const ProofTreeNode * const rhs_parent) :
+    ProofTreeNode(const ProofTreeNode *const lhs_parent, const ProofTreeNode *const rhs_parent) :
         lhs_parent(lhs_parent),
         rhs_parent(rhs_parent),
         depth(std::max(lhs_parent->get_depth(), rhs_parent->get_depth()) + 1)
-    { }
+    {
+    }
 
 private:
-    const ProofTreeNode * lhs_parent = nullptr;
-    const ProofTreeNode * rhs_parent = nullptr;
+    const ProofTreeNode *lhs_parent = nullptr;
+    const ProofTreeNode *rhs_parent = nullptr;
     unsigned int depth = 0;
 };
 

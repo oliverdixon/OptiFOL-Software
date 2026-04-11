@@ -28,17 +28,16 @@ namespace optifol
 
 /**
  * @class Subsystem
- * @brief The Subsystem storage object forms the second level of the Optifol object hierarchy; it belongs to a Project,
- *  and consists of many individual requirements.
- * @details The Subsystem holds a great amount of responsibility. It is the single-owning repository for much of the
- *  storage hierarchy. In particular, it creates and persists the following objects:
- *  <ul>
+ * @brief The Subsystem storage object forms the second level of the Optifol object hierarchy; it belongs to a
+ * Project, and consists of many individual requirements.
+ * @details The Subsystem holds a great amount of responsibility. It is the single-owning repository for much
+ * of the storage hierarchy. In particular, it creates and persists the following objects: <ul>
  *      <li>Requirement objects in the flat structure;</li>
  *      <li>AnalysisGroup objects; and</li>
  *      <li>TestGroup objects.</li>
  *  </ul>
- *  Therefore to handle changes in its base set of Requirement objects, changes must be propagated to all relevant
- *  AnalysisGroup and TestGroup grouping structures.
+ *  Therefore to handle changes in its base set of Requirement objects, changes must be propagated to all
+ * relevant AnalysisGroup and TestGroup grouping structures.
  */
 class Subsystem : public StorageObjectBase,
                   public TreeNode,
@@ -48,8 +47,8 @@ public:
     /**
      * @brief Create a new Subsystem with the given name and register in the Glib GType system
      * @param name The initial name of the Subsystem
-     * @param parent The owning node: typically a Project (if root-level Subsystem) or Subsystem if a member of a nested
-     *  hierarchy.
+     * @param parent The owning node: typically a Project (if root-level Subsystem) or Subsystem if a member
+     * of a nested hierarchy.
      */
     explicit Subsystem(const Glib::ustring &name, TreeNode *parent);
 
@@ -58,8 +57,8 @@ public:
      * @param name The initial name of the Subsystem
      * @param cobject The C cast-item used by Glib::Object
      * @param builder Currently unused builder parameter to provide to the Glib::Object instance
-     * @param parent The owning node: typically a Project (if root-level Subsystem) or Subsystem if a member of a nested
-     *  hierarchy.
+     * @param parent The owning node: typically a Project (if root-level Subsystem) or Subsystem if a member
+     * of a nested hierarchy.
      */
     Subsystem(const Glib::ustring &name, BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &builder,
             TreeNode *parent);
@@ -73,22 +72,23 @@ public:
     bool operator==(const Subsystem &other) const noexcept;
 
     /**
-     * @brief Recursively generate a human-readable path of the Subsystem hierarchy, delimited with oblique characters
+     * @brief Recursively generate a human-readable path of the Subsystem hierarchy, delimited with oblique
+     * characters
      * @return The human-readable path of the current subsystem with a leading oblique
      */
     [[nodiscard]] std::string get_path() const override;
 
     /**
-     * @brief Build a new Requirement, using the forwarded arguments, with the Subsystem SymbolRepository instance. The
-     *  built Requirement is immediately appended to the model.
+     * @brief Build a new Requirement, using the forwarded arguments, with the Subsystem SymbolRepository
+     * instance. The built Requirement is immediately appended to the model.
      * @tparam CtorArgs The types of Requirement constructor arguments to forward, as a parameter pack.
      * @param args The head argument values to forward to the Requirement constructor.
      */
     template<typename... CtorArgs>
     void build_requirement(CtorArgs &&...args)
     {
-        insert_object(
-                Glib::make_refptr_for_instance(new Requirement(std::forward<CtorArgs>(args)..., symbol_repository)));
+        insert_object(Glib::make_refptr_for_instance(
+                new Requirement(std::forward<CtorArgs>(args)..., symbol_repository)));
     }
 
     /**
@@ -106,13 +106,14 @@ public:
 
 private:
     /**
-     * @brief Configure the Subsystem to a known initial state, including the configuration of signal handlers for
-     *  changing internal list models, and construction of default test and analysis groups.
+     * @brief Configure the Subsystem to a known initial state, including the configuration of signal handlers
+     * for changing internal list models, and construction of default test and analysis groups.
      * @param name The initial name of the Subsystem
      */
     void setup_groups(const Glib::ustring &name);
 
-    void handle_requirement_model_change(guint initial_index, guint removed_count, guint added_count) noexcept;
+    void handle_requirement_model_change(
+            guint initial_index, guint removed_count, guint added_count) noexcept;
 
     /**
      * @brief Propagate Requirement model deletions to the analysis and test groups.

@@ -25,7 +25,8 @@ namespace optifol
 
 /**
  * @class CNFNormalisationTest
- * @brief The CNFNormalisationTest Google Test fixture contains tests of the CNF normalisation visitor-based pipeline.
+ * @brief The CNFNormalisationTest Google Test fixture contains tests of the CNF normalisation visitor-based
+ * pipeline.
  * @details <p>The seven-stage pipeline is tested:</p>
  *  <ol>
  *      <li>ImplicationEliminationVisitor</li>
@@ -41,19 +42,20 @@ class CNFNormalisationTest : public testing::Test
 {
 protected:
     /**
-     * @brief Despatches the templated CNF visitor on the given test node and verifies that the CNF-normalised result
-     *  matches the expected sentence construction.
+     * @brief Despatches the templated CNF visitor on the given test node and verifies that the CNF-normalised
+     * result matches the expected sentence construction.
      * @tparam CNFVisitor The CNF Visitor type to instantiate and despatch on the sentence
      * @param test The sentence on which the CNF Visitor should be tested
      * @param expected The expected sentence following transformation by the CNF Visitor
      * @note It is not necessary nor forbidden to wrap nodes in any level of MutableSentenceRoot objects.
-     * @note The equality functor is hash-based; in particular, a commutative hash-combining function is used for
-     *  binary-operand sentences. Thus the expected sentence need not pass operands to commutative operators in the same
-     *  order as would be produced by the CNF Visitor.
+     * @note The equality functor is hash-based; in particular, a commutative hash-combining function is used
+     * for binary-operand sentences. Thus the expected sentence need not pass operands to commutative
+     * operators in the same order as would be produced by the CNF Visitor.
      */
     template<typename CNFVisitor>
         requires std::derived_from<CNFVisitor, MutatingSentenceVisitorBase>
-    static void cnf_test(std::unique_ptr<IMutableSentence> &&test, std::unique_ptr<IMutableSentence> &&expected)
+    static void cnf_test(
+            std::unique_ptr<IMutableSentence> &&test, std::unique_ptr<IMutableSentence> &&expected)
     {
         CNFVisitor visitor;
         test->accept(visitor);
@@ -62,7 +64,8 @@ protected:
 };
 
 /**
- * @brief Tests basic non-nested functionality of the ImplicationEliminationVisitor for single-operand implications.
+ * @brief Tests basic non-nested functionality of the ImplicationEliminationVisitor for single-operand
+ * implications.
  * @details
  *  <ul>
  *      <li>Input: @f$ P \implies Q @f$</li>
@@ -90,7 +93,8 @@ TEST_F(CNFNormalisationTest, ImplicationElimination_Basic)
 }
 
 /**
- * @brief Tests basic non-nested functionality of the ImplicationEliminationVisitor for dual-operand implications.
+ * @brief Tests basic non-nested functionality of the ImplicationEliminationVisitor for dual-operand
+ * implications.
  * @details
  *  <ul>
  *      <li>Input: @f$ P \iff Q @f$</li>
@@ -355,12 +359,13 @@ TEST_F(CNFNormalisationTest, DisjunctionDistribution_BasicBinary)
 }
 
 /**
- * @brief Tests functionality of the DisjunctionDistributionVisitor for distribution over both operands, where a
- *  reduction is only applicable to one.
+ * @brief Tests functionality of the DisjunctionDistributionVisitor for distribution over both operands, where
+ * a reduction is only applicable to one.
  * @details
  *  <ul>
  *      <li>Input: @f$ A \land \left( P \lor \left( Q \land R \right) \right) @f$</li>
- *      <li>Expected output: @f$ A \land \left( \left( P \lor Q \right) \land \left( P \lor R \right) \right) @f$</li>
+ *      <li>Expected output: @f$ A \land \left( \left( P \lor Q \right) \land \left( P \lor R \right) \right)
+ * @f$</li>
  *  </ul>
  * @memberof CNFNormalisationTest
  */

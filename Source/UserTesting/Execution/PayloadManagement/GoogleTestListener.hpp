@@ -27,13 +27,14 @@ class TestResult;
 
 /**
  * @class GoogleTestListener
- * @brief Accept incoming packets from the Google Test testing framework, parse the payloads into TestResult objects,
- *  and invoke the listening callbacks.
+ * @brief Accept incoming packets from the Google Test testing framework, parse the payloads into TestResult
+ * objects, and invoke the listening callbacks.
  *
- * @details The constructed class opens a non-blocking listener, bound to the IPv4 localhost address 127.0.0.1, on a
- *  single implementation-defined port number. Client connections on TCP are accepted and continue to be read into a
- *  large per-connection internal buffer until the connection is closed on the socket. Individual TestResult objects are
- *  confined into an owning container and stored internally. Once the streaming has completed, callers can execute
+ * @details The constructed class opens a non-blocking listener, bound to the IPv4 localhost address
+ * 127.0.0.1, on a single implementation-defined port number. Client connections on TCP are accepted and
+ * continue to be read into a large per-connection internal buffer until the connection is closed on the
+ * socket. Individual TestResult objects are confined into an owning container and stored internally. Once the
+ * streaming has completed, callers can execute
  *  @ref TestListenerBase::endow_test to provide ref-counted pointers to Test objects relevant to the streamed
  *  TestResult records.
  *

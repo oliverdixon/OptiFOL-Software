@@ -25,7 +25,8 @@ namespace optifol
 
 /**
  * @class Test
- * @brief The Test storage object denotes a single unit test to be executed against a testable target executable.
+ * @brief The Test storage object denotes a single unit test to be executed against a testable target
+ * executable.
  */
 class Test : public StorageObjectBase,
              public ITestModelNode
@@ -36,7 +37,7 @@ public:
     Test(std::shared_ptr<TestSpecificationEntry> template_specification, BaseObjectType *cobject,
             const Glib::RefPtr<Gtk::Builder> &builder);
 
-    [[nodiscard]] bool operator==(const Test & other) const;
+    [[nodiscard]] bool operator==(const Test &other) const;
 
     [[nodiscard]] Glib::RefPtr<Gtk::TreeListModel> get_tests_tree() const noexcept override;
 
@@ -47,7 +48,7 @@ public:
      * @param test_result The TestResult to share.
      * @throws SemanticException if the TestResult was not appropriate or relevant to the Test.
      */
-    void emplace_result(const std::shared_ptr<TestResult>& test_result);
+    void emplace_result(const std::shared_ptr<TestResult> &test_result);
 
     void accept_test_executable(std::shared_ptr<TestExecutable> shared_exe);
 

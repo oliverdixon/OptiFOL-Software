@@ -30,8 +30,9 @@ class TestGroup;
 
 /**
  * @class TestingCopyMovePopoverBase
- * @brief Provides a common base for GTK popovers providing functionality to copy or move Requirement objects between
- *  TestGroup objects. Default callbacks are provided, but inheritors must implement the <i>Confirm</i> action.
+ * @brief Provides a common base for GTK popovers providing functionality to copy or move Requirement objects
+ * between TestGroup objects. Default callbacks are provided, but inheritors must implement the <i>Confirm</i>
+ * action.
  */
 class TestingCopyMovePopoverBase : public sigc::trackable
 {
@@ -52,12 +53,9 @@ protected:
      * @param confirm_button The button to confirm the action.
      * @param cancel_button The button to cancel the action.
      */
-    TestingCopyMovePopoverBase(TestingArea& testing_area,
-        Gtk::Popover * my_popover,
-        Gtk::Entry * requirement_entry,
-        Gtk::DropDown * new_test_group_dropdown,
-        Gtk::Button * confirm_button,
-        Gtk::Button * cancel_button);
+    TestingCopyMovePopoverBase(TestingArea &testing_area, Gtk::Popover *my_popover,
+            Gtk::Entry *requirement_entry, Gtk::DropDown *new_test_group_dropdown,
+            Gtk::Button *confirm_button, Gtk::Button *cancel_button);
 
     /**
      * @brief Display the popover by setting context-sensitive default selections for the drop-downs.
@@ -84,17 +82,17 @@ protected:
      * @return The configured factory.
      */
     static Glib::RefPtr<Gtk::SignalListItemFactory> configure_combo_box_factory(
-        sigc::slot<void(const Glib::RefPtr<Gtk::ListItem> &)> &&bind_function);
+            sigc::slot<void(const Glib::RefPtr<Gtk::ListItem> &)> &&bind_function);
 
-    TestingArea& testing_area;
-    Gtk::Popover * const my_popover;
-    Gtk::DropDown * const new_test_group_dropdown;
+    TestingArea &testing_area;
+    Gtk::Popover *const my_popover;
+    Gtk::DropDown *const new_test_group_dropdown;
 
 private:
-    static const char * const popover_name;
+    static const char *const popover_name;
     static const log4cxx::LoggerPtr popover_logger;
 
-    Gtk::Entry * const requirement_entry;
+    Gtk::Entry *const requirement_entry;
 };
 
 } // namespace optifol

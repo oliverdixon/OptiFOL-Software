@@ -19,7 +19,8 @@
 namespace optifol
 {
 
-const log4cxx::LoggerPtr ProcessExecutor::logger = Logging::get_logger({"SubprocessControl", "ProcessExecutor"});
+const log4cxx::LoggerPtr ProcessExecutor::logger =
+        Logging::get_logger({"SubprocessControl", "ProcessExecutor"});
 
 ProcessExecutor::ProcessExecutor(const std::string &working_directory, const std::vector<std::string> &argv,
         const std::vector<std::string> &envp, sigc::slot<void(int)> &&finished_callback) :
@@ -27,8 +28,8 @@ ProcessExecutor::ProcessExecutor(const std::string &working_directory, const std
 {
     try {
         Glib::spawn_async_with_pipes(working_directory, argv, envp,
-                Glib::SpawnFlags::SEARCH_PATH | Glib::SpawnFlags::DO_NOT_REAP_CHILD, {}, &pid, nullptr, &stdout_fd,
-                &stderr_fd);
+                Glib::SpawnFlags::SEARCH_PATH | Glib::SpawnFlags::DO_NOT_REAP_CHILD, {}, &pid, nullptr,
+                &stdout_fd, &stderr_fd);
     } catch (const Glib::SpawnError &spawn_error) {
         logger->error("Failed to spawn sub-process.");
         logger->error(spawn_error.what());

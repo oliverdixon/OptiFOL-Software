@@ -14,34 +14,35 @@
 #ifndef COMPOSITESERIALISABLECONCEPTS_HPP
 #define COMPOSITESERIALISABLECONCEPTS_HPP
 
-#include <iterator>
 #include <iostream>
+#include <iterator>
 
 namespace optifol
 {
 
 /**
  * @concept SerialisableIterator
- * @brief Represents a bidirectional iterator to a de-referencable type with a @ref std::ostream serialisation function.
+ * @brief Represents a bidirectional iterator to a de-referencable type with a @ref std::ostream serialisation
+ *  function.
  * @details A SerialisableIterator satsifies the following constraints:
  *  <ul>
  *      <li>Compliant with @ref std::bidirectional_iterator;</li>
  *      <li>Be a constant iterator; and</li>
- *      <li>Iterates over a pointer-like type that can be dereferenced to a type with a serialiser member function.</li>
+ *      <li>Iterates over a pointer-like type that can be dereferenced to a type with a serialiser member
+ *          function.</li>
  *  </ul>
  */
 template<typename Candidate>
-concept SerialisableIterator =
-        std::bidirectional_iterator<Candidate> &&
+concept SerialisableIterator = std::bidirectional_iterator<Candidate> &&
         std::is_const_v<std::remove_reference_t<decltype(*std::declval<Candidate>())>> &&
-    requires(std::ostream& ostream, const Candidate& candidate)
-{
-    { (*candidate)->serialise(ostream) } -> std::convertible_to<std::ostream&>;
-};
+        requires(std::ostream &ostream, const Candidate &candidate) {
+            { (*candidate)->serialise(ostream) } -> std::convertible_to<std::ostream &>;
+        };
 
 /**
  * @concept StringifiableIterator
- * @brief Represents a bidirectional iterator to a de-referencable type with a @ref std::string stringifier function.
+ * @brief Represents a bidirectional iterator to a de-referencable type with a @ref std::string stringifier
+ *  function.
  * @details A SerialisableIterator satsifies the following constraints:
  *  <ul>
  *      <li>Compliant with @ref std::bidirectional_iterator;</li>
@@ -51,13 +52,11 @@ concept SerialisableIterator =
  *  </ul>
  */
 template<typename Candidate>
-concept StringifiableIterator =
-        std::bidirectional_iterator<Candidate> &&
+concept StringifiableIterator = std::bidirectional_iterator<Candidate> &&
         std::is_const_v<std::remove_reference_t<decltype(*std::declval<Candidate>())>> &&
-    requires(std::ostream& ostream, const Candidate& candidate)
-{
-    { (*candidate)->to_string() } -> std::convertible_to<std::string>;
-};
+        requires(std::ostream &ostream, const Candidate &candidate) {
+            { (*candidate)->to_string() } -> std::convertible_to<std::string>;
+        };
 
 class CompositeSerialisationHelpers
 {
@@ -73,8 +72,8 @@ public:
      * @return Populated destination output stream
      */
     template<SerialisableIterator Iterator>
-    static std::ostream& stream_serialise(std::ostream &ostream, const std::string_view display_name,
-        const Iterator arguments_begin, Iterator arguments_end, const bool is_negative_polarity = false)
+    static std::ostream &stream_serialise(std::ostream &ostream, const std::string_view display_name,
+            const Iterator arguments_begin, Iterator arguments_end, const bool is_negative_polarity = false)
     {
         if (is_negative_polarity)
             ostream << '~';
@@ -101,7 +100,8 @@ public:
     }
 
     /**
-     * @brief Serialise a formatted symbol string, including all arguments, into a dynamic @ref std::string buffer.
+     * @brief Serialise a formatted symbol string, including all arguments, into a dynamic @ref std::string
+     *  buffer.
      * @tparam Iterator @ref StringifableIterator over the argument collection
      * @param display_name Symbol display name
      * @param arguments_begin Beginning iterator of the argument collection
@@ -111,7 +111,7 @@ public:
      */
     template<StringifiableIterator Iterator>
     static std::string string_serialise(std::string display_name, const Iterator arguments_begin,
-        Iterator arguments_end, const bool is_negative_polarity = false)
+            Iterator arguments_end, const bool is_negative_polarity = false)
     {
         std::string result;
 
@@ -136,6 +136,6 @@ public:
     }
 };
 
-}
+} // namespace optifol
 
 #endif

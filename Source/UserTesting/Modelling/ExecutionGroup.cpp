@@ -32,7 +32,7 @@ Glib::ustring ExecutionGroup::get_executable_name() const
     return executable.property_name().get_value();
 }
 
-ExecutionGroup::ExecutionGroup(const TestExecutable& executable) :
+ExecutionGroup::ExecutionGroup(const TestExecutable &executable) :
     executable(executable)
 {
 }
@@ -62,8 +62,8 @@ size_t hash<optifol::ExecutionGroup>::operator()(const optifol::TestExecutable &
     return executable.hash();
 }
 
-size_t hash<optifol::ExecutionGroup>::operator()(const unique_ptr<optifol::ExecutionGroup> &unique_hashable) const
-    noexcept
+size_t hash<optifol::ExecutionGroup>::operator()(
+        const unique_ptr<optifol::ExecutionGroup> &unique_hashable) const noexcept
 {
     return unique_hashable->hash();
 }

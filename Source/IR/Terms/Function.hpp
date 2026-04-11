@@ -24,13 +24,12 @@ namespace optifol
 
 /**
  * @class Function
- * @brief A Function represents a non-owning IR node term consisting of a display name and zero to many arguments, all
- *  of which are referenced from the centralised SymbolRepository.
+ * @brief A Function represents a non-owning IR node term consisting of a display name and zero to many
+ * arguments, all of which are referenced from the centralised SymbolRepository.
  * @see MutableFunction for the unprocessed, argument-owning dual.
  */
-class Function :
-        public IProcessedTerm,
-        public OwningBuildable<Function>
+class Function : public IProcessedTerm,
+                 public OwningBuildable<Function>
 {
 public:
     /**
@@ -38,9 +37,10 @@ public:
      * @param name Display name of the function
      * @param arguments Set of non-owning pointers to immutable arguments
      */
-    [[maybe_unused]] explicit Function(std::string name, std::initializer_list<const IProcessedTerm *> arguments = {});
+    [[maybe_unused]] explicit Function(
+            std::string name, std::initializer_list<const IProcessedTerm *> arguments = {});
 
-    explicit Function(std::string name, std::vector<const IProcessedTerm *>&& arguments);
+    explicit Function(std::string name, std::vector<const IProcessedTerm *> &&arguments);
 
     [[nodiscard]] std::string to_string() const override;
 
@@ -56,29 +56,34 @@ public:
      */
     [[nodiscard]] const std::vector<const IProcessedTerm *> &observe_arguments() const noexcept;
 
-    [[nodiscard]] bool accept(IObservingBinaryVisitor &binary_visitor, const IProcessedTerm &term) const override;
+    [[nodiscard]] bool accept(
+            IObservingBinaryVisitor &binary_visitor, const IProcessedTerm &term) const override;
 
-    [[nodiscard]] bool accept(IObservingBinaryVisitor &binary_visitor, const Function &function) const override;
-    [[nodiscard]] bool accept(IObservingBinaryVisitor &binary_visitor, const Variable &variable) const override;
+    [[nodiscard]] bool accept(
+            IObservingBinaryVisitor &binary_visitor, const Function &function) const override;
+    [[nodiscard]] bool accept(
+            IObservingBinaryVisitor &binary_visitor, const Variable &variable) const override;
 
-    [[nodiscard]] bool accept_reverse(IObservingBinaryVisitor &binary_visitor, const Function &function) const override;
-    [[nodiscard]] bool accept_reverse(IObservingBinaryVisitor &binary_visitor, const Variable &variable) const override;
+    [[nodiscard]] bool accept_reverse(
+            IObservingBinaryVisitor &binary_visitor, const Function &function) const override;
+    [[nodiscard]] bool accept_reverse(
+            IObservingBinaryVisitor &binary_visitor, const Variable &variable) const override;
 
     [[nodiscard]] bool is_self_nested(const IProcessedTerm &search_term) const noexcept override;
 
-    void accept(FeatureBuildingVisitor& feature_building_visitor) const noexcept override;
+    void accept(FeatureBuildingVisitor &feature_building_visitor) const noexcept override;
     [[nodiscard]] const IProcessedTerm *accept(
             const UnificationApplicationVisitor &unification_application_visitor) const override;
 
     [[nodiscard]] bool operator==(const IProcessedTerm &other) const noexcept override;
 
-    [[nodiscard]] bool operator<(const IProcessedTerm& other) const noexcept override;
+    [[nodiscard]] bool operator<(const IProcessedTerm &other) const noexcept override;
 
 private:
     const std::string name;
     const std::vector<const IProcessedTerm *> arguments;
 };
 
-}
+} // namespace optifol
 
 #endif

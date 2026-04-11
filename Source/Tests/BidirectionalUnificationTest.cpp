@@ -27,8 +27,7 @@ namespace optifol
  * @brief Tests the BidirectionalUnificationTest to verify that valid substitutions are constructed in the
  *  Generalisations and Instances to unify pairs of sentences.
  */
-class BidirectionalUnificationTest :
-        public testing::Test
+class BidirectionalUnificationTest : public testing::Test
 {
 protected:
     std::unique_ptr<BidirectionalUnificationVisitor> unification_visitor;
@@ -40,9 +39,10 @@ protected:
     }
 
     template<typename TermType, class... CtorArgs>
-    [[nodiscard]] const TermType * register_symbol(CtorArgs&&... ctor_args) const
+    [[nodiscard]] const TermType *register_symbol(CtorArgs &&...ctor_args) const
     {
-        return symbol_repository->add_symbol(std::make_unique<TermType>(std::forward<CtorArgs>(ctor_args)...));
+        return symbol_repository->add_symbol(
+                std::make_unique<TermType>(std::forward<CtorArgs>(ctor_args)...));
     }
 
 private:
@@ -50,8 +50,8 @@ private:
 };
 
 /**
- * @brief Tests basic functionality of the BidirectionalUnificationVisitor for a single pair of unifiable literals with
- *  one applicable Function / Variable substitution.
+ * @brief Tests basic functionality of the BidirectionalUnificationVisitor for a single pair of unifiable
+ * literals with one applicable Function / Variable substitution.
  * @details
  *  <ul>
  *      <li>LHS Input: @f$ P \left( C\left(\right), x \right) @f$</li>
@@ -66,8 +66,8 @@ TEST_F(BidirectionalUnificationTest, Positive_SingleBinding_FuncVar)
     const auto d = register_symbol<Function>("D");
     const auto x = register_symbol<Variable>("x");
 
-    const auto p1 = register_symbol<Literal>("P", std::vector<const IProcessedTerm *>{ c, x });
-    const auto p2 = register_symbol<Literal>("P", std::vector<const IProcessedTerm *>{ c, d });
+    const auto p1 = register_symbol<Literal>("P", std::vector<const IProcessedTerm *>{c, x});
+    const auto p2 = register_symbol<Literal>("P", std::vector<const IProcessedTerm *>{c, d});
 
     EXPECT_TRUE(p1->accept(*unification_visitor, *p2));
 
@@ -76,13 +76,14 @@ TEST_F(BidirectionalUnificationTest, Positive_SingleBinding_FuncVar)
 }
 
 /**
- * @brief Tests basic functionality of the BidirectionalUnificationVisitor for a single pair of unifiable literals with
- *  two applicable Function / Variable substitutions.
+ * @brief Tests basic functionality of the BidirectionalUnificationVisitor for a single pair of unifiable
+ * literals with two applicable Function / Variable substitutions.
  * @details
  *  <ul>
  *      <li>LHS Input: @f$ P \left( C\left(\right), x \right) @f$</li>
  *      <li>RHS Input: @f$ P \left( y, D\left(\right) \right) @f$</li>
- *      <li>Expected substitutions: @f$ \left\{ x \mapsto D\left(\right), y \mapsto C\left(\right) \right\} @f$</li>
+ *      <li>Expected substitutions: @f$ \left\{ x \mapsto D\left(\right), y \mapsto C\left(\right) \right\}
+ * @f$</li>
  *  </ul>
  * @memberof BidirectionalUnificationTest
  */
@@ -93,8 +94,8 @@ TEST_F(BidirectionalUnificationTest, Positive_MultipleBindings_FuncVar)
     const auto x = register_symbol<Variable>("x");
     const auto y = register_symbol<Variable>("y");
 
-    const auto p1 = register_symbol<Literal>("P", std::vector<const IProcessedTerm *>{ c, x });
-    const auto p2 = register_symbol<Literal>("P", std::vector<const IProcessedTerm *>{ y, d });
+    const auto p1 = register_symbol<Literal>("P", std::vector<const IProcessedTerm *>{c, x});
+    const auto p2 = register_symbol<Literal>("P", std::vector<const IProcessedTerm *>{y, d});
 
     EXPECT_TRUE(p1->accept(*unification_visitor, *p2));
 
@@ -103,8 +104,8 @@ TEST_F(BidirectionalUnificationTest, Positive_MultipleBindings_FuncVar)
 }
 
 /**
- * @brief Tests basic functionality of the BidirectionalUnificationVisitor for a single pair of unifiable literals with
- *  two applicable Variable / Variable substitutions.
+ * @brief Tests basic functionality of the BidirectionalUnificationVisitor for a single pair of unifiable
+ * literals with two applicable Variable / Variable substitutions.
  * @details
  *  <ul>
  *      <li>LHS Input: @f$ P \left( a, b \right) @f$</li>
@@ -120,8 +121,8 @@ TEST_F(BidirectionalUnificationTest, Positive_MultipleBindings_VarVar)
     const auto c = register_symbol<Variable>("c");
     const auto d = register_symbol<Variable>("d");
 
-    const auto p1 = register_symbol<Literal>("P", std::vector<const IProcessedTerm *>{ a, b });
-    const auto p2 = register_symbol<Literal>("P", std::vector<const IProcessedTerm *>{ c, d });
+    const auto p1 = register_symbol<Literal>("P", std::vector<const IProcessedTerm *>{a, b});
+    const auto p2 = register_symbol<Literal>("P", std::vector<const IProcessedTerm *>{c, d});
 
     EXPECT_TRUE(p1->accept(*unification_visitor, *p2));
 
@@ -130,7 +131,8 @@ TEST_F(BidirectionalUnificationTest, Positive_MultipleBindings_VarVar)
 }
 
 /**
- * @brief Tests basic functionality of the BidirectionalUnificationVisitor for a single pair of non-unifiable literals.
+ * @brief Tests basic functionality of the BidirectionalUnificationVisitor for a single pair of non-unifiable
+ * literals.
  * @details
  *  <ul>
  *      <li>LHS Input: @f$ P \left( C\left(\right), x \right) @f$</li>
@@ -144,15 +146,16 @@ TEST_F(BidirectionalUnificationTest, Negative_MultipleBindings_VarVar)
     const auto c = register_symbol<Function>("C");
     const auto d = register_symbol<Function>("D");
 
-    const auto p1 = register_symbol<Literal>("P", std::vector<const IProcessedTerm *>{ c, x });
-    const auto p2 = register_symbol<Literal>("P", std::vector<const IProcessedTerm *>{ x, d });
+    const auto p1 = register_symbol<Literal>("P", std::vector<const IProcessedTerm *>{c, x});
+    const auto p2 = register_symbol<Literal>("P", std::vector<const IProcessedTerm *>{x, d});
 
     EXPECT_FALSE(p1->accept(*unification_visitor, *p2));
 }
 
 /**
- * @brief Tests occurs-checking functionality of the BidirectionalUnificationVisitor for a single pair of literals,
- *  non-unifiable due to the trivial case of the occurs-check (does not require substitution to discover).
+ * @brief Tests occurs-checking functionality of the BidirectionalUnificationVisitor for a single pair of
+ * literals, non-unifiable due to the trivial case of the occurs-check (does not require substitution to
+ * discover).
  * @details
  *  <ul>
  *      <li>LHS Input: @f$ P \left( C\left(\right), x \right) @f$</li>
@@ -164,42 +167,44 @@ TEST_F(BidirectionalUnificationTest, Negative_OccursCheck_Trivial)
 {
     const auto x = register_symbol<Variable>("x");
     const auto c = register_symbol<Function>("C");
-    const auto f = register_symbol<Function>("F", std::vector<const IProcessedTerm *>{ x });
+    const auto f = register_symbol<Function>("F", std::vector<const IProcessedTerm *>{x});
 
-    const auto p1 = register_symbol<Literal>("P", std::vector<const IProcessedTerm *>{ c, x });
-    const auto p2 = register_symbol<Literal>("P", std::vector<const IProcessedTerm *>{ c, f });
+    const auto p1 = register_symbol<Literal>("P", std::vector<const IProcessedTerm *>{c, x});
+    const auto p2 = register_symbol<Literal>("P", std::vector<const IProcessedTerm *>{c, f});
 
     EXPECT_FALSE(p1->accept(*unification_visitor, *p2));
 }
 
 /**
- * @brief Tests occurs-checking functionality of the BidirectionalUnificationVisitor for a single pair of literals,
- *  non-unifiable due to the non-trivial case of the occurs-check (requires substitution to discover).
+ * @brief Tests occurs-checking functionality of the BidirectionalUnificationVisitor for a single pair of
+ * literals, non-unifiable due to the non-trivial case of the occurs-check (requires substitution to
+ * discover).
  * @details
  *  <ul>
  *      <li>LHS Input: @f$ P \left( x, F\left(x\right) \right) @f$</li>
  *      <li>RHS Input: @f$ P \left( G\left(y\right), y \right) @f$</li>
  *  </ul>
  *  <p>
- *      The substitution @f$ \left[ x \mapsto G\left(y\right) \right] @f$ is discovered, followed by the substitution
- *      @f$ \left[ y \mapsto F\left(x\right) \right] @f$. Although @f$ y @f$ does not immediately appear in its proposed
- *      binding @f$ F\left(x\right) @f$, expanding on the first substitution to produce
- *      @f$ F\left(G\left( y \right)\right) @f$ exposes the cycle that would be introduced by adding the second
- *      substitution. Hence the LHS and RHS predicates are non-unifiable.
+ *      The substitution @f$ \left[ x \mapsto G\left(y\right) \right] @f$ is discovered, followed by the
+ * substitution
+ *      @f$ \left[ y \mapsto F\left(x\right) \right] @f$. Although @f$ y @f$ does not immediately appear in
+ * its proposed binding @f$ F\left(x\right) @f$, expanding on the first substitution to produce
+ *      @f$ F\left(G\left( y \right)\right) @f$ exposes the cycle that would be introduced by adding the
+ * second substitution. Hence the LHS and RHS predicates are non-unifiable.
  *  </p>
  * @memberof BidirectionalUnificationTest
  */
 TEST_F(BidirectionalUnificationTest, Negative_OccursCheck_Substituted)
 {
     const auto x = register_symbol<Variable>("x");
-    const auto f_x = register_symbol<Function>("F", std::vector<const IProcessedTerm *>{ x });
+    const auto f_x = register_symbol<Function>("F", std::vector<const IProcessedTerm *>{x});
     const auto y = register_symbol<Variable>("y");
-    const auto g_y = register_symbol<Function>("G", std::vector<const IProcessedTerm *>{ y });
+    const auto g_y = register_symbol<Function>("G", std::vector<const IProcessedTerm *>{y});
 
-    const auto p1 = register_symbol<Literal>("P", std::vector<const IProcessedTerm *>{ x, f_x });
-    const auto p2 = register_symbol<Literal>("P", std::vector<const IProcessedTerm *>{ g_y, y });
+    const auto p1 = register_symbol<Literal>("P", std::vector<const IProcessedTerm *>{x, f_x});
+    const auto p2 = register_symbol<Literal>("P", std::vector<const IProcessedTerm *>{g_y, y});
 
     EXPECT_FALSE(p1->accept(*unification_visitor, *p2));
 }
 
-}
+} // namespace optifol

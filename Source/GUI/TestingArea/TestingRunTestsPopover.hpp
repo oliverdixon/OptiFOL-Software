@@ -35,12 +35,8 @@ class TestingArea;
  *
  * @details
  *  The <i>Run Tests</i> popover provides controls for executing unit test specifications through an external
- *  executable(s) for the selected TestGroup within the Subsystem. The following GTK elements are expected to be
- *  available from the given Gtk::Builder:
- *  <table>
- *      <tr>
- *          <th>GTK C++ Class</th>
- *          <th>Unique Identifier</th>
+ *  executable(s) for the selected TestGroup within the Subsystem. The following GTK elements are expected to
+ * be available from the given Gtk::Builder: <table> <tr> <th>GTK C++ Class</th> <th>Unique Identifier</th>
  *          <th>Purpose</th>
  *      </tr>
  *      <tr>
@@ -64,8 +60,8 @@ class TestingArea;
  *          <td>Read-only text area for the name of the selected TestGroup</td>
  *      </tr>
  *  </table>
- *  A @ref std::runtime_error will be thrown by the class constructor if any of these are inaccessible in the expected
- *  type instantiations.
+ *  A @ref std::runtime_error will be thrown by the class constructor if any of these are inaccessible in the
+ * expected type instantiations.
  */
 class TestingRunTestsPopover : public sigc::trackable
 {
@@ -80,7 +76,8 @@ public:
 
 private:
     /**
-     * @brief Handle a click of the <i>Confirm</i> by attempting to create a Requirement with the given characteristics.
+     * @brief Handle a click of the <i>Confirm</i> by attempting to create a Requirement with the given
+     * characteristics.
      */
     void confirm_button_clicked() noexcept;
 

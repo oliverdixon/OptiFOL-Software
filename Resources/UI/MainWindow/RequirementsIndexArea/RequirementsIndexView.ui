@@ -24,7 +24,8 @@
 
 The <i>Requirements Index</i> presents a tabular view of all Requirements within the active Subsystem.
 
-From the Index, you can review, modify, search, and filter Requirements in preparation for formal analysis, compliance verification, and report generation.
+From the Index, you can review, modify, search, and filter Requirements in preparation for formal analysis,
+compliance verification, and report generation.
 
 To view an Index, select a Subsystem from the left-hand <i>Project Explorer</i> pane.]]>
             </property>

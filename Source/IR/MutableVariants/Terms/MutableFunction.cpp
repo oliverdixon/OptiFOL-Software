@@ -107,7 +107,8 @@ std::vector<std::unique_ptr<IMutableTerm>> &MutableFunction::observe_arguments()
 
 std::ostream &MutableFunction::serialise(std::ostream &ostream) const
 {
-    return CompositeSerialisationHelpers::stream_serialise(ostream, name, arguments.cbegin(), arguments.cend());
+    return CompositeSerialisationHelpers::stream_serialise(
+            ostream, name, arguments.cbegin(), arguments.cend());
 }
 
 std::size_t MutableFunction::hash() const noexcept

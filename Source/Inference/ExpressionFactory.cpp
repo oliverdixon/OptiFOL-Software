@@ -30,11 +30,13 @@
 namespace optifol
 {
 
-const log4cxx::LoggerPtr ExpressionFactory::cnf_logger = Logging::get_logger({"LogicServices", "CNFNormalisation"});
+const log4cxx::LoggerPtr ExpressionFactory::cnf_logger =
+        Logging::get_logger({"LogicServices", "CNFNormalisation"});
 TextSerialiserVisitor ExpressionFactory::serialiser_visitor;
 
 std::unique_ptr<SentenceRoot> ExpressionFactory::build_sentence(
-        std::unique_ptr<MutableSentenceRoot> &&sentence_root, std::shared_ptr<SymbolRepository> symbol_repository)
+        std::unique_ptr<MutableSentenceRoot> &&sentence_root,
+        std::shared_ptr<SymbolRepository> symbol_repository)
 {
     // Step 1. Propagate the polarity of the root to its immediate child.
     if (sentence_root->is_negative_polarity()) {
@@ -47,12 +49,12 @@ std::unique_ptr<SentenceRoot> ExpressionFactory::build_sentence(
     /*
      * Step 2. Push through the seven-stage CNF normalisation pipeline.
      *
-     * This produces a MutableSentenceRoot that is structured as a tree, but only contains elements allowable in a CNF
-     * tree. Note that a new tree is not created; the original tree is mutated such that it can be trivially converted
-     * to the conjunctive-disjunctive set form.
+     * This produces a MutableSentenceRoot that is structured as a tree, but only contains elements allowable
+     * in a CNF tree. Note that a new tree is not created; the original tree is mutated such that it can be
+     * trivially converted to the conjunctive-disjunctive set form.
      *
-     * If the CNF logger is configured to an info level, the original ("before") and normalised ("after") CNF statements
-     * are serialised with the TextSerialiserVisitor.
+     * If the CNF logger is configured to an info level, the original ("before") and normalised ("after") CNF
+     * statements are serialised with the TextSerialiserVisitor.
      */
 
     if (cnf_logger->isInfoEnabled()) {
@@ -73,9 +75,9 @@ std::unique_ptr<SentenceRoot> ExpressionFactory::build_sentence(
      * Step 3. Populate the symbol repository.
      *
      * This transforms the normalised mutable CNF tree into the corresponding immutable form, represented by a
-     * SentenceRoot. SentenceRoot objects do not indicate trees, rather sets of literals under disjunction, of which the
-     * elements are under conjunction. The given SymbolRepository is also populated with the terms and literals
-     * appearing in the normalised expression.
+     * SentenceRoot. SentenceRoot objects do not indicate trees, rather sets of literals under disjunction, of
+     * which the elements are under conjunction. The given SymbolRepository is also populated with the terms
+     * and literals appearing in the normalised expression.
      */
 
     return build_symbol_repository(std::move(sentence_root), std::move(symbol_repository));
@@ -98,9 +100,9 @@ std::unique_ptr<MutableSentenceRoot> ExpressionFactory::cnf_normalise(
 
     if (cnf_logger->isDebugEnabled())
         /*
-         * Explicitly check if debugging is enabled on the CNF logger, as running a serialisation visitor down the
-         * entire tree for each step in the normalisation pipeline would be a great inefficiency if the strings were not
-         * used!
+         * Explicitly check if debugging is enabled on the CNF logger, as running a serialisation visitor down
+         * the entire tree for each step in the normalisation pipeline would be a great inefficiency if the
+         * strings were not used!
          */
         for (const auto &visitor: cnf_visitors) {
             try {
@@ -130,7 +132,8 @@ std::unique_ptr<MutableSentenceRoot> ExpressionFactory::cnf_normalise(
 }
 
 std::unique_ptr<SentenceRoot> ExpressionFactory::build_symbol_repository(
-        std::unique_ptr<MutableSentenceRoot> &&normalised_root, std::shared_ptr<SymbolRepository> symbol_repository)
+        std::unique_ptr<MutableSentenceRoot> &&normalised_root,
+        std::shared_ptr<SymbolRepository> symbol_repository)
 {
     RepositoryBuildingVisitor building_visitor(std::move(symbol_repository));
     normalised_root->accept(building_visitor);

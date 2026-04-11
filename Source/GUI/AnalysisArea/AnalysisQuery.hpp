@@ -28,15 +28,15 @@ namespace optifol
 /**
  * @class AnalysisQuery
  * @brief A single page in a Gtk::Notebook holding the tab widget Gtk::Label and the scrollable Gtk::TextView.
- * @warning The Gtk::Notebook widget does not own its child pages; to avoid memory access problems, always remove
- *  pages from the Gtk::Notebook before destructing the corresponding AnalysisQuery.
+ * @warning The Gtk::Notebook widget does not own its child pages; to avoid memory access problems, always
+ * remove pages from the Gtk::Notebook before destructing the corresponding AnalysisQuery.
  */
 class AnalysisQuery
 {
 public:
-    explicit AnalysisQuery(const Glib::ustring& query_name, Prover& kb_weak);
+    explicit AnalysisQuery(const Glib::ustring &query_name, Prover &kb_weak);
 
-    void add_to_notebook(Gtk::Notebook& notebook);
+    void add_to_notebook(Gtk::Notebook &notebook);
 
 private:
     void execute_query();
@@ -51,7 +51,7 @@ private:
     Gtk::Entry query_entry;
     Gtk::Button execute_query_button;
 
-    Prover& kb_weak;
+    Prover &kb_weak;
     std::unique_ptr<QueryResult> latest_result;
 
     static std::istringstream lexer_input_stream;

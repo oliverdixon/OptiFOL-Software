@@ -24,62 +24,63 @@ namespace optifol
 
 /**
  * @class LiteralOrganisationTest
- * @brief Verifies API characteristics of Literal, Clause, and SentenceRoot structures relating to reductions for
- *  tautologies and bottoms, and handles duplicates.
+ * @brief Verifies API characteristics of Literal, Clause, and SentenceRoot structures relating to reductions
+ * for tautologies and bottoms, and handles duplicates.
  */
 class LiteralOrganisationTest : public testing::Test
 {
 protected:
     /**
-     * @brief Randomly generate a fixed number of non-complementary Literal objects, owned by the returned container,
-     *  and inserted into the given Clause.
+     * @brief Randomly generate a fixed number of non-complementary Literal objects, owned by the returned
+     * container, and inserted into the given Clause.
      * @param clause_size The number of Literal objects to generate.
      * @param target The Clause into which the Literal objects should be registered.
      * @return The owning containers of the constructed Literal objects.
      */
-    static std::vector<std::unique_ptr<Literal>> generate_literals(const unsigned int clause_size, Clause& target)
+    static std::vector<std::unique_ptr<Literal>> generate_literals(
+            const unsigned int clause_size, Clause &target)
     {
         // Build the literals and hold ownership.
         std::vector<std::unique_ptr<Literal>> owning_container(clause_size);
         unsigned int literal_idx = 0;
-        std::ranges::generate(owning_container,
-            [&literal_idx] { return Literal::build(std::to_string(++literal_idx)); });
+        std::ranges::generate(
+                owning_container, [&literal_idx] { return Literal::build(std::to_string(++literal_idx)); });
 
         // Provide weak references (through a C++23 projection) for each owning container to the given clause.
-        std::ranges::for_each(owning_container,
-            [&target](const Literal * const literal) { target.add_literal(literal); },
-            [](const std::unique_ptr<Literal>& literal) { return literal.get(); }
-        );
+        std::ranges::for_each(
+                owning_container, [&target](const Literal *const literal) { target.add_literal(literal); },
+                [](const std::unique_ptr<Literal> &literal) { return literal.get(); });
 
         return owning_container;
     }
 
     /**
-     * @brief Generate a fixed number of non-equal Clause objects, owned by the returned container, and inserted into
-     *  the given SentenceRoot.
+     * @brief Generate a fixed number of non-equal Clause objects, owned by the returned container, and
+     * inserted into the given SentenceRoot.
      * @param clause_count The number of Clauses to insert into the SentenceRoot.
      * @param target The SentenceRoot into which the Clause objects should be registered.
      * @return The owning containers of the constructed Literal objects.
      */
-    static std::vector<std::unique_ptr<Literal>> generate_clauses(const unsigned int clause_count, SentenceRoot& target)
+    static std::vector<std::unique_ptr<Literal>> generate_clauses(
+            const unsigned int clause_count, SentenceRoot &target)
     {
         std::vector<std::unique_ptr<Literal>> literals_owner;
 
         // Set up a generator to produce clauses with increasing numbers of literals.
-        auto clauses_view =
-            std::views::iota(0U) |
-            std::views::transform([&literals_owner](const auto idx) -> Clause
-            {
-                Clause clause;
-                auto new_literals_owner = generate_literals(idx, clause);
-                literals_owner.insert(literals_owner.end(),
-                    std::make_move_iterator(new_literals_owner.begin()),
-                    std::make_move_iterator(new_literals_owner.end()));
-                return clause;
-            });
+        auto clauses_view = std::views::iota(0U) |
+                std::views::transform(
+                        [&literals_owner](const auto idx) -> Clause
+                        {
+                            Clause clause;
+                            auto new_literals_owner = generate_literals(idx, clause);
+                            literals_owner.insert(literals_owner.end(),
+                                    std::make_move_iterator(new_literals_owner.begin()),
+                                    std::make_move_iterator(new_literals_owner.end()));
+                            return clause;
+                        });
 
         // Sample the fixed number of clauses for the SentenceRoot.
-        for (auto clause : clauses_view | std::views::take(clause_count))
+        for (auto clause: clauses_view | std::views::take(clause_count))
             target.add_clause(std::move(clause));
 
         return literals_owner;
@@ -87,7 +88,8 @@ protected:
 };
 
 /**
- * @brief Verify that a Clause can accept a single pair of complementary Literal objects and reduce to a tautology.
+ * @brief Verify that a Clause can accept a single pair of complementary Literal objects and reduce to a
+ * tautology.
  * @memberof LiteralOrganisationTest
  */
 TEST_F(LiteralOrganisationTest, ClauseTriviallyTrue_Simple)
@@ -102,7 +104,8 @@ TEST_F(LiteralOrganisationTest, ClauseTriviallyTrue_Simple)
 }
 
 /**
- * @brief Verify that a Clause can accept a large number of Literal objects, in any order, and detect tautologies.
+ * @brief Verify that a Clause can accept a large number of Literal objects, in any order, and detect
+ * tautologies.
  * @memberof LiteralOrganisationTest
  */
 TEST_F(LiteralOrganisationTest, ClauseTriviallyTrue_Complex)
@@ -112,15 +115,15 @@ TEST_F(LiteralOrganisationTest, ClauseTriviallyTrue_Complex)
     auto literals = generate_literals(clause_size, clause);
 
     /*
-     * Randomly generate and add the complement of one existing literal, and verify that it pulls the clause into a
-     * tautology.
+     * Randomly generate and add the complement of one existing literal, and verify that it pulls the clause
+     * into a tautology.
      */
     std::random_device random_device;
     std::mt19937 rng(random_device());
     std::uniform_int_distribution<> dist(1, clause_size);
 
-    literals.emplace_back(Literal::build(std::to_string(dist(rng)),
-        std::initializer_list<const IProcessedTerm *>{}, false));
+    literals.emplace_back(Literal::build(
+            std::to_string(dist(rng)), std::initializer_list<const IProcessedTerm *>{}, false));
     clause.add_literal(literals.back().get());
 
     EXPECT_EQ(clause.get_triviality_state(), Clause::State::TriviallyTrue);
@@ -140,8 +143,8 @@ TEST_F(LiteralOrganisationTest, ClauseTriviallyFalse)
 }
 
 /**
- * @brief Verify that a Clause with no complementary pairs is correctly marked as non-trivial and accepts all Literal
- *  objects.
+ * @brief Verify that a Clause with no complementary pairs is correctly marked as non-trivial and accepts all
+ * Literal objects.
  * @memberof LiteralOrganisationTest
  */
 TEST_F(LiteralOrganisationTest, ClauseNonTrivial_Simple)
@@ -156,8 +159,8 @@ TEST_F(LiteralOrganisationTest, ClauseNonTrivial_Simple)
 }
 
 /**
- * @brief Verify that a Clause with no complementary pairs and duplicates is correctly marked as non-trivial and denies
- *  only non-unique Literal objects.
+ * @brief Verify that a Clause with no complementary pairs and duplicates is correctly marked as non-trivial
+ * and denies only non-unique Literal objects.
  * @memberof LiteralOrganisationTest
  */
 TEST_F(LiteralOrganisationTest, ClauseNonTrivial_Duplicates)

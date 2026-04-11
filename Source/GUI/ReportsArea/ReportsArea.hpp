@@ -31,14 +31,10 @@ namespace optifol
  *
  * @details
  *  <p>
- *      The <i>Releases and Reports</i> area provides controls for reviewing baselined releases of the project with a
- *      frozen set of Requirement objects, and also enables the automatic generation of reports to document baselines.
- *      The following GTK elements are expected from the given Gtk::Builder:
- *      <table>
- *          <tr>
- *              <th>GTK C++ Class</th>
- *              <th>Unique Identifier</th>
- *              <th>Purpose</th>
+ *      The <i>Releases and Reports</i> area provides controls for reviewing baselined releases of the project
+ * with a frozen set of Requirement objects, and also enables the automatic generation of reports to document
+ * baselines. The following GTK elements are expected from the given Gtk::Builder: <table> <tr> <th>GTK C++
+ * Class</th> <th>Unique Identifier</th> <th>Purpose</th>
  *          </tr>
  *          <tr>
  *              <td>Gtk::Widget (abstract)</td>
@@ -71,22 +67,19 @@ namespace optifol
  *              <td>Popover for the LaTeX generation facility</td>
  *          </tr>
  *      </table>
- *      A @ref std::runtime_error will be thrown by the class constructor if any of these are inaccessible in the
- *      expected type instantiations.
+ *      A @ref std::runtime_error will be thrown by the class constructor if any of these are inaccessible in
+ * the expected type instantiations.
  *  </p>
  *  <p>
- *      In addition to the stated required GTK elements, constituent popovers of this view will require their own,
- *      possibly distinct, set of elements:
- *      <ul>
- *          <li>@ref ReportsAreaGenerateLaTeXPopover</li>
+ *      In addition to the stated required GTK elements, constituent popovers of this view will require their
+ * own, possibly distinct, set of elements: <ul> <li>@ref ReportsAreaGenerateLaTeXPopover</li>
  *      </ul>
  *  </p>
  */
-class ReportsArea :
-        public IWindowArea
+class ReportsArea : public IWindowArea
 {
 public:
-    explicit ReportsArea(Gtk::Builder& builder);
+    explicit ReportsArea(Gtk::Builder &builder);
 
     void select_model(const Glib::RefPtr<Subsystem> &subsystem) override;
 
@@ -97,11 +90,11 @@ public:
     const Subsystem *observe_active_subsystem() const noexcept override;
 
 private:
-    static const char * const area_name;
+    static const char *const area_name;
 
-    std::pair<Gtk::Widget*, Gtk::Widget*> on_off_widgets;
+    std::pair<Gtk::Widget *, Gtk::Widget *> on_off_widgets;
 
-    Gtk::ColumnView * view;
+    Gtk::ColumnView *view;
 
     ContextButtonCorrespondence context_menu;
 

@@ -18,7 +18,7 @@
 namespace optifol
 {
 
-const char * ImplicationEliminationVisitor::visitor_name = "ImplicationElimination";
+const char *ImplicationEliminationVisitor::visitor_name = "ImplicationElimination";
 
 std::string_view ImplicationEliminationVisitor::get_visitor_name() const
 {
@@ -46,19 +46,13 @@ void ImplicationEliminationVisitor::visit(MutableBinaryConnected &node)
         new_rhs->flip_polarity();
 
         node.put_lhs_operand(std::make_unique<MutableBinaryConnected>(
-            BinaryOperatorTypes::Disjunction,
-            save_lhs->clone(),
-            std::move(new_rhs)
-        ));
+                BinaryOperatorTypes::Disjunction, save_lhs->clone(), std::move(new_rhs)));
 
         save_lhs->flip_polarity();
 
         node.put_rhs_operand(std::make_unique<MutableBinaryConnected>(
-            BinaryOperatorTypes::Disjunction,
-            std::move(save_lhs),
-            std::move(save_rhs)
-        ));
+                BinaryOperatorTypes::Disjunction, std::move(save_lhs), std::move(save_rhs)));
     }
 }
 
-}
+} // namespace optifol

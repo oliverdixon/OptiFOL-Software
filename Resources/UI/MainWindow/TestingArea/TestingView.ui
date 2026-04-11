@@ -21,11 +21,14 @@
             <property name="label">
                 <![CDATA[<b>The Testing View is not applicable to Project-level scopes.</b>
 
-The <i>Testing View</i> allows organisation of Test-associated Requirements defined in the selected Subsystem into <i>Test Groups</i>.
+The <i>Testing View</i> allows organisation of Test-associated Requirements defined in the selected Subsystem
+into <i>Test Groups</i>.
 
-Test Groups can be individually subject to execution under an external unit testing framework, such as Google Test, to determine software-level satisfaction of Requirements.
+Test Groups can be individually subject to execution under an external unit testing framework, such as Google
+Test, to determine software-level satisfaction of Requirements.
 
-To prepare Test Groups, select a Subsystem from the left-hand <i>Project Explorer</i> pane and define some Requirements in the <i>Requirements Index</i> view.]]>
+To prepare Test Groups, select a Subsystem from the left-hand <i>Project Explorer</i> pane and define some
+Requirements in the <i>Requirements Index</i> view.]]>
             </property>
         </object>
     </child>

@@ -19,7 +19,7 @@ namespace optifol
 
 TermResolutionVisitor::TermResolutionVisitor(
         const std::unordered_map<std::string, std::unique_ptr<IMutableTerm>, StringHash, std::equal_to<>>
-            &rewriting_rules_hook) :
+                &rewriting_rules_hook) :
     rewriting_rules_hook(rewriting_rules_hook)
 {
 }
@@ -35,10 +35,10 @@ void TermResolutionVisitor::visit(MutableFunction &node)
             /*
              * Rewrite the argument according to the rule if and only if:
              *
-             *  - A suitable rule is available, such that the disambiguated name of the argument has been identified as
-             *    rewritable; and
-             *  - The rewriting would change the argument. If this check is not done, an infinite loop would be caused
-             *    by the following accept call.
+             *  - A suitable rule is available, such that the disambiguated name of the argument has been
+             * identified as rewritable; and
+             *  - The rewriting would change the argument. If this check is not done, an infinite loop would
+             * be caused by the following accept call.
              */
             args[i] = rule->second->clone();
 

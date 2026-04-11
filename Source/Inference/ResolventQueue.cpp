@@ -33,14 +33,16 @@ void ResolventQueue::push(Resolvent element, std::unique_ptr<Clause> &&resolutio
          *
          *  1. The insertion genuinely failed, indicating a runtime error; or
          *
-         *  2. The resolution clause of the incoming resolvent is already owned by us. Therefore, we update the pointer
-         *     (using the "friend" access rights conferred by Resolvent) such that it observes a consistently owned
-         *     clause. Once this process is repeated for all resolvents, there will be a de-duplicated set of resolution
-         *     clauses (either owned by us or transferred into a QueryResult) to which all resolvents correctly refer.
+         *  2. The resolution clause of the incoming resolvent is already owned by us. Therefore, we update
+         * the pointer (using the "friend" access rights conferred by Resolvent) such that it observes a
+         * consistently owned clause. Once this process is repeated for all resolvents, there will be a
+         * de-duplicated set of resolution clauses (either owned by us or transferred into a QueryResult) to
+         * which all resolvents correctly refer.
          */
         if (resolution_it == resolutions.end())
-            throw std::runtime_error("The ownership of the incoming resolution clause could not be transferred into "
-                                     "the queue.");
+            throw std::runtime_error(
+                    "The ownership of the incoming resolution clause could not be transferred into "
+                    "the queue.");
         element.resolution = resolution_it->get();
     }
 

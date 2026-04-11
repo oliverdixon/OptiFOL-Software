@@ -22,8 +22,9 @@
 namespace optifol
 {
 
-MutableQuantified::MutableQuantified(const QuantifierTypes quantifier_type, std::unique_ptr<IMutableTerm> &&bound_term,
-        std::unique_ptr<IMutableSentence> &&sentence, const bool is_positive) :
+MutableQuantified::MutableQuantified(const QuantifierTypes quantifier_type,
+        std::unique_ptr<IMutableTerm> &&bound_term, std::unique_ptr<IMutableSentence> &&sentence,
+        const bool is_positive) :
     quantifier_type(quantifier_type),
     bound_term(std::move(bound_term)),
     sentence(std::move(sentence)),
@@ -33,7 +34,8 @@ MutableQuantified::MutableQuantified(const QuantifierTypes quantifier_type, std:
 
 std::unique_ptr<IMutableSentence> MutableQuantified::clone() const
 {
-    return std::make_unique<MutableQuantified>(quantifier_type, bound_term->clone(), sentence->clone(), is_positive);
+    return std::make_unique<MutableQuantified>(
+            quantifier_type, bound_term->clone(), sentence->clone(), is_positive);
 }
 
 void MutableQuantified::flip_polarity() noexcept

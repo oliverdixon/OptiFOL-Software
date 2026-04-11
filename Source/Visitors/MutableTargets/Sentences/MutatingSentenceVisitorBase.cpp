@@ -50,4 +50,4 @@ void MutatingSentenceVisitorBase::visit(MutableSentenceRoot &node)
     node.put_sentence(std::move(borrowed_sentence));
 }
 
-}
+} // namespace optifol

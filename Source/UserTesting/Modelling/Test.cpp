@@ -12,8 +12,8 @@
  */
 
 #include "Test.hpp"
-#include "../Discovery/DiscoveryTestFixture.hpp"
 #include "../../Exceptions/SemanticException.hpp"
+#include "../Discovery/DiscoveryTestFixture.hpp"
 
 namespace optifol
 {
@@ -40,9 +40,10 @@ Test::Test(std::shared_ptr<TestSpecificationEntry> template_specification, BaseO
 
 bool Test::operator==(const Test &other) const
 {
-    return property_target_executable_name().get_value() == other.property_target_executable_name().get_value() &&
-        property_fixture().get_value() == other.property_fixture().get_value() &&
-        property_name().get_value() == other.property_name().get_value();
+    return property_target_executable_name().get_value() ==
+            other.property_target_executable_name().get_value() &&
+            property_fixture().get_value() == other.property_fixture().get_value() &&
+            property_name().get_value() == other.property_name().get_value();
 }
 
 Glib::RefPtr<Gtk::TreeListModel> Test::get_tests_tree() const noexcept
@@ -58,7 +59,7 @@ Glib::RefPtr<Gtk::TreeListModel> Test::get_results_tree() const noexcept
     return result.get_value()->get_results_tree();
 }
 
-void Test::emplace_result(const std::shared_ptr<TestResult>& test_result)
+void Test::emplace_result(const std::shared_ptr<TestResult> &test_result)
 {
     const auto &given_fixture_name = test_result->copy_fixture_name();
     const auto &expected_fixture_name = fixture.get_value();
@@ -68,8 +69,8 @@ void Test::emplace_result(const std::shared_ptr<TestResult>& test_result)
                 "\", but needed \"" + expected_fixture_name + "\".");
 
     if (test_result->copy_test_name() != property_name().get_value())
-        throw SemanticException("Incoming test result was from a different test: \"" + test_result->copy_test_name() +
-                "\", but needed \"" + property_name().get_value() + "\".");
+        throw SemanticException("Incoming test result was from a different test: \"" +
+                test_result->copy_test_name() + "\", but needed \"" + property_name().get_value() + "\".");
 
     result.set_value(test_result);
 }
@@ -122,15 +123,15 @@ void Test::instantiate_from_specification(std::shared_ptr<TestSpecificationEntry
     property_fixture().set_value(spec->property_fixture().get_value()->property_name().get_value());
     property_name().set_value(spec->property_name().get_value());
 
-    spec->property_name().signal_changed().connect([this, spec]
-    {
-        property_name().set_value(spec->property_name().get_value());
-    });
+    spec->property_name().signal_changed().connect(
+            [this, spec] { property_name().set_value(spec->property_name().get_value()); });
 
-    spec->property_fixture().signal_changed().connect([this, spec]
-    {
-        property_fixture().set_value(spec->property_fixture().get_value()->property_name().get_value());
-    });
+    spec->property_fixture().signal_changed().connect(
+            [this, spec]
+            {
+                property_fixture().set_value(
+                        spec->property_fixture().get_value()->property_name().get_value());
+            });
 
     // TODO URGENT: executable binding
 }

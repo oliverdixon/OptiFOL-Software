@@ -30,20 +30,24 @@ TestingNewTestGroupPopover::TestingNewTestGroupPopover(Gtk::Builder &builder, Te
     name_entry(GTKHelpers::get_widget<Gtk::Entry>(popover_name, builder, "new_test_group_name"))
 {
     // Get extra elements needed only for the constructor lifetime.
-    const auto cancel_button = GTKHelpers::get_widget<Gtk::Button>(popover_name, builder, "new_test_group_cancel");
+    const auto cancel_button =
+            GTKHelpers::get_widget<Gtk::Button>(popover_name, builder, "new_test_group_cancel");
 
     // Set up buttons and self.
-    confirm_button->signal_clicked().connect(sigc::mem_fun(*this, &TestingNewTestGroupPopover::confirm_button_clicked));
-    cancel_button->signal_clicked().connect(sigc::mem_fun(*this, &TestingNewTestGroupPopover::cancel_button_clicked));
+    confirm_button->signal_clicked().connect(
+            sigc::mem_fun(*this, &TestingNewTestGroupPopover::confirm_button_clicked));
+    cancel_button->signal_clicked().connect(
+            sigc::mem_fun(*this, &TestingNewTestGroupPopover::cancel_button_clicked));
     my_popover->signal_show().connect(sigc::mem_fun(*this, &TestingNewTestGroupPopover::popover_shown));
-    name_entry->signal_changed().connect(sigc::mem_fun(*this, &TestingNewTestGroupPopover::name_entry_changed));
+    name_entry->signal_changed().connect(
+            sigc::mem_fun(*this, &TestingNewTestGroupPopover::name_entry_changed));
 }
 
 void TestingNewTestGroupPopover::confirm_button_clicked() const
 {
     my_popover->popdown();
-    testing_area.observe_active_subsystem()->get_test_groups()->append(Glib::make_refptr_for_instance(
-        new TestGroup(name_entry->get_text())));
+    testing_area.observe_active_subsystem()->get_test_groups()->append(
+            Glib::make_refptr_for_instance(new TestGroup(name_entry->get_text())));
 
     popover_logger->debug("Created new Test Group with name \"" + name_entry->get_text() + "\".");
 }

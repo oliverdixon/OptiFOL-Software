@@ -28,22 +28,22 @@ namespace optifol
 {
 
 /**
- * @brief The first-order logic parser encapsulates the raw Bison-generated parser and provides various safety and
- *  convenience mechanisms.
+ * @brief The first-order logic parser encapsulates the raw Bison-generated parser and provides various safety
+ * and convenience mechanisms.
  */
-class FOLParser:
-    public impl::BaseFOLParser
+class FOLParser : public impl::BaseFOLParser
 {
 public:
     /**
      * @brief Instantiate a new first-order logic parser, to be supplied by the given lexer
      * @param lexer The Flex-created lexer with which the parser should be acquainted
      */
-    explicit FOLParser(FOLLexer * lexer):
+    explicit FOLParser(FOLLexer *lexer) :
         BaseFOLParser(lexer)
-    { }
+    {
+    }
 
-    void error(const std::string& msg) override
+    void error(const std::string &msg) override
     {
         throw ParseError(msg, 0); // TODO get bad column number
     }
@@ -68,6 +68,6 @@ private:
     std::unique_ptr<MutableSentenceRoot> last_parsed_root;
 };
 
-}
+} // namespace optifol
 
 #endif

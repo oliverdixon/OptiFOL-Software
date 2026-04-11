@@ -58,14 +58,16 @@ void QuantifierExtractingVisitor::visit(MutableBinaryConnected &node)
     /*
      * Apply the rules:
      *
-     *  - If there's a quantifier on the LHS and the RHS, the quantifiers cannot be moved any further outwards.
+     *  - If there's a quantifier on the LHS and the RHS, the quantifiers cannot be moved any further
+     * outwards.
      *  - If there's neither of the operands were quantifiers, there are no quantifiers to move outwards.
-     *  - If there's a quantifier on either the LHS or the RHS, prepare the current MutableBinaryConnected to be the
-     *      quantified sentence by retaining the non-quantified side, and using the previously quantified sentence as
-     *      the other operand.
+     *  - If there's a quantifier on either the LHS or the RHS, prepare the current MutableBinaryConnected to
+     * be the quantified sentence by retaining the non-quantified side, and using the previously quantified
+     * sentence as the other operand.
      *
-     *  At each stage, we ensure that any borrowed sentences/operands have been returned to an owner. Once this
-     *  operation is complete, only the bound variable may be held in the quantifier template without a permanent owner.
+     *  At each stage, we ensure that any borrowed sentences/operands have been returned to an owner. Once
+     * this operation is complete, only the bound variable may be held in the quantifier template without a
+     * permanent owner.
      */
 
     if (quant_lhs_data.has_value()) {
@@ -74,7 +76,8 @@ void QuantifierExtractingVisitor::visit(MutableBinaryConnected &node)
             node.put_lhs_operand(std::move(quant_lhs_data->sentence));
             transformation.emplace(quant_lhs_data->type, std::move(quant_lhs_data->bound_term));
         } else {
-            // If both operands were quantifiers, there's no transformation to do. Return operands to our node.
+            // If both operands were quantifiers, there's no transformation to do. Return operands to our
+            // node.
             node.put_lhs_operand(std::move(borrowed_operand_lhs));
             node.put_rhs_operand(std::move(borrowed_operand_rhs));
 
@@ -114,11 +117,13 @@ void QuantifierExtractingVisitor::visit(MutableQuantified &node)
         return;
 
     case TrackingMode::LeftMajor:
-        quant_lhs_data.emplace(node.get_quantifier_type(), node.take_bound_term(), std::move(borrowed_sentence), &node);
+        quant_lhs_data.emplace(
+                node.get_quantifier_type(), node.take_bound_term(), std::move(borrowed_sentence), &node);
         break;
 
     case TrackingMode::RightMajor:
-        quant_rhs_data.emplace(node.get_quantifier_type(), node.take_bound_term(), std::move(borrowed_sentence), &node);
+        quant_rhs_data.emplace(
+                node.get_quantifier_type(), node.take_bound_term(), std::move(borrowed_sentence), &node);
         break;
     }
 }
@@ -138,7 +143,8 @@ std::unique_ptr<IMutableSentence> QuantifierExtractingVisitor::apply_transform(
                 transformation->first, std::move(transformation->second), std::move(transform_target));
         transformation.reset();
 
-        // The introduction of a new quantified sentence may open new opportunities for reduction, to an arbitrary depth
+        // The introduction of a new quantified sentence may open new opportunities for reduction, to an
+        // arbitrary depth
         transform_target->accept(*this);
     }
 

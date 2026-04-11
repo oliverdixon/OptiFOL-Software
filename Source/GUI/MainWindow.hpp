@@ -27,17 +27,16 @@
 namespace optifol
 {
 
-class MainWindow :
-        public Gtk::ApplicationWindow
+class MainWindow : public Gtk::ApplicationWindow
 {
 public:
     MainWindow();
 
 private:
     Glib::RefPtr<Gtk::Builder> builder;
-    static const char * const area_name;
+    static const char *const area_name;
 
-    Gtk::Box * const root_grid;
+    Gtk::Box *const root_grid;
 
     std::unique_ptr<ProjectHierarchyPane> project_hierarchy_pane;
 
@@ -47,6 +46,6 @@ private:
     std::unique_ptr<ReportsArea> reports_area;
 };
 
-}
+} // namespace optifol
 
 #endif

@@ -23,7 +23,7 @@ TreeNode::TreeNode() :
 {
 }
 
-TreeNode::TreeNode(TreeNode * const parent) :
+TreeNode::TreeNode(TreeNode *const parent) :
     children(Gio::ListStore<Subsystem>::create()),
     parent(parent)
 {
@@ -44,14 +44,14 @@ void TreeNode::add(std::string &&name)
     children->append(Glib::make_refptr_for_instance(new Subsystem(std::move(name), this)));
 }
 
-const TreeNode * TreeNode::get_parent() const
+const TreeNode *TreeNode::get_parent() const
 {
     return parent;
 }
 
-TreeNode * TreeNode::get_parent()
+TreeNode *TreeNode::get_parent()
 {
     return parent;
 }
 
-}
+} // namespace optifol

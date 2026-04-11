@@ -20,8 +20,8 @@
 namespace optifol
 {
 
-Resolvent::Resolvent(const ProofTreeNode * const lhs_parent, const ProofTreeNode * const rhs_parent, Unifier unifier,
-        const Clause * resolution) :
+Resolvent::Resolvent(const ProofTreeNode *const lhs_parent, const ProofTreeNode *const rhs_parent,
+        Unifier unifier, const Clause *resolution) :
     ProofTreeNode(lhs_parent, rhs_parent),
     unifier(std::move(unifier)),
     resolution(resolution)
@@ -61,7 +61,8 @@ std::optional<const Unifier *> Resolvent::observe_edge() const noexcept
 bool Resolvent::operator<(const Resolvent &other) const noexcept
 {
     const auto we_have_unit = observe_lhs_parent()->is_unit() || observe_rhs_parent()->is_unit();
-    const auto other_has_unit = other.observe_lhs_parent()->is_unit() || other.observe_rhs_parent()->is_unit();
+    const auto other_has_unit =
+            other.observe_lhs_parent()->is_unit() || other.observe_rhs_parent()->is_unit();
 
     if (we_have_unit && !other_has_unit)
         return false; // LHS has higher priority.

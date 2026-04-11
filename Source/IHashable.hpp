@@ -34,9 +34,9 @@ concept HashableIterator = std::bidirectional_iterator<Candidate> &&
 
 /**
  * @class IHashable
- * @brief An IHashable class can be hashed, such that a (relatively) content-dependent numerical hashcode can be
- *  generated for any instance. Hashcodes are useful for implementing equality functor, but IHashable makes no
- *  guarantees on the collision properties of the generated hashcodes.
+ * @brief An IHashable class can be hashed, such that a (relatively) content-dependent numerical hashcode can
+ * be generated for any instance. Hashcodes are useful for implementing equality functor, but IHashable makes
+ * no guarantees on the collision properties of the generated hashcodes.
  */
 class IHashable
 {
@@ -70,11 +70,11 @@ public:
 
         return lhs;
     }
-    
-    IHashable(const IHashable&) = default;
-    IHashable& operator=(const IHashable&) = default;
-    IHashable(IHashable&&) = default;
-    IHashable& operator=(IHashable&&) = default;
+
+    IHashable(const IHashable &) = default;
+    IHashable &operator=(const IHashable &) = default;
+    IHashable(IHashable &&) = default;
+    IHashable &operator=(IHashable &&) = default;
 
 protected:
     IHashable() = default;
@@ -89,8 +89,8 @@ protected:
     static std::size_t hash_combine_commutative(std::size_t lhs, std::size_t rhs)
     {
         /*
-         * The choice of operator> to collapse the hash operands into a commutative pair is arbitrary. We just need
-         * something reliable and universally defined on std::size_t.
+         * The choice of operator> to collapse the hash operands into a commutative pair is arbitrary. We just
+         * need something reliable and universally defined on std::size_t.
          */
         if (lhs > rhs)
             std::swap(lhs, rhs);
@@ -102,7 +102,8 @@ protected:
      * @brief Mutate a hash according the polarity of the node instantiation being hashed
      * @param hash The produced hash for the unsigned node (i.e., the node without a polarity)
      * @param is_negative Does the instantiation have a negative sign?
-     * @return If positive, the original hash. If negative, a mutated hash to reflect the difference in polarity.
+     * @return If positive, the original hash. If negative, a mutated hash to reflect the difference in
+     * polarity.
      */
     static std::size_t hash_polarity(const std::size_t hash, const bool is_negative)
     {
@@ -160,7 +161,7 @@ struct PairHash
 {
     template<typename LHS, typename RHS>
         requires(std::derived_from<LHS, IHashable> and std::derived_from<RHS, IHashable>)
-    auto operator()(const std::pair<LHS, RHS>& pair) const
+    auto operator()(const std::pair<LHS, RHS> &pair) const
     {
         return IHashable::hash_combine(pair.first.hash(), pair.second.hash());
     }
@@ -178,7 +179,8 @@ namespace std
  * @brief Standard hasher implementation for Optifol's IHashable derived classes
  * @tparam Type The IHashable type to hash
  */
-template<typename Type> requires derived_from<Type, optifol::IHashable>
+template<typename Type>
+    requires derived_from<Type, optifol::IHashable>
 struct hash<Type> // NOLINT(*-dcl58-cpp) Specialising std::hash does not result in UB.
 {
     using is_transparent = void;
@@ -194,9 +196,10 @@ struct hash<Type> // NOLINT(*-dcl58-cpp) Specialising std::hash does not result 
     }
 
     /**
-     * @brief Execute the hash functor to produce a hashcode of the object contained within the ref-counted pointer
-     * @param shared_hashable The ref-counted pointer containing the hashable object for which a hashcode should be
-     *  generated
+     * @brief Execute the hash functor to produce a hashcode of the object contained within the ref-counted
+     *  pointer
+     * @param shared_hashable The ref-counted pointer containing the hashable object for which a hashcode
+     *  should be generated
      * @return The hashcode of the hashable object detained within the ref-counted pointer
      */
     size_t operator()(const shared_ptr<Type> &shared_hashable) const
@@ -206,7 +209,8 @@ struct hash<Type> // NOLINT(*-dcl58-cpp) Specialising std::hash does not result 
 
     /**
      * @brief Execute the hash functor to produce a hashcode of the object contained within the unique pointer
-     * @param unique_hashable The unique pointer containing the hashable object for which a hashcode should be generated
+     * @param unique_hashable The unique pointer containing the hashable object for which a hashcode should be
+     *  generated
      * @return The hashcode of the hashable object detained within the unique pointer
      */
     size_t operator()(const unique_ptr<Type> &unique_hashable) const
@@ -214,7 +218,7 @@ struct hash<Type> // NOLINT(*-dcl58-cpp) Specialising std::hash does not result 
         return unique_hashable->hash();
     }
 
-    size_t operator()(const Type* ptr_hashable) const
+    size_t operator()(const Type *ptr_hashable) const
     {
         return ptr_hashable->hash();
     }
@@ -231,11 +235,11 @@ struct hash<Type> // NOLINT(*-dcl58-cpp) Specialising std::hash does not result 
 template<>
 struct hash<chrono::system_clock::time_point>
 {
-    std::size_t operator()(const chrono::system_clock::time_point& time) const noexcept;
+    std::size_t operator()(const chrono::system_clock::time_point &time) const noexcept;
 };
 
 #endif
 
-}
+} // namespace std
 
 #endif

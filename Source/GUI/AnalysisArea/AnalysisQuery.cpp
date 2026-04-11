@@ -19,13 +19,13 @@ namespace optifol
 std::istringstream AnalysisQuery::lexer_input_stream;
 
 /*
- * TODO: this construction is possibly undefined due to std::cerr. But for the real case, we'll use a custom error
- *  handler that can be statically initialised in the Analysis Manager, so this is OK for development.
+ * TODO: this construction is possibly undefined due to std::cerr. But for the real case, we'll use a custom
+ * error handler that can be statically initialised in the Analysis Manager, so this is OK for development.
  */
 FOLLexer AnalysisQuery::lexer{AnalysisQuery::lexer_input_stream, std::cerr};
 FOLParser AnalysisQuery::parser{&AnalysisQuery::lexer};
 
-AnalysisQuery::AnalysisQuery(const Glib::ustring &query_name, Prover& kb_weak) :
+AnalysisQuery::AnalysisQuery(const Glib::ustring &query_name, Prover &kb_weak) :
     kb_weak(kb_weak)
 {
     execute_query_button.signal_clicked().connect(sigc::mem_fun(*this, &AnalysisQuery::execute_query));
@@ -68,7 +68,7 @@ void AnalysisQuery::execute_query()
     try {
         lexer_input_stream.str(query_entry.get_text());
         parser.parse();
-    } catch (const ParseError& parse_error) {
+    } catch (const ParseError &parse_error) {
         // TODO log
         assert(0);
         return;
@@ -78,7 +78,7 @@ void AnalysisQuery::execute_query()
         latest_result = std::make_unique<QueryResult>(kb_weak.ask(parser.retrieve_sentence()));
         if (latest_result->terminating_resolvent != nullptr)
             drawing_area.replace_proof(latest_result->terminating_resolvent);
-    } catch (const SemanticException& semantic_exception) {
+    } catch (const SemanticException &semantic_exception) {
         // TODO log
         assert(0);
         return;

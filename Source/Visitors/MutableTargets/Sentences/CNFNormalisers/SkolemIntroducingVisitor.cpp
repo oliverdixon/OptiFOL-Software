@@ -24,7 +24,7 @@
 namespace optifol
 {
 
-const char * SkolemIntroducingVisitor::visitor_name = "SkolemIntroduction";
+const char *SkolemIntroducingVisitor::visitor_name = "SkolemIntroduction";
 
 SkolemIntroducingVisitor::SkolemIntroducingVisitor()
 {
@@ -77,8 +77,8 @@ void SkolemIntroducingVisitor::visit(MutablePredicate &node)
     const auto argument_count = args.size();
 
     for (std::remove_const_t<decltype(argument_count)> i = 0; i < argument_count; ++i) {
-        const auto& potential_replacement =
-            skolem_replacements.find(std::string(args[i]->get_disambiguated_name()));
+        const auto &potential_replacement =
+                skolem_replacements.find(std::string(args[i]->get_disambiguated_name()));
         if (potential_replacement != skolem_replacements.cend())
             args[i] = potential_replacement->second->clone();
 
@@ -123,7 +123,8 @@ void SkolemIntroducingVisitor::open_scope(MutableQuantified &node)
 void SkolemIntroducingVisitor::close_latest_scope(MutableQuantified &node)
 {
     const auto scoped_var_count = universally_quantified_variables.top().size();
-    assert(scoped_var_count > 0); // We assume to be within a scope, and thus must have at least one bound variable.
+    assert(scoped_var_count >
+            0); // We assume to be within a scope, and thus must have at least one bound variable.
 
     // Return the latest variable from the latest scope to the given node, assumed to be its original owner.
     node.put_bound_term(std::move(universally_quantified_variables.top().back()));
@@ -134,8 +135,8 @@ void SkolemIntroducingVisitor::close_latest_scope(MutableQuantified &node)
         universally_quantified_variables.emplace();
     } else
         /*
-         * Otherwise, just remove the returned variable. There are other universally quantified variables that need to
-         * be returned at this scope level.
+         * Otherwise, just remove the returned variable. There are other universally quantified variables that
+         * need to be returned at this scope level.
          */
         universally_quantified_variables.top().pop_back();
 }
@@ -143,22 +144,23 @@ void SkolemIntroducingVisitor::close_latest_scope(MutableQuantified &node)
 void SkolemIntroducingVisitor::eliminate_existential(const IMutableTerm &target_bound_variable)
 {
     // Clone the universally quantified variables in the current scope.
-    const auto& arguments = universally_quantified_variables.top();
+    const auto &arguments = universally_quantified_variables.top();
     std::vector<std::unique_ptr<IMutableTerm>> argument_copy;
     argument_copy.reserve(arguments.size());
 
-    for (const auto& argument : arguments)
+    for (const auto &argument: arguments)
         argument_copy.push_back(argument->clone());
 
-    // Create a new Skolem function to be parameterised by all universally quantified variables in the current scope.
-    auto skolem = std::make_unique<MutableSkolemFunction>('S' + std::to_string(skolem_counter++),
-        std::move(argument_copy));
+    // Create a new Skolem function to be parameterised by all universally quantified variables in the current
+    // scope.
+    auto skolem = std::make_unique<MutableSkolemFunction>(
+            'S' + std::to_string(skolem_counter++), std::move(argument_copy));
 
     /*
-     * Indicate to the visitor that all instances of the existentially quantified variable should be replaced by a
-     * Skolem function, to be cloned from the templated created above.
+     * Indicate to the visitor that all instances of the existentially quantified variable should be replaced
+     * by a Skolem function, to be cloned from the templated created above.
      */
     skolem_replacements.emplace(target_bound_variable.get_disambiguated_name(), std::move(skolem));
 }
 
-}
+} // namespace optifol

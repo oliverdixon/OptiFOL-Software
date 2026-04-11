@@ -28,20 +28,20 @@ class IObservingNodeVisitor;
 
 /**
  * @class IMutableTerm
- * @brief An IMutableTerm is an ITerm that has not undergone the full lexing, parsing, and normalisation pipeline. Such
- *  terms are still being processed and likely to be mutated in-situ.
- * @details IMutableTerms are typically held within an outermost @ref std::unique_ptr to enforce clear semantics of
- *  ownership, and the explicit transfer thereof, throughout the mutation pipelines. Once an IMutableTerm has been
- *  deemed as processed, with no further mutations necessary, it should be converted to an IProcessedTerm that has more
- *  restrictions but does not require equally stringent ownership.
+ * @brief An IMutableTerm is an ITerm that has not undergone the full lexing, parsing, and normalisation
+ * pipeline. Such terms are still being processed and likely to be mutated in-situ.
+ * @details IMutableTerms are typically held within an outermost @ref std::unique_ptr to enforce clear
+ * semantics of ownership, and the explicit transfer thereof, throughout the mutation pipelines. Once an
+ * IMutableTerm has been deemed as processed, with no further mutations necessary, it should be converted to
+ * an IProcessedTerm that has more restrictions but does not require equally stringent ownership.
  */
 class IMutableTerm : public ITerm
 {
 
 public:
     /**
-     * @brief Recursively clone an owning term, making replicas of all children held by the cloned parent, and return
-     *  the root-most node detained by a @ref std::unique_ptr.
+     * @brief Recursively clone an owning term, making replicas of all children held by the cloned parent, and
+     * return the root-most node detained by a @ref std::unique_ptr.
      * @return The transferable container holding the recursively cloned term
      */
     [[nodiscard]] virtual std::unique_ptr<IMutableTerm> clone() const = 0;

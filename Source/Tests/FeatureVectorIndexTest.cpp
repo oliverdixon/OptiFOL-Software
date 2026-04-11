@@ -62,4 +62,4 @@ TEST_F(FeatureVectorIndexTest, Test1)
     kb.add_clause(std::move(ct));
 }
 
-}
+} // namespace optifol

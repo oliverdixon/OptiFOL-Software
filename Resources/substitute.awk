@@ -2,13 +2,13 @@
 # 2025 Oliver Dixon <od641@york.ac.uk>
 
 # File: substitute.awk
-# Brief: Perform K-V-based substitutions on files, whereby all instances of the key are replaced by the contents of file
-#   whose path is detained by the value.
-# Detail: The current working directory is presumed to contain a "replacements.txt" file containing zero or more key-
-#   value pairs of the form 'key=value'; each separated by a newline. These lines are the only allowable entries in the
-#   replacements file. For each instance of the key in the input stream, it is replaced by the contents of a file. The
-#   path of that file is given by the value. If there are any invalid entries in the replacements file, a message is
-#   produced on stderr and a non-zero exit code is emitted.
+# Brief: Perform K-V-based substitutions on files, whereby all instances of the key are replaced by the
+# contents of file whose path is detained by the value.
+# Detail: The current working directory is presumed to contain a "replacements.txt" file containing zero or
+#   more key-value pairs of the form 'key=value'; each separated by a newline. These lines are the only
+#   allowable entries in the replacements file. For each instance of the key in the input stream, it is
+#   replaced by the contents of a file. The path of that file is given by the value. If there are any invalid
+#   entries in the replacements file, a message is produced on stderr and a non-zero exit code is emitted.
 # Author: Oliver Dixon
 # Date: 2025-03-26
 # Version: Development

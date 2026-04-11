@@ -33,7 +33,8 @@ MainWindow::MainWindow() :
     testing_area = std::make_unique<TestingArea>(*builder);
     reports_area = std::make_unique<ReportsArea>(*builder);
 
-    project_hierarchy_pane = std::make_unique<ProjectHierarchyPane>(*builder, Gio::ListStore<Project>::create());
+    project_hierarchy_pane =
+            std::make_unique<ProjectHierarchyPane>(*builder, Gio::ListStore<Project>::create());
 
     // Register the Requirements Index Area as a Subsystem-sensitive area.
     project_hierarchy_pane->add_subsystem_change_callback(
@@ -41,19 +42,23 @@ MainWindow::MainWindow() :
             sigc::mem_fun(*requirements_index_area, &RequirementsIndexArea::deselect_model));
 
     // Register the Analysis Area as a Subsystem-sensitive area.
-    project_hierarchy_pane->add_subsystem_change_callback(sigc::mem_fun(*analysis_area, &AnalysisArea::select_model),
+    project_hierarchy_pane->add_subsystem_change_callback(
+            sigc::mem_fun(*analysis_area, &AnalysisArea::select_model),
             sigc::mem_fun(*analysis_area, &AnalysisArea::deselect_model));
 
     // Register the Testing Area as a Subsystem-sensitive area.
-    project_hierarchy_pane->add_subsystem_change_callback(sigc::mem_fun(*testing_area, &TestingArea::select_model),
+    project_hierarchy_pane->add_subsystem_change_callback(
+            sigc::mem_fun(*testing_area, &TestingArea::select_model),
             sigc::mem_fun(*testing_area, &TestingArea::deselect_model));
 
     // Register the Reports Area as a Subsystem-sensitive area.
-    project_hierarchy_pane->add_subsystem_change_callback(sigc::mem_fun(*reports_area, &ReportsArea::select_model),
+    project_hierarchy_pane->add_subsystem_change_callback(
+            sigc::mem_fun(*reports_area, &ReportsArea::select_model),
             sigc::mem_fun(*reports_area, &ReportsArea::deselect_model));
 
     const auto css_provider = Gtk::CssProvider::create();
-    Gtk::StyleProvider::add_provider_for_display(get_display(), css_provider, GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+    Gtk::StyleProvider::add_provider_for_display(
+            get_display(), css_provider, GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
     css_provider->load_from_resource("/uk/ac/york/www_users/od641/optifol/UI/MainWindow/styles.css");
 }
 

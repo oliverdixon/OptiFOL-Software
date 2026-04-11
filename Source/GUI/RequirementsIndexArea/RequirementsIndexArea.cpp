@@ -18,44 +18,34 @@
 namespace optifol
 {
 
-const char * const RequirementsIndexArea::area_name = "Requirements Index Area";
+const char *const RequirementsIndexArea::area_name = "Requirements Index Area";
 
-RequirementsIndexArea::RequirementsIndexArea(Gtk::Builder& builder) :
+RequirementsIndexArea::RequirementsIndexArea(Gtk::Builder &builder) :
     on_off_widgets(
-        GTKHelpers::get_widget<Gtk::Widget>(area_name, builder, "requirements_index_advice_unselected"),
-        GTKHelpers::get_widget<Gtk::Widget>(area_name, builder, "requirements_index_content")
-    ),
+            GTKHelpers::get_widget<Gtk::Widget>(area_name, builder, "requirements_index_advice_unselected"),
+            GTKHelpers::get_widget<Gtk::Widget>(area_name, builder, "requirements_index_content")),
     view(GTKHelpers::get_widget<Gtk::ColumnView>(area_name, builder, "requirements_view")),
-    context_menu(
-        view,
-        GTKHelpers::get_object<Gio::Menu>(area_name, builder, "requirement_context_menu"),
-        {
-            {
-                "new_requirement",
-                GTKHelpers::get_widget<Gtk::MenuButton>(area_name, builder, "new_requirement"),
-                GTKHelpers::get_widget<Gtk::Popover>(area_name, builder, "new_requirement_popover"),
-                true
-            },
-            {
-                "edit_requirement",
-                GTKHelpers::get_widget<Gtk::MenuButton>(area_name, builder, "edit_requirement"),
-                GTKHelpers::get_widget<Gtk::Popover>(area_name, builder, "edit_requirement_popover"),
-                false
-            },
-            {
-                "delete_requirement",
-                GTKHelpers::get_widget<Gtk::MenuButton>(area_name, builder, "delete_requirement"),
-                GTKHelpers::get_widget<Gtk::Popover>(area_name, builder, "delete_requirement_popover"),
-                false
-            },
-            {
-                "duplicate_requirement",
-                GTKHelpers::get_widget<Gtk::MenuButton>(area_name, builder, "duplicate_requirement"),
-                GTKHelpers::get_widget<Gtk::Popover>(area_name, builder, "duplicate_requirement_popover"),
-                false
-            }
-        }
-    ),
+    context_menu(view, GTKHelpers::get_object<Gio::Menu>(area_name, builder, "requirement_context_menu"),
+            {{"new_requirement",
+                     GTKHelpers::get_widget<Gtk::MenuButton>(area_name, builder, "new_requirement"),
+                     GTKHelpers::get_widget<Gtk::Popover>(area_name, builder, "new_requirement_popover"),
+                     true},
+                    {"edit_requirement",
+                            GTKHelpers::get_widget<Gtk::MenuButton>(area_name, builder, "edit_requirement"),
+                            GTKHelpers::get_widget<Gtk::Popover>(
+                                    area_name, builder, "edit_requirement_popover"),
+                            false},
+                    {"delete_requirement",
+                            GTKHelpers::get_widget<Gtk::MenuButton>(area_name, builder, "delete_requirement"),
+                            GTKHelpers::get_widget<Gtk::Popover>(
+                                    area_name, builder, "delete_requirement_popover"),
+                            false},
+                    {"duplicate_requirement",
+                            GTKHelpers::get_widget<Gtk::MenuButton>(
+                                    area_name, builder, "duplicate_requirement"),
+                            GTKHelpers::get_widget<Gtk::Popover>(
+                                    area_name, builder, "duplicate_requirement_popover"),
+                            false}}),
     new_requirement_popover(builder, *this),
     edit_requirement_popover(builder, *this),
     duplicate_requirement_popover(builder, *this),
@@ -64,28 +54,31 @@ RequirementsIndexArea::RequirementsIndexArea(Gtk::Builder& builder) :
     selection_model->set_autoselect(false);
     selection_model->set_can_unselect(true);
 
-    selection_model->signal_selection_changed().connect([this](guint, const guint n_items)
-    {
-        if (n_items == 0) {
-            context_menu.disable_action("edit_requirement");
-            context_menu.disable_action("delete_requirement");
-            context_menu.disable_action("duplicate_requirement");
-        } else {
-            context_menu.enable_action("edit_requirement");
-            context_menu.enable_action("delete_requirement");
-            context_menu.enable_action("duplicate_requirement");
-        }
-    });
+    selection_model->signal_selection_changed().connect(
+            [this](guint, const guint n_items)
+            {
+                if (n_items == 0) {
+                    context_menu.disable_action("edit_requirement");
+                    context_menu.disable_action("delete_requirement");
+                    context_menu.disable_action("duplicate_requirement");
+                } else {
+                    context_menu.enable_action("edit_requirement");
+                    context_menu.enable_action("delete_requirement");
+                    context_menu.enable_action("duplicate_requirement");
+                }
+            });
 
-    selection_model->signal_items_changed().connect([this](guint, const guint removed, guint)
-    {
-        if (removed > 0) {
-            // If anything was removed from the model, just deselect everything out of an abundance of caution.
-            context_menu.disable_action("edit_requirement");
-            context_menu.disable_action("delete_requirement");
-            context_menu.disable_action("duplicate_requirement");
-        }
-    });
+    selection_model->signal_items_changed().connect(
+            [this](guint, const guint removed, guint)
+            {
+                if (removed > 0) {
+                    // If anything was removed from the model, just deselect everything out of an abundance of
+                    // caution.
+                    context_menu.disable_action("edit_requirement");
+                    context_menu.disable_action("delete_requirement");
+                    context_menu.disable_action("duplicate_requirement");
+                }
+            });
 
     view->set_model(selection_model);
 
@@ -96,7 +89,7 @@ RequirementsIndexArea::RequirementsIndexArea(Gtk::Builder& builder) :
         Glib::RefPtr<Gtk::ColumnViewColumn> column = nullptr;
 
         if ((column = columns->get_typed_object<Gtk::ColumnViewColumn>(position)) != nullptr) {
-            const auto& gtk_id = column->get_id();
+            const auto &gtk_id = column->get_id();
             const auto factory = Gtk::SignalListItemFactory::create();
 
             if (gtk_id == "requirement_name") {
@@ -104,13 +97,16 @@ RequirementsIndexArea::RequirementsIndexArea(Gtk::Builder& builder) :
                 factory->signal_bind().connect(sigc::ptr_fun(&StorageObjectBase::bind_name));
             } else if (gtk_id == "requirement_statement") {
                 factory->signal_setup().connect(sigc::bind(&GTKHelpers::setup_label, true));
-                factory->signal_bind().connect(sigc::ptr_fun(&RequirementsIndexArea::on_bind_property_statement));
+                factory->signal_bind().connect(
+                        sigc::ptr_fun(&RequirementsIndexArea::on_bind_property_statement));
             } else if (gtk_id == "requirement_description") {
                 factory->signal_setup().connect(sigc::bind(&GTKHelpers::setup_label, false));
-                factory->signal_bind().connect(sigc::ptr_fun(&RequirementsIndexArea::on_bind_property_description));
+                factory->signal_bind().connect(
+                        sigc::ptr_fun(&RequirementsIndexArea::on_bind_property_description));
             } else if (gtk_id == "requirement_priority") {
                 factory->signal_setup().connect(sigc::bind(&GTKHelpers::setup_label, false));
-                factory->signal_bind().connect(sigc::ptr_fun(&RequirementsIndexArea::on_bind_property_priority));
+                factory->signal_bind().connect(
+                        sigc::ptr_fun(&RequirementsIndexArea::on_bind_property_priority));
             } else if (gtk_id == "requirement_test") {
                 factory->signal_setup().connect(sigc::bind(&GTKHelpers::setup_label, false));
                 factory->signal_bind().connect(sigc::ptr_fun(&RequirementsIndexArea::on_bind_property_test));
@@ -178,8 +174,8 @@ void RequirementsIndexArea::on_bind_property_description(const Glib::RefPtr<Gtk:
     const auto item = std::dynamic_pointer_cast<Requirement>(list_item->get_item());
 
     if (label != nullptr && item != nullptr)
-        Glib::Binding::bind_property(item->property_description(), label->property_label(),
-            Glib::Binding::Flags::SYNC_CREATE);
+        Glib::Binding::bind_property(
+                item->property_description(), label->property_label(), Glib::Binding::Flags::SYNC_CREATE);
 }
 
 void RequirementsIndexArea::on_bind_property_statement(const Glib::RefPtr<Gtk::ListItem> &list_item)
@@ -189,11 +185,8 @@ void RequirementsIndexArea::on_bind_property_statement(const Glib::RefPtr<Gtk::L
 
     if (label != nullptr && item != nullptr)
         Glib::Binding::bind_property(item->property_statement(), label->property_label(),
-            Glib::Binding::Flags::SYNC_CREATE,
-            [item](const Glib::ustring&)
-            {
-                return item->get_formatted_statement();
-            });
+                Glib::Binding::Flags::SYNC_CREATE,
+                [item](const Glib::ustring &) { return item->get_formatted_statement(); });
 }
 
 void RequirementsIndexArea::on_bind_property_priority(const Glib::RefPtr<Gtk::ListItem> &list_item)
@@ -216,9 +209,7 @@ void RequirementsIndexArea::on_bind_property_test(const Glib::RefPtr<Gtk::ListIt
         if (typed_tests != nullptr) {
             label->set_text(ManageTestsPopover::format_test_summary(*typed_tests));
             typed_tests->signal_items_changed().connect([label, typed_tests](guint, guint, guint) noexcept
-            {
-                label->set_text(ManageTestsPopover::format_test_summary(*typed_tests));
-            });
+                    { label->set_text(ManageTestsPopover::format_test_summary(*typed_tests)); });
         }
     }
 }

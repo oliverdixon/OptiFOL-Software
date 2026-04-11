@@ -28,9 +28,9 @@ endfunction()
 ## Optifol Generated Object Library ##
 ######################################
 
-# The "generated" object library controls the invocation of all non-GTK code-generators required for Optifol. Namely:
-# Flex (lexer, generates C++) and Bison (parser, generates C++). All generated source translation units are placed in
-# ${GENERATED_SRC_DIR}, and headers are placed in ${GENERATED_INCLUDE_DIR}.
+# The "generated" object library controls the invocation of all non-GTK code-generators required for Optifol.
+# Namely: Flex (lexer, generates C++) and Bison (parser, generates C++). All generated source translation
+# units are placed in ${GENERATED_SRC_DIR}, and headers are placed in ${GENERATED_INCLUDE_DIR}.
 
 find_package(FLEX REQUIRED)
 find_package(BISON REQUIRED)
@@ -62,8 +62,8 @@ flex_target(GoogleTestLexer
         ${GENERATED_SRC_DIR}/GoogleTestLexer.cpp
 )
 
-# Note that a very useful quality example of using CMake to generate multiple subclassed C++ lexers and parsers is
-# OpenSTA from Parallax Software: https://github.com/parallaxsw/OpenSTA.
+# Note that a very useful quality example of using CMake to generate multiple subclassed C++ lexers and
+# parsers is  OpenSTA from Parallax Software: https://github.com/parallaxsw/OpenSTA.
 add_flex_bison_dependency(FOLLexer FOLParser)
 add_flex_bison_dependency(GoogleTestLexer GoogleTestParser)
 
@@ -74,8 +74,9 @@ add_library(OptifolGenerated OBJECT
         ${FLEX_GoogleTestLexer_OUTPUTS}
 )
 
-# Flex and Bison generate all sorts of suspect melting pots of C and C++. It is assumed safe and correct to suppress all
-# compiler warnings produced by these programs, hence the grouping of all generated code into a distinct CMake target.
+# Flex and Bison generate all sorts of suspect melting pots of C and C++. It is assumed safe and correct to
+# suppress all compiler warnings produced by these programs, hence the grouping of all generated code into a
+# distinct CMake target.
 target_compile_options(OptifolGenerated PRIVATE -Wno-everything)
 
 target_include_directories(OptifolGenerated PRIVATE
@@ -368,9 +369,9 @@ set(MAINWINDOW_RESOURCE_COMPONENTS
         ${RESOURCE_DIR}/UI/MainWindow/replacements.txt
 )
 
-# Generate the Main Window UI specification file using the given Awk script. The Awk script nominally takes a number of
-# key-value pairs, defined in ./replacements.txt (relative to the location of the UI files), and replaces all instances
-# of the key with the contents of the file whose path is detained by the value.
+# Generate the Main Window UI specification file using the given Awk script. The Awk script nominally takes a
+# number of key-value pairs, defined in ./replacements.txt (relative to the location of the UI files), and
+# replaces all instances of the key with the contents of the file whose path is detained by the value.
 add_custom_command(
         OUTPUT ${MAINWINDOW_RESOURCE_OUTPUT}
         MAIN_DEPENDENCY ${MAINWINDOW_RESOURCE_INPUT}
@@ -380,34 +381,35 @@ add_custom_command(
         ARGS ${MAINWINDOW_RESOURCE_INPUT}
 )
 
-# Performs any CMake variable substitutions in the GResources manifest. This is required due to some included resource
-# files being generated dynamically, hence existing in an implementation-defined generated source directory.
+# Performs any CMake variable substitutions in the GResources manifest. This is required due to some included
+# resource files being generated dynamically, hence existing in an implementation-defined generated source
+# directory.
 configure_file(
         ${RESOURCE_XML_IN}
         ${RESOURCE_XML}
 )
 
 # The below command generates the 'resources.c' pseudo-blob with 'glib-compile-resources', containing octal
-# representations of GTK resources. This is later linked into the GUI target only. A Make-style depfile is also created
-# and retained in the generated sources root, using paths relative to the current binary directory, or absolute paths,
-# as required by the Ninja backend.
+# representations of GTK resources. This is later linked into the GUI target only. A Make-style depfile is also
+# created and retained in the generated sources root, using paths relative to the current binary directory, or
+# absolute paths, as required by the Ninja backend.
 add_custom_command(
         OUTPUT ${RESOURCE_OUT}
         MAIN_DEPENDENCY ${RESOURCE_XML}
         DEPENDS ${MAINWINDOW_RESOURCE_OUTPUT}
         DEPFILE ${RESOURCE_DEP}
         VERBATIM
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} # Encourage glib-compile-resources to emit relative paths
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} # Force glib-compile-resources to emit relative paths
         BYPRODUCTS ${RESOURCE_DEP} # Don't let Ninja absorb the depfile into its internal database
         COMMAND ${GLIB_COMPILE_RESOURCES}
         ARGS
-            --generate-source
-            --generate-phony-targets # Individual resource files are not generated
-            --dependency-file=${RESOURCE_DEP}
-            --target=${RESOURCE_OUT}
-            --sourcedir=${RESOURCE_DIR}
-            ${RESOURCE_XML}
-        COMMAND sed -i "s|${CMAKE_CURRENT_BINARY_DIR}/||g" ${RESOURCE_DEP} # Clean up any paths that should be relative
+        --generate-source
+        --generate-phony-targets # Individual resource files are not generated
+        --dependency-file=${RESOURCE_DEP}
+        --target=${RESOURCE_OUT}
+        --sourcedir=${RESOURCE_DIR}
+        ${RESOURCE_XML}
+        COMMAND sed -i "s|${CMAKE_CURRENT_BINARY_DIR}/||g" ${RESOURCE_DEP} # Clean up paths that are absolute
 )
 
 # Suppress compiler warnings known to be harmlessly invoked by glib-compile-resources translation units.
@@ -511,9 +513,6 @@ gtest_discover_tests(OptifolTesting)
 ######################################
 ## Optifol Documentation Generation ##
 ######################################
-
-# TODO 1: wrap external tagfile support into a function
-# TODO 2: i.a.w. the above, use to get tags for cppreference.com and externally GTKmm Doxygen, plus anything else of use
 
 set(DOXYGEN_OUTPUT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/GeneratedDocumentation)
 set(CPPREFERENCE_DOXYGEN_WEB_TAG ${DOXYGEN_OUTPUT_DIR}/cppreference-doxygen-web.tag.xml)

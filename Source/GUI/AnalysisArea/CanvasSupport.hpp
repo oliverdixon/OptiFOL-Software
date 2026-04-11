@@ -14,8 +14,8 @@
 #ifndef OPTIFOL_CANVASSUPPORT_HPP
 #define OPTIFOL_CANVASSUPPORT_HPP
 
-#include <cassert>
 #include <cairomm/context.h>
+#include <cassert>
 
 #include "../../Inference/ProofTreeNode.hpp"
 
@@ -48,7 +48,7 @@ struct NodeColour
      * @brief Set the given Cairo::Context to use the colour.
      * @param ctx The target Cairo::Context.
      */
-    void apply(Cairo::Context& ctx) const
+    void apply(Cairo::Context &ctx) const
     {
         ctx.set_source_rgb(red, green, blue);
     }
@@ -77,14 +77,14 @@ struct CanvasDrawable
      * @brief Draw the CanvasDrawable item in the colour currently selected by the Cairo::Context.
      * @param ctx The target canvas.
      */
-    virtual void draw(Cairo::Context& ctx) const = 0;
+    virtual void draw(Cairo::Context &ctx) const = 0;
 
     /**
      * @brief Draw the CanvasDrawable item in the given colour.
      * @param ctx The target canvas.
      * @param node_colour The normalised RGB colour.
      */
-    void draw(Cairo::Context& ctx, const NodeColour& node_colour) const
+    void draw(Cairo::Context &ctx, const NodeColour &node_colour) const
     {
         node_colour.apply(ctx);
         draw(ctx);
@@ -110,9 +110,10 @@ struct Point : CanvasDrawable
     Point(const float x, const float y) :
         x(x),
         y(y)
-    { }
+    {
+    }
 
-    void draw(Cairo::Context& ctx) const override
+    void draw(Cairo::Context &ctx) const override
     {
         ctx.arc(x, y, 5, 0, 2 * M_PI);
         ctx.stroke();
@@ -133,31 +134,33 @@ struct LineSegment : CanvasDrawable
      * @param p1 The first endpoint.
      * @param p2 The second endpoint.
      */
-    LineSegment(const Point& p1, const Point &p2) :
+    LineSegment(const Point &p1, const Point &p2) :
         endpoint_1(p1),
         endpoint_2(p2),
         gradient(p1.x == p2.x ? INFINITY : (p1.y - p2.y) / (p1.x - p2.x))
-    { }
+    {
+    }
 
     /**
      * @brief Determine the X coordinate on the non-horizontal line for the given Y coordinate.
      * @param y The Y position on the line for which the corresponding X is sought.
      * @throws std::runtime_error The line was horizontal, hence there is no unique X for a given Y.
      * @return The Point on the LineSegment at the given Y position.
-     * @note This function does not check that the returned pair is actually on the LineSegment. The API user should
-     *  verify that the given Y is within the bounds of the LineSegment endpoints.
+     * @note This function does not check that the returned pair is actually on the LineSegment. The API user
+     * should verify that the given Y is within the bounds of the LineSegment endpoints.
      */
     [[nodiscard]] Point trace(const float y) const
     {
         switch (std::fpclassify(gradient)) {
         case FP_INFINITE:
             // The line is vertical.
-            return { endpoint_1.x, y };
+            return {endpoint_1.x, y};
         case FP_ZERO:
             // The line is horizontal.
-            throw std::runtime_error("There is no unique X coordinate for a given Y on a horizontal line segment.");
+            throw std::runtime_error(
+                    "There is no unique X coordinate for a given Y on a horizontal line segment.");
         default:
-            return { endpoint_1.x + (y - endpoint_1.y) / gradient, y };
+            return {endpoint_1.x + (y - endpoint_1.y) / gradient, y};
         }
     }
 
@@ -167,10 +170,10 @@ struct LineSegment : CanvasDrawable
      */
     [[nodiscard]] Point get_midpoint() const noexcept
     {
-        return { (endpoint_1.x + endpoint_2.x) / 2, (endpoint_1.y + endpoint_2.y) / 2 };
+        return {(endpoint_1.x + endpoint_2.x) / 2, (endpoint_1.y + endpoint_2.y) / 2};
     }
 
-    void draw(Cairo::Context& ctx) const override
+    void draw(Cairo::Context &ctx) const override
     {
         ctx.move_to(endpoint_1.x, endpoint_1.y);
         ctx.line_to(endpoint_2.x, endpoint_2.y);
@@ -184,19 +187,21 @@ struct LineSegment : CanvasDrawable
 
 /**
  * @struct NodeDrawingAdapter
- * @brief A transparent cache of drawing information related to a ProofTreeNode, for direct use by AnalysisQueryCanvas.
+ * @brief A transparent cache of drawing information related to a ProofTreeNode, for direct use by
+ * AnalysisQueryCanvas.
  */
 struct NodeDrawingAdapter
 {
     /**
      * @brief Construct a new adapter for the given node, with optional LHS and RHS parents.
-     * @param node The self ProofTreeNode, typically a Resolvent, but sometimes a Clause (for axioms in the proof).
+     * @param node The self ProofTreeNode, typically a Resolvent, but sometimes a Clause (for axioms in the
+     * proof).
      * @param lhs An optional parent on the LHS.
      * @param rhs An optional parent on the RHS.
      * @note The given node must have exactly zero or exactly two parents; this is enforced at runtime.
      */
-    NodeDrawingAdapter(const ProofTreeNode * const node, const NodeDrawingAdapter * const lhs,
-            const NodeDrawingAdapter * const rhs) :
+    NodeDrawingAdapter(const ProofTreeNode *const node, const NodeDrawingAdapter *const lhs,
+            const NodeDrawingAdapter *const rhs) :
         node_label(generate_label(*node)),
         node(node),
         lhs(lhs),
@@ -215,9 +220,9 @@ struct NodeDrawingAdapter
 
     const std::string node_label;
     std::vector<std::string> edge_label_lines;
-    const ProofTreeNode * node;
-    const NodeDrawingAdapter * lhs = nullptr;
-    const NodeDrawingAdapter * rhs = nullptr;
+    const ProofTreeNode *node;
+    const NodeDrawingAdapter *lhs = nullptr;
+    const NodeDrawingAdapter *rhs = nullptr;
 
 private:
     /**
@@ -225,7 +230,7 @@ private:
      * @param node The node to serialise.
      * @return The serialised string produced from the node.
      */
-    static std::string generate_label(const ISerialisable& node)
+    static std::string generate_label(const ISerialisable &node)
     {
         std::ostringstream oss;
         oss << node;

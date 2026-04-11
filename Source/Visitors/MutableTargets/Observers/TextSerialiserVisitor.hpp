@@ -25,17 +25,16 @@ namespace optifol
 enum class BinaryOperatorTypes;
 enum class QuantifierTypes;
 
-class TextSerialiserVisitor :
-        public IObservingNodeVisitor
+class TextSerialiserVisitor : public IObservingNodeVisitor
 {
 public:
-    void visit(const MutableQuantified& node) override;
+    void visit(const MutableQuantified &node) override;
 
-    void visit(const MutableBinaryConnected& node) override;
+    void visit(const MutableBinaryConnected &node) override;
 
-    void visit(const MutablePredicate& node) override;
+    void visit(const MutablePredicate &node) override;
 
-    void visit(const MutableSentenceRoot& node) override;
+    void visit(const MutableSentenceRoot &node) override;
 
     void visit(const MutableFunction &node) override;
 
@@ -46,10 +45,10 @@ public:
 private:
     std::ostringstream output_stream;
 
-    void print_polarity(const IMutableSentence * node);
+    void print_polarity(const IMutableSentence *node);
 };
 
-}
+} // namespace optifol
 
 
 #endif

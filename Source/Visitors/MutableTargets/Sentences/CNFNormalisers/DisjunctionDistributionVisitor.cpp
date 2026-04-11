@@ -32,9 +32,9 @@ void DisjunctionDistributionVisitor::visit(MutableBinaryConnected &node)
 
     if (current_operator_type == BinaryOperatorTypes::Conjunction)
         /*
-         * If we're a conjunction node, we might be a candidate child. Transfer ownership of our LHS and RHS operands to
-         * the top layer of the operand stack, with the order determined by the tracking mode, to be returned by the
-         * attempt_reduction member function.
+         * If we're a conjunction node, we might be a candidate child. Transfer ownership of our LHS and RHS
+         * operands to the top layer of the operand stack, with the order determined by the tracking mode, to
+         * be returned by the attempt_reduction member function.
          */
         switch (tracking_mode) {
         case TrackingMode::LeftMajor:
@@ -57,8 +57,8 @@ void DisjunctionDistributionVisitor::visit(MutableBinaryConnected &node)
     if (current_operator_type == BinaryOperatorTypes::Disjunction) {
         /*
          * If we're a disjunction node, we might be a candidate parent. Check the left and right branches for
-         * candidate children, reducing recursively where necessary. Once we've reduced on both branches, and ownership
-         * has been returned, stop the tracking.
+         * candidate children, reducing recursively where necessary. Once we've reduced on both branches, and
+         * ownership has been returned, stop the tracking.
          */
 
         tracking_mode = TrackingMode::RightMajor;
@@ -88,13 +88,14 @@ bool DisjunctionDistributionVisitor::attempt_reduction(MutableBinaryConnected &n
 
     if (!tracked_operands.empty()) {
         /*
-         * If the tracked operands stack is non-empty, it still holds ownership of operands in clauses that need to be
-         * distributed. We consider four 'destination' operands based on the top layer of the stack used to construct
-         * the distributed conjunctive clause of disjuncts:
+         * If the tracked operands stack is non-empty, it still holds ownership of operands in clauses that
+         * need to be distributed. We consider four 'destination' operands based on the top layer of the stack
+         * used to construct the distributed conjunctive clause of disjuncts:
          *
          *  - LHS/LHS: The LHS operand of the first disjunct
          *  - LHS/RHS: The RHS operand of the first disjunct
-         *  - RHS/LHS: The LHS operand of the second disjunct. This is the distributed literal cloned from LHS/LHS.
+         *  - RHS/LHS: The LHS operand of the second disjunct. This is the distributed literal cloned from
+         * LHS/LHS.
          *  - RHS/RHS: The RHS operand of the second disjunct.
          */
 
@@ -107,19 +108,19 @@ bool DisjunctionDistributionVisitor::attempt_reduction(MutableBinaryConnected &n
 
         node.set_operator_type(BinaryOperatorTypes::Conjunction);
 
-        node.put_lhs_operand(std::make_unique<MutableBinaryConnected>(
-                BinaryOperatorTypes::Disjunction, std::move(destination_lhs_lhs), std::move(destination_lhs_rhs)));
+        node.put_lhs_operand(std::make_unique<MutableBinaryConnected>(BinaryOperatorTypes::Disjunction,
+                std::move(destination_lhs_lhs), std::move(destination_lhs_rhs)));
 
-        node.put_rhs_operand(std::make_unique<MutableBinaryConnected>(
-                BinaryOperatorTypes::Disjunction, std::move(destination_rhs_lhs), std::move(destination_rhs_rhs)));
+        node.put_rhs_operand(std::make_unique<MutableBinaryConnected>(BinaryOperatorTypes::Disjunction,
+                std::move(destination_rhs_lhs), std::move(destination_rhs_rhs)));
 
         tracked_operands.pop();
         MutatingSentenceVisitorBase::visit(node);
 
         /*
-         * The above recursive call should empty the tracked operands stack with this member function. If we end with a
-         * non-empty stack, it still owns operands that should've been returned to the MutableBinaryConnected or used to
-         * construct a new operand.
+         * The above recursive call should empty the tracked operands stack with this member function. If we
+         * end with a non-empty stack, it still owns operands that should've been returned to the
+         * MutableBinaryConnected or used to construct a new operand.
          */
         assert(tracked_operands.empty());
         return true;

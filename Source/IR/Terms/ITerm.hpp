@@ -35,13 +35,15 @@ class Function;
  *      </ul>
  *  </p>
  *  <p>
- *      All terms contain a display name, which is guaranteed to match the symbol identifier provided by the user. Terms
- *      also include a disambiguated name, which may or may not be equal to the display name and is resolved internally
- *      to guarantee uniqueness within the scope of a single sentence. More precisely, the disambiguated name is unique
- *      up to the outermost IR node, but not necessarily across multiple SentenceRoot or ITerm root objects.
+ *      All terms contain a display name, which is guaranteed to match the symbol identifier provided by the
+ * user. Terms also include a disambiguated name, which may or may not be equal to the display name and is
+ * resolved internally to guarantee uniqueness within the scope of a single sentence. More precisely, the
+ * disambiguated name is unique up to the outermost IR node, but not necessarily across multiple SentenceRoot
+ * or ITerm root objects.
  *  </p>
  */
-class ITerm : public IHashable, public ISerialisable
+class ITerm : public IHashable,
+              public ISerialisable
 {
 public:
     [[nodiscard]] std::size_t hash() const noexcept override

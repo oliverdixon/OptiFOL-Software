@@ -17,8 +17,8 @@
 #include <forward_list>
 
 #include "../../GUI/ProcessExecutor.hpp"
-#include "Test.hpp"
 #include "ExecutionGroup.hpp"
+#include "Test.hpp"
 #include "TestListenerBase.hpp"
 
 namespace optifol
@@ -43,7 +43,8 @@ public:
 
 private:
     /**
-     * @brief Handle the sub-process exit by distributing results from the listener pool to the Requirement objects.
+     * @brief Handle the sub-process exit by distributing results from the listener pool to the Requirement
+     * objects.
      * @param exit_code Exit code from the Google Test sub-process.
      */
     void distribute_results(int exit_code) const;
@@ -66,13 +67,14 @@ private:
     std::forward_list<Glib::RefPtr<Test>> tests;
 
     /**
-     * @brief The Google Test filter specification for the loaded @ref tests. The Google Test format for a single
-     *  fixture-test pair is <code>fixture.test:</code>. The colon is a delimiter and may be trailing.
+     * @brief The Google Test filter specification for the loaded @ref tests. The Google Test format for a
+     * single fixture-test pair is <code>fixture.test:</code>. The colon is a delimiter and may be trailing.
      */
     std::string filter_line_cache;
 
     /**
-     * @brief Is @ref filter_line_cache a representative Google Test filter string for the detained @ref tests?
+     * @brief Is @ref filter_line_cache a representative Google Test filter string for the detained @ref
+     * tests?
      */
     bool cache_ok = true;
 };

@@ -16,10 +16,10 @@
 #include <algorithm>
 #include <ranges>
 
-#include "../Exceptions/SemanticException.hpp"
-#include "../../../IR/SymbolRepository.hpp"
 #include "../../../IR/Sentences/Literal.hpp"
+#include "../../../IR/SymbolRepository.hpp"
 #include "../../../IR/Terms/Function.hpp"
+#include "../Exceptions/SemanticException.hpp"
 
 namespace optifol
 {
@@ -38,17 +38,14 @@ bool UnificationVisitor::visit(const Literal &predicate_gen, const Literal &pred
     if (predicate_gen.get_name() != predicate_inst.get_name())
         return false;
 
-    const auto& gen_args = predicate_gen.observe_arguments();
-    const auto& inst_args = predicate_inst.observe_arguments();
+    const auto &gen_args = predicate_gen.observe_arguments();
+    const auto &inst_args = predicate_inst.observe_arguments();
 
     if (gen_args.size() != inst_args.size())
         return false;
 
-    return std::ranges::all_of(std::ranges::views::zip(gen_args, inst_args),
-        [this](const auto& arg_pair)
-        {
-            return std::get<0>(arg_pair)->accept(*this, *std::get<1>(arg_pair));
-        });
+    return std::ranges::all_of(std::ranges::views::zip(gen_args, inst_args), [this](const auto &arg_pair)
+            { return std::get<0>(arg_pair)->accept(*this, *std::get<1>(arg_pair)); });
 }
 
 bool UnificationVisitor::visit(const Variable &variable_gen, const Function &function_inst)
@@ -80,8 +77,8 @@ bool UnificationVisitor::visit(const Function &function_gen, const Function &fun
     if (gen_args.size() != inst_args.size())
         return false;
 
-    return std::ranges::all_of(std::ranges::views::zip(gen_args, inst_args),
-        [this](const auto& arg_pair) { return std::get<0>(arg_pair)->accept(*this, *std::get<1>(arg_pair)); });
+    return std::ranges::all_of(std::ranges::views::zip(gen_args, inst_args), [this](const auto &arg_pair)
+            { return std::get<0>(arg_pair)->accept(*this, *std::get<1>(arg_pair)); });
 }
 
 const Unifier *UnificationVisitor::observe_substitutions() const noexcept
@@ -99,19 +96,22 @@ void UnificationVisitor::reset_substitutions() const noexcept
     substitutions->unifier.clear();
 }
 
-void UnificationVisitor::register_substitution(const Variable &bound_key, const IProcessedTerm &bound_value) const
+void UnificationVisitor::register_substitution(
+        const Variable &bound_key, const IProcessedTerm &bound_value) const
 {
     const auto variable_repo_ptr = symbol_repository->get_symbol_handle(bound_key);
     const auto bound_repo_ptr = symbol_repository->get_symbol_handle(bound_value);
 
     if (variable_repo_ptr == nullptr || bound_repo_ptr == nullptr)
-        throw SemanticException("Attempted to register substitution for " + bound_key.to_string() + " but the "
-            "Repository is incomplete.");
+        throw SemanticException("Attempted to register substitution for " + bound_key.to_string() +
+                " but the "
+                "Repository is incomplete.");
 
     substitutions->unifier.emplace(variable_repo_ptr, bound_repo_ptr);
 }
 
-bool UnificationVisitor::variable_generic(const Variable &variable_gen, const IProcessedTerm &generic_term_inst)
+bool UnificationVisitor::variable_generic(
+        const Variable &variable_gen, const IProcessedTerm &generic_term_inst)
 {
     const auto it = substitutions->unifier.find(variable_gen);
     if (it != substitutions->unifier.end())

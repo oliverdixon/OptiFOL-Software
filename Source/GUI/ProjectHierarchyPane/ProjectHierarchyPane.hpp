@@ -26,8 +26,8 @@ namespace optifol
 
 /**
  * @class ProjectHierarchyPane
- * @brief The manager of the UI view element representing an interactable tree of all projects and subsystems, typically
- *  derived from a backend storage controller.
+ * @brief The manager of the UI view element representing an interactable tree of all projects and subsystems,
+ * typically derived from a backend storage controller.
  */
 class ProjectHierarchyPane
 {
@@ -40,13 +40,13 @@ public:
     ProjectHierarchyPane(Gtk::Builder &builder, const Glib::RefPtr<Gio::ListStore<Project>> &initial_model);
 
     /**
-     * @brief Add a new listener whose callback routine should be called when a new Subsystem is selected, or the
-     *  previously selected one is deselected.
+     * @brief Add a new listener whose callback routine should be called when a new Subsystem is selected, or
+     * the previously selected one is deselected.
      * @param selected The callback to handle the changing of the active selection to a new Subsystem
      * @param deselected The callback to handle the deselection of the currently selected Subsystem
-     * @param onboard Should the newly added callback be invoked immediately to "onboard" the listener as to the current
-     *  state of the selection? The deselection callback is called during onboarding if and only if the present
-     *  selection is invalid or not a Subsystem.
+     * @param onboard Should the newly added callback be invoked immediately to "onboard" the listener as to
+     * the current state of the selection? The deselection callback is called during onboarding if and only if
+     * the present selection is invalid or not a Subsystem.
      */
     void add_subsystem_change_callback(sigc::slot<void(const Glib::RefPtr<Subsystem> &)> &&selected,
             sigc::slot<void()> &&deselected, bool onboard = true);
@@ -83,15 +83,15 @@ private:
     void configure_delete_structure_popover(Gtk::Builder &builder) const;
 
     /**
-     * @brief GTK callback for a new Gtk::ListItem. This member function handles the configuration of a new entry in the
-     *  Project Hierarchy view as an editable label.
+     * @brief GTK callback for a new Gtk::ListItem. This member function handles the configuration of a new
+     * entry in the Project Hierarchy view as an editable label.
      * @param item The new list item to configure for placement within the tree view
      */
     static void tree_node_setup(const Glib::RefPtr<Gtk::ListItem> &item);
 
     /**
-     * @brief GTK callback for a change of selection on the stack-switcher dropdown. The current state is checked, and
-     *  the corresponding stack page is made visible.
+     * @brief GTK callback for a change of selection on the stack-switcher dropdown. The current state is
+     * checked, and the corresponding stack page is made visible.
      */
     void switch_visible_stack() const;
 
@@ -108,13 +108,14 @@ private:
     void emit_selected(const Glib::RefPtr<Subsystem> &new_subsystem) const;
 
     /**
-     * @brief Emits a notification to all listeners that the previously selected subsystem has been deselected.
+     * @brief Emits a notification to all listeners that the previously selected subsystem has been
+     * deselected.
      */
     void emit_deselected() const;
 
     /**
-     * @brief Handle a selection change in the Project Hierarchy Pane by updating any internal state and informing
-     *  listeners
+     * @brief Handle a selection change in the Project Hierarchy Pane by updating any internal state and
+     * informing listeners
      */
     void switch_selection(guint) const;
 

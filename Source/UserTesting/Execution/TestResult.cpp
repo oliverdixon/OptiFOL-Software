@@ -25,7 +25,7 @@ TestResult::TestResult(Glib::ustring test_name, const bool passed, const std::si
     passed(passed),
     execution_time(execution_time)
 {
-    for (const auto& partial_result : partial_results)
+    for (const auto &partial_result: partial_results)
         this->partial_results->append(partial_result);
 }
 
@@ -74,7 +74,7 @@ bool TestResult::operator==(const TestResult &other) const noexcept
     return test_name == other.test_name && fixture_name == other.fixture_name;
 }
 
-bool TestResult::operator==(const std::pair<Glib::ustring, Glib::ustring>& names) const noexcept
+bool TestResult::operator==(const std::pair<Glib::ustring, Glib::ustring> &names) const noexcept
 {
     return names.first == fixture_name && names.second == test_name;
 }

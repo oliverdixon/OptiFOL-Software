@@ -28,11 +28,13 @@ IndexDuplicateRequirementPopover::IndexDuplicateRequirementPopover(
         Gtk::Builder &builder, RequirementsIndexArea &index_area) :
     index_area(index_area),
     my_popover(GTKHelpers::get_widget<Gtk::Popover>(popover_name, builder, "duplicate_requirement_popover")),
-    confirm_button(GTKHelpers::get_widget<Gtk::Button>(popover_name, builder, "duplicate_requirement_confirm")),
+    confirm_button(
+            GTKHelpers::get_widget<Gtk::Button>(popover_name, builder, "duplicate_requirement_confirm")),
     cancel_button(GTKHelpers::get_widget<Gtk::Button>(popover_name, builder, "duplicate_requirement_cancel")),
-    old_name_entry(
-            GTKHelpers::get_widget<Gtk::Entry>(popover_name, builder, "duplicate_requirement_property_old_name")),
-    new_name_entry(GTKHelpers::get_widget<Gtk::Entry>(popover_name, builder, "duplicate_requirement_property_new_name"))
+    old_name_entry(GTKHelpers::get_widget<Gtk::Entry>(
+            popover_name, builder, "duplicate_requirement_property_old_name")),
+    new_name_entry(GTKHelpers::get_widget<Gtk::Entry>(
+            popover_name, builder, "duplicate_requirement_property_new_name"))
 {
     confirm_button->signal_clicked().connect(
             sigc::mem_fun(*this, &IndexDuplicateRequirementPopover::confirm_button_clicked));
@@ -49,11 +51,11 @@ void IndexDuplicateRequirementPopover::confirm_button_clicked() const noexcept
         const auto subsystem = index_area.get_active_subsystem();
         subsystem->duplicate_requirement(*index_area.get_selection());
 
-        popover_logger->info("Duplicated new Subsystem Requirement with name \"" + new_name_entry->get_text() +
-            "\" from existing \"" + old_name_entry->get_text() + "\".");
-    } catch (const std::runtime_error& error) {
-        popover_logger->error("Could not duplicate Subsystem Requirement with name \"" + new_name_entry->get_text() +
-            "\".");
+        popover_logger->info("Duplicated new Subsystem Requirement with name \"" +
+                new_name_entry->get_text() + "\" from existing \"" + old_name_entry->get_text() + "\".");
+    } catch (const std::runtime_error &error) {
+        popover_logger->error("Could not duplicate Subsystem Requirement with name \"" +
+                new_name_entry->get_text() + "\".");
         popover_logger->error(error.what());
     }
 

@@ -1,5 +1,5 @@
 /*
-* Copyright (c) All Rights Reserved
+ * Copyright (c) All Rights Reserved
  * 2025 Oliver Dixon <od641@york.ac.uk>
  */
 
@@ -26,7 +26,8 @@ class IMutableSentence;
 
 /**
  * @class DMLVisitor
- * @brief The DML (De Morgan's Laws) Visitor applies De Morgan's Laws with negative reduction to eligible sentences.
+ * @brief The DML (De Morgan's Laws) Visitor applies De Morgan's Laws with negative reduction to eligible
+ * sentences.
  *
  * @details The DML visitor recursively rewrites the root model with the following rules:
  * <ul>
@@ -37,11 +38,11 @@ class IMutableSentence;
  *   <li><code>~%Ex(P(x))</code> becomes <code>%Ux(~P(x))</code>.</li>
  * </ul>
  *
- * @warning Although multiple passes are not required for this DML-normalising visitor, it does recurse on any produced
- * terms to ensure a full reduction. On extremely deeply nested sentences, this could cause a machine stack overflow.
+ * @warning Although multiple passes are not required for this DML-normalising visitor, it does recurse on any
+ * produced terms to ensure a full reduction. On extremely deeply nested sentences, this could cause a machine
+ * stack overflow.
  */
-class DMLVisitor :
-        public MutatingSentenceVisitorBase
+class DMLVisitor : public MutatingSentenceVisitorBase
 {
 public:
     [[nodiscard]] std::string_view get_visitor_name() const override;
@@ -51,9 +52,9 @@ public:
     void visit(MutableQuantified &node) override;
 
 private:
-    static const char * visitor_name;
+    static const char *visitor_name;
 };
 
-}
+} // namespace optifol
 
 #endif

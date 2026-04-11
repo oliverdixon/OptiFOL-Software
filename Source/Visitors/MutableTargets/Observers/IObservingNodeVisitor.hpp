@@ -31,19 +31,19 @@ class IObservingNodeVisitor
 public:
     virtual ~IObservingNodeVisitor() = default;
 
-    virtual void visit(const MutableQuantified& node) = 0;
+    virtual void visit(const MutableQuantified &node) = 0;
 
-    virtual void visit(const MutableBinaryConnected& node) = 0;
+    virtual void visit(const MutableBinaryConnected &node) = 0;
 
-    virtual void visit(const MutablePredicate& node) = 0;
+    virtual void visit(const MutablePredicate &node) = 0;
 
-    virtual void visit(const MutableSentenceRoot& node) = 0;
+    virtual void visit(const MutableSentenceRoot &node) = 0;
 
-    virtual void visit(const MutableFunction& node) = 0;
+    virtual void visit(const MutableFunction &node) = 0;
 
-    virtual void visit(const MutableVariable& node) = 0;
+    virtual void visit(const MutableVariable &node) = 0;
 };
 
-}
+} // namespace optifol
 
 #endif

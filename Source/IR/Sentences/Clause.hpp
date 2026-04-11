@@ -16,8 +16,8 @@
 
 #include <vector>
 
-#include "../Visitors/RegularTargets/FeatureBuildingVisitor.hpp"
 #include "../../Inference/ProofTreeNode.hpp"
+#include "../Visitors/RegularTargets/FeatureBuildingVisitor.hpp"
 #include "Literal.hpp"
 
 namespace optifol
@@ -38,18 +38,19 @@ class Literal;
  *      @f$ \exists L_i \in C \left( \lnot L_i \in C \right) @f$.
  *  </p>
  *  <p>
- *      This implementation models a tautology with @f$ C := \emptyset @f$. Trivial states can be further queried.
+ *      This implementation models a tautology with @f$ C := \emptyset @f$. Trivial states can be further
+ * queried.
  *  </p>
  */
-class Clause :
-    public OwningBuildable<Clause>,
-    public IHashable,
-    public ProofTreeNode
+class Clause : public OwningBuildable<Clause>,
+               public IHashable,
+               public ProofTreeNode
 {
 public:
     /**
      * @enum State
-     * @brief Triviality state of the Clause, indicating a bottom (unsatisfiable) or tautology (trivially satisfiable).
+     * @brief Triviality state of the Clause, indicating a bottom (unsatisfiable) or tautology (trivially
+     * satisfiable).
      */
     enum class State
     {
@@ -61,9 +62,11 @@ public:
 private:
     /**
      * @brief The collection of Literal objects
-     * @note An ordering according to Literal::operator<(const Literal&) is currently enforced on this container by
-     *  @ref Clause::Clause() and Clause::add_literal. Mathematically, a Clause is unordered due to the associativity of
-     *  FOL disjunction, but it's easier to keep an ordering here to detect tautologies or duplicate entries.
+     * @note An ordering according to Literal::operator<(const Literal&) is currently enforced on this
+     * container by
+     *  @ref Clause::Clause() and Clause::add_literal. Mathematically, a Clause is unordered due to the
+     * associativity of FOL disjunction, but it's easier to keep an ordering here to detect tautologies or
+     * duplicate entries.
      */
     std::vector<const Literal *> literals;
 
@@ -86,14 +89,13 @@ public:
      * @details Mutating the state of the Clause can change its structure. In particular:
      *  <ul>
      *      <li>If the same Literal is already present, it is silently rejected.</li>
-     *      <li>If the complentary Literal is already present, the Clause is deemed a tautology and has its store
-     *          cleared and state updated accordingly.</li>
-     *      <li>If none of the above, it is added. If the Clause was previously bottom, it is updated to
-     *          non-trivial.</li>
+     *      <li>If the complentary Literal is already present, the Clause is deemed a tautology and has its
+     * store cleared and state updated accordingly.</li> <li>If none of the above, it is added. If the Clause
+     * was previously bottom, it is updated to non-trivial.</li>
      *  </ul>
      * @param new_literal The incoming Literal to consider adding.
      */
-    void add_literal(const Literal * new_literal);
+    void add_literal(const Literal *new_literal);
 
     /**
      * @brief Reports on the triviality state of the Clause, indicating whether it is a tautology.
@@ -117,7 +119,7 @@ public:
 
     [[nodiscard]] std::size_t hash() const noexcept override;
 
-    bool operator<(const Clause& other) const noexcept;
+    bool operator<(const Clause &other) const noexcept;
 
     /**
      * @brief Determine equality between two Clauses by zipping the Literal nodes
@@ -144,15 +146,15 @@ public:
      */
     [[nodiscard]] bool is_unit() const noexcept override;
 
-    [[nodiscard]] const Clause * observe_node() const noexcept override;
+    [[nodiscard]] const Clause *observe_node() const noexcept override;
 
     [[nodiscard]] std::optional<const Unifier *> observe_edge() const noexcept override;
 
     [[nodiscard]] const std::vector<Feature> &observe_features() const noexcept;
 
-    void accept(FeatureBuildingVisitor& feature_component_builder) const;
+    void accept(FeatureBuildingVisitor &feature_component_builder) const;
 
-    [[nodiscard]] bool subsumes(const Clause& other_clause, UnificationVisitor& visitor) const;
+    [[nodiscard]] bool subsumes(const Clause &other_clause, UnificationVisitor &visitor) const;
 
 private:
     /**
@@ -164,7 +166,7 @@ private:
 
     void recompute_feature_vector() noexcept;
 
-    void recompute_feature_vector(const Literal& literal) noexcept;
+    void recompute_feature_vector(const Literal &literal) noexcept;
 
     std::vector<Feature> features;
     FeatureBuildingVisitor feature_building_visitor;

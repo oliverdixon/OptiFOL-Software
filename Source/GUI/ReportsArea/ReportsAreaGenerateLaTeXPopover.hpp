@@ -35,21 +35,17 @@ class ReportsArea;
 /**
  * @class ReportsAreaGenerateLaTeXPopover
  * @brief Manage the "Generate LaTeX" popover for the Releases and Reports Area
- * @note Instantiations of this class mutate the graphical environment via the given Gtk::Builder. As such, it should be
- *  regarded an effective singleton as multiple instantiations will cause conflicts with the GTK+ runtime due to
- *  multiply registered callbacks.
+ * @note Instantiations of this class mutate the graphical environment via the given Gtk::Builder. As such, it
+ * should be regarded an effective singleton as multiple instantiations will cause conflicts with the GTK+
+ * runtime due to multiply registered callbacks.
  * @see ReportsArea for parent area
  *
  * @details
  *  <p>
- *      The "Generate LaTeX" popover provides controls for setting LaTeX-specific options in the automated report-
- *      generation process and invoking the external commands to construct a LaTeX and subsequent PDF document. The
- *      following GTK elements are expected from the given Gtk::Builder:
- *      <table>
- *          <tr>
- *              <th>GTK C++ Class</th>
- *              <th>Unique Identifier</th>
- *              <th>Purpose</th>
+ *      The "Generate LaTeX" popover provides controls for setting LaTeX-specific options in the automated
+ * report- generation process and invoking the external commands to construct a LaTeX and subsequent PDF
+ * document. The following GTK elements are expected from the given Gtk::Builder: <table> <tr> <th>GTK C++
+ * Class</th> <th>Unique Identifier</th> <th>Purpose</th>
  *          </tr>
  *          <tr>
  *              <td>Gtk::Popover</td>
@@ -97,16 +93,16 @@ class ReportsArea;
  *              <td>Container including compiler output and some visual separators</td>
  *          </tr>
  *      </table>
- *      A @ref std::runtime_error will be thrown by the class constructor if any of these are inaccessible in the
- *      expected type instantiations.
+ *      A @ref std::runtime_error will be thrown by the class constructor if any of these are inaccessible in
+ * the expected type instantiations.
  *  </p>
  *  <p>
- *      The implementation and state machine of this class is complicated by the process of despatching and watching the
- *      output buffers (via numerical file descriptors for <code>stdout</code> and <code>stderr</code>) of external
- *      processes; in particular, the <code>latexmk</code> utility used to build PDFs from LaTeX (<code>.tex</code>)
- *      source files. The implementation here is believed to be reasonably fool-proof, albeit specialised to the single
- *      use-case, and elegantly handles data from both standard output streams, errors, and HUPs indicating process
- *      completion.
+ *      The implementation and state machine of this class is complicated by the process of despatching and
+ * watching the output buffers (via numerical file descriptors for <code>stdout</code> and
+ * <code>stderr</code>) of external processes; in particular, the <code>latexmk</code> utility used to build
+ * PDFs from LaTeX (<code>.tex</code>) source files. The implementation here is believed to be reasonably
+ * fool-proof, albeit specialised to the single use-case, and elegantly handles data from both standard output
+ * streams, errors, and HUPs indicating process completion.
  *  </p>
  */
 class ReportsAreaGenerateLaTeXPopover : public sigc::trackable
@@ -118,12 +114,12 @@ public:
      * @param reports_area An observing reference to the view of which the popover is a member
      * @throws std::runtime_error A required GTK element/widget could not be loaded from the given builder
      */
-    ReportsAreaGenerateLaTeXPopover(Gtk::Builder& builder, const ReportsArea& reports_area);
+    ReportsAreaGenerateLaTeXPopover(Gtk::Builder &builder, const ReportsArea &reports_area);
 
 private:
     /**
-     * @brief Handle a click of the <i>Confirm</i> button by generating LaTeX with latexmk and providing real-time
-     *  feedback
+     * @brief Handle a click of the <i>Confirm</i> button by generating LaTeX with latexmk and providing
+     * real-time feedback
      */
     void confirm_button_clicked();
 
@@ -138,44 +134,46 @@ private:
     void clear_inputs();
 
     /**
-     * @brief Handle a click of the <i>Open Output Directory</i> button by temporarily hiding the popover and raising a
-     *  native Gtk::FileDialog file-chooser.
+     * @brief Handle a click of the <i>Open Output Directory</i> button by temporarily hiding the popover and
+     * raising a native Gtk::FileDialog file-chooser.
      * @details A callback is registered on the error-tolerant
-     *  @ref open_directory_finished(const Glib::RefPtr<Gio::AsyncResult>&) to handle the completion of the dialog.
-     *  Until the dialog is closed/completed, the entire popover will remain hidden and inoperable.
+     *  @ref open_directory_finished(const Glib::RefPtr<Gio::AsyncResult>&) to handle the completion of the
+     * dialog. Until the dialog is closed/completed, the entire popover will remain hidden and inoperable.
      */
     void open_directory_button_clicked();
 
     /**
-     * @brief Handle a completed session of the directory-chooser dialog and update any changes in the popover state
+     * @brief Handle a completed session of the directory-chooser dialog and update any changes in the popover
+     * state
      * @param result The asynchronously produced result of the Gtk::FileDialog session
      */
     void open_directory_finished(const Glib::RefPtr<Gio::AsyncResult> &result);
 
     /**
      * @brief Handle completion of the asynchronous executor.
-     * @note This callback does not reset the generator instance, as it would be typically called from the instance.
-     *  Hence, the generator instance persists in memory until it is replaced by another despatcher.
+     * @note This callback does not reset the generator instance, as it would be typically called from the
+     * instance. Hence, the generator instance persists in memory until it is replaced by another despatcher.
      */
     void post_generation_callback() const;
 
     /**
-     * @brief Handle a toggle of the <i>Show Details</i> button by showing or hiding the latexmk/pdflatex output
+     * @brief Handle a toggle of the <i>Show Details</i> button by showing or hiding the latexmk/pdflatex
+     * output
      */
     void show_details_toggled() const;
 
-    static const char * const popover_name;
+    static const char *const popover_name;
     static const log4cxx::LoggerPtr popover_logger;
 
-    const ReportsArea& reports_area;
+    const ReportsArea &reports_area;
     const Glib::RefPtr<Gtk::TextBuffer> buffer;
-    Gtk::Popover * const my_popover;
-    Gtk::Box * const details_container;
-    Gtk::Entry * const output_directory_entry;
-    Gtk::Button * const confirm_button;
-    Gtk::Button * const cancel_button;
+    Gtk::Popover *const my_popover;
+    Gtk::Box *const details_container;
+    Gtk::Entry *const output_directory_entry;
+    Gtk::Button *const confirm_button;
+    Gtk::Button *const cancel_button;
     const Glib::RefPtr<Gtk::FileDialog> open_dialog;
-    Gtk::CheckButton * const show_details_check;
+    Gtk::CheckButton *const show_details_check;
 
     Glib::RefPtr<Gio::File> output_directory;
     std::optional<LaTeXReportGenerator> generator;

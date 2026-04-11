@@ -24,11 +24,10 @@ namespace optifol
 
 /**
  * @class UnidirectionalUnificationTest
- * @brief Tests the UnificationVisitor to verify that valid substitutions are constructed in the Generalisation only to
- *  unify pairs of sentences.
+ * @brief Tests the UnificationVisitor to verify that valid substitutions are constructed in the
+ * Generalisation only to unify pairs of sentences.
  */
-class UnidirectionalUnificationTest :
-        public testing::Test
+class UnidirectionalUnificationTest : public testing::Test
 {
 protected:
     std::unique_ptr<UnificationVisitor> unification_visitor;
@@ -40,9 +39,10 @@ protected:
     }
 
     template<typename TermType, class... CtorArgs>
-    [[nodiscard]] const TermType * register_symbol(CtorArgs&&... ctor_args) const
+    [[nodiscard]] const TermType *register_symbol(CtorArgs &&...ctor_args) const
     {
-        return symbol_repository->add_symbol(std::make_unique<TermType>(std::forward<CtorArgs>(ctor_args)...));
+        return symbol_repository->add_symbol(
+                std::make_unique<TermType>(std::forward<CtorArgs>(ctor_args)...));
     }
 
 private:
@@ -50,8 +50,8 @@ private:
 };
 
 /**
- * @brief Tests basic functionality of the UnidirectionalUnificationTest for a single pair of unifiable literals with
- *  one applicable Function / Variable substitution.
+ * @brief Tests basic functionality of the UnidirectionalUnificationTest for a single pair of unifiable
+ * literals with one applicable Function / Variable substitution.
  * @details
  *  <ul>
  *      <li>Generalisation: @f$ P \left( C\left(\right), x \right) @f$</li>
@@ -66,8 +66,8 @@ TEST_F(UnidirectionalUnificationTest, Positive_SingleBinding_FuncVar)
     const auto d = register_symbol<Function>("D");
     const auto x = register_symbol<Variable>("x");
 
-    const auto gen = register_symbol<Literal>("P", std::vector<const IProcessedTerm *>{ c, x });
-    const auto inst = register_symbol<Literal>("P", std::vector<const IProcessedTerm *>{ c, d });
+    const auto gen = register_symbol<Literal>("P", std::vector<const IProcessedTerm *>{c, x});
+    const auto inst = register_symbol<Literal>("P", std::vector<const IProcessedTerm *>{c, d});
 
     EXPECT_TRUE(gen->accept(*unification_visitor, *inst));
 
@@ -76,8 +76,8 @@ TEST_F(UnidirectionalUnificationTest, Positive_SingleBinding_FuncVar)
 }
 
 /**
- * @brief Tests basic functionality of the UnidirectionalUnificationTest for a single pair of non-unifiable literals,
- *  verifying that valid substitutions in the instance are refused.
+ * @brief Tests basic functionality of the UnidirectionalUnificationTest for a single pair of non-unifiable
+ * literals, verifying that valid substitutions in the instance are refused.
  * @details
  *  <ul>
  *      <li>Generalisation: @f$ P \left( C\left(\right), x \right) @f$</li>
@@ -91,10 +91,10 @@ TEST_F(UnidirectionalUnificationTest, Negative_SingleBinding_VarFunc)
     const auto d = register_symbol<Function>("D");
     const auto x = register_symbol<Variable>("x");
 
-    const auto gen = register_symbol<Literal>("P", std::vector<const IProcessedTerm *>{ c, d });
-    const auto inst = register_symbol<Literal>("P", std::vector<const IProcessedTerm *>{ c, x });
+    const auto gen = register_symbol<Literal>("P", std::vector<const IProcessedTerm *>{c, d});
+    const auto inst = register_symbol<Literal>("P", std::vector<const IProcessedTerm *>{c, x});
 
     EXPECT_FALSE(gen->accept(*unification_visitor, *inst));
 }
 
-}
+} // namespace optifol

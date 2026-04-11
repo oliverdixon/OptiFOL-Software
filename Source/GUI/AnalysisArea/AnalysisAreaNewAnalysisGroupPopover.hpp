@@ -29,14 +29,11 @@ class AnalysisArea;
  * @class AnalysisAreaNewAnalysisGroupPopover
  * @brief Manage the <i>New Analysis Group</i> popover for the Analysis area
  * @see AnalysisArea for the parent area
- * 
+ *
  * @details
- *  The <i>New Analysis Group</i> popover provides controls for creating a new AnalysisGroup, consisting of one or more
- *  Requirement objects from the active Subsystem, to be subject to mathematical analysis. The following GTK elements
- *  are expected from the given Gtk::Builder:
- *  <table>
- *      <tr>
- *          <th>GTK C++ Class</th>
+ *  The <i>New Analysis Group</i> popover provides controls for creating a new AnalysisGroup, consisting of
+ * one or more Requirement objects from the active Subsystem, to be subject to mathematical analysis. The
+ * following GTK elements are expected from the given Gtk::Builder: <table> <tr> <th>GTK C++ Class</th>
  *          <th>Unique Identifier</th>
  *          <th>Purpose</th>
  *      </tr>
@@ -61,8 +58,8 @@ class AnalysisArea;
  *          <td>Text entry area for the name of the new AnalysisGroup</td>
  *      </tr>
  *  </table>
- *  A @ref std::runtime_error will be thrown by the class constructor if any of these are inaccessible in the expected
- *  type instantiations.
+ *  A @ref std::runtime_error will be thrown by the class constructor if any of these are inaccessible in the
+ * expected type instantiations.
  */
 class AnalysisAreaNewAnalysisGroupPopover : public sigc::trackable
 {
@@ -73,7 +70,7 @@ public:
      * @param analysis_area A mutating reference to the view of which the popover is a member
      * @throws std::runtime_error A required GTK element/widget could not be loaded from the given builder
      */
-    AnalysisAreaNewAnalysisGroupPopover(Gtk::Builder& builder, AnalysisArea& analysis_area);
+    AnalysisAreaNewAnalysisGroupPopover(Gtk::Builder &builder, AnalysisArea &analysis_area);
 
 private:
     /**
@@ -91,14 +88,14 @@ private:
      */
     void clear_inputs() const;
 
-    static const char * const popover_name;
+    static const char *const popover_name;
     static const log4cxx::LoggerPtr popover_logger;
 
-    AnalysisArea& analysis_area;
-    Gtk::Popover * const my_popover;
-    Gtk::Button * const confirm_button;
-    Gtk::Button * const cancel_button;
-    Gtk::Entry * const name_entry;
+    AnalysisArea &analysis_area;
+    Gtk::Popover *const my_popover;
+    Gtk::Button *const confirm_button;
+    Gtk::Button *const cancel_button;
+    Gtk::Entry *const name_entry;
 };
 
 } // namespace optifol

@@ -22,15 +22,16 @@ namespace optifol
 
 /**
  * @class SentenceRoot
- * @brief A SentenceRoot denotes the root node of an immutable IR node set. It contains conjunctive clauses of literals
- *  under disjunction, where the literals are weak references to a lifetime-assured SymbolRepository.
+ * @brief A SentenceRoot denotes the root node of an immutable IR node set. It contains conjunctive clauses of
+ * literals under disjunction, where the literals are weak references to a lifetime-assured SymbolRepository.
  */
-class SentenceRoot : public IProcessedSentence, public OwningBuildable<SentenceRoot>
+class SentenceRoot : public IProcessedSentence,
+                     public OwningBuildable<SentenceRoot>
 {
 public:
     [[nodiscard]] bool is_negative_polarity() const noexcept override;
 
-    std::ostream& serialise(std::ostream &ostream) const override;
+    std::ostream &serialise(std::ostream &ostream) const override;
 
     [[nodiscard]] std::size_t hash() const noexcept override;
 

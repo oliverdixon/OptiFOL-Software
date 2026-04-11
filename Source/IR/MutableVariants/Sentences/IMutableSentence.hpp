@@ -28,16 +28,16 @@ class IProcessedSentence;
 
 /**
  * @class IMutableSentence
- * @brief A mutable sentence is a sentence IR node with properties useful during parsing and normalisation, prior to
- *  formal analysis.
+ * @brief A mutable sentence is a sentence IR node with properties useful during parsing and normalisation,
+ * prior to formal analysis.
  * @details A mutable sentence, in general, has the following properties:
  *  <ul>
  *      <li>
- *          Any child nodes (e.g. arguments to a MutablePredicate, bound sentences to MutableQuantified, etc.) are
- *          strictly owned by explicitly transferable containers, typically a @ref std::unique_ptr. Immutable observing
- *          pointers can be extracted without requiring a non-constant object, but for mutation ownership needs to be
- *          explicitly stolen from the sentence node and later returned through <code>steal</code> and <code>put</code>
- *          member functions.
+ *          Any child nodes (e.g. arguments to a MutablePredicate, bound sentences to MutableQuantified, etc.)
+ * are strictly owned by explicitly transferable containers, typically a @ref std::unique_ptr. Immutable
+ * observing pointers can be extracted without requiring a non-constant object, but for mutation ownership
+ * needs to be explicitly stolen from the sentence node and later returned through <code>steal</code> and
+ * <code>put</code> member functions.
  *      </li>
  *      <li>
  *          POD metadata (e.g. display names and operator types for MutableBinaryConnected) are changeable on
@@ -49,7 +49,8 @@ class IMutableSentence : public ISentence
 {
 public:
     /**
-     * @brief Perform a deep-copy of the sentence and produce a copy wrapped in a transferable @ref std::unique_ptr.
+     * @brief Perform a deep-copy of the sentence and produce a copy wrapped in a transferable @ref
+     * std::unique_ptr.
      * @return The container containing the copied sentence.
      */
     [[nodiscard]] virtual std::unique_ptr<IMutableSentence> clone() const = 0;

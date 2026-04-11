@@ -21,10 +21,10 @@ namespace optifol
 
 /**
  * @class FOLParserTest
- * @brief Provide a convenient input-streamer to the FOL lexer and parser for use with the Google Test framework
+ * @brief Provide a convenient input-streamer to the FOL lexer and parser for use with the Google Test
+ * framework
  */
-class FOLParserTest :
-        public testing::Test
+class FOLParserTest : public testing::Test
 {
 protected:
     void TearDown() override
@@ -38,7 +38,7 @@ protected:
      * @param expected The expected output sentence structure. The sentence is wrapped in a positive
      *  MutableSentenceRoot.
      */
-    void equality_on_input(const char *test, std::unique_ptr<IMutableSentence>&& expected)
+    void equality_on_input(const char *test, std::unique_ptr<IMutableSentence> &&expected)
     {
         lexer_input_stream.str(test);
         parser.parse();

@@ -20,8 +20,7 @@ namespace optifol
 enum class QuantifierTypes;
 enum class BinaryOperatorTypes;
 
-class LaTeXSerialisationVisitor :
-        public IObservingNodeVisitor
+class LaTeXSerialisationVisitor : public IObservingNodeVisitor
 {
 public:
     void visit(const MutableSentenceRoot &node) override;
@@ -41,7 +40,7 @@ public:
 private:
     [[nodiscard]] static const char *get_quantifier_symbol(QuantifierTypes quantifier) noexcept;
 
-    [[nodiscard]] static const char * get_connected_symbol(BinaryOperatorTypes op) noexcept;
+    [[nodiscard]] static const char *get_connected_symbol(BinaryOperatorTypes op) noexcept;
 
     std::ostringstream latex;
 };

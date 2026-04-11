@@ -24,24 +24,23 @@ namespace optifol
 
 class IMutableSentence;
 
-class UniversalEliminationVisitor :
-        public MutatingSentenceVisitorBase
+class UniversalEliminationVisitor : public MutatingSentenceVisitorBase
 {
 public:
     [[nodiscard]] std::string_view get_visitor_name() const override;
 
-    void visit(MutableQuantified& node) override;
+    void visit(MutableQuantified &node) override;
 
     void visit(MutableBinaryConnected &node) override;
 
-    void visit(MutableSentenceRoot& node) override;
+    void visit(MutableSentenceRoot &node) override;
 
 private:
-    static const char * visitor_name;
+    static const char *visitor_name;
 
     std::unique_ptr<IMutableSentence> extracted_sentence;
 };
 
-}
+} // namespace optifol
 
 #endif

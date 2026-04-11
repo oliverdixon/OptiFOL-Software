@@ -26,8 +26,8 @@ class Resolvent;
 
 /**
  * @class ResolventQueue
- * @brief The ResolventQueue is a specialised @ref std::priority_queue style of max-heap enabling ordered retrieval of
- *  Resolvents and temporary unstructured ownership of their corresponding resolution clauses.
+ * @brief The ResolventQueue is a specialised @ref std::priority_queue style of max-heap enabling ordered
+ * retrieval of Resolvents and temporary unstructured ownership of their corresponding resolution clauses.
  */
 class ResolventQueue
 {
@@ -42,8 +42,8 @@ public:
     void push(Resolvent element, std::unique_ptr<Clause> &&resolution);
 
     /**
-     * @brief Pop and return the maximal Resolvent from the queue, where order is determined by the @ref std::less
-     *  functor on Resolvent. This does not change ownership of resolution Clauses.
+     * @brief Pop and return the maximal Resolvent from the queue, where order is determined by the @ref
+     * std::less functor on Resolvent. This does not change ownership of resolution Clauses.
      * @return The maximal Resolvent owned by the queue.
      * @throws std::runtime_error if the resolvent queue is empty.
      */
@@ -54,7 +54,7 @@ public:
      * @param resolvent The Resolvent which resolves to the desired Clause.
      * @return An owning container for the resolution Clause.
      */
-    std::unique_ptr<Clause> extract_resolution(const Resolvent& resolvent);
+    std::unique_ptr<Clause> extract_resolution(const Resolvent &resolvent);
 
     /**
      * @brief Confer ownership of a resolution Clause into the ResolventQueue.

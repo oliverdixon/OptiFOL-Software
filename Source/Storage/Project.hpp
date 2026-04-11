@@ -21,18 +21,18 @@ namespace optifol
 {
 /**
  * @class Project
- * @brief The Project storage forms the top level of the Optifol object hierarchy; it contains many subsystems.
+ * @brief The Project storage forms the top level of the Optifol object hierarchy; it contains many
+ * subsystems.
  */
-class Project :
-        public StorageObjectBase,
-        public TreeNode
+class Project : public StorageObjectBase,
+                public TreeNode
 {
 public:
     /**
      * @brief Create a new Project with the given name and register in the Glib GType system
      * @param name The initial name of the Project
      */
-    explicit Project(std::string&& name);
+    explicit Project(std::string &&name);
 
     /**
      * @brief Create a new Project with the given name and register in the Glib GType system
@@ -40,7 +40,7 @@ public:
      * @param cobject The C cast-item used by Glib::Object
      * @param builder Currently unused builder parameter to provide to the Glib::Object instance
      */
-    Project(std::string&& name, BaseObjectType* cobject, const Glib::RefPtr<Gtk::Builder>& builder);
+    Project(std::string &&name, BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &builder);
 
     /**
      * @brief Tests a couple of projects for equality
@@ -48,7 +48,7 @@ public:
      * @return Is the current project the same as the other project?
      * @note This comparator determines equality by project metadata.
      */
-    bool operator==(const Project& other) const noexcept;
+    bool operator==(const Project &other) const noexcept;
 
     /**
      * @brief Generate a path for a root-level Project, prepended with an oblique
@@ -57,6 +57,6 @@ public:
     [[nodiscard]] std::string get_path() const override;
 };
 
-}
+} // namespace optifol
 
 #endif

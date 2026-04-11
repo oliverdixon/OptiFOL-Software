@@ -21,14 +21,16 @@ class Literal;
 class IProcessedSentence : public ISentence
 {
 public:
-    [[nodiscard]] virtual bool accept(IObservingBinaryVisitor &binary_visitor, const IProcessedSentence &sentence) const
+    [[nodiscard]] virtual bool accept(
+            IObservingBinaryVisitor &binary_visitor, const IProcessedSentence &sentence) const
     {
         std::ignore = binary_visitor;
         std::ignore = sentence;
         return false;
     }
 
-    [[nodiscard]] virtual bool accept(IObservingBinaryVisitor &unification_visitor, const Literal &predicate) const
+    [[nodiscard]] virtual bool accept(
+            IObservingBinaryVisitor &unification_visitor, const Literal &predicate) const
     {
         std::ignore = unification_visitor;
         std::ignore = predicate;

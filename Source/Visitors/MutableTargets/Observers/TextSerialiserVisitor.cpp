@@ -17,8 +17,8 @@
 #include "../../../IR/MutableVariants/Sentences/MutablePredicate.hpp"
 #include "../../../IR/MutableVariants/Sentences/MutableQuantified.hpp"
 #include "../../../IR/MutableVariants/Sentences/MutableSentenceRoot.hpp"
-#include "../../../IR/MutableVariants/Terms/MutableVariable.hpp"
 #include "../../../IR/MutableVariants/Terms/MutableFunction.hpp"
+#include "../../../IR/MutableVariants/Terms/MutableVariable.hpp"
 
 namespace optifol
 {
@@ -46,7 +46,7 @@ void TextSerialiserVisitor::visit(const MutableBinaryConnected &node)
 
 void TextSerialiserVisitor::visit(const MutablePredicate &node)
 {
-    const auto& arguments = node.observe_arguments();
+    const auto &arguments = node.observe_arguments();
     print_polarity(&node);
     output_stream << node.get_name() << '(';
 
@@ -67,7 +67,7 @@ void TextSerialiserVisitor::visit(const MutableSentenceRoot &node)
 
 void TextSerialiserVisitor::visit(const MutableFunction &node)
 {
-    const auto& arguments = node.observe_arguments();
+    const auto &arguments = node.observe_arguments();
     output_stream << node.get_disambiguated_name() << '(';
 
     const auto argument_count = arguments.size();
@@ -98,4 +98,4 @@ void TextSerialiserVisitor::print_polarity(const IMutableSentence *node)
         output_stream << '~';
 }
 
-}
+} // namespace optifol

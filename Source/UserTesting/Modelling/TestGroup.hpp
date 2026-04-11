@@ -25,31 +25,30 @@ namespace optifol
  * @class TestGroup
  * @brief A TestGroup is a user-populated structure that groups Test objects.
  * @details
- *  Internally, a TestGroup maintains a number of models that must be synchronised. Most of the implementation of
- *  TestGroup is focused on keeping these models synchronised through a series of callbacks. There are three models of
- *  note:
- *  <ol>
- *      <li>
- *          <b>The Requirement model.</b> Provided by the ObjectGroup<Requirement> base class, the TestGroup groups
- *          Requirement objects endowed with Test objects. This may seem counter-intuitive, but it is desired
- *          behaviour. It means that Test objects must be added via their constituent Requirement parents, which
- *          allows the TestGroup to directly expose Test instances grouped according to the corresponding
- *          Requirement. As the ObjectGroup CRTP base class is being used, Requirement objects are transparently
- *          held in both a linear model (iteration) and a hashed model (lookup) that are invariantly synchronised.
+ *  Internally, a TestGroup maintains a number of models that must be synchronised. Most of the implementation
+ * of TestGroup is focused on keeping these models synchronised through a series of callbacks. There are three
+ * models of note: <ol> <li> <b>The Requirement model.</b> Provided by the ObjectGroup<Requirement> base
+ * class, the TestGroup groups Requirement objects endowed with Test objects. This may seem counter-intuitive,
+ * but it is desired behaviour. It means that Test objects must be added via their constituent Requirement
+ * parents, which allows the TestGroup to directly expose Test instances grouped according to the
+ * corresponding Requirement. As the ObjectGroup CRTP base class is being used, Requirement objects are
+ * transparently held in both a linear model (iteration) and a hashed model (lookup) that are invariantly
+ * synchronised.
  *      </li>
  *      <li>
- *          <b>The ExecutionGroup model.</b> Provided by an implementation detail, ExecutionGroup objects aggregate
- *          Test objects (irrespective of Requirement) according to their associated TestExecutable. Therefore, in
- *          addition to a model centred on Requirement, there is a model centred on TestExecutable. ExecutionGroup
- *          objects can be accessed via the iterator-based member functions @ref begin_execution_groups and
+ *          <b>The ExecutionGroup model.</b> Provided by an implementation detail, ExecutionGroup objects
+ * aggregate Test objects (irrespective of Requirement) according to their associated TestExecutable.
+ * Therefore, in addition to a model centred on Requirement, there is a model centred on TestExecutable.
+ * ExecutionGroup objects can be accessed via the iterator-based member functions @ref begin_execution_groups
+ * and
  *          @ref end_execution_groups.
  *      </li>
  *      <li>
- *          <b>The TestResult and PartialTestResult model.</b> Provided by ObjectGroup<Test>, the TestGroup groups
- *          TestResult and PartialTestResult objects based on the Test to which they refer, irrespective of
+ *          <b>The TestResult and PartialTestResult model.</b> Provided by ObjectGroup<Test>, the TestGroup
+ * groups TestResult and PartialTestResult objects based on the Test to which they refer, irrespective of
  *          Requirement or TestExecutable. This enables a second 'view' of the TestGroup, accessible via the
- *          ITestModelNode member functions, displaying TestResult information without regard to the Requirement
- *          structure.
+ *          ITestModelNode member functions, displaying TestResult information without regard to the
+ * Requirement structure.
  *      </li>
  *  </ol>
  */
@@ -79,7 +78,7 @@ public:
      * @param other The TestGroup with which equality should be tested.
      * @return Is the object equivalent to the given TestGroup?
      */
-    [[nodiscard]] bool operator==(const TestGroup & other) const noexcept;
+    [[nodiscard]] bool operator==(const TestGroup &other) const noexcept;
 
     [[nodiscard]] Glib::RefPtr<Gtk::TreeListModel> get_tests_tree() const noexcept override;
 
@@ -101,19 +100,20 @@ public:
      * @brief Bind the name of the TestGroup to a Gtk::Label.
      * @param item A Gtk::ListItem with a Gtk::Label child and TestGroup item.
      */
-    static void bind_name_to_label(const Glib::RefPtr<Gtk::ListItem>& item) noexcept;
+    static void bind_name_to_label(const Glib::RefPtr<Gtk::ListItem> &item) noexcept;
 
 private:
     /**
-     * @brief Handles a change to the underlying object model by registering and/or de-registering Test objects from
-     *  Requirement objects.
+     * @brief Handles a change to the underlying object model by registering and/or de-registering Test
+     * objects from Requirement objects.
      * @param initial_index The initial index in the list model from which changes were made.
      * @param removed_count The number of removed items at the initial index.
      * @param added_count The number of inserted items at the initial index.
      * @see handle_test_deletions for the deletion handler
      * @see handle_test_additions for the addition handler
      */
-    void handle_requirement_model_change(guint initial_index, guint removed_count, guint added_count) noexcept;
+    void handle_requirement_model_change(
+            guint initial_index, guint removed_count, guint added_count) noexcept;
 
     /**
      * @brief Remove the TestResult model entries for the given Test.
@@ -124,8 +124,8 @@ private:
     void deregister_test_results(Glib::RefPtr<Test> test);
 
     /**
-     * @brief Remove the given Test from the corresponding ExecutionGroup within the group model. If the removal renders
-     *  the corresponding ExecutionGroup empty, it is removed from the model entirely.
+     * @brief Remove the given Test from the corresponding ExecutionGroup within the group model. If the
+     * removal renders the corresponding ExecutionGroup empty, it is removed from the model entirely.
      * @param test The Test to remove from the ExecutionGroup.
      * @see @ref execution_groups for the model.
      * @pre The given Test container is non-null.
@@ -133,26 +133,27 @@ private:
     void deregister_test_executable(const Glib::RefPtr<Test> &test);
 
     /**
-     * @brief Register a new callback to listen for changes to the TestResult objects assigned to the given Test, and
-     *  synchronise the changes in our local @ref results_model.
+     * @brief Register a new callback to listen for changes to the TestResult objects assigned to the given
+     * Test, and synchronise the changes in our local @ref results_model.
      * @param test The Test whose results to watch.
      * @pre The given Test container is non-null.
      */
-    void register_test_results(const Glib::RefPtr<Test>& test);
+    void register_test_results(const Glib::RefPtr<Test> &test);
 
     /**
-     * @brief Allocate the incoming Test to the suitable ExecutionGroup, determined by the Test's target executable
-     *  property. A new ExecutionGroup is created if one does not already exist.
+     * @brief Allocate the incoming Test to the suitable ExecutionGroup, determined by the Test's target
+     * executable property. A new ExecutionGroup is created if one does not already exist.
      * @param test The Test to register in the execution model.
      * @throws std::runtime_error if the Test could not be added.
      * @pre The given Test container is non-null.
      */
-    void register_test_executable(const Glib::RefPtr<Test>& test);
+    void register_test_executable(const Glib::RefPtr<Test> &test);
 
     /**
      * @brief Handle Test deletions by deregistering watchers for TestResult changes, and removing from the
      *  ExecutionGroup model.
-     * @param initial_index The initial index of the deleted Test objects; see @ref ObjectGroup::steal_deleted_object.
+     * @param initial_index The initial index of the deleted Test objects; see @ref
+     * ObjectGroup::steal_deleted_object.
      * @param removed_count The number of removed Test objects from the initial index.
      * @see deregister_test_executable for removal from ExecutionGroup model.
      * @see deregister_test_results for removal from TestResult model.
@@ -162,7 +163,8 @@ private:
     /**
      * @brief Handle Tets additions by registering watchers for TestResult changes, and inserting into the
      *  ExecutionGroup model.
-     * @param initial_index The initial index of the inserted Test objects; see @ref ObjectGroup::get_object_by_index.
+     * @param initial_index The initial index of the inserted Test objects; see @ref
+     * ObjectGroup::get_object_by_index.
      * @param added_count The number of inserted Test objects from the initial index.
      * @see register_test_results for insertion into TestResult model.
      * @see register_test_executable for insertion into ExecutionGroup model.
@@ -184,8 +186,8 @@ private:
 
     SharedUnorderedMap<Test, sigc::connection> registered_callbacks;
 
-    Glib::RefPtr<Gtk::TreeListModel> results_tree =
-            Gtk::TreeListModel::create(results_model.get_model(), &ITestModelNode::get_given_results_tree, true);
+    Glib::RefPtr<Gtk::TreeListModel> results_tree = Gtk::TreeListModel::create(
+            results_model.get_model(), &ITestModelNode::get_given_results_tree, true);
 };
 
 } // namespace optifol

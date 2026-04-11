@@ -23,52 +23,36 @@ const char *const TestingArea::area_name = "Testing and Compliance Area";
 
 TestingArea::TestingArea(Gtk::Builder &builder) :
     test_groups_view(GTKHelpers::get_widget<Gtk::ColumnView>(area_name, builder, "test_groups_view")),
-    context_menu(
-        test_groups_view,
-        GTKHelpers::get_object<Gio::Menu>(area_name, builder, "test_groups_context_menu"),
-        {
-            {
-                "new_test_group",
-                GTKHelpers::get_widget<Gtk::MenuButton>(area_name, builder, "new_test_group"),
-                GTKHelpers::get_widget<Gtk::Popover>(area_name, builder, "new_test_group_popover"),
-                true
-            },
-            {
-                "rename_test_group",
-                GTKHelpers::get_widget<Gtk::MenuButton>(area_name, builder, "rename_test_group"),
-                GTKHelpers::get_widget<Gtk::Popover>(area_name, builder, "rename_test_group_popover"),
-                true
-            },
-            {
-                "delete_test_group",
-                GTKHelpers::get_widget<Gtk::MenuButton>(area_name, builder, "delete_test_group"),
-                GTKHelpers::get_widget<Gtk::Popover>(area_name, builder, "delete_test_group_popover"),
-                true
-            },
-            {
-                "copy_to_test_group",
-                GTKHelpers::get_widget<Gtk::MenuButton>(area_name, builder, "copy_to_test_group"),
-                GTKHelpers::get_widget<Gtk::Popover>(area_name, builder, "copy_to_test_group_popover"),
-                true
-            },
-            {
-                "move_to_test_group",
-                GTKHelpers::get_widget<Gtk::MenuButton>(area_name, builder, "move_to_test_group"),
-                GTKHelpers::get_widget<Gtk::Popover>(area_name, builder, "move_to_test_group_popover"),
-                true
-            },
-            {
-                "run_tests",
-                GTKHelpers::get_widget<Gtk::MenuButton>(area_name, builder, "run_tests"),
-                GTKHelpers::get_widget<Gtk::Popover>(area_name, builder, "run_tests_popover"),
-                true
-            }
-        }
-    ),
-    on_off_widgets(
-        GTKHelpers::get_widget<Gtk::Widget>(area_name, builder, "testing_advice_unselected"),
-        GTKHelpers::get_widget<Gtk::Widget>(area_name, builder, "testing_content")
-    ),
+    context_menu(test_groups_view,
+            GTKHelpers::get_object<Gio::Menu>(area_name, builder, "test_groups_context_menu"),
+            {{"new_test_group", GTKHelpers::get_widget<Gtk::MenuButton>(area_name, builder, "new_test_group"),
+                     GTKHelpers::get_widget<Gtk::Popover>(area_name, builder, "new_test_group_popover"),
+                     true},
+                    {"rename_test_group",
+                            GTKHelpers::get_widget<Gtk::MenuButton>(area_name, builder, "rename_test_group"),
+                            GTKHelpers::get_widget<Gtk::Popover>(
+                                    area_name, builder, "rename_test_group_popover"),
+                            true},
+                    {"delete_test_group",
+                            GTKHelpers::get_widget<Gtk::MenuButton>(area_name, builder, "delete_test_group"),
+                            GTKHelpers::get_widget<Gtk::Popover>(
+                                    area_name, builder, "delete_test_group_popover"),
+                            true},
+                    {"copy_to_test_group",
+                            GTKHelpers::get_widget<Gtk::MenuButton>(area_name, builder, "copy_to_test_group"),
+                            GTKHelpers::get_widget<Gtk::Popover>(
+                                    area_name, builder, "copy_to_test_group_popover"),
+                            true},
+                    {"move_to_test_group",
+                            GTKHelpers::get_widget<Gtk::MenuButton>(area_name, builder, "move_to_test_group"),
+                            GTKHelpers::get_widget<Gtk::Popover>(
+                                    area_name, builder, "move_to_test_group_popover"),
+                            true},
+                    {"run_tests", GTKHelpers::get_widget<Gtk::MenuButton>(area_name, builder, "run_tests"),
+                            GTKHelpers::get_widget<Gtk::Popover>(area_name, builder, "run_tests_popover"),
+                            true}}),
+    on_off_widgets(GTKHelpers::get_widget<Gtk::Widget>(area_name, builder, "testing_advice_unselected"),
+            GTKHelpers::get_widget<Gtk::Widget>(area_name, builder, "testing_content")),
     testing_failed_view(builder),
     new_test_group_popover(builder, *this),
     rename_test_group_popover(builder, *this),
@@ -89,8 +73,8 @@ void TestingArea::select_model(const Glib::RefPtr<Subsystem> &new_subsystem)
     on_off_widgets.second->set_visible(true);
 
     active_subsystem = new_subsystem;
-    tree_model = Gtk::TreeListModel::create(active_subsystem->get_test_groups(),
-        &ITestModelNode::get_given_tests_tree, true, true);
+    tree_model = Gtk::TreeListModel::create(
+            active_subsystem->get_test_groups(), &ITestModelNode::get_given_tests_tree, true, true);
     selection_model->set_model(tree_model);
     testing_failed_view.select_model(new_subsystem);
 }
@@ -165,7 +149,7 @@ std::optional<Glib::ustring> TestingArea::bind_test_result(const std::shared_ptr
 
     try {
         return std::string(result->has_passed() ? "Passed" : "Failed") + " in " +
-            std::to_string(result->get_execution_time()) + " ms";
+                std::to_string(result->get_execution_time()) + " ms";
     } catch (...) {
         area_logger->error("Could not format Test Result string due to system error.");
         return "Unknown error in evaluation";
@@ -193,57 +177,51 @@ void TestingArea::configure_columns() const
             } else if (gtk_id == "test_target_executable") {
 
                 factory->signal_setup().connect(sigc::bind(&GTKHelpers::setup_label, false));
-                factory->signal_bind().connect([](const Glib::RefPtr<Gtk::ListItem> & list_item) noexcept -> void
-                {
-                    const auto label = dynamic_cast<Gtk::Label *>(list_item->get_child());
-                    const auto typed_test = std::dynamic_pointer_cast<Test>(list_item->get_item());
+                factory->signal_bind().connect(
+                        [](const Glib::RefPtr<Gtk::ListItem> &list_item) noexcept -> void
+                        {
+                            const auto label = dynamic_cast<Gtk::Label *>(list_item->get_child());
+                            const auto typed_test = std::dynamic_pointer_cast<Test>(list_item->get_item());
 
-                    if (label == nullptr || typed_test == nullptr)
-                        return;
+                            if (label == nullptr || typed_test == nullptr)
+                                return;
 
-                    Glib::Binding::bind_property(
-                        typed_test->property_target_executable_name(),
-                        label->property_label(),
-                        Glib::Binding::Flags::SYNC_CREATE
-                    );
-                });
+                            Glib::Binding::bind_property(typed_test->property_target_executable_name(),
+                                    label->property_label(), Glib::Binding::Flags::SYNC_CREATE);
+                        });
 
             } else if (gtk_id == "test_fixture") {
 
                 factory->signal_setup().connect(sigc::bind(&GTKHelpers::setup_label, false));
-                factory->signal_bind().connect([](const Glib::RefPtr<Gtk::ListItem> & list_item) noexcept -> void
-                {
-                    const auto label = dynamic_cast<Gtk::Label *>(list_item->get_child());
-                    const auto typed_test = std::dynamic_pointer_cast<Test>(list_item->get_item());
+                factory->signal_bind().connect(
+                        [](const Glib::RefPtr<Gtk::ListItem> &list_item) noexcept -> void
+                        {
+                            const auto label = dynamic_cast<Gtk::Label *>(list_item->get_child());
+                            const auto typed_test = std::dynamic_pointer_cast<Test>(list_item->get_item());
 
-                    if (label == nullptr || typed_test == nullptr)
-                        return;
+                            if (label == nullptr || typed_test == nullptr)
+                                return;
 
-                    Glib::Binding::bind_property(
-                        typed_test->property_fixture(),
-                        label->property_label(),
-                        Glib::Binding::Flags::SYNC_CREATE
-                    );
-                });
+                            Glib::Binding::bind_property(typed_test->property_fixture(),
+                                    label->property_label(), Glib::Binding::Flags::SYNC_CREATE);
+                        });
 
             } else if (gtk_id == "test_status") {
 
                 factory->signal_setup().connect(sigc::bind(&GTKHelpers::setup_label, false));
-                factory->signal_bind().connect([](const Glib::RefPtr<Gtk::ListItem> & list_item) noexcept -> void
-                {
-                    const auto label = dynamic_cast<Gtk::Label *>(list_item->get_child());
-                    const auto typed_test = std::dynamic_pointer_cast<Test>(list_item->get_item());
+                factory->signal_bind().connect(
+                        [](const Glib::RefPtr<Gtk::ListItem> &list_item) noexcept -> void
+                        {
+                            const auto label = dynamic_cast<Gtk::Label *>(list_item->get_child());
+                            const auto typed_test = std::dynamic_pointer_cast<Test>(list_item->get_item());
 
-                    if (label == nullptr || typed_test == nullptr)
-                        return;
+                            if (label == nullptr || typed_test == nullptr)
+                                return;
 
-                    Glib::Binding::bind_property(
-                        typed_test->property_result(),
-                        label->property_label(),
-                        Glib::Binding::Flags::SYNC_CREATE,
-                        sigc::ptr_fun(&TestingArea::bind_test_result)
-                    );
-                });
+                            Glib::Binding::bind_property(typed_test->property_result(),
+                                    label->property_label(), Glib::Binding::Flags::SYNC_CREATE,
+                                    sigc::ptr_fun(&TestingArea::bind_test_result));
+                        });
 
             } else
                 // Jump out here if unrecognised, so all further code can assume a factory was configured.

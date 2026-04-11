@@ -33,8 +33,8 @@ GoogleTestDiscoveryExecutable::GoogleTestDiscoveryExecutable(const Glib::ustring
     start_discovery();
 }
 
-GoogleTestDiscoveryExecutable::GoogleTestDiscoveryExecutable(
-        const Glib::ustring &executable_path, BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &builder) :
+GoogleTestDiscoveryExecutable::GoogleTestDiscoveryExecutable(const Glib::ustring &executable_path,
+        BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &builder) :
     Glib::ObjectBase("GoogleTestDiscoveryExecutable"),
     DiscoveryTestExecutable(executable_path, cobject, builder)
 {
@@ -44,31 +44,29 @@ GoogleTestDiscoveryExecutable::GoogleTestDiscoveryExecutable(
 GoogleTestDiscoveryExecutable::~GoogleTestDiscoveryExecutable()
 {
     if (discovery_executor != nullptr)
-        logger->error("Google Test discovery executable for \"" + property_name().get_value() + "\" is being "
-            "destructed with an unhandled subprocess. Discovery will be incomplete.");
+        logger->error("Google Test discovery executable for \"" + property_name().get_value() +
+                "\" is being "
+                "destructed with an unhandled subprocess. Discovery will be incomplete.");
 
     if (discovery_tmp_file_path.has_value())
-        logger->error("Google Test discovery executable for \"" + property_name().get_value() + "\" is being "
-            "destructed with an unresolved temporary file at \"" + *discovery_tmp_file_path +
-            "\". Discovery will be incomplete.");
+        logger->error("Google Test discovery executable for \"" + property_name().get_value() +
+                "\" is being "
+                "destructed with an unresolved temporary file at \"" +
+                *discovery_tmp_file_path + "\". Discovery will be incomplete.");
 }
 
 void GoogleTestDiscoveryExecutable::start_discovery()
 {
     const auto current_time_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
-        std::chrono::system_clock::now().time_since_epoch());
+            std::chrono::system_clock::now().time_since_epoch());
 
-    discovery_tmp_file_path.emplace("/tmp/google_test_discovery." + std::to_string(current_time_ms.count()) + ".json");
-    discovery_executor = std::make_unique<ProcessExecutor>(
-        "", // Current working directory.
-        std::vector<std::string>{
-            property_name().get_value(),
-            "--gtest_list_tests",
-            "--gtest_output=json:" + *discovery_tmp_file_path
-        },
-        std::vector<std::string>{},
-        sigc::mem_fun(*this, &GoogleTestDiscoveryExecutable::discovery_done_callback)
-    );
+    discovery_tmp_file_path.emplace(
+            "/tmp/google_test_discovery." + std::to_string(current_time_ms.count()) + ".json");
+    discovery_executor = std::make_unique<ProcessExecutor>("", // Current working directory.
+            std::vector<std::string>{property_name().get_value(), "--gtest_list_tests",
+                    "--gtest_output=json:" + *discovery_tmp_file_path},
+            std::vector<std::string>{},
+            sigc::mem_fun(*this, &GoogleTestDiscoveryExecutable::discovery_done_callback));
 }
 
 void GoogleTestDiscoveryExecutable::discovery_done_callback(const int exit_code) noexcept
@@ -97,7 +95,8 @@ void GoogleTestDiscoveryExecutable::discovery_done_callback(const int exit_code)
         document.ParseStream(json_stream); // May invoke RAPIDJSON_PARSE_ERROR_NORETURN.
         parse_json_payload(document);
     } catch (const ParseError &parse_error) {
-        logger->error("Parse failed for Google Test discovery executable \"" + property_name().get_value() + "\".");
+        logger->error(
+                "Parse failed for Google Test discovery executable \"" + property_name().get_value() + "\".");
         logger->error(parse_error.what());
     } catch (const std::ios_base::failure &stream_error) {
         logger->error("Could not open file \"" + *discovery_tmp_file_path + "\" due to system error.");
@@ -116,11 +115,11 @@ void GoogleTestDiscoveryExecutable::discovery_done_callback(const int exit_code)
 // ReSharper disable once CppDFAUnreachableFunctionCall - False positive. Called from discovery_done_callback.
 void GoogleTestDiscoveryExecutable::parse_json_payload(const rapidjson::Document &document) const
 {
-    const auto& fixtures = document.FindMember("testsuites");
+    const auto &fixtures = document.FindMember("testsuites");
     if (fixtures == document.MemberEnd() || fixtures->value.IsArray() == false)
         throw ParseError("Test suites array not found.");
 
-    for (const auto& fixture : fixtures->value.GetArray()) {
+    for (const auto &fixture: fixtures->value.GetArray()) {
         if (fixture.IsObject() == false)
             throw ParseError("Fixture located, but is not an object.");
 
@@ -130,21 +129,21 @@ void GoogleTestDiscoveryExecutable::parse_json_payload(const rapidjson::Document
 
         const auto fixture_tests = fixture.FindMember("testsuite");
         if (fixture_tests == fixture.MemberEnd() || fixture_tests->value.IsArray() == false)
-            throw ParseError("Fixture tests not present for \"" + std::string(fixture_name->value.GetString()) +
-                "\".");
+            throw ParseError("Fixture tests not present for \"" +
+                    std::string(fixture_name->value.GetString()) + "\".");
 
-        const auto modelled_fixture = Glib::make_refptr_for_instance(
-            new DiscoveryTestFixture(fixture_name->value.GetString()));
+        const auto modelled_fixture =
+                Glib::make_refptr_for_instance(new DiscoveryTestFixture(fixture_name->value.GetString()));
 
-        for (const auto& test : fixture_tests->value.GetArray()) {
+        for (const auto &test: fixture_tests->value.GetArray()) {
             if (fixture.IsObject() == false)
                 throw ParseError("Test located in \"" + std::string(fixture_name->value.GetString()) +
-                    "\", but is not an object.");
+                        "\", but is not an object.");
 
             const auto test_name = test.FindMember("name");
             if (test_name == test.MemberEnd() || test_name->value.IsString() == false)
                 throw ParseError("Test located in \"" + std::string(fixture_name->value.GetString()) +
-                    "\", but it does not have a declared name.");
+                        "\", but it does not have a declared name.");
 
             modelled_fixture->add_test(test_name->value.GetString());
         }

@@ -27,15 +27,10 @@ namespace optifol
  * @see TestingArea for the parent area.
  *
  * @details
- *  The <i>Move Requirement to Test Group</i> popover provides controls for moving an existing Requirement between
- *  TestGroup objects. The control automatically populates its entries with likely defaults using the TestGroup/
- *  Requirement/Test models from the parental TestArea. The following GTK elements are expected from the given
- *  Gtk::Builder:
- *  <table>
- *      <tr>
- *          <th>GTK C++ Class</th>
- *          <th>Unique Identifier</th>
- *          <th>Purpose</th>
+ *  The <i>Move Requirement to Test Group</i> popover provides controls for moving an existing Requirement
+ * between TestGroup objects. The control automatically populates its entries with likely defaults using the
+ * TestGroup/ Requirement/Test models from the parental TestArea. The following GTK elements are expected from
+ * the given Gtk::Builder: <table> <tr> <th>GTK C++ Class</th> <th>Unique Identifier</th> <th>Purpose</th>
  *      </tr>
  *      <tr>
  *          <td>Gtk::Popover</td>
@@ -63,8 +58,8 @@ namespace optifol
  *          <td>Selection of destination TestGroup/move</td>
  *      </tr>
  *  </table>
- *  A @ref std::runtime_error will be thrown by the class constructor if any of these are inaccessible in the expected
- *  type instantiations.
+ *  A @ref std::runtime_error will be thrown by the class constructor if any of these are inaccessible in the
+ * expected type instantiations.
  */
 class TestingMoveToTestGroupPopover : public TestingCopyMovePopoverBase
 {
@@ -75,17 +70,17 @@ public:
      * @param testing_area A mutating reference to the TestingArea of which the popover is a member
      * @throws std::runtime_error A required GTK element/widget could not be loaded from the given builder
      */
-    TestingMoveToTestGroupPopover(Gtk::Builder& builder, TestingArea& testing_area);
+    TestingMoveToTestGroupPopover(Gtk::Builder &builder, TestingArea &testing_area);
 
 private:
     /**
      * @copybrief TestingCopyMovePopoverBase::confirm_button_clicked
-     * @details Moves the Requirement from its current TestGroup to the selected destination TestGroup. The source
-     *  TestGroup does not retain its copy of the Requirement.
+     * @details Moves the Requirement from its current TestGroup to the selected destination TestGroup. The
+     * source TestGroup does not retain its copy of the Requirement.
      */
     void confirm_button_clicked() const noexcept override;
 
-    static const char * const popover_name;
+    static const char *const popover_name;
     static const log4cxx::LoggerPtr popover_logger;
 };
 

@@ -21,8 +21,7 @@ namespace optifol
 
 class MainWindow;
 
-class Application :
-        public Gtk::Application
+class Application : public Gtk::Application
 {
 public:
     static Glib::RefPtr<Application> create();
@@ -35,7 +34,7 @@ protected:
     void on_activate() override;
 
 private:
-    MainWindow* create_main_window();
+    MainWindow *create_main_window();
 
     void show_about_dialog() const;
 
@@ -45,9 +44,9 @@ private:
 
     Glib::RefPtr<Gtk::Builder> builder;
 
-    Gtk::AboutDialog * about_dialog = nullptr;
+    Gtk::AboutDialog *about_dialog = nullptr;
 };
 
-}
+} // namespace optifol
 
 #endif

@@ -25,8 +25,7 @@
 namespace optifol
 {
 
-class SkolemIntroducingVisitor:
-        public MutatingSentenceVisitorBase
+class SkolemIntroducingVisitor : public MutatingSentenceVisitorBase
 {
 public:
     SkolemIntroducingVisitor();
@@ -50,19 +49,20 @@ private:
 
     void eliminate_existential(const IMutableTerm &target_bound_variable);
 
-    static const char * visitor_name;
+    static const char *visitor_name;
 
     std::stack<std::vector<std::unique_ptr<IMutableTerm>>> universally_quantified_variables;
 
     std::size_t skolem_counter = 0;
 
-    std::unordered_map<std::string, std::unique_ptr<IMutableTerm>, StringHash, std::equal_to<>> skolem_replacements;
+    std::unordered_map<std::string, std::unique_ptr<IMutableTerm>, StringHash, std::equal_to<>>
+            skolem_replacements;
 
     TermResolutionVisitor term_visitor{skolem_replacements};
 
     std::unique_ptr<IMutableSentence> extracted_sentence;
 };
 
-}
+} // namespace optifol
 
 #endif

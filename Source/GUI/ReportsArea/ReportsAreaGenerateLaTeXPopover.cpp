@@ -13,30 +13,34 @@
 
 #include <fstream>
 
-#include "ReportsAreaGenerateLaTeXPopover.hpp"
 #include "../GTKHelpers.hpp"
 #include "../Logging.hpp"
 #include "ReportsArea.hpp"
+#include "ReportsAreaGenerateLaTeXPopover.hpp"
 
 namespace optifol
 {
 
-const char * const ReportsAreaGenerateLaTeXPopover::popover_name = "Generate LaTeX Report Popover";
+const char *const ReportsAreaGenerateLaTeXPopover::popover_name = "Generate LaTeX Report Popover";
 const log4cxx::LoggerPtr ReportsAreaGenerateLaTeXPopover::popover_logger =
         Logging::get_logger({"GUI", "ReleasesReports", "GenerateLaTeX"});
 
 ReportsAreaGenerateLaTeXPopover::ReportsAreaGenerateLaTeXPopover(
-        Gtk::Builder &builder, const ReportsArea& reports_area) :
+        Gtk::Builder &builder, const ReportsArea &reports_area) :
     reports_area(reports_area),
-    buffer(GTKHelpers::get_widget<Gtk::TextView>(popover_name, builder, "generate_latex_output")->get_buffer()),
+    buffer(GTKHelpers::get_widget<Gtk::TextView>(popover_name, builder, "generate_latex_output")
+                    ->get_buffer()),
     my_popover(GTKHelpers::get_widget<Gtk::Popover>(popover_name, builder, "reports_generate_latex_popover")),
-    details_container(GTKHelpers::get_widget<Gtk::Box>(popover_name, builder, "generate_latex_details_container")),
-    output_directory_entry(GTKHelpers::get_widget<Gtk::Entry>(popover_name, builder, "generate_latex_output_path")),
+    details_container(
+            GTKHelpers::get_widget<Gtk::Box>(popover_name, builder, "generate_latex_details_container")),
+    output_directory_entry(
+            GTKHelpers::get_widget<Gtk::Entry>(popover_name, builder, "generate_latex_output_path")),
     confirm_button(GTKHelpers::get_widget<Gtk::Button>(popover_name, builder, "generate_latex_confirm")),
     cancel_button(GTKHelpers::get_widget<Gtk::Button>(popover_name, builder, "generate_latex_cancel")),
     open_dialog(GTKHelpers::get_object<Gtk::FileDialog>(
             popover_name, builder, "generate_latex_output_path_chooser_dialog")),
-    show_details_check(GTKHelpers::get_widget<Gtk::CheckButton>(popover_name, builder, "generate_latex_show_details"))
+    show_details_check(
+            GTKHelpers::get_widget<Gtk::CheckButton>(popover_name, builder, "generate_latex_show_details"))
 {
 
     show_details_check->signal_toggled().connect(
@@ -44,8 +48,8 @@ ReportsAreaGenerateLaTeXPopover::ReportsAreaGenerateLaTeXPopover(
     confirm_button->signal_clicked().connect(
             sigc::mem_fun(*this, &ReportsAreaGenerateLaTeXPopover::confirm_button_clicked));
 
-    const auto open_directory_button =
-            GTKHelpers::get_widget<Gtk::Button>(popover_name, builder, "generate_latex_output_path_chooser_button");
+    const auto open_directory_button = GTKHelpers::get_widget<Gtk::Button>(
+            popover_name, builder, "generate_latex_output_path_chooser_button");
     open_directory_button->signal_clicked().connect(
             sigc::mem_fun(*this, &ReportsAreaGenerateLaTeXPopover::open_directory_button_clicked));
 }
@@ -56,18 +60,16 @@ void ReportsAreaGenerateLaTeXPopover::confirm_button_clicked()
     buffer->set_text("");
 
     /*
-     * Create a new generator instance (possibly replacing the previous one) to produce a file in the given output
-     * directory indicated by the user. Populate it with the Requirements, the Test Groups, and the Analysis Groups,
-     * and despatch the asynchronous generation of the report with a callback to run on completion.
+     * Create a new generator instance (possibly replacing the previous one) to produce a file in the given
+     * output directory indicated by the user. Populate it with the Requirements, the Test Groups, and the
+     * Analysis Groups, and despatch the asynchronous generation of the report with a callback to run on
+     * completion.
      */
     generator.emplace(output_directory);
 
     // Populate the Requirements Index.
     reports_area.observe_active_subsystem()->for_each(
-        [this](const Requirement &requirement)
-        {
-            generator->add_requirement(requirement);
-        });
+            [this](const Requirement &requirement) { generator->add_requirement(requirement); });
 
     // Populate the Test Groups.
     const auto test_groups = reports_area.observe_active_subsystem()->get_test_groups();
@@ -78,7 +80,8 @@ void ReportsAreaGenerateLaTeXPopover::confirm_button_clicked()
     // TODO: populate the Analysis Groups.
 
     // Run the generator.
-    generator->generate(buffer, sigc::mem_fun(*this, &ReportsAreaGenerateLaTeXPopover::post_generation_callback));
+    generator->generate(
+            buffer, sigc::mem_fun(*this, &ReportsAreaGenerateLaTeXPopover::post_generation_callback));
 }
 
 void ReportsAreaGenerateLaTeXPopover::cancel_button_clicked()
@@ -99,7 +102,8 @@ void ReportsAreaGenerateLaTeXPopover::open_directory_button_clicked()
 {
     // Hide the popover whilst the dialog is active, otherwise it may have z-index priority over the dialog.
     my_popover->popdown();
-    open_dialog->select_folder(sigc::mem_fun(*this, &ReportsAreaGenerateLaTeXPopover::open_directory_finished));
+    open_dialog->select_folder(
+            sigc::mem_fun(*this, &ReportsAreaGenerateLaTeXPopover::open_directory_finished));
 }
 
 void ReportsAreaGenerateLaTeXPopover::open_directory_finished(const Glib::RefPtr<Gio::AsyncResult> &result)
