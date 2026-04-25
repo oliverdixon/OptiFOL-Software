@@ -77,7 +77,6 @@ protected:
  */
 TEST_F(ResolutionTest, ModusPonens_Quantified)
 {
-    // TODO fix these constructors so I don't have to specify arguments like this... !!! Deduction guides?
     std::vector<std::unique_ptr<IMutableTerm>> s1_p_args;
     s1_p_args.push_back(MutableVariable::build<IMutableTerm>("x"));
 

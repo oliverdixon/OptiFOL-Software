@@ -134,7 +134,6 @@ private:
     Glib::RefPtr<Gio::ListStore<AnalysisGroup>> analysis_groups = Gio::ListStore<AnalysisGroup>::create();
     Glib::RefPtr<Gio::ListStore<TestGroup>> test_groups = Gio::ListStore<TestGroup>::create();
 
-    // TODO: future work - should this be in Analysis group for different group-wise FOL interpretations?
     std::shared_ptr<SymbolRepository> symbol_repository = std::make_shared<SymbolRepository>();
 
     mutable std::pair<std::size_t, std::string> fully_qualified_path_cache;

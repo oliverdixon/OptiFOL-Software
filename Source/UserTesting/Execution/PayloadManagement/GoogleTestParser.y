@@ -94,7 +94,7 @@ protocol_line :
                 throw SemanticException("Unsupported Google Test protocol version " + $2);
         } catch (const std::logic_error& parsing_exception) {
             logger->error(parsing_exception.what());
-            throw ParseError("Could not parse Google Test protocol version number \"" + $2 + '"', 0); // TODO column number
+            throw ParseError("Could not parse Google Test protocol version number \"" + $2 + '"', 0);
         } catch (const SemanticException& semantic_exception) {
             logger->error(semantic_exception.what());
             throw;
@@ -169,7 +169,7 @@ test :
                     ((passed_result) ? "PASS" : "FAIL") + '.');
         } catch (const std::logic_error& parsing_exception) {
             logger->error(parsing_exception.what());
-            throw ParseError("Could not parse Google Test test result \"" + $3 + '"', 0); // TODO column number
+            throw ParseError("Could not parse Google Test test result \"" + $3 + '"', 0);
         } catch (const SemanticException& semantic_exception) {
             logger->error(semantic_exception.what());
             throw;
@@ -197,7 +197,7 @@ partial_test :
         } catch (const std::logic_error& parsing_exception) {
             logger->error(parsing_exception.what());
             throw ParseError("Could not parse Google Test partial result in file \"" + $3 + "\" at line " + $5 +
-                "\": " + parsing_exception.what(), 0); // TODO column number
+                "\": " + parsing_exception.what(), 0);
         }
     }
 

@@ -42,23 +42,11 @@ Prover &AnalysisGroup::observe_prover_instance() noexcept
 }
 
 void AnalysisGroup::handle_group_model_change(
-        const guint initial_index, const guint removed_count, const guint added_count)
+        const guint initial_index, const guint, const guint added_count)
 {
-    // TODO how to handle removals?  Can't "untell" from the KB.
-
-    try {
-        for (guint added_list_i = initial_index; added_list_i < initial_index + added_count; ++added_list_i) {
-            try {
-                const auto requirement = get_object_by_index(added_list_i);
-                kb.tell(requirement->observe_prepared_sentence());
-            } catch (const std::runtime_error &error) {
-                assert(0);
-                // TODO log
-            }
-        }
-    } catch (const std::exception &global_error) {
-        assert(0);
-        // TODO log
+    for (guint added_list_i = initial_index; added_list_i < initial_index + added_count; ++added_list_i) {
+        const auto requirement = get_object_by_index(added_list_i);
+        kb.tell(requirement->observe_prepared_sentence());
     }
 }
 

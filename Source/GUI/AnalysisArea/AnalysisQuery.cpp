@@ -22,10 +22,6 @@ namespace optifol
 
 std::istringstream AnalysisQuery::lexer_input_stream;
 
-/*
- * TODO: this construction is possibly undefined due to std::cerr. But for the real case, we'll use a custom
- * error handler that can be statically initialised in the Analysis Manager, so this is OK for development.
- */
 FOLLexer AnalysisQuery::lexer{AnalysisQuery::lexer_input_stream, std::cerr};
 FOLParser AnalysisQuery::parser{&AnalysisQuery::lexer};
 
@@ -69,24 +65,12 @@ void AnalysisQuery::execute_query()
     if (query_entry.get_text().empty())
         return;
 
-    try {
-        lexer_input_stream.str(query_entry.get_text());
-        parser.parse();
-    } catch (const ParseError &parse_error) {
-        // TODO log
-        assert(0);
-        return;
-    }
+    lexer_input_stream.str(query_entry.get_text());
+    parser.parse();
 
-    try {
-        latest_result = std::make_unique<QueryResult>(kb_weak.ask(parser.retrieve_sentence()));
-        if (latest_result->terminating_resolvent != nullptr)
-            drawing_area.replace_proof(latest_result->terminating_resolvent);
-    } catch (const SemanticException &semantic_exception) {
-        // TODO log
-        assert(0);
-        return;
-    }
+    latest_result = std::make_unique<QueryResult>(kb_weak.ask(parser.retrieve_sentence()));
+    if (latest_result->terminating_resolvent != nullptr)
+        drawing_area.replace_proof(latest_result->terminating_resolvent);
 
     drawing_area.queue_draw();
 }

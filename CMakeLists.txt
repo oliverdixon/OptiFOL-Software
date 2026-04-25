@@ -215,8 +215,6 @@ add_library(OptifolCommon OBJECT
         Source/GUI/AnalysisArea/AnalysisAreaNewAnalysisGroupPopover.hpp
         Source/GUI/RequirementsIndexArea/IndexNewRequirementPopover.cpp
         Source/GUI/RequirementsIndexArea/IndexNewRequirementPopover.hpp
-        Source/GUI/RequirementsIndexArea/IndexEditRequirementPopover.cpp
-        Source/GUI/RequirementsIndexArea/IndexEditRequirementPopover.hpp
         Source/GUI/RequirementsIndexArea/IndexDuplicateRequirementPopover.cpp
         Source/GUI/RequirementsIndexArea/IndexDuplicateRequirementPopover.hpp
         Source/GUI/RequirementsIndexArea/IndexDeleteRequirementPopover.cpp

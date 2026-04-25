@@ -52,14 +52,14 @@ public:
     /**
      * @brief Recursively applies the symbol-standardisation procedures to the given quantified sentence root.
      * @param node The root quantified sentence node
-     * @throws SemanticException TODO
+     * @throws SemanticException
      */
     void visit(MutableQuantified &node) override;
 
     /**
      * @brief Recursively applies the symbol-standardisation procedures to the given predicate root node.
      * @param node The root predicate sentence node
-     * @throws SemanticException TODO
+     * @throws SemanticException
      */
     void visit(MutablePredicate &node) override;
 
@@ -100,7 +100,7 @@ private:
      * @brief Establishes a new scope, introducing the variable bound by the given quantifier. If necessary,
      * the bound name is disambiguated, in which case a rewriting rule entry is added.
      * @param node The bounding quantifier responsible for the opened scope
-     * @return TODO
+     * @return An observing reference for the rule of the opened scope.
      */
     std::optional<decltype(rewriting_rules)::iterator> open_scope(MutableQuantified &node);
 
@@ -109,7 +109,7 @@ private:
      * rewriting rule map. The bound variable of the closed scope is comitted to the adjacents naming set.
      * @pre The scope naming set must contain a variable name of the given node.
      * @param node The variable bound by the scope
-     * @param rule_reference TODO
+     * @param rule_reference An observing reference to the rule of the closed scope.
      */
     void close_scope(MutableQuantified &node,
             const std::optional<decltype(rewriting_rules)::iterator> &rule_reference);

@@ -219,7 +219,6 @@ void ProjectHierarchyPane::configure_edit_structure_popover(Gtk::Builder &builde
             [this, popover]
             {
                 popover->popdown();
-                // TODO
             });
 }
 

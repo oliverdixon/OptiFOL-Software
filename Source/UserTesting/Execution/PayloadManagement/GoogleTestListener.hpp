@@ -60,7 +60,7 @@ private:
     Glib::RefPtr<Gio::SocketListener> listener = Gio::SocketListener::create();
 
     std::istringstream lexer_input_stream;
-    GoogleTestLexer lexer{lexer_input_stream, std::cerr}; // TODO do not use std::cerr
+    GoogleTestLexer lexer{lexer_input_stream, std::cerr};
     GoogleTestParser parser;
 };
 

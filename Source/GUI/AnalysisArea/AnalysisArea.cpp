@@ -70,9 +70,8 @@ AnalysisArea::AnalysisArea(Gtk::Builder &builder) :
             });
 
     selection_model->signal_items_changed().connect(
-            [this](guint added, const guint removed, guint)
+            [this](const guint added, const guint removed, guint)
             {
-                // TODO URGENT remove this... just for very dirty test.
                 if (added > 0)
                     add_query_page();
 

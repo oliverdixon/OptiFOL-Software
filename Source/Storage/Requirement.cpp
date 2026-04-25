@@ -27,10 +27,6 @@ namespace optifol
 
 std::istringstream Requirement::lexer_input_stream;
 
-/*
- * TODO: this construction is possibly undefined due to std::cerr. But for the real case, we'll use a custom
- * error handler that can be statically initialised in the Analysis Manager, so this is OK for development.
- */
 FOLLexer Requirement::lexer{Requirement::lexer_input_stream, std::cerr};
 FOLParser Requirement::parser{&Requirement::lexer};
 
@@ -215,7 +211,6 @@ void Requirement::handle_statement_change()
     const auto &typed_statement = property_statement().get_value();
 
     if (typed_statement.empty() == true) {
-        // TODO should compartmentalise all statement-related structures into a struct
         original_ast.reset();
         formatted_input_statement.clear();
         latex_input_statement.clear();

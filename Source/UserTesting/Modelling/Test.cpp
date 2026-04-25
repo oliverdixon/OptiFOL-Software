@@ -80,7 +80,7 @@ void Test::accept_test_executable(std::shared_ptr<TestExecutable> shared_exe)
     target_executable = std::move(shared_exe);
 
     if (target_executable == nullptr)
-        target_executable_name.set_value(""); // TODO log. Or maybe even throw an exception!
+        target_executable_name.set_value("");
     else
         target_executable_name.set_value(target_executable->property_name().get_value());
 }
@@ -117,7 +117,6 @@ Glib::PropertyProxy_ReadOnly<std::shared_ptr<TestResult>> Test::property_result(
 
 void Test::instantiate_from_specification(std::shared_ptr<TestSpecificationEntry> spec)
 {
-    // TODO: don't create a new test executable each time.
     accept_test_executable(std::make_shared<TestExecutable>(
             spec->property_executable().get_value()->property_name().get_value()));
     property_fixture().set_value(spec->property_fixture().get_value()->property_name().get_value());
@@ -132,8 +131,6 @@ void Test::instantiate_from_specification(std::shared_ptr<TestSpecificationEntry
                 property_fixture().set_value(
                         spec->property_fixture().get_value()->property_name().get_value());
             });
-
-    // TODO URGENT: executable binding
 }
 
 } // namespace optifol

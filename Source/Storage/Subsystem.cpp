@@ -113,7 +113,6 @@ void Subsystem::handle_requirement_deletions(const guint initial_index, const gu
      * doesn't use the model at all, as the Requirements have already been erased and moved into the deleted
      * records map.
      */
-    // TODO: efficiently remove multiple records with splice. See insertion logic.
 
     for (guint remove_count_i = 0; remove_count_i < removed_count; ++remove_count_i) {
         try {

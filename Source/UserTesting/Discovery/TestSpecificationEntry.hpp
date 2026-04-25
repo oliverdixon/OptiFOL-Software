@@ -50,7 +50,6 @@ public:
     /**
      * @brief Copy-construct a TestSpecificationEntry from the given template entry.
      * @param template_entry The entry to clone.
-     * @todo URGENT TODO doesn't work! :)
      */
     TestSpecificationEntry(const TestSpecificationEntry &template_entry);
 

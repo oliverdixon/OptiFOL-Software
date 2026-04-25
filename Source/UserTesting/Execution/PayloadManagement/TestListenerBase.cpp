@@ -31,8 +31,6 @@ void TestListenerBase::endow_test(Test &candidate)
 
     if (result_it != received_test_blob.cend())
         candidate.emplace_result(*result_it);
-
-    // TODO log.
 }
 
 } // namespace optifol

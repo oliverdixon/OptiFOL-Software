@@ -45,7 +45,7 @@ public:
 
     void error(const std::string &msg) override
     {
-        throw ParseError(msg, 0); // TODO get bad column number
+        throw ParseError(msg, 0);
     }
 
     /**

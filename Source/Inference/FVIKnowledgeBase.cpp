@@ -66,7 +66,7 @@ std::pair<UniqueUnorderedSet<Clause>::iterator, bool> FVIKnowledgeBase::add_clau
         const std::optional<std::function<void(std::unique_ptr<Clause> &&)>> &rejection_handler)
 {
     std::vector<const Clause *> subsuming_clauses;
-    get_subsuming(*clause, root, 0, subsuming_clauses); // TODO don't need to build up a whole vector here...
+    get_subsuming(*clause, root, 0, subsuming_clauses);
 
     if (!subsuming_clauses.empty()) {
         LOG4CXX_INFO(kb_logger,

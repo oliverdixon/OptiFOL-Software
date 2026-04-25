@@ -146,25 +146,6 @@ public:
 
         // Recalculate the index map.
         for (auto &it: index_map)
-            /*
-             * TODO this is very inefficient. We should maintain a shift map to correspond offsets from the
-             * index map to be applied only when required. Should be done with reasonable urgency. We're
-             * reindexing the entire map for every deletion!
-             *
-             * Sketch of a solution:
-             *
-             * Keep an ordered map to maintain a correspondence between the index in the index map ("stored
-             * index") and shifts that have been applied to that elements. If you had A, B, and C; and B was
-             * deleted; the stored index of C would be 2 but we could record a shift of -1. When the index of
-             * C was queried again, we would apply the shift lazily.
-             *
-             * Of course, changes need to cascade. So if A was also deleted, a shift of -1 would be recorded
-             * for B, but the C shift should be updated to -2. When the shift map became sufficiently large,
-             * an entire re-index could be done to clear down the shift records.
-             *
-             * I did attempt this but it was finicky, and wasn't completely clear on the problem I was trying
-             * to solve. Needs a second attempt soon.
-             */
             if (it.second > index_it->second)
                 --it.second;
 

@@ -77,8 +77,6 @@ void ReportsAreaGenerateLaTeXPopover::confirm_button_clicked()
     for (guint test_group_index = 0; test_group_index < test_group_count; ++test_group_index)
         generator->add_test_group(*test_groups->get_item(test_group_index));
 
-    // TODO: populate the Analysis Groups.
-
     // Run the generator.
     generator->generate(
             buffer, sigc::mem_fun(*this, &ReportsAreaGenerateLaTeXPopover::post_generation_callback));
