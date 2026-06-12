@@ -13,6 +13,7 @@
 
 #include <gtest/gtest.h>
 
+#include "../IR/Sentences/SentenceRoot.hpp"
 #include "../IR/MutableVariants/Sentences/MutableBinaryConnected.hpp"
 #include "../IR/MutableVariants/Sentences/MutablePredicate.hpp"
 #include "../IR/MutableVariants/Sentences/MutableQuantified.hpp"

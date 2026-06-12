@@ -31,7 +31,7 @@ class Feature : public IHashable
 {
 public:
     /**
-     * @class FeatureType
+     * @enum FeatureType
      * @brief The four Clause feature types.
      */
     enum class FeatureType

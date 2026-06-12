@@ -18,6 +18,7 @@
 #include <ranges>
 #include <sigc++/adaptors/bind.h>
 
+#include "../IR/Sentences/SentenceRoot.hpp"
 #include "../IR/MutableVariants/Sentences/MutableSentenceRoot.hpp"
 #include "../IR/Sentences/Literal.hpp"
 #include "../IR/SymbolRepository.hpp"
