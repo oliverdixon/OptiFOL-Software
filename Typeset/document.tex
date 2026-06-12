@@ -186,16 +186,15 @@
 \begingroup%
 \setlength\parskip{1em}%
 This document is not intended to reflect a finish product; rather an archive of
-the source at the point of submission for the B. Eng. (L6) dissertation. Given
-that not all functional requirements were met in the timeline, some code is
+the source at the point of submission for the Level 6 dissertation. Given that
+not all functional requirements were met in the timeline, some code is
 annotated with \texttt{TODO} markers, and Doxygen documentation is occasionally
 incomplete.
 
 From the front-matter onwards, the page margins shrink from $2$cm to $0.5$cm to
 accommodate the 110-column source listings\footnotemark. As some printers may
 not be able to handle such large text areas, printing a couple of test pages
-prior to printing the entire document is recommended! Page numbering is also
-omitted for the remainder of the document for similar typographical reasons.
+prior to printing the entire document is recommended!
 %
 \footnotetext{The software was initially developed with 120-column files. The
 sources have been automatically reset to 110 columns using the
@@ -230,7 +229,7 @@ Doxygen HTML documentation of the sources can be found at
 \tableofcontents
 \clearpage
 \frontmatterfalse
-\pagenumbering{gobble}
-\newgeometry{margin=.5cm}
+\newgeometry{vmargin={.5cm,2cm},hmargin={.5cm,.5cm}}
+\pagenumbering{arabic}
 \input{sources.tex}
 \end{document}
